@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.12 2004-07-27 21:58:16 taylor Exp $
+// $Id: StepQueryView.java,v 1.13 2004-08-10 21:17:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -153,6 +153,7 @@ public class StepQueryView extends SequenceView {
     add( stepHeaderPanel, BorderLayout.NORTH);
 
     TableSorter sorter = createTableModelAndSorter();
+    sorter.setColumnComparator( Integer.class, DBTransactionTableModel.INTEGER_COMPARATOR);
     stepTable = new DBTransactionTable( sorter, stepNumberColumnIndx, this);
     sorter.setTableHeader( stepTable.getTableHeader());
     contentScrollPane = new JScrollPane( stepTable);
@@ -223,6 +224,15 @@ public class StepQueryView extends SequenceView {
         data[row][5] = transaction.getInfo()[1];
         data[row][6] = transaction.getInfo()[2];
       }
+      return new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 1) || (columnIndex == 3)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
     } else if ((query.indexOf( " With ") == -1) && key.equals( "")) {
       // all constraints, or tokens, for sequence
       objectKeyColumnIndx = 3;
@@ -262,6 +272,15 @@ public class StepQueryView extends SequenceView {
           data[row][4] = transaction.getInfo()[0];
         }
       }
+      return new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 1) || (columnIndex == 3)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
     } else {
       // specific constraint, token, or variable for sequence
       objectKeyColumnIndx = -1;
@@ -322,9 +341,16 @@ public class StepQueryView extends SequenceView {
           data[row][5] = transaction.getInfo()[2];
         }
       }
+      return new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 1)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
     }
-
-    return new TableSorter( new DBTransactionTableModel( columnNames, data));
   }
 
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNetworkRuleInstanceNode.java,v 1.1 2004-08-05 00:24:30 taylor Exp $
+// $Id: TokenNetworkRuleInstanceNode.java,v 1.2 2004-08-10 21:17:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -294,7 +294,13 @@ public class TokenNetworkRuleInstanceNode extends RuleInstanceNode
     return false;
   } // end doMouseClick   
 
-  private boolean addRuleInstanceObjects( final TokenNetworkRuleInstanceNode ruleInstanceNode) {
+  /**
+   * <code>addRuleInstanceObjects</code>
+   *
+   * @param ruleInstanceNode - <code>TokenNetworkRuleInstanceNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addRuleInstanceObjects( final TokenNetworkRuleInstanceNode ruleInstanceNode) {
     boolean areNodesChanged =
       TokenNetworkGenerics.addEntityTokNetNodes( ruleInstanceNode, tokenNetworkView,
                                                  isDebugPrint);

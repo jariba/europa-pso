@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.53 2004-08-06 20:05:30 taylor Exp $
+// $Id: planViz.txt,v 1.54 2004-08-10 21:17:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -437,6 +437,10 @@ Method:
      "Find Variable Path", enter two variable keys, and click "OK".
  18. In the Constraint Network, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
+ 19. In the Token Network, Mouse-Right click on the background and select
+     "Find Token Path", enter two token keys, and click "OK".
+ 20. In the Token Network, Mouse-Left click on the background, and then
+     Mouse-Right click on the background and select "Highlight Current Path".
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -483,6 +487,10 @@ Post-conditions:
      be rendered and highlighted: the first green and the others turquoise.
  17. Method:18 - After the Mouse-Left click the node highlighting will disappear.
      After the Mouse-Right click the node highlighting of Method:17 will reappear.
+ 18. Method:19 - The node path ids will be listed in a dialog and the nodes will
+     be rendered and highlighted: the first green and the others turquoise.
+ 19. Method:20 - After the Mouse-Left click the node highlighting will disappear.
+     After the Mouse-Right click the node highlighting of Method:18 will reappear.
 
 Requirements: TBD
 

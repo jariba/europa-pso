@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.35 2004-08-06 20:05:28 taylor Exp $
+// $Id: VizView.java,v 1.36 2004-08-10 21:17:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -554,6 +554,15 @@ public class VizView extends JPanel {
     return new JGoListener(this);
   }
 
+  /**
+   * <code>progressMonitorThread</code>
+   *
+   * @param title - <code>String</code> - 
+   * @param minValue - <code>int</code> - 
+   * @param maxValue - <code>int</code> - 
+   * @param monitoredThread - <code>Thread</code> - 
+   * @param view - <code>JPanel</code> - 
+   */
   protected void progressMonitorThread( String title, int minValue, int maxValue,
                                         Thread monitoredThread, JPanel view) {
     Thread thread = new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
@@ -562,6 +571,10 @@ public class VizView extends JPanel {
     thread.start();
   }
 
+  /**
+   * <code>ProgressMonitorThread</code> - 
+   *
+   */
   public class ProgressMonitorThread extends Thread {
 
     private String title;
@@ -569,10 +582,21 @@ public class VizView extends JPanel {
     private int maxValue;
     private Thread monitoredThread;
     private JPanel view;
+    private boolean isThreadCancel;
 
+    /**
+     * <code>ProgressMonitorThread</code> - constructor 
+     *
+     * @param title - <code>String</code> - 
+     * @param minValue - <code>int</code> - 
+     * @param maxValue - <code>int</code> - 
+     * @param monitoredThread - <code>Thread</code> - 
+     * @param view - <code>JPanel</code> - 
+     */
     public ProgressMonitorThread( String title, int minValue, int maxValue,
                                   Thread monitoredThread, JPanel view) {
       isProgressMonitorCancel = false;
+      isThreadCancel = false;
       this.title = title;
       this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
       this.maxValue = maxValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
@@ -580,15 +604,24 @@ public class VizView extends JPanel {
       this.view = view;
     }  // end constructor
 
+    public void setPMThreadCancel() {
+      // System.err.println( "ProgressMonitorThread.setPMThreadCancel");
+      isThreadCancel = true;
+    }
+
+    /**
+     * <code>run</code>
+     *
+     */
     public void run() {
       progressMonitor = new PWProgressMonitor( PlanWorks.getPlanWorks(), title, "",
-                                              minValue, maxValue, monitoredThread, view);
+                                              minValue, maxValue, monitoredThread, view, this);
       progressMonitor.setMillisToDecideToPopup( 0);
       progressMonitor.setMillisToPopup( 0);
       // these two must be set to 0 before calling setProgress, which puts up the dialog
       progressMonitor.setProgress( 0);
 
-      while (! isProgressMonitorCancel) {
+      while ((! isProgressMonitorCancel) && (! isThreadCancel)) {
         try {
           Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
         }

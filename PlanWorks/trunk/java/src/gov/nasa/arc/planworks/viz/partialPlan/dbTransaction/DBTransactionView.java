@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.14 2004-07-29 01:36:39 taylor Exp $
+// $Id: DBTransactionView.java,v 1.15 2004-08-10 21:17:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -250,7 +250,18 @@ public class DBTransactionView extends PartialPlanView {
     objectKeyColumnIndx = 3;
     int stepNumberColumnIndx = -1;
 
-    TableSorter sorter = new TableSorter( new DBTransactionTableModel( columnNames, data));
+    TableSorter sorter =
+      new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 3)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
+    sorter.setColumnComparator( Integer.class, DBTransactionTableModel.INTEGER_COMPARATOR);
+
     dbTransactionTable = new DBTransactionTable( sorter, stepNumberColumnIndx, this);
     sorter.setTableHeader( dbTransactionTable.getTableHeader());
     contentScrollPane = new JScrollPane( dbTransactionTable);

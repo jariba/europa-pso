@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.54 2004-08-06 20:05:27 taylor Exp $
+# $Id: GETTING_STARTED,v 1.55 2004-08-10 21:17:05 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -137,7 +137,7 @@ Then the node becomes "closed" and has an unbold border.  The active node
 ("opened" or "closed" by Mouse-Left click) is positioned in the center of the 
 view after layout, and highlighted by a bright green rectangle.
 
-The Mouse-Right pop-up offers, in addition to the "standard" selections,
+The view background Mouse-Right pop-up offers, in addition to the "standard" selections,
 "Find Variable Path" and "Highlight Current Path".  "Find Variable Path" requests 
 two variable keys and finds a path through variables and constraints which connects
 them.  This node path is saved.  Selected nodes are dragged as a group, which may
@@ -274,21 +274,37 @@ root nodes are the "supreme" master tokens.  The Token Network View is freshly
 layed out after a  Content Filter specification is applied.  The token nodes,
 are rendered as rectangles with a label containing the token's predicate name
 and its key value.  The rule instance nodes, are rendered as ovals, with the 
-instance key and the rule key values in the label.
+instance key and the rule key values in the label.  The initial rendering is
+of only the "root" token nodes and their immediate rule instance nodes. The
+view can be imncrementally increased or decreased by clicking on the appropriate
+nodes (see below).
+
+The view background Mouse-Right pop-up offers, in addition to the "standard"
+selections, "Find Token Path", and "Highlight Current Path".  "Find Token Path" 
+requests two token keys and finds a path through tokens and rule instances which 
+connects them.  This node path is saved.  Selected nodes are dragged as a group, 
+which may be inconvenient.  To deal with this, click Mouse-Left in the background 
+to discard the selections, drag the nodes to new locations, and then on the background 
+select Mouse-Right: "Highlight Current Path".
 
 Mouse cursor over token nodes displays "predicateName( parameterValues)", and 
-the second line displays its slot key.  Clicking Mouse-Left on a node link will 
-make visible two small hollow squares, one at the "root" of the link, and the 
-other at the tip of the arrow.  Mouse-Right on the token nodes offers the selections
-"Open Navigator View", and "Set Active Token".
+the second line, if appropriate, shows "Mouse-L: {open | close}".  "Open" will
+display the tokens neasrest neighbors, and "close" will make them invisible.
+Mouse-Right on the token nodes offers the selections "Open Navigator View", and 
+"Set Active Token".
 
-Mouse-Right on the rule instance nodes brings up the selections "Open Constraint
-Network View", "Open Navigator View" and "Open Rule Instance View".  Selecting the 
-third creates an internal frame titled "RuleInstanceView of <plan-name>/stepnn - n", 
-which displays the "from" token, and "to" token key values and predicates, followed 
-by the text of the rule.  A "RuleInstanceView ..." internal frame may be created for 
-every rule instance node in the Token Network View.  Mouse-Right: "Close Rule 
-Instance Views" on the view background can be used to remove all "Rule Instance Views".
+Mouse cursor over rule instance nodes displays "Mouse-L: {open | close}, which 
+open/close its nearest neighbors.  Mouse-Right on the rule instance nodes offers 
+the selections "Open Navigator View", and "Open Rule Instance View".  "Open Rule 
+Instance View" creates an internal frame titled "RuleInstanceView of 
+<plan-name>/stepnn - n", which displays the "from" token, and "to" token key values 
+and predicates, followed by the text of the rule.  A "RuleInstanceView ..." internal 
+frame may be created for every rule instance node in the Token Network View.  Mouse-
+Right: "Close Rule Instance Views" on the view background can be used to remove all 
+"Rule Instance Views".
+
+Clicking Mouse-Left on a node link will make visible two small hollow squares, one 
+at the "root" of the link, and the other at the tip of the arrow.  
 
 
 Node Focus in Views

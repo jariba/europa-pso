@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNetworkTokenNode.java,v 1.1 2004-08-05 00:24:31 taylor Exp $
+// $Id: TokenNetworkTokenNode.java,v 1.2 2004-08-10 21:17:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -385,7 +385,13 @@ public class TokenNetworkTokenNode extends ExtendedBasicNode
     return false;
   } // end doMouseClick   
 
-  private boolean addTokenObjects( final TokenNetworkTokenNode tokenNetworkTokenNode) {
+  /**
+   * <code>addTokenObjects</code>
+   *
+   * @param tokenNetworkTokenNode - <code>TokenNetworkTokenNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addTokenObjects( final TokenNetworkTokenNode tokenNetworkTokenNode) {
     boolean areNodesChanged =
       TokenNetworkGenerics.addEntityTokNetNodes( tokenNetworkTokenNode, tokenNetworkView,
                                          isDebug);

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.117 2004-08-05 19:34:19 taylor Exp $
+# $Id: README,v 1.118 2004-08-10 21:17:06 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -92,6 +92,14 @@ o PLASMA can now be run with interactive control over which step's partial plan 
 o The Constraint Network View has two new background Mouse-Right selection options: 
   "Find Variable Path" and "Highlight Current Path".  "Find Variable Path" requests 
   two variable keys and finds a path through variables and constraints which connects
+  them.  This node path is saved.  Selected nodes are dragged as a group, which may
+  be inconvenient.  To deal with this, click Mouse-Left in the background to discard
+  the selections, drag the nodes to new locations, and then on the background select
+  Mouse-Right: "Highlight Current Path".
+
+o The Token Network View has two new background Mouse-Right selection options: 
+  "Find Token Path" and "Highlight Current Path".  "Find Token Path" requests 
+  two token keys and finds a path through tokens and rule instances which connects
   them.  This node path is saved.  Selected nodes are dragged as a group, which may
   be inconvenient.  To deal with this, click Mouse-Left in the background to discard
   the selections, drag the nodes to new locations, and then on the background select
