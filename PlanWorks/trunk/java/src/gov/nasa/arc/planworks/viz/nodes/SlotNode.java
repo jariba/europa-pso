@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.17 2003-07-24 20:57:11 taylor Exp $
+// $Id: SlotNode.java,v 1.18 2003-08-07 21:24:46 taylor Exp $
 //
 // PlanWorks
 //
@@ -216,7 +216,6 @@ public class SlotNode extends TextNode {
     if (slot.getTokenList().size() > 0) {
       baseToken = (PwToken) slot.getTokenList().get( 0);
     }
-    boolean isLocationAbsolute = false;
     if (baseToken == null) {
       if (previousToken == null) {
         // first slot is empty
@@ -231,7 +230,7 @@ public class SlotNode extends TextNode {
         // empty slot between filled slots
         intervalVariable = previousToken.getEndVariable();
       }
-    } else if (isLastSlot == true) {
+    } else if (isLastSlot || alwaysReturnEnd) {
       intervalVariable = baseToken.getStartVariable();
       lastIntervalVariable = baseToken.getEndVariable();
     } else {
@@ -245,8 +244,7 @@ public class SlotNode extends TextNode {
     }
     // System.err.println( "startIntervalDomain " + startIntervalDomain.toString());
 
-    if ((lastIntervalVariable != null) || (lastIntervalDomain != null) ||
-        alwaysReturnEnd) {
+    if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
       if (lastIntervalVariable == null) {
         endIntervalDomain = lastIntervalDomain;
       } else {
