@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.95 2004-08-05 00:24:23 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.96 2004-08-10 22:41:10 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -180,8 +180,10 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       urlsDontMatchDialog(url, dbUrl);
     }
     //loadTransactionFile();
-    loadStatsFile();
-    loadRulesFile();
+    if(!MySQLDB.statsInDb(this.id))
+      loadStatsFile();
+    if(!MySQLDB.rulesInDb(this.id))
+      loadRulesFile();
     MySQLDB.analyzeDatabase();
     //loadTransactions();
     transactions = null;
@@ -223,13 +225,17 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   }
 
   private void loadStatsFile() {
+    long t1 = System.currentTimeMillis();
     MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_PP_STATS,
                      DbConstants.TBL_PP_STATS);
+    System.err.println("Loading stats file took " + (System.currentTimeMillis() - t1) + " msecs");
   }
 
   private void loadRulesFile() {
+    long t1 = System.currentTimeMillis();
     MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_RULES, 
                      DbConstants.TBL_RULES);
+    System.err.println("Loading rules file took " + (System.currentTimeMillis() - t1) + " msecs");
   }
 
   private void loadTransactions() {
@@ -630,12 +636,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return MySQLDB.queryStepsWithRelaxations(id);
   }
 
-  public List getStepsWithUnitVariableBindingDecisions() {
+  public List getStepsWithUnitDecisions() {
 		loadTransactionFile();
     return MySQLDB.queryStepsWithUnitDecisions(this);
   }
 
-  public List getStepsWithNonUnitVariableBindingDecisions() {
+  public List getStepsWithNonUnitDecisions() {
 		loadTransactionFile();
     return MySQLDB.queryStepsWithNonUnitDecisions(this);
   }
