@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.41 2003-10-16 20:39:14 miatauro Exp $
+# $Id: README,v 1.42 2003-10-16 21:05:11 taylor Exp $
 #
 
 SUMMARY
@@ -49,6 +49,10 @@ data and will require a rebuilding of the database tables
 ("ant planWorksDbInstall").
 
 o  GNATS PRs and CRs completed:
+   #2079: Users not telepathic-need to specify MySQL version.
+   #2086: PlanWriter writes output files in wierd places.
+   #2092: The filter of free token, etc from the content spec should 
+          persist between window open and closes.
    #2107: Issues with display of Token Network and other windows.
    #2108: Changes in Token Network View.
 
@@ -143,7 +147,6 @@ the database.
  cleanCls           -- delete the 'java/classes' directory tree
  cleanDb            -- delete loaded projects from data base, unless -Dno.clean.db=yes
  compile            -- compile 'java/src' tree into 'java/classes' tree
- hurtPlanWorks      -- Big JFCUnit test (compile, cleandb dependencies)
  planWorks          -- run PlanWorks application (compile dependency)
  planWorksDbInstall -- create all necessary databases and tables
  planWorksProf      -- run PlanWorks with profiling info
