@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.104 2004-05-21 22:25:15 miatauro Exp $
+// $Id: MySQLDB.java,v 1.105 2004-05-27 17:36:14 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1095,12 +1095,16 @@ public class MySQLDB {
 		List retval = new ArrayList();
 		try {
 			ResultSet decs = 
-				queryDatabase("SELECT DecisionId, DecisionType, EntityId, IsUnit, Choices FROM Decision WHERE PartialPlanId=".concat(ppId.toString()));
+				queryDatabase("SELECT Decision.DecisionId, Decision.DecisionType, Decision.EntityId, Decision.IsUnit, Decision.Choices FROM Decision WHERE Decision.PartialPlanId=".concat(ppId.toString()));
 			while(decs.next()) {
-				Blob blob = decs.getBlob("Choices");
-				String choices = new String(blob.getBytes(1, (int) blob.length()));
-				retval.add(new PwDecisionImpl(ppId, new Integer(decs.getInt("DecisionId")), decs.getInt("DecisionType"),
-																			new Integer(decs.getInt("EntityId")), decs.getBoolean("IsUnit"), choices));
+				PwDecisionImpl impl = new PwDecisionImpl(ppId, new Integer(decs.getInt("DecisionId")), decs.getInt("DecisionType"),
+																								 new Integer(decs.getInt("EntityId")), decs.getBoolean("IsUnit"));
+				Blob blob = decs.getBlob("Decision.Choices");
+				if(!decs.wasNull()) {
+					impl.makeChoices(new String(blob.getBytes(1, (int) blob.length())));
+				}
+				retval.add(impl);
+				System.err.println(impl.toOutputString());
 			}
 		}
 		catch(SQLException sqle) {
@@ -1648,7 +1652,6 @@ public class MySQLDB {
 		catch(SQLException sqle) {
 			sqle.printStackTrace();
 		}
-		System.err.println("=====>File: " + seq.getUrl() + System.getProperty("file.separator") + "transactions");
 		File transFile = new File(seq.getUrl() + System.getProperty("file.separator") + "transactions");
 		if(!transFile.exists() || !transFile.canRead()) {
 			return;

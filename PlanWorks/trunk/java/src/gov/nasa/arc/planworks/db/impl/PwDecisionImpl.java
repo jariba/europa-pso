@@ -16,22 +16,26 @@ public class PwDecisionImpl implements PwDecision {
 	private boolean unit;
 	private List choiceList;
 
-	public PwDecisionImpl(Long ppId, Integer id, int type, Integer entityId, boolean unit, String choiceStr) {
+	public PwDecisionImpl(Long ppId, Integer id, int type, Integer entityId, boolean unit) {
+		this.ppId = ppId;
 		this.id = id;
 		this.type = type;
 		this.entityId = entityId;
 		this.unit = unit;
 		choiceList = new ArrayList();
-		String [] choices = choiceStr.split("\\x1e");
-		for(int i = 0; i < choices.length; i++) {
-			choiceList.add(new PwChoiceImpl(choices[i]));
-		}
 	}
 	public final Integer getId(){return id;}
 	public final int getType(){return type;}
 	public final Integer getEntityId(){return entityId;}
 	public final boolean isUnit(){return unit;}
 	public final List getChoices(){return new ArrayList(choiceList);}
+	public final void makeChoices(final String choiceStr) {
+		String [] choices = choiceStr.split("\\x1e");
+		for(int i = 0; i < choices.length; i++) {
+			choiceList.add(new PwChoiceImpl(choices[i]));
+		}
+	}
+	//this is broken
 	public final String toOutputString() {
 		StringBuffer retval = new StringBuffer(ppId.toString()).append("\t").append(id.toString()).append("\t").append(type);
 		retval.append("\t").append(entityId.toString()).append("\t");
