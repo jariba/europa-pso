@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.5 2003-12-31 01:02:22 taylor Exp $
+// $Id: SlotNode.java,v 1.6 2004-01-05 23:34:20 taylor Exp $
 //
 // PlanWorks
 //
@@ -445,6 +445,8 @@ public class SlotNode extends TextNode {
           ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
         boolean isByKey = false;
         temporalExtentView.findAndSelectToken( token, slot, isByKey);
+      } else {
+        timelineView.setMouseOverNode( null);
       }
       return true;
     } else {

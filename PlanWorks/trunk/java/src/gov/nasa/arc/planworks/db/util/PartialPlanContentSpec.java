@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.9 2004-01-02 22:28:32 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.10 2004-01-05 23:34:18 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -273,6 +273,7 @@ public class PartialPlanContentSpec implements ContentSpec {
         tokenQuery.append(") ");
       }
       tokenQuery.append(";");
+      // System.err.println( "applySpec " + tokenQuery.toString());
       ResultSet tokenIds = MySQLDB.queryDatabase(tokenQuery.toString());
       validTokenIds.clear();
       while(tokenIds.next()) {

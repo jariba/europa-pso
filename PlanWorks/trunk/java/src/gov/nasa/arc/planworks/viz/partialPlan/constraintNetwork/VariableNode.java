@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.6 2003-12-22 20:51:58 miatauro Exp $
+// $Id: VariableNode.java,v 1.7 2004-01-05 23:34:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -198,8 +198,8 @@ public class VariableNode extends BasicNode {
           String name = (String) objectNameIterator.next();
           tip.append(name).append(": ");
           tip.append(partialPlanView.getPartialPlan().getObjectIdByName(name));
-          if(objectNameIterator.hasNext()) {
-            tip.append(", ");
+          if (objectNameIterator.hasNext()) {
+            tip.append("<br>");
           }
         }
       } else if (typeName.equals( DbConstants.PARAMETER_VAR)) {
