@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.16 2003-06-30 22:18:22 taylor Exp $
+// $Id: PlanWorks.java,v 1.17 2003-07-01 00:27:42 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -362,8 +362,14 @@ public class PlanWorks extends MDIDesktopFrame {
         JOptionPane.showMessageDialog
           (PlanWorks.this, sqlExcep.getMessage().substring( index + 1),
            "SQL Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println( sqlExcep);
-          isProjectCreated = false; 
+        System.err.println( sqlExcep);
+        isProjectCreated = false; 
+      } catch(Exception e) {
+        int index = e.getMessage().indexOf(":");
+        JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
+                                      "Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println(e);
+        isProjectCreated = false;
       }
     }
     return project;

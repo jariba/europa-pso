@@ -102,7 +102,10 @@ public class MySQLDB {
     ResultSet result = null;
     try {
       stmt = conn.createStatement();
+      System.err.println("MySQLDB executing query command: " + query);
+      long t1 = System.currentTimeMillis();
       result = stmt.executeQuery(query);
+      System.err.println("MySQLDB query took " + (System.currentTimeMillis() - t1) + "ms.");
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -115,7 +118,10 @@ public class MySQLDB {
     int result = -1;
     try {
       stmt = conn.createStatement();
+      System.err.println("MySQLDB executing update command: " + update);
+      long t1 = System.currentTimeMillis();
       result = stmt.executeUpdate(update);
+      System.err.println("MySQLDB update took " + (System.currentTimeMillis() - t1) + "ms.");
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
