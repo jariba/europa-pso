@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.141 2005-01-20 21:48:40 miatauro Exp $
+# $Id: README,v 1.142 2005-02-10 18:48:26 tania Exp $
 #
 
 NOTE: Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -40,7 +40,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary above)
-  > cvs co -r PW_M_19 PlanWorks
+  > cvs co -r TUTORIAL_20050210 PlanWorks
 
 
 PLATFORM REQUIREMENTS
