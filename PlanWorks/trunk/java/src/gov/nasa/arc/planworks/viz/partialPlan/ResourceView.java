@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.9 2004-05-04 01:27:17 taylor Exp $
+// $Id: ResourceView.java,v 1.10 2004-05-07 19:54:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -298,13 +298,10 @@ public abstract class ResourceView extends PartialPlanView  {
   public final void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ResourceView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( SLEEP_FOR_50MS);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
-    }
+		if(!displayableWait()) {
+			return;
+		}
+
     this.computeFontMetrics( this);
 
     // resource names font

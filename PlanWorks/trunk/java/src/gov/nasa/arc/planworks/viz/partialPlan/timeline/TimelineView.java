@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.51 2004-05-04 01:27:21 taylor Exp $
+// $Id: TimelineView.java,v 1.52 2004-05-07 19:54:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -192,13 +192,9 @@ public class TimelineView extends PartialPlanView {
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep(50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
-    }
+		if(!displayableWait()) {
+			return;
+		}
 
     this.computeFontMetrics( this);
 
@@ -222,7 +218,7 @@ public class TimelineView extends PartialPlanView {
       }
 
       long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... elapsed time: " +
+      System.err.println( "   ... TimelineView elapsed time: " +
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
     } else {
       try {
