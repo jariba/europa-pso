@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.82 2004-08-14 01:39:14 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.83 2004-08-20 21:51:08 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -1867,7 +1867,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 	if ((variableToFind = partialPlan.getVariable( vcKey)) != null) {
 	  if (! findAndSelectVariable( variableToFind, doRedraw)) {
 	    JOptionPane.showMessageDialog
-	      ( PlanWorks.getPlanWorks(), "variable key '" + vcKey + " is not found",
+	      ( PlanWorks.getPlanWorks(), "variable key '" + vcKey + " is not available",
 		"Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
 	    break;
 	  }
@@ -1881,7 +1881,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 	} else if ((constraintToFind = partialPlan.getConstraint( vcKey)) != null) {
 	  if (! findAndSelectConstraint( constraintToFind, isVariableOpened)) {
 	    JOptionPane.showMessageDialog
-	      ( PlanWorks.getPlanWorks(), "constraint key '" + vcKey + " is not found",
+	      ( PlanWorks.getPlanWorks(), "constraint key '" + vcKey + " is not available",
 		"Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
 	    break;
 	  }
@@ -1978,7 +1978,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (! isTokenFound) {
       // Content Spec filtering may cause this to happen
       String message = "Token " + contToFind.getName() +
-	" (key=" + contToFind.getId().toString() + ") not found.";
+	" (key=" + contToFind.getId().toString() + ") not available.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
 				     "Token Not Found in ConstraintNetworkView",
 				     JOptionPane.ERROR_MESSAGE);
@@ -2019,7 +2019,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       // Content Spec filtering may cause this to happen
       if(variableToFind.getParent() instanceof PwObject) {
 	String message = "Variable " + variableToFind.getDomain().toString() +
-	  " (key=" + variableToFind.getId().toString() + ") not found.";
+	  " (key=" + variableToFind.getId().toString() + ") not available.";
 	JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
 				       "Variable Not Found in ConstraintNetworkView",
 				       JOptionPane.ERROR_MESSAGE);
@@ -2053,7 +2053,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
     }
     String message = "Variable " + variableToFind.getDomain().toString() +
-      " (key=" + variableToFind.getId().toString() + ") not found.";
+      " (key=" + variableToFind.getId().toString() + ") not available.";
     JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
 				   "Variable Not Found in ConstraintNetworkView",
 				   JOptionPane.ERROR_MESSAGE);
@@ -2125,7 +2125,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (! isConstraintFound) {
       // Content Spec filtering may cause this to happen
       String message = "Constraint " + constraintToFind.getName() +
-	" (key=" + constraintToFind.getId().toString() + ") not found.";
+	" (key=" + constraintToFind.getId().toString() + ") not available.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
 				     "Constraint Not Found in ConstraintNetworkView",
 				     JOptionPane.ERROR_MESSAGE);

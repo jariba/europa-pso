@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.2 2004-08-16 22:01:02 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.3 2004-08-20 21:53:05 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -50,6 +50,10 @@ import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
  * @version 0.0
  */
 public class AskNodeByKey extends JDialog { 
+
+  private static final int KEY_NOT_VALID = -1;
+  private static final int KEY_NOT_AVAILABLE = 0;
+  private static final int KEY_FOUND = 1;
 
   private PartialPlanView partialPlanView;
   private Integer nodeKey;
@@ -161,11 +165,16 @@ public class AskNodeByKey extends JDialog {
               try {
                 nodeKey = new Integer( Integer.parseInt( typedText));
                 // System.err.println( "AskNodeByKey key " + typedText);
-                if (! isNodeKeyValid( nodeKey)) {
+                if (isNodeKeyValid( nodeKey) == KEY_NOT_VALID) {
                   JOptionPane.showMessageDialog
                     (PlanWorks.getPlanWorks(),
                      "Sorry, \"" + nodeKey.toString() + "\" " + "is not a valid key.",
                      "Invalid Key", JOptionPane.ERROR_MESSAGE);
+                } else if (isNodeKeyValid( nodeKey) == KEY_NOT_AVAILABLE) {
+                  JOptionPane.showMessageDialog
+                    (PlanWorks.getPlanWorks(),
+                     "Sorry, \"" + nodeKey.toString() + "\" " + "is a valid key but is not available in this view.",
+                     "Key Not Available", JOptionPane.ERROR_MESSAGE);
                 } else {
                   // we're done; dismiss the dialog
                   setVisible( false);
@@ -189,23 +198,26 @@ public class AskNodeByKey extends JDialog {
       });
   } // end addInputListener
 
-  private boolean isNodeKeyValid( Integer nodeKey) {
-    boolean isValid = false;
+  private int isNodeKeyValid( Integer nodeKey) {
+    int keyStatus = KEY_NOT_VALID; 
     PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+    if (partialPlan.getEntity( nodeKey ) != null) {
+      keyStatus = KEY_NOT_AVAILABLE; 
+    }
     if (partialPlanView instanceof TemporalExtentView) {
       if (partialPlan.getToken( nodeKey) != null) {
-        return true;
+        return KEY_FOUND;  //valid and available
       }
     } else if (partialPlanView instanceof TokenNetworkView) {
       if ((partialPlan.getToken( nodeKey) != null) ||
           (partialPlan.getRuleInstance( nodeKey) != null)) {
-        return true;
+        return KEY_FOUND;
       }
     } else if (partialPlanView instanceof TimelineView) {
       if ((partialPlan.getToken( nodeKey) != null) ||
           (partialPlan.getSlot( nodeKey) != null) ||
           (partialPlan.getTimeline( nodeKey) != null)) {
-         return true;
+        return KEY_FOUND;
       }
     } else if (partialPlanView instanceof ConstraintNetworkView) {
       if ((partialPlan.getToken( nodeKey) != null) ||
@@ -213,16 +225,16 @@ public class AskNodeByKey extends JDialog {
           (partialPlan.getConstraint( nodeKey) != null) ||
           (partialPlan.getRuleInstance( nodeKey) != null) ||
           (partialPlan.getObject(nodeKey) != null)) {
-        return true;
+        return KEY_FOUND;
       }
     } else if (partialPlanView instanceof ResourceProfileView) {
       if (partialPlan.getResource( nodeKey) != null) {
-        return true;
+        return KEY_FOUND; 
       }
     } else if (partialPlanView instanceof ResourceTransactionView) {
       if ((partialPlan.getResource( nodeKey) != null) ||
           (partialPlan.getResourceTransaction( nodeKey) != null)) {
-        return true;
+        return KEY_FOUND;  
       }
     } else if (partialPlanView instanceof DecisionView) {
       Iterator decisionItr = ((DecisionView) partialPlanView).getDecisionList().iterator();
@@ -230,18 +242,20 @@ public class AskNodeByKey extends JDialog {
         PwEntity decision = (PwDecision) decisionItr.next();
         if (decision.getId().equals( nodeKey)) {
           entity = decision;
-          return true;
+          return KEY_FOUND; 
         }
       }
     } else if (partialPlanView instanceof NavigatorView) {
-      return ((partialPlan.getEntity( nodeKey) != null) &&
-	      (partialPlan.getResourceTransaction( nodeKey) == null));
+      if ((partialPlan.getEntity( nodeKey) != null) &&
+	      (partialPlan.getResourceTransaction( nodeKey) == null)) {
+          return KEY_FOUND;  
+        }
     } else {
       System.err.println( "AskNodeByKey.isNodeKeyValid: " + partialPlanView +
                           " not handled");
       System.exit( -1);
     }
-    return isValid;
+    return keyStatus;
   } // end isNodeKeyValid
 
 
