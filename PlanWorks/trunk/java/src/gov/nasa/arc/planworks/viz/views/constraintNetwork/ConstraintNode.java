@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.2 2003-09-23 16:10:39 taylor Exp $
+// $Id: ConstraintNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -104,12 +104,9 @@ public class ConstraintNode extends BasicNode {
     }
     isDebug = false;
     // isDebug = true;
-    if (isDebug) {
-      nodeLabel = constraint.getType().substring( 0, 1) + "_" +
-        constraint.getId().toString();
-    } else {
-      nodeLabel = constraint.getName();
-    }
+    StringBuffer labelBuf = new StringBuffer( constraint.getName());
+    labelBuf.append( "\nkey=").append( constraint.getId().toString());
+    nodeLabel = labelBuf.toString();
     // System.err.println( "ConstraintNode: " + nodeLabel);
 
     hasBeenVisited = false;
@@ -127,6 +124,7 @@ public class ConstraintNode extends BasicNode {
     setDraggable( isDraggable);
     // do not allow user links
     getPort().setVisible( false);
+    getLabel().setMultiline( true);
     if (isUnaryConstraint) {
       setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     }

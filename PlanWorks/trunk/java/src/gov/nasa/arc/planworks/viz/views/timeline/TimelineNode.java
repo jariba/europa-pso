@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.1 2003-09-18 20:48:49 taylor Exp $
+// $Id: TimelineNode.java,v 1.2 2003-09-23 19:28:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,6 +21,7 @@ import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
+import com.nwoods.jgo.JGoText;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
@@ -82,6 +83,8 @@ public class TimelineNode extends TextNode {
     setBrush( JGoBrush.makeStockBrush( backgroundColor));
     getLabel().setEditable( false);
     getLabel().setBold( true);
+    getLabel().setMultiline( true);
+    getLabel().setAlignment( JGoText.ALIGN_CENTER);
     setDraggable( false);
     // do not allow user links
     getTopPort().setVisible( false);

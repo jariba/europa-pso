@@ -68,7 +68,7 @@ public interface ViewConstants {
    * constant <code>TIMELINE_VIEW_Y_DELTA</code>
    *
    */
-  public static final int TIMELINE_VIEW_Y_DELTA = 60;
+  public static final int TIMELINE_VIEW_Y_DELTA = 80; // 60;
 
   /**
    * constant <code>TIMELINE_VIEW_FONT_SIZE</code>
@@ -208,7 +208,7 @@ public interface ViewConstants {
    * constant <code>TEMPORAL_NODE_CELL_HEIGHT</code>
    *
    */
-  public static final int TEMPORAL_NODE_CELL_HEIGHT = 46;
+  public static final int TEMPORAL_NODE_CELL_HEIGHT = 68; // 46;
 
   /**
    * constant <code>TEMPORAL_NODE_Y_LABEL_OFFSET</code>
@@ -220,13 +220,13 @@ public interface ViewConstants {
    * constant <code>TEMPORAL_NODE_Y_START_OFFSET</code>
    *
    */
-  public static final int TEMPORAL_NODE_Y_START_OFFSET = 22;
+  public static final int TEMPORAL_NODE_Y_START_OFFSET = 30; // 22;
 
   /**
    * constant <code>TEMPORAL_NODE_Y_END_OFFSET</code>
    *
    */
-  public static final int TEMPORAL_NODE_Y_END_OFFSET = 34;
+  public static final int TEMPORAL_NODE_Y_END_OFFSET = 42; // 34;
 
   /**
    * constant <code>TEMPORAL_MIN_END_X_LOC</code>

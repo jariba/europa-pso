@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.2 2003-09-23 16:10:40 taylor Exp $
+// $Id: TemporalNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -156,16 +156,23 @@ public class TemporalNode extends BasicNode implements Extent {
     this.backgroundColor = backgroundColor;
     this.isFreeToken = isFreeToken;
     this.temporalExtentView = temporalExtentView;
+    String nodeLabel2 = null;
     if (token != null) {
       predicateName = token.getPredicate().getName();
-      // nodeLabel = predicateName + " " + token.getId().toString();
-      nodeLabel = predicateName;
+      nodeLabel2 = "key=" + token.getId().toString();
     } else {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
-      nodeLabel = predicateName;
+      nodeLabel2 = "";
     }
+    StringBuffer labelBuf = new StringBuffer( predicateName);
+    labelBuf.append( "\n").append( nodeLabel2);
+    nodeLabel = labelBuf.toString();
     nodeLabelWidth =
-      SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(), nodeLabel) +
+      Math.max(
+               SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
+                                                  predicateName),
+               SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
+                                                  nodeLabel2)) +
       (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2);
     markAndBridgeList = new ArrayList();
     cellRow = Algorithms.NO_ROW;
@@ -195,6 +202,7 @@ public class TemporalNode extends BasicNode implements Extent {
     setDraggable( false);
     // do not allow user links
     getPort().setVisible( false);
+    getLabel().setMultiline( true);
 
     // render time interval extents
     int yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_START_OFFSET;

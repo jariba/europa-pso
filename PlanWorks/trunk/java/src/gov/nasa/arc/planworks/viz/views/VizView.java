@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.18 2003-09-18 20:48:46 taylor Exp $
+// $Id: VizView.java,v 1.19 2003-09-23 19:28:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -246,16 +246,26 @@ public class VizView extends JPanel {
         (PlanWorks.planWorks, viewName, "View Not Supported", 
          JOptionPane.INFORMATION_MESSAGE);
     }
-    maxViewWidth = Math.min( Math.max( maxViewWidth, PlanWorks.INTERNAL_FRAME_WIDTH),
+    maxViewWidth = Math.min( maxViewWidth, 
                              (int) PlanWorks.planWorks.getSize().getWidth() -
                              (int) viewFrame.getLocation().getX() -
                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
                              ViewConstants.FRAME_DECORATION_WIDTH); 
-    maxViewHeight = Math.min( Math.max( maxViewHeight, PlanWorks.INTERNAL_FRAME_HEIGHT),
+    maxViewHeight = Math.min( maxViewHeight, 
                               (int) PlanWorks.planWorks.getSize().getHeight() -
                               (int) viewFrame.getLocation().getY() -
                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
                               ViewConstants.FRAME_DECORATION_HEIGHT); 
+//     maxViewWidth = Math.min( Math.max( maxViewWidth, PlanWorks.INTERNAL_FRAME_WIDTH),
+//                              (int) PlanWorks.planWorks.getSize().getWidth() -
+//                              (int) viewFrame.getLocation().getX() -
+//                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
+//                              ViewConstants.FRAME_DECORATION_WIDTH); 
+//     maxViewHeight = Math.min( Math.max( maxViewHeight, PlanWorks.INTERNAL_FRAME_HEIGHT),
+//                               (int) PlanWorks.planWorks.getSize().getHeight() -
+//                               (int) viewFrame.getLocation().getY() -
+//                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
+//                               ViewConstants.FRAME_DECORATION_HEIGHT); 
     viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
                        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
   } // end expandViewFrame

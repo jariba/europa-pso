@@ -4,14 +4,12 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.33 2003-09-23 19:25:38 taylor Exp $
+# $Id: README,v 1.34 2003-09-23 19:27:59 taylor Exp $
 #
 
 SUMMARY
 =======
 
-23september03: Milestone 7
---------------------------
 In the Timeline View, clicking Mouse-Right "Set Active Token" on a slot,
 will now set the overloaded tokens as "secondary tokens", such that when
 Mouse-Right "Snap to Active Token" is invoked in the background of the
