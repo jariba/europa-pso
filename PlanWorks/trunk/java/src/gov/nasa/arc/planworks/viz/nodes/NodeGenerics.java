@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.17 2004-02-12 21:42:40 taylor Exp $
+// $Id: NodeGenerics.java,v 1.18 2004-02-13 02:37:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -388,7 +388,8 @@ public class NodeGenerics {
         ((PwEnumeratedDomain) variable.getDomain()).getEnumeration().listIterator();;
       while(objectNameIterator.hasNext()) {
         String name = (String) objectNameIterator.next();
-        tip.append( name).append( ": ");
+        // tip.append( name).append( ": ");
+        tip.append( "value: ");
         tip.append( partialPlanView.getPartialPlan().getObjectIdByName( name));
         if (objectNameIterator.hasNext()) {
           tip.append("<br>");

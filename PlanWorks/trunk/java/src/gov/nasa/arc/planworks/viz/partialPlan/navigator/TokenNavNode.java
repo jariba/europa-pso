@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.2 2004-02-05 23:25:21 miatauro Exp $
+// $Id: TokenNavNode.java,v 1.3 2004-02-13 02:37:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -720,13 +720,18 @@ public class TokenNavNode extends ExtendedBasicNode {
         (TokenNavNode) navigatorView.tokenNavNodeMap.get( masterId);
       if (masterNavNode == null) {
         PwSlot slot =  partialPlan.getSlot( master.getSlotId());
-        PwTimeline timeline = partialPlan.getTimeline( slot.getTimelineId());
+        Color nodeColor = null;
+        if (slot == null) { // free token
+          nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+        } else {
+          PwTimeline timeline = partialPlan.getTimeline( slot.getTimelineId());
+          nodeColor = navigatorView.getTimelineColor( timeline.getId());
+        }
         masterNavNode =
           new TokenNavNode( master, 
                             new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                        ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                            navigatorView.getTimelineColor( timeline.getId()),
-                            isDraggable, navigatorView);
+                            nodeColor, isDraggable, navigatorView);
         navigatorView.tokenNavNodeMap.put( masterId, masterNavNode);
         navigatorView.getJGoDocument().addObjectAtTail( masterNavNode);
       }

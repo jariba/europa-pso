@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.84 2004-02-10 02:35:52 taylor Exp $
+// $Id: PlanWorks.java,v 1.85 2004-02-13 02:37:06 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -89,6 +89,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final List PARTIAL_PLAN_VIEW_LIST;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
+  public static final String OBJECT_TREE_VIEW        = "Object Tree View";
   public static final String MODEL_RULES_VIEW        = "Model Rules View";
   public static final List SEQUENCE_VIEW_LIST;
 
@@ -123,12 +124,14 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP.put
       ( DB_TRANSACTION_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView");
-    VIEW_CLASS_NAME_MAP.put
-      ( RESOURCE_PROFILE_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
-    VIEW_CLASS_NAME_MAP.put
-      ( RESOURCE_TRANSACTION_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
+    // not fully implemented yet
+//     VIEW_CLASS_NAME_MAP.put
+//       ( RESOURCE_PROFILE_VIEW,
+//         "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
+    // not fully implemented yet
+//     VIEW_CLASS_NAME_MAP.put
+//       ( RESOURCE_TRANSACTION_VIEW,
+//         "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
     // not in map, since it is created from nodes in views, not from other views
 //     VIEW_CLASS_NAME_MAP.put
 //       ( NAVIGATOR_VIEW,
@@ -137,6 +140,10 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP.put
       ( SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
+    // not in map, since it is created by M-R on SequenceStepsView
+//     VIEW_CLASS_NAME_MAP.put
+//       ( OBJECT_TREE_VIEW,
+//         "gov.nasa.arc.planworks.viz.sequence.objectTree.ObjectTreeView");
     // not implemented yet
 //     VIEW_CLASS_NAME_MAP.put
 //       ( MODEL_RULES_VIEW,
@@ -144,8 +151,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
     PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
+    // not fully implemented yet
+    // PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
+    // not fully implemented yet
+    // PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
@@ -155,6 +164,8 @@ public class PlanWorks extends MDIDesktopFrame {
 
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
+    // not in list, since it is created by M-R on SequenceStepsView
+    // SEQUENCE_VIEW_LIST.add( OBJECT_TREE_VIEW);
     // not implemented yet
     // SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
   }
