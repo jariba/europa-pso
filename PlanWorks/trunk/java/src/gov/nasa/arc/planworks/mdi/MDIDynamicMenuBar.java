@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.15 2004-06-21 22:42:59 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.16 2004-07-15 21:24:46 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -48,6 +48,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   private ArrayList windows = new ArrayList();
   private TileCascader tileCascader;
   private JMenu windowMenu;
+  private JMenu pluginMenu;
   private JMenu helpMenu;
     /**
      * creates a new MDIDynamicMenuBar and registers itself with the MDIDesktop
@@ -60,6 +61,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
     this.tileCascader = tileCascader;
     buildWindowMenu();
+    buildPlugInMenu();
     buildHelpMenu();
     this.setVisible(true);
   }
@@ -79,6 +81,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
     this.tileCascader = tileCascader;
     buildWindowMenu();
+    buildPlugInMenu();
     buildHelpMenu();
     this.setVisible(true);
   }
@@ -103,6 +106,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
     this.tileCascader = tileCascader;
     buildWindowMenu();
+    buildPlugInMenu();
     buildHelpMenu();
     this.setVisible(true);
   }
@@ -181,7 +185,12 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   public void addWindow(final MDIInternalFrame frame) {
     windows.add(frame);
     buildWindowMenu();
+    buildPlugInMenu();
     buildHelpMenu();
+  }
+
+  public JMenu getPlugInMenu() {
+    return pluginMenu;
   }
 
   private void buildWindowMenu() {
@@ -237,6 +246,17 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     helpMenu.validate();
     validate();
   } // end buildHelpMenu
+
+  private void buildPlugInMenu() {
+    if(pluginMenu != null) {
+      pluginMenu.removeAll();
+      remove( pluginMenu);
+    }
+    pluginMenu = new JMenu( PlanWorks.PLUGIN_MENU);
+    super.add (pluginMenu);
+    pluginMenu.validate();
+    validate();
+  } // end buildPlugInMenu
 
   private List sortWindows( List  windows) {
     if (windows.size() == 0) { return windows; }
@@ -469,6 +489,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   public void notifyDeleted(final MDIFrame frame) {
     windows.remove(frame);
     buildWindowMenu();
+    buildPlugInMenu();
     buildHelpMenu();
   }
 
@@ -477,10 +498,14 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
 
   public JMenu add(final JMenu menu) {
     remove(windowMenu);
+    remove(pluginMenu);
     remove(helpMenu);
     super.add(menu);
     if(windowMenu != null) {
       super.add(windowMenu);
+    }
+    if(pluginMenu != null) {
+      super.add(pluginMenu);
     }
     if(helpMenu != null) {
       super.add(helpMenu);

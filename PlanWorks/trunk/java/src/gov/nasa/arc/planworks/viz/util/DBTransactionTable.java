@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionTable.java,v 1.4 2004-06-21 22:43:04 taylor Exp $
+// $Id: DBTransactionTable.java,v 1.5 2004-07-15 21:24:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -337,7 +337,7 @@ public class DBTransactionTable extends JTable {
       planSequence = ((SequenceView) vizView).getPlanSequence();
     }
     List viewListenerList = new ArrayList();
-    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+    for (int i = 0, n = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
     ViewGenerics.partialPlanViewsPopupMenu

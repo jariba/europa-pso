@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.11 2004-07-13 23:54:08 taylor Exp $
+// $Id: PWTestHelper.java,v 1.12 2004-07-15 21:24:46 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -1142,7 +1142,7 @@ public abstract class PWTestHelper {
   public static void openAllExistingViews( String currentViewName,  PartialPlanView currentView,
                                            JFCTestHelper helper, PlanWorksGUITest guiTest)
     throws Exception {
-    Iterator viewItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewItr.hasNext()) {
       String viewName = (String) viewItr.next();
       if (! viewName.equals( currentViewName)) {

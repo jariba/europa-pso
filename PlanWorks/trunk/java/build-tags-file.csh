@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.73 2004-06-29 00:47:15 taylor Exp $
+# $Id: build-tags-file.csh,v 1.74 2004-07-15 21:24:44 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -20,6 +20,7 @@ etags $etags_flag planWorks.TAGS \
     ../../../pub/JGo41/com/nwoods/jgo/examples/PinchedRectangle.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/RightTrapezoid.java \
     src/gov/nasa/arc/planworks/AddSequenceThread.java \
+    src/gov/nasa/arc/planworks/ConfigureAndPlugins.java \
     src/gov/nasa/arc/planworks/CreateSequenceViewThread.java \
     src/gov/nasa/arc/planworks/CreateViewThread.java \
     src/gov/nasa/arc/planworks/DeleteProjectThread.java \
@@ -28,6 +29,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
     src/gov/nasa/arc/planworks/NewSequenceThread.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
+    src/gov/nasa/arc/planworks/PlanWorksPlugin.java \
     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
     src/gov/nasa/arc/planworks/db/PwChoice.java \
@@ -129,6 +131,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/Extent.java \
     src/gov/nasa/arc/planworks/util/FileCopy.java \
     src/gov/nasa/arc/planworks/util/FunctorFactory.java \
+    src/gov/nasa/arc/planworks/util/JarClassLoader.java \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
     src/gov/nasa/arc/planworks/util/OneToManyMap.java \
     src/gov/nasa/arc/planworks/util/PlannerCommandLineDialog.java \

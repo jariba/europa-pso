@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.16 2004-05-04 01:27:10 taylor Exp $
+// $Id: CreateViewThread.java,v 1.17 2004-07-15 21:24:45 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -126,8 +126,8 @@ public class CreateViewThread extends Thread {
                   getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5);
         yFrameAvailable -= sequenceStepsViewHeight;
         yFrameDelta = (int) ((yFrameAvailable * 0.50) /
-                             ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
-        viewList = ViewConstants.PARTIAL_PLAN_VIEW_LIST;
+                             PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
+        viewList = PlanWorks.PARTIAL_PLAN_VIEW_LIST;
         // deltaCnt--;
       } else if (viewable instanceof PwPlanningSequence) {
         yFrameDelta = (int) ((yFrameAvailable * 0.50)/ ViewConstants.SEQUENCE_VIEW_LIST.size());

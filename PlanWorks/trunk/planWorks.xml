@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.32 2004-06-22 21:43:17 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.33 2004-07-15 21:24:44 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -30,6 +30,7 @@
             <jvmarg value="-Xms${arg_gcInit}m"/>
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Dplanworks.config=${planworks.config}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -75,6 +76,7 @@
             <jvmarg value="-Xms${arg_gcInit}m"/>
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Dplanworks.config=${planworks.config}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -124,6 +126,7 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 -->
 	    <jvmarg value="-Xrunhprof:cpu=old,file=planWorksProf.txt"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Dplanworks.config=${planworks.config}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>

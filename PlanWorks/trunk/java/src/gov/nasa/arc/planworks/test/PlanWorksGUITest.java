@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.16 2004-07-13 23:54:08 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.17 2004-07-15 21:24:46 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -163,24 +163,24 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQue
 public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   
   // there must be a listener for every partial plan view - with this view ordering
-  // ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()
+  // PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()
 
   private static final int CONSTRAINT_NETWORK_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
   private static final int DB_TRANSACTION_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
   private static final int DECISION_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DECISION_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DECISION_VIEW);
   private static final int RESOURCE_PROFILE_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_PROFILE_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_PROFILE_VIEW);
   private static final int RESOURCE_TRANSACTION_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_TRANSACTION_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_TRANSACTION_VIEW);
   private static final int TEMPORAL_EXTENT_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TEMPORAL_EXTENT_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TEMPORAL_EXTENT_VIEW);
   private static final int TIMELINE_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TIMELINE_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TIMELINE_VIEW);
   private static final int TOKEN_NETWORK_VIEW_INDEX =
-    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TOKEN_NETWORK_VIEW);
+    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TOKEN_NETWORK_VIEW);
 
   private PlanWorks planWorks;
   private JFCTestHelper helper;
@@ -2917,7 +2917,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                                              helper, this);
    waitForAllViews( viewName1, viewListenerList);
    numViews = viewMgr.getViewSet( partialPlan).getViews().keySet().size();
-   int expectedNumViews = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size();
+   int expectedNumViews = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size();
    assertTrueVerbose( "planSeq step " + stepNumber + " does not have " +
                       expectedNumViews + " views", (numViews == expectedNumViews), "not ");
 
@@ -4145,9 +4145,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     viewListenerList.add( new ViewListenerWait06( this));
     viewListenerList.add( new ViewListenerWait07( this));
     viewListenerList.add( new ViewListenerWait08( this));
-    if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+    if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
       System.err.println( "createViewListenerList: num listeners not = " +
-                           ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+                           PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
       System.exit( -1);
     }
     return viewListenerList;

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.109 2004-07-08 21:33:20 taylor Exp $
+# $Id: README,v 1.110 2004-07-15 21:24:43 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -16,6 +16,9 @@ The current known-good MySQL versions are:
 
 SUMMARY
 =======
+o PlanWorks now reads a configuration file during start-up, and supports a
+  Java plugin capability.  See README.ConfigureAndPlugins.
+
 o If you are using PlanWorks with PLASMA, this revision requires PLASMA
   from the CVS head.  The PartialPlanWriter has been modified to capture
   rule instances.

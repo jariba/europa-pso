@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.104 2004-07-09 23:00:47 miatauro Exp $
+// $Id: PlanWorks.java,v 1.105 2004-07-15 21:24:45 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -64,6 +64,7 @@ import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.FunctorFactory;
 import gov.nasa.arc.planworks.util.PlannerCommandLineDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.StringNameComparator;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -79,11 +80,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
  */
 public class PlanWorks extends MDIDesktopFrame {
 
+  public static Map VIEW_CLASS_NAME_MAP;
+  public static List PARTIAL_PLAN_VIEW_LIST;
+
   private static final int DESKTOP_FRAME_WIDTH;// = 900;
   private static final int DESKTOP_FRAME_HEIGHT;// = 750;
   private static final int FRAME_X_LOCATION;// = 100;
   private static final int FRAME_Y_LOCATION;// = 125;
-  public static final Map VIEW_CLASS_NAME_MAP;
 
   public static final String FILE_MENU = "File";
   public static final String EXIT_MENU_ITEM = "Exit";
@@ -110,6 +113,8 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String HELP_MENU = "Help";
   public static final String NODE_SHAPES_MENU_ITEM = "Node Shapes";
 
+  public static final String PLUGIN_MENU = "Plug-in";
+
   static {
     GraphicsDevice [] devices = 
       GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
@@ -123,42 +128,13 @@ public class PlanWorks extends MDIDesktopFrame {
     // System.err.println( FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
 
     VIEW_CLASS_NAME_MAP = new HashMap();
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.CONSTRAINT_NETWORK_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.TEMPORAL_EXTENT_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
-    // not implemented
-//     VIEW_CLASS_NAME_MAP.put
-//       ( ViewConstants.TEMPORAL_NETWORK_VIEW,
-//         "gov.nasa.arc.planworks.viz.partialPlan.temporalNetwork.TemporalNetworkView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.TIMELINE_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.TOKEN_NETWORK_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.DB_TRANSACTION_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.RESOURCE_PROFILE_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.RESOURCE_TRANSACTION_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
-    // not in map, since it is created from nodes in views, not from other views
-//     VIEW_CLASS_NAME_MAP.put
-//       ( ViewConstants.NAVIGATOR_VIEW,
-//         "gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
-    VIEW_CLASS_NAME_MAP.put
-      ( ViewConstants.DECISION_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView");
+    PARTIAL_PLAN_VIEW_LIST = new ArrayList();
 
     VIEW_CLASS_NAME_MAP.put
       ( ViewConstants.SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
+
+    // ConfigureAndPlugins fills the rest of this map
 
   } // end static
 
@@ -292,6 +268,8 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     supportedViewNames = Utilities.sortStringKeySet( VIEW_CLASS_NAME_MAP);
     viewRenderingStartTime = new long [supportedViewNames.size()];
+    Collections.sort( PARTIAL_PLAN_VIEW_LIST, new StringNameComparator());
+
     this.setVisible( true);
     if(usingSplash) {
       this.toBack();
@@ -340,12 +318,18 @@ public class PlanWorks extends MDIDesktopFrame {
   }
     
   /**
-   * <code>setPlanWorks</code>
+   * <code>setPlanWorks</code> - should only be used PlanWorksGUITest
    *
    * @param planWorksInstance - <code>PlanWorks</code> - 
    */
   public static void setPlanWorks( final PlanWorks planWorksInstance) {
-    planWorks = planWorksInstance;
+    StackTraceElement st = (new Throwable()).getStackTrace()[1];
+    if (st.getClassName().equals( "gov.nasa.arc.planworks.test.PlanWorksGUITest")) {
+      planWorks = planWorksInstance;
+    } else {
+      System.err.println( "You may NOT reset the PlanWorks instance");
+      System.exit(  -1);
+    }
   }
 
   /**
@@ -375,6 +359,11 @@ public class PlanWorks extends MDIDesktopFrame {
     return currentProjectName;
   }
 
+  /**
+   * <code>setCurrentProjectName</code>
+   *
+   * @param name - <code>String</code> - 
+   */
   public void setCurrentProjectName( final String name) {
     currentProjectName = name;
   }
@@ -1082,8 +1071,18 @@ public class PlanWorks extends MDIDesktopFrame {
       DisplayMode dm = gs[i].getDisplayMode();
       System.err.println(dm.getWidth() + " " + dm.getHeight());
     }
-    
+
+    File configFile = new File( System.getProperty( "planworks.config"));
+    if (! configFile.isFile()) {
+      // user did not create planworks.config from planworks.config.template
+      configFile = new File( System.getProperty( "planworks.config") + ".template");
+    }
+    ConfigureAndPlugins.processPlanWorksConfigFile( configFile);
+
     planWorks = new PlanWorks( buildConstantMenus());
+
+    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) planWorks.getJMenuBar();
+    ConfigureAndPlugins.invokeLoadPlugin( dynamicMenuBar.getPlugInMenu());
   } // end main
 
   private class SeqNameComparator implements Comparator {
