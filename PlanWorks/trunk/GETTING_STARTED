@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.53 2004-07-27 21:58:00 taylor Exp $
+# $Id: GETTING_STARTED,v 1.54 2004-08-06 20:05:27 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -136,6 +136,14 @@ variable nodes "opens" them to show or link to their nearest neighbors
 Then the node becomes "closed" and has an unbold border.  The active node 
 ("opened" or "closed" by Mouse-Left click) is positioned in the center of the 
 view after layout, and highlighted by a bright green rectangle.
+
+The Mouse-Right pop-up offers, in addition to the "standard" selections,
+"Find Variable Path" and "Highlight Current Path".  "Find Variable Path" requests 
+two variable keys and finds a path through variables and constraints which connects
+them.  This node path is saved.  Selected nodes are dragged as a group, which may
+be inconvenient.  To deal with this, click Mouse-Left in the background to discard
+the selections, drag the nodes to new locations, and then on the background select
+Mouse-Right: "Highlight Current Path".
 
 Mouse cursor over all variable container nodes, except for interval tokens and
 resource transactions, displays the node name, and Mouse-L: open" on the second 

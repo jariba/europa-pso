@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.34 2004-07-29 18:05:43 taylor Exp $
+// $Id: VizView.java,v 1.35 2004-08-06 20:05:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -595,8 +595,10 @@ public class VizView extends JPanel {
         catch (InterruptedException ie) {}
         // System.err.println( "ProgressMonitorThread wait for isProgressMonitorCancel = true");
       }
-      progressMonitor.close();
-      progressMonitor = null;
+      if (progressMonitor != null) {
+	progressMonitor.close();
+	progressMonitor = null;
+      }
     } // end run
 
   } // end class ProgressMonitorThread

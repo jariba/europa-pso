@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.3 2004-07-29 18:05:44 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.4 2004-08-06 20:05:29 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -21,6 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 // import java.util.Iterator;
 // import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -33,6 +34,7 @@ import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /** A class to monitor the progress of some operation. If it looks
@@ -210,17 +212,22 @@ public class PWProgressMonitor extends Object
 
                         if (monitoredThread != null) { // added will taylor
                           System.err.print( "PWProgressMonitor stopped thread for '");
-                          if (view != null) {
+			  if (view instanceof ConstraintNetworkView.FindVariablePath) {
+			    System.err.println( "FindVariablePath'");
+			    ConstraintNetworkView.FindVariablePath findVarPath =
+			      (ConstraintNetworkView.FindVariablePath) view;
+			    findVarPath.setVarConstrKeyList( new ArrayList());
+                          } else if (view != null) {
                             if (view instanceof VizView) {
                               VizView vizView = (VizView) view;
                               vizView.closeView( vizView);
                               System.err.println( vizView.getName() + "'");
                             } else if (view instanceof SequenceQueryWindow) {
+                              System.err.println( "Sequence Query View'");
                               SequenceQueryWindow seqQueryWindow =
                                 (SequenceQueryWindow) view;
                               seqQueryWindow.getProgressMonitor().close();
                               seqQueryWindow.setProgressMonitor( null);
-                              System.err.println( "Sequence Query View'");
                             } else {
                               System.err.println( "PWProgressMonitor: " +
                                                   view.getClass().getName() + " not handled");
