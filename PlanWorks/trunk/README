@@ -4,11 +4,14 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.94 2004-06-04 23:08:59 taylor Exp $
+# $Id: README,v 1.95 2004-06-04 23:19:47 miatauro Exp $
 #
 
 SUMMARY
 =======
+o If you are using PlanWorks with PLASMA, this revision requires PLASMA
+  version PW_PLASMA_1 or later.
+
 o The partial plan DBTransaction View and the Sequence Query result views for
   Steps, Transactions, Free Tokens, Unbound Variables, and All Decisions - have
   all been reimplemented using Swing JTable, instead of JGo widgets.  A
