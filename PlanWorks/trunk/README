@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.81 2004-03-20 01:00:37 taylor Exp $
+# $Id: README,v 1.82 2004-03-23 20:05:55 taylor Exp $
 #
 
 SUMMARY
@@ -18,6 +18,12 @@ o Mouse-Right "Zoom View" has been added for the Constraint Network,
   does not create a new window, rather it changes scaling in the 
   existing window.  Thus the existing Mouse-Right functionality on
   the view background and the view nodes is maintained.
+
+o The Sequence Steps View now has Mouse-Right "Step Backward step<nn> 
+  Active Views" and Mouse-Right "Step Forward step<nn> Active Views",
+  where <nn> is the currently selected step. Active views are those views
+  which exist for the currently selected step.
+
 
 o  GNATS PRs and CRs completed:
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.46 2004-03-20 01:00:41 taylor Exp $
+// $Id: TimelineView.java,v 1.47 2004-03-23 20:05:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -244,6 +244,15 @@ public class TimelineView extends PartialPlanView {
     }
     return isValid;
   } // end createTemporalExtentView
+
+  /**
+   * <code>getJGoView</code> - 
+   *
+   * @return - <code>JGoView</code> - 
+   */
+  public JGoView getJGoView()  {
+    return jGoView;
+  }
 
   /**
    * <code>getJGoDocument</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepButton.java,v 1.1 2004-02-10 02:35:58 taylor Exp $
+// $Id: StepButton.java,v 1.2 2004-03-23 20:06:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -117,6 +117,14 @@ public class StepButton extends BasicNode {
 
   public void addActionListener(ActionListener l) {
     actionListeners.add(l);
+  }
+
+  /**
+   * <code>getActionListeners</code>
+   *
+   */
+  public List getActionListeners() {
+    return actionListeners;
   }
 
   /**

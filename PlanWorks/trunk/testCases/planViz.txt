@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.35 2004-03-20 01:00:42 taylor Exp $
+// $Id: planViz.txt,v 1.36 2004-03-23 20:06:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -450,7 +450,8 @@ Post-conditions:
      the overview windows.
  13. Method:14 - The Temporal Extent View's focus with green highlight will
      follow the movement of the mouse cursor over the Timeline View's non-
-     empty slots and free tokens.
+     empty slots (base tokens) and free tokens.  If a slot has merged tokens, 
+     the merged tokens will be highlighted turquoise.
 
 Requirements: TBD
 
@@ -948,14 +949,26 @@ Pre-conditions:
      "DBTransaction" views.
 
 Method:
-  1. In the Temporal Extent View, Mouse-Right "Zoom View" on the background,
-     and choose a "zoom" factor.
-  2. In the Timeline View, Mouse-Right "Zoom View" on the background,
-     and choose a "zoom" factor.
+  1. In the Timeline View, Mouse-Right "Zoom View" on the background,
+     and choose a "zoom" factor.  Exercise "Step Forward", "Step Back",
+     some Content Filter specifications, background Mouse-Right "Find 
+     by Key", and with mouse over a slot node with at least one merged token
+     Mouse-Right "Set Active Token".
+  2. In the Temporal Extent View, Mouse-Right "Zoom View" on the background,
+     and choose a "zoom" factor.  Exercise "Step Forward", "Step Back",
+     some Content Filter specifications, background Mouse-Right "Hide Node
+     Labels", "Find by Key", "Set Time Scale Line", and "Snap to Active Token", 
+     and with mouse over a temporal node Mouse-Right "Set Active Token".
   3. In the Token Network View, Mouse-Right "Zoom View" on the background,
-     and choose a "zoom" factor.
+     and choose a "zoom" factor.  Exercise "Step Forward", "Step Back",
+     some Content Filter specifications, background Mouse-Right "Find 
+     by Key", and "Snap to Active Token", and with mouse over a token node 
+     Mouse-Right "Set Active Token".
   4. In the Constraint Network View, Mouse-Right "ZoomView" on the background,
-     and choose a "zoom" factor.
+     and choose a "zoom" factor.  Exercise "Step Forward", "Step Back",
+     some Content Filter specifications, background Mouse-Right "Find 
+     by Key", and "Snap to Active Token", and with mouse over a token node 
+     Mouse-Right "Set Active Token".
   5. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
      variable node.  In the Navigator View, Mouse-Right "Zoom View" on the 
      background, and choose a "zoom" factor.
@@ -964,8 +977,72 @@ Method:
 
 
 Post-conditions:
-  1. Verify that the functionality and visibility of the "full scale" views
-     is rendered in the Zoom Views.
+  1. Method: 1 - Verify that the functionality and visibility of the "full 
+     scale" view is rendered in the Zoom View.  For "Find by Key", the node
+     is highlighted with bright green.
+  2. Method: 2 - Verify that the functionality and visibility of the "full 
+     scale" view is rendered in the Zoom View.  For "Snap to Active Token" 
+     verify that base token is highlighted with bright green, and the merged 
+     tokens are highlighted with turquoise.  For "Find by Key", the node is 
+     highlighted with bright green.
+  3. Method: 3 - Verify that the functionality and visibility of the "full 
+     scale" view is rendered in the Zoom View.  For "Snap to Active Token" 
+     verify that base token is highlighted with bright green, and the merged 
+     tokens are highlighted with turquoise.  For "Find by Key", the node is 
+     highlighted with bright green.
+  4. Method: 4 - Verify that the functionality and visibility of the "full 
+     scale" view is rendered in the Zoom View.  For "Snap to Active Token" 
+     verify that base token is highlighted with bright green, and the merged 
+     tokens are highlighted with turquoise.  For "Find by Key", the node is 
+     highlighted with bright green.
+  5. Method: 5 - Verify that the functionality and visibility of the "full 
+     scale" view is rendered in the Zoom View.
+  6. Method: 6 - Verify that the functionality and visibility of the "full 
+     scale" view is rendered in the Zoom View.
+
+Requirements: N/A
+
+
+PLANVIZ-23
+--------------------
+Exercise stepping forward and backward for multiple views.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. A project is open.
+  3. "Sequence Steps View" is visible for a sequence with multiple steps.
+
+Method:
+  1. Open a view that is not the "Transaction View" for a plan step that is 
+     neither the first nor the last step.
+  2. On the Sequence Steps View, select Mouse-Right "Step Forward step nn 
+     Active Views".
+  3. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
+     Active Views".
+  4. On the Sequence Steps View, over the original step, select Mouse-Right
+     "Open All Views".  Delete the DBTransaction View.
+  5. On the Sequence Steps View, select Mouse-Right "Step Forward step nn 
+     Active Views".
+  6. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
+     Active Views".
+
+Post-conditions:
+  1. Method:1 - The selected view is visible and correct.  The plan step histogram
+     element in the SequenceStepsView is highlighted.
+  2. Method:2 - The view is replaced with the same view of the next step in the same 
+     position with possibly different size.  The plan step histogram element 
+     highlighting is on the next step.
+  3. Method:3 - The view is replaces with the same view of the step that was 
+     originally opened.  The plan step histogram element highlighting is on the 
+     original step.
+  4. Method:4 - The other six partial plan views appear for the selected step.  Then
+     the DBTransaction View is removed.
+  5. Method:5 - The six views are replaced with the same views for the next step 
+     in the same positions with possibly different sizes. The plan step histogram 
+     element highlighting is on the next step.
+  6. Method:6 - The six views are replaced with the same views of the previous step 
+     in the same positions with possibly different sizes.  The plan step histogram 
+     element highlighting is on the previous step.
 
 Requirements: N/A
 

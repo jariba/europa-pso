@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.53 2004-03-23 18:23:01 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.54 2004-03-23 20:05:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -385,7 +385,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   }
 
   /**
-   * <code>getJGoView</code> - needed for PlanWorksTest
+   * <code>getJGoView</code> - 
    *
    * @return - <code>JGoView</code> - 
    */

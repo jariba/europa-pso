@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.36 2004-03-20 01:00:37 taylor Exp $
+# $Id: GETTING_STARTED,v 1.37 2004-03-23 20:05:55 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -67,14 +67,20 @@ Selecting a sequence name brings up two windows.  The first,
 sequence (see below).  The second, "SequenceStepsView", is a histogram 
 of the partial plan data base size for each step of the sequence, with
 every tenth step number displayed at the bottom of the appropriate
-element.  The "SequenceStepsView" has these Mouse-Right selections: "Close/
-Hide/Show <sequence-name>/step Views".
+element.  The "SequenceStepsView" background has these Mouse-Right selections: 
+"Close/Hide/Show <sequence-name>/step Views", which effect the views on
+all sequence steps.
 
 Individual or all partial plan views for each step are available by
-clicking Mouse-Right on the desired step in the histogram ("SequenceStepsView").  
-The histogram steps have a "mouse over" pop-up showing the step number, 
-and the data base size for tokens, variables, and constraints -- which are
-color coded.  
+clicking Mouse-Right on the desired step in the histogram ("SequenceStepsView"). 
+This step then becomes the currently selected step.  The histogram steps 
+have a "mouse over" pop-up showing the step number, and the data base size 
+for tokens, variables, and constraints -- which are color coded.  
+The "SequenceStepsView" background also has "Step Backward step<nn> Active 
+Views" and "Step Forward step<nn> Active Views", where <nn> is the currently 
+selected step. Active views are those views which exist for the currently 
+selected step.  Note that stepping an individual view will change the
+currently selected step.
 
 
 Partial Plan Views

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.61 2004-03-16 02:24:06 taylor Exp $
+# $Id: build-tags-file.csh,v 1.62 2004-03-23 20:05:56 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -36,6 +36,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwEntity.java \
     src/gov/nasa/arc/planworks/db/PwEnumeratedDomain.java \
     src/gov/nasa/arc/planworks/db/PwIntervalDomain.java \
+    src/gov/nasa/arc/planworks/db/PwListenable.java \
+    src/gov/nasa/arc/planworks/db/PwListener.java \
     src/gov/nasa/arc/planworks/db/PwModel.java \
     src/gov/nasa/arc/planworks/db/PwObject.java \
     src/gov/nasa/arc/planworks/db/PwParameter.java \
@@ -100,6 +102,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/test/MySQLDBTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksUtilsTest.java \
+    src/gov/nasa/arc/planworks/test/TestHelper.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/BooleanFunctor.java \
     src/gov/nasa/arc/planworks/util/BrowseButton.java \
@@ -132,6 +135,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/VariableQueryHeaderView.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/ViewGenerics.java \
+    src/gov/nasa/arc/planworks/viz/ViewListener.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/VizViewOverview.java \
     src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java \

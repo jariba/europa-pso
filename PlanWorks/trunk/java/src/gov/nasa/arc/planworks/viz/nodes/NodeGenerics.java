@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.23 2004-03-16 02:24:09 taylor Exp $
+// $Id: NodeGenerics.java,v 1.24 2004-03-23 20:05:57 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 
 
@@ -192,6 +193,30 @@ public class NodeGenerics {
     }
   } // end focusViewOnNode
 
+
+  /**
+   * <code>setSecondaryTokensForSlot</code>
+   *
+   * @param baseToken - <code>PwToken</code> - 
+   * @param slot - <code>PwSlot</code> - 
+   * @param viewSet - <code>PartialPlanViewSet</code> - 
+   */
+  public static  void setSecondaryTokensForSlot( PwToken baseToken, PwSlot slot,
+                                                 PartialPlanViewSet viewSet) {
+    List secondaryTokens = null;
+    if (slot != null) {
+      secondaryTokens = slot.getTokenList();
+      secondaryTokens.remove( baseToken);
+      if (secondaryTokens.size() == 0) {
+        secondaryTokens = null;
+      }
+    }
+//     System.err.println( "setSecondaryTokensForSlot: ");
+//     for (int i = 0, n = secondaryTokens.size(); i < n; i++) {
+//       System.err.println( "  " + secondaryTokens.get( i));
+//     }
+    viewSet.setSecondaryTokens( secondaryTokens);
+  } // end setSecondaryTokensForSlot
 
   /**
    * <code>selectSecondaryNodes</code> - highlight the secondary nodes.
