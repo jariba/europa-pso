@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.24 2003-07-03 21:18:49 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.25 2003-07-11 22:33:34 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -39,25 +40,24 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
  */
 public class PwProjectImpl extends PwProject {
 
-  private static List projectNames;  // element String
-  private static List projects;  // element PwProjectImpl
+  //private static List projectNames;  // element String
+  //private static List projects;  // element PwProjectImpl
+
+  private static HashMap projects;
 
   /**
    * <code>initProjects</code> - 
    *
    */
   public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
-    System.err.println("***********In initProjects!");
-    projectNames = new ArrayList();
-    projects = new ArrayList();
-
+    projects = new HashMap();
     connectToDataBase();
 
     ResultSet dbProjectNames = MySQLDB.queryDatabase("SELECT ProjectName FROM Project");
     while(dbProjectNames.next()) {
       System.err.println("Got project " + dbProjectNames.getString("ProjectName"));
-      projectNames.add(dbProjectNames.getString("ProjectName"));
-      projects.add(new PwProjectImpl(dbProjectNames.getString("ProjectName"), true));
+      projects.put(dbProjectNames.getString("ProjectName"),
+                   new PwProjectImpl(dbProjectNames.getString("ProjectName"), true));
     }
   } // end initProjects
 
@@ -68,10 +68,9 @@ public class PwProjectImpl extends PwProject {
       throw new DuplicateNameException("A project named '" + name +
                                        "' already exists.");
     }
-    projectNames.add(name);
     PwProjectImpl retval = null;
     retval = new PwProjectImpl(name);
-    projects.add(retval);
+    projects.put(name, retval);
     MySQLDB.updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
     ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
     newKey.first();
@@ -98,11 +97,11 @@ public class PwProjectImpl extends PwProject {
    * @return - <code>PwProject</code> - 
    */
   public static PwProject getProject( String name) throws ResourceNotFoundException {
-    int index = -1;
-    if((index = projectNames.indexOf(name)) == -1) {
+    if(!projects.containsKey(name)) {
       throw new ResourceNotFoundException("Project " + name + " not found.");
     }
-    return (PwProject) projects.get(index);
+    
+    return (PwProject) projects.get(name);
   } // end getProject
 
   /**
@@ -111,7 +110,7 @@ public class PwProjectImpl extends PwProject {
    * @return - <code>List</code> - of String (url)
    */
   public static List listProjects() {
-    return projectNames;
+    return new ArrayList(projects.keySet());
   }
 
   private String name;
@@ -166,7 +165,7 @@ public class PwProjectImpl extends PwProject {
     }
 
     // this project is already in projectNames & projectUrls
-    projects.add( this);
+    //projects.add(name, this);
   } // end  constructor PwProjectImpl.openProject
 
   public Integer getKey() {
@@ -240,8 +239,7 @@ public class PwProjectImpl extends PwProject {
    * @exception Exception if an error occurs
    */
   public void delete() throws Exception, ResourceNotFoundException {
-    projectNames.remove(name);
-    projects.remove(this);
+    projects.remove(name);
 
     try {
       ResultSet sequenceIds = 
