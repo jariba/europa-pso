@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.29 2004-04-06 01:31:40 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.30 2004-04-30 21:47:12 miatauro Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -41,6 +41,7 @@
             <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+	    <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
             <jvmarg value="-server"/>
             <arg value="${name.application}"/>
             <arg value="${boolean.isMaxScreen}"/>
@@ -84,6 +85,7 @@
             <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+	    <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
             <arg value="${name.application}"/>
             <arg value="${boolean.isMaxScreen}"/>
 	</java>
