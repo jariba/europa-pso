@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.1 2004-02-10 02:35:56 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.2 2004-02-11 02:29:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -740,12 +740,20 @@ public class ResourceTransactionView extends PartialPlanView  {
      * @return - <code>Dimension</code> - 
      */
     public final Dimension getPreferredSize() {
-      return new Dimension
-        ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
-                 jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceTransactionView.this.getSize().getHeight() -
-                 jGoRulerView.getDocumentSize().getHeight() -
-                 jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
+      if ((jGoLevelScaleView.getVerticalScrollBar() == null) ||
+          (jGoRulerView.getHorizontalScrollBar() == null)) {
+        return new Dimension
+          ( (int) jGoLevelScaleView.getDocumentSize().getWidth(),
+            (int) (ResourceTransactionView.this.getSize().getHeight() -
+                   jGoRulerView.getDocumentSize().getHeight()));
+      } else {
+        return new Dimension
+          ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
+                   jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
+            (int) (ResourceTransactionView.this.getSize().getHeight() -
+                   jGoRulerView.getDocumentSize().getHeight() -
+                   jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
+      }
     }
 
   } // end class LevelScalePanel

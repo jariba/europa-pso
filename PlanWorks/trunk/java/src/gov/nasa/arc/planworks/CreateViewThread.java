@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.11 2004-02-03 20:43:43 taylor Exp $
+// $Id: CreateViewThread.java,v 1.12 2004-02-11 02:29:30 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -109,7 +109,7 @@ public class CreateViewThread extends Thread {
       int yFrameDelta = 0;
       List viewList = null;
       int sequenceStepsViewHeight = 0;
-      int deltaCnt = viewManager.getContentSpecWindowCnt();
+      // int deltaCnt = viewManager.getContentSpecWindowCnt();
       if (viewable instanceof PwPartialPlan) {
         // put content spec windows below the sequence steps window
         sequenceStepsViewHeight =
@@ -119,11 +119,11 @@ public class CreateViewThread extends Thread {
         yFrameDelta = (int) ((yFrameAvailable * 0.50) /
                              PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
         viewList = PlanWorks.PARTIAL_PLAN_VIEW_LIST;
-        deltaCnt--;
+        // deltaCnt--;
       } else if (viewable instanceof PwPlanningSequence) {
         yFrameDelta = (int) ((yFrameAvailable * 0.50)/ PlanWorks.SEQUENCE_VIEW_LIST.size());
         viewList = PlanWorks.SEQUENCE_VIEW_LIST;
-        deltaCnt--;
+        // deltaCnt--;
       }
       Iterator viewItr = viewList.iterator();
       int viewIndex = 0;
@@ -134,8 +134,10 @@ public class CreateViewThread extends Thread {
         viewIndex++;
       }
       // keep views from sliding off desktop
-      int delta = Math.min( (deltaCnt * ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                            (yFrameAvailable - (2 * ViewConstants.MDI_FRAME_DECORATION_HEIGHT)));
+//       int delta = Math.min( (deltaCnt * ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+//                             (yFrameAvailable - (2 * ViewConstants.MDI_FRAME_DECORATION_HEIGHT)));
+      int delta = 0;
+      // do not use deltas -- causes windows to slip off screen
       viewFrame.setLocation( (ViewConstants.INTERNAL_FRAME_X_DELTA * viewIndex) + delta,
                              contentSpecFrameOffset + sequenceStepsViewHeight +
                              yFrameDelta * viewIndex + delta);

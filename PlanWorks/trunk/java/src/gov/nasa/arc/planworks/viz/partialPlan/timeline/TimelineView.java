@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.36 2004-02-10 02:35:57 taylor Exp $
+// $Id: TimelineView.java,v 1.37 2004-02-11 02:29:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -294,33 +294,31 @@ public class TimelineView extends PartialPlanView {
     Iterator objectIterator = objectList.iterator();
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-       if(object.getObjectType() == DbConstants.O_TIMELINE) {
-         x = ViewConstants.TIMELINE_VIEW_X_INIT;
-         PwTimeline timeline = (PwTimeline) object;
-         if(isTimelineInContentSpec(timeline)) {
-           String timelineName = timeline.getName();
-           String parentName = null;
-           if(timeline.getParent() != null) {
-             parentName = timeline.getParent().getName();
-           }
-           String timelineLabel = "";
-           if(parentName != null) {
-             timelineLabel += parentName + " : ";
-           }
-           timelineLabel += timelineName + "\ntimeline key=" + timeline.getId().toString();
-           Color timelineColor = getTimelineColor(timeline.getId());
-           TimelineNode timelineNode =
-             new TimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, this);
-           tmpTimelineNodeList.add(timelineNode);
-           jGoDocument.addObjectAtTail(timelineNode);
-           x += timelineNode.getSize().getWidth();
-           isValid = createSlotNodes(timeline, timelineNode, x, y, timelineColor);
-           if(!isValid) {
-             return isValid;
-           }
-           y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
-         }
-       }
+      if(object.getObjectType() == DbConstants.O_TIMELINE) {
+        x = ViewConstants.TIMELINE_VIEW_X_INIT;
+        PwTimeline timeline = (PwTimeline) object;
+        String timelineName = timeline.getName();
+        String parentName = null;
+        if(timeline.getParent() != null) {
+          parentName = timeline.getParent().getName();
+        }
+        String timelineLabel = "";
+        if(parentName != null) {
+          timelineLabel += parentName + " : ";
+        }
+        timelineLabel += timelineName + "\ntimeline key=" + timeline.getId().toString();
+        Color timelineColor = getTimelineColor(timeline.getId());
+        TimelineNode timelineNode =
+          new TimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, this);
+        tmpTimelineNodeList.add(timelineNode);
+        jGoDocument.addObjectAtTail(timelineNode);
+        x += timelineNode.getSize().getWidth();
+        isValid = createSlotNodes(timeline, timelineNode, x, y, timelineColor);
+        if(!isValid) {
+          return isValid;
+        }
+        y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+      }
     }
 
     y += ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -475,10 +473,10 @@ public class TimelineView extends PartialPlanView {
     String message = "Earliest start times are not monotonically increasing " +
       "in timeline '" + timeline.getName() + "' (id = " + timeline.getId() + ")" +
       "\npreviousPredicate = '" + previousPredicateName +
-      "', slotId = " + previousSlot.getId() + " tokenId = " + previousTokenIdString + 
-      " start = " + previousSlot.getStartTime() + " end = " + previousSlot.getEndTime() +
+      "', slotId = " + previousSlot.getId() + ", tokenId = " + previousTokenIdString + 
+      ", start = " + previousSlot.getStartTime() + ", end = " + previousSlot.getEndTime() +
       "\npredicate = '" + predicateName + "', slotId = " + slot.getId() +
-      ", tokenId = " + tokenIdString + " start = " + slot.getStartTime() + " end = " + 
+      ", tokenId = " + tokenIdString + ", start = " + slot.getStartTime() + ", end = " + 
       slot.getEndTime();
     JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                    "Timeline View Exception",
