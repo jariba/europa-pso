@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.137 2004-10-13 23:49:00 taylor Exp $
+# $Id: README,v 1.138 2004-10-14 00:06:47 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -148,7 +148,7 @@ ${PLANWORKS_HOME}/cpp/integration/PlannerControlJNI.h
 and compiles it with
 ${PLANWORKS_HOME}/cpp/integration/PlannerControlJNI.cc
 to generate
-${PLANWORKS_HOME}/cpp/integration/libPlannerControl_JNI_adapter.so
+${PLANWORKS_HOME}/cpp/integration/libPlannerControlJNI.so
 which is loaded by "Project->New Sequence".
 
 
