@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.33 2004-02-17 22:54:07 miatauro Exp $
+// $Id: TokenNode.java,v 1.34 2004-02-17 23:30:04 miatauro Exp $
 //
 // PlanWorks
 //
@@ -176,6 +176,10 @@ public class TokenNode extends BasicNode implements VariableContainerNode {
   public List getVariableNodes() {
     return new ArrayList();
   }
+
+  public int getContainerLinkCount(){return 0;}
+  public int getContainerLinkCount(VariableContainerNode other){return 0;}
+  public List getConnectedContainerNodes(){return new ArrayList();}
 
   /**
    * <code>getToolTipText</code>

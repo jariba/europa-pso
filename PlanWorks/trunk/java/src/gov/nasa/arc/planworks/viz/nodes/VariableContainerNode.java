@@ -12,4 +12,8 @@ public interface VariableContainerNode {
   public abstract boolean isVisible();
   public abstract Dimension getSize();
   public abstract void setLocation(int x, int y);
+  public abstract int getContainerLinkCount();
+  public abstract int getContainerLinkCount(VariableContainerNode other);
+  public abstract List getConnectedContainerNodes();
+  
 }

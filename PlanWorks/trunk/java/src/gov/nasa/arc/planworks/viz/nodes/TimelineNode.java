@@ -79,4 +79,8 @@ public class TimelineNode extends ExtendedBasicNode implements VariableContainer
   public List getVariableNodes() {
     return new ArrayList();
   }
+
+  public int getContainerLinkCount(){return 0;}
+  public int getContainerLinkCount(VariableContainerNode other){return 0;}
+  public List getConnectedContainerNodes(){return new ArrayList();}
 }
