@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.4 2004-05-13 20:24:06 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.5 2004-06-04 23:41:44 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -207,6 +207,8 @@ public abstract class PWSetupHelper {
                           variablesBuffer.toString());
 
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RESOURCE_INSTANTS_EXT,
+                          "");
+    writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_DECISIONS_EXT,
                           "");
     return partialPlan;
   } // end createPartialPlan
