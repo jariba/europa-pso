@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.9 2003-06-26 18:18:45 miatauro Exp $
+// $Id: PwProject.java,v 1.10 2003-06-26 19:42:41 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -114,5 +114,5 @@ public abstract class PwProject {
    */
   public abstract void delete() throws Exception, ResourceNotFoundException;
 
-
+  public abstract PwPlanningSequence addPlanningSequence(String url) throws ResourceNotFoundException;
 } // end class PwProject
