@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.13 2003-08-22 21:39:51 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.14 2003-10-23 22:54:32 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -29,6 +29,10 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
+ * NOTE: For the moment, the assumption is made (due to a EUROPA design decision) that a
+ * variable is on at most one token (globals obviously have no tokens).  Should you be using this
+ * in a non-EUROPA context, then certain changes will have to be made to account for that, but the
+ * general form of this data structure doesn't disallow the possibility.
  */
 public class PwVariableImpl implements PwVariable {
 
