@@ -4,31 +4,24 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.9 2003-06-17 22:06:02 miatauro Exp $
+// $Id: PlanWorks.java,v 1.10 2003-06-17 22:19:02 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
 import java.awt.Container;
-import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent; 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JDesktopPane;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -39,18 +32,16 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.mdi.MDIMenu;
-import gov.nasa.arc.planworks.mdi.MDIWindowButtonBar;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.ParseProjectUrl;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
 
 /**
- * <code>PlanWorks</code> - 
+ * <code>PlanWorks</code> - top-level application class, invoked from Ant  target
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
@@ -94,12 +85,36 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public static final int FRAME_Y_LOCATION = 100;
 
-  private static String name;
-  private static String osName;
-  private static String userCollectionName; // e.g. /wtaylor
-  private static String planWorksRoot;
+  /**
+   * variable <code>name</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static String name;
 
-  private static PlanWorks planWorks;
+  /**
+   * variable <code>osName</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static String osName;
+
+  /**
+   * variable <code>userCollectionName</code> - make it accessible to JFCUnit tests
+   *                e.g. /wtaylor 
+   */
+  public static String userCollectionName; 
+
+  /**
+   * variable <code>planWorksRoot</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static String planWorksRoot;
+
+  /**
+   * variable <code>planWorks</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static PlanWorks planWorks;
+
   private static JMenu projectMenu;
 
   private String defaultProjectUrl;
@@ -110,7 +125,7 @@ public class PlanWorks extends MDIDesktopFrame {
   /**
    * <code>PlanWorks</code> - constructor 
    *
-   * @param constantMenus - <code>JMenu[]</code> - 
+   * @param constantMenus - <code>JMenu[]</code> -
    */                                
   public PlanWorks( JMenu[] constantMenus) {
     super( name, constantMenus);
@@ -159,6 +174,42 @@ public class PlanWorks extends MDIDesktopFrame {
   } //end constructor 
 
 
+  /**
+   * <code>getCurrentProjectUrl</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getCurrentProjectUrl() {
+    return currentProjectUrl;
+  }
+
+  /**
+   * <code>getCurrentProject</code>
+   *
+   * @return - <code>PwProject</code> - 
+   */
+  public PwProject getCurrentProject() {
+    return currentProject;
+  }
+
+  /**
+   * <code>getViewManager</code>
+   *
+   * @return - <code>ViewManager</code> - 
+   */
+  public ViewManager getViewManager() {
+    return viewManager;
+  }
+
+  /**
+   * <code>getDefaultProjectUrl</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getDefaultProjectUrl() {
+    return defaultProjectUrl;
+  }
+
   private List getUrlsLessCurrent() {
     List projectUrls = PwProject.listProjects();
     List urlsLessCurrent = new ArrayList();
@@ -183,7 +234,12 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end setProjectMenuEnabled
 
 
-  private static JMenu[] buildConstantMenus() {
+  /**
+   * <code>buildConstantMenus</code> - make it accessible to JFCUnit tests
+   *
+   * @return - <code>JMenu[]</code> - 
+   */
+  public static JMenu[] buildConstantMenus() {
     JMenu [] jMenuArray = new JMenu [2];
     JMenu fileMenu = new JMenu( "File");
     JMenuItem exitItem = new JMenuItem( "Exit");
@@ -206,7 +262,6 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem createProjectItem = new JMenuItem( "Create ...");
     JMenuItem openProjectItem = new JMenuItem( "Open ...");
     JMenuItem deleteProjectItem = new JMenuItem( "Delete ...");
-//     JMenuItem saveProjectItem = new JMenuItem( "Save");
     createProjectItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           PlanWorks.planWorks.instantiateProjectThread( "create");
@@ -222,14 +277,6 @@ public class PlanWorks extends MDIDesktopFrame {
           PlanWorks.planWorks.deleteProjectThread();
         }});
     projectMenu.add( deleteProjectItem);
-//     saveProjectItem.addActionListener( new ActionListener() {
-//         public void actionPerformed( ActionEvent evt) {
-//           try {
-//             PlanWorks.this.project.save();
-//           } catch (Exception excp) {
-//             System.err.println( excp ); System.exit( 0); }}});
-//     projectMenu.add( saveProjectItem);
-
 
     jMenuArray[0] = fileMenu;
     jMenuArray[1] = projectMenu;
@@ -286,7 +333,7 @@ public class PlanWorks extends MDIDesktopFrame {
     PwProject project = null;
     while (! isProjectCreated) {
 
-      ParseProjectUrl urlMenuItem = new ParseProjectUrl();
+      ParseProjectUrl urlMenuItem = new ParseProjectUrl( this);
 
       String inputUrl = urlMenuItem.getTypedText();
       if (inputUrl == null) { // user selected Cancel
@@ -626,7 +673,7 @@ public class PlanWorks extends MDIDesktopFrame {
         try {
           viewFrame.setSelected( false);
           viewFrame.setSelected( true);
-        } catch (PropertyVetoException excp) {};
+        } catch (PropertyVetoException excp) { };
 
       } else if (viewName.equals( "tokenGraphView")) {
         JOptionPane.showMessageDialog
@@ -675,118 +722,6 @@ public class PlanWorks extends MDIDesktopFrame {
     }
 
   } // end class SeqPartPlanViewMenuItem
-
-
-  class ParseProjectUrl extends JDialog {
-
-    private String typedText = null;
-    private JOptionPane optionPane;
-    private JTextField textField;
-    private String btnString1;
-    private String btnString2;
-
-    /**
-     * <code>ParseProjectUrl</code> - constructor 
-     *
-     */
-    public ParseProjectUrl () {
-      // modal dialog - blocks other activity
-      super( planWorks, true);
-
-      setTitle( "Create Project");
-      final String msgString1 = "url (string)";
-      textField = new JTextField( 30);
-      Object[] array = {msgString1, textField};
-      btnString1 = "Enter";
-      btnString2 = "Cancel";
-      Object[] options = {btnString1, btnString2};
-      // current value
-      String url = PlanWorks.this.currentProjectUrl;
-      if (url == null) {
-        url =  PlanWorks.this.defaultProjectUrl;
-      }
-      textField.setText( String.valueOf( url));
-      optionPane = new JOptionPane
-        ( array, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
-          null, options, options[0]);
-      setContentPane( optionPane);
-      setDefaultCloseOperation( DO_NOTHING_ON_CLOSE);
-      addWindowListener( new WindowAdapter() {
-          public void windowClosing(WindowEvent we) {
-            /*
-             * Instead of directly closing the window,
-             * we're going to change the JOptionPane's
-             * value property.
-             */
-            optionPane.setValue( new Integer( JOptionPane.CLOSED_OPTION));
-          }
-        });
-
-      textField.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            optionPane.setValue( btnString1);
-          }
-        });
-
-      addInputListener();
-
-      // size dialog appropriately
-      pack();
-      // place it in center of JFrame
-      Point planWorksLocation = planWorks.getLocation();
-      setLocation( (int) (planWorksLocation.getX() +
-                          planWorks.getSize().getWidth() / 2 -
-                          this.getPreferredSize().getWidth() / 2),
-                   (int) (planWorksLocation.getY() +
-                          planWorks.getSize().getHeight() / 2 -
-                          this.getPreferredSize().getHeight() / 2));
-      setBackground( ColorMap.getColor( "gray60"));
-      setVisible( true);
-    } // end constructor
-
-
-    private void addInputListener() {
-      optionPane.addPropertyChangeListener( new PropertyChangeListener() {
-          public void propertyChange( PropertyChangeEvent e) {
-            String prop = e.getPropertyName();
-            if (isVisible() && (e.getSource() == optionPane) &&
-                (prop.equals(JOptionPane.VALUE_PROPERTY) ||
-                 prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
-              Object value = optionPane.getValue();
-              if (value == JOptionPane.UNINITIALIZED_VALUE) {
-                //ignore reset
-                return;
-              }
-              // Reset the JOptionPane's value.
-              // If you don't do this, then if the user
-              // presses the same button next time, no
-              // property change event will be fired.
-              optionPane.setValue( JOptionPane.UNINITIALIZED_VALUE);
-
-              if (value.equals( btnString1)) {
-                typedText = textField.getText();
-                // we're done; dismiss the dialog
-                setVisible( false);
-              } else { // user closed dialog or clicked cancel
-                typedText = null;
-                setVisible( false);
-              }
-            }
-          }
-        });
-    } // end addInputListener
-
-    /**
-     * <code>getTypedText</code>
-     *
-     * @return - <code>String</code> - 
-     */
-    public String getTypedText() {
-      return typedText;
-    }
-
-  } // end class ParseProjectUrl
-
 
 
   /**
