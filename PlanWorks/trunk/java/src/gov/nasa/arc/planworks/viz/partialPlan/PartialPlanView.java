@@ -1,10 +1,10 @@
-// 
+    // 
 // * See the file "PlanWorks/disclaimers-and-notices.txt" for 
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.26 2004-02-11 02:29:30 taylor Exp $
+// $Id: PartialPlanView.java,v 1.27 2004-02-12 01:26:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -59,10 +59,13 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -355,6 +358,15 @@ public class PartialPlanView extends VizView {
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
                                                             partialPlanViewState);
       try {
+        moveSequenceStepsViewHighlight( nextStep);
+      } catch (ViewRenderingException excp) {
+        System.err.println( excp);
+        int index = excp.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(),
+                                       excp.getMessage().substring( index + 1),
+                                       "Step Exception", JOptionPane.ERROR_MESSAGE);
+      }
+      try {
         nextViewFrame.setBounds(viewFrame.getBounds());
         nextViewFrame.setNormalBounds(viewFrame.getNormalBounds());
         nextViewFrame.setSelected(true);
@@ -416,7 +428,61 @@ public class PartialPlanView extends VizView {
       }
       catch(Exception ack){ack.printStackTrace();}
     }
-  }
+  } // end  class StepButtonListener 
+
+
+  private void moveSequenceStepsViewHighlight( PwPartialPlan nextStep)
+    throws ViewRenderingException {
+    int currentStepNumber = getPartialPlan().getStepNumber();
+    int nextStepNumber = nextStep.getStepNumber();
+    MDIInternalFrame seqStepsViewFrame =
+      PlanWorks.getPlanWorks().getSequenceStepsViewFrame( getPartialPlan().getSequenceUrl());
+    SequenceStepsView sequenceStepsView = null;
+    Container contentPane = seqStepsViewFrame.getContentPane();
+    for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
+      if (contentPane.getComponent(i) instanceof SequenceStepsView) {
+        sequenceStepsView = (SequenceStepsView) contentPane.getComponent( i);
+        break;
+      }
+    }
+    if (sequenceStepsView != null) {
+      if (sequenceStepsView.getJGoView().getSelection() != null) {
+        sequenceStepsView.getJGoView().getSelection().clearSelection();
+      }
+      StepElement selectedStepElement = sequenceStepsView.getSelectedStepElement();
+      List currentElementList =
+        (List) sequenceStepsView.getStepElementList().get( currentStepNumber);
+      // make sure that the selectedStepElement is in currentElementList
+      int stepTypeIndex = -1;
+      for (int i = 0, n = currentElementList.size(); i < n; i++) {
+        StepElement stepElement = (StepElement) currentElementList.get( i);
+        if (stepElement.equals( selectedStepElement)) {
+          stepTypeIndex = i;
+          break;
+        }
+      }
+      if (stepTypeIndex == -1) {
+        Color stepDbBgColor = selectedStepElement.getDbBgColor();
+        if (stepDbBgColor.equals( SequenceStepsView.TOKENS_BG_COLOR)) {
+          stepTypeIndex = 0;
+        } else if (stepDbBgColor.equals( SequenceStepsView.VARIABLES_BG_COLOR)) {
+          stepTypeIndex = 1;
+        } else if (stepDbBgColor.equals( SequenceStepsView.DB_CONSTRAINTS_BG_COLOR)) {
+          stepTypeIndex = 2;
+        }
+        if (stepTypeIndex == -1) {
+          throw new ViewRenderingException( "moveSequenceStepsViewHighlight - stepElement" +
+                                            " color index not found");
+        } 
+      }
+      List nextElementList =
+        (List) sequenceStepsView.getStepElementList().get( nextStepNumber);
+      StepElement nextElement = (StepElement) nextElementList.get( stepTypeIndex);
+      sequenceStepsView.getJGoView().getSelection().extendSelection( nextElement);
+      sequenceStepsView.setSelectedStepElement( nextElement);
+    }
+  } // end moveSequenceStepsViewHighlight
+
 
   class ButtonAdjustmentListener implements AdjustmentListener {
     private JGoView view;

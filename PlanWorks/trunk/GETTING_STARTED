@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.27 2004-01-17 01:22:50 taylor Exp $
+# $Id: GETTING_STARTED,v 1.28 2004-02-12 01:26:49 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -56,7 +56,8 @@ Selecting a sequence name brings up two windows.  The first,
 sequence (see below).  The second, "SequenceStepsView", is a histogram 
 of the partial plan data base size for each step of the sequence, with
 every tenth step number displayed at the bottom of the appropriate
-element.
+element.  The "SequenceStepsView" has these Mouse-Right selections: "Close/
+Hide/Show <sequence-name>/step Views".
 
 Individual or all partial plan views for each step are available by
 clicking Mouse-Right on the desired step in the histogram ("SequenceStepsView").  
@@ -84,7 +85,9 @@ Applying a Content Filter specification will cause the views to be redrawn
 with only the filtered predicates and their dependencies.
 
 Every view has two buttons in the lower left corner which, when clicked,
-will cause the view to display either the next or previous step.
+will cause the view to display either the next or previous step.  The
+highlighted step in the SequenceStepsView will track the current step
+number.
 
 There are five active views:
 
