@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.2 2004-01-12 22:21:12 miatauro Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.3 2004-01-12 22:26:01 miatauro Exp $
 //
 // PlanWorks
 //
@@ -90,11 +90,9 @@ public class ExtendedBasicNodePort extends BasicNodePort {
     // if (x,y) is inside the object, just return it instead of finding the edge intersection
     //if (! obj.isPointInObj(p)) {
       if (node.isRectangular()) {
-        System.err.println("node is rectangular");
         JGoRectangle.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                   rect.height, x, y, cx, cy, p);
       } else if (node instanceof ConstraintNode) {
-        System.err.println("node is constraint node.");
         ((Diamond) ((ConstraintNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
         //         ((LeftTrapezoid) ((ConstraintNode) node).getDrawable()).
@@ -104,11 +102,9 @@ public class ExtendedBasicNodePort extends BasicNodePort {
         //         ((Hexagon) ((ConstraintNode) node).getDrawable()).
         //           getNearestIntersectionPoint( x, y, cx, cy, p);
       } else if (node instanceof ParamNode) {
-        System.err.println("node is param node");
         ((Diamond) ((ParamNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
       } else  if (node instanceof VariableNode) {
-        System.err.println("node is variable node");
         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                 rect.height, x, y, p);
       }
