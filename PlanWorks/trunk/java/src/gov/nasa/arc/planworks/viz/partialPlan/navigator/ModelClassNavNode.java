@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.1 2004-01-12 19:46:25 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.2 2004-01-12 22:21:34 miatauro Exp $
 //
 // PlanWorks
 //
@@ -96,6 +96,7 @@ public class ModelClassNavNode extends ExtendedBasicNode {
     timelineLinkCount = 0;
 
     configure( objectLocation, backgroundColor, isDraggable);
+
   } // end constructor
 
   private final void configure( Point objectLocation, Color backgroundColor,
