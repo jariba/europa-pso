@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.7 2003-11-20 19:11:23 taylor Exp $
+// $Id: VizView.java,v 1.8 2003-12-11 22:25:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -248,8 +248,9 @@ public class VizView extends JPanel {
             final String viewName = (String) viewListItr.next();
             final PartialPlanViewMenuItem viewItem =
               new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName);
-
-            new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait).start();
+            Thread thread = new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait);
+            thread.setPriority(Thread.MIN_PRIORITY);
+            thread.start();
           }
         }
       });

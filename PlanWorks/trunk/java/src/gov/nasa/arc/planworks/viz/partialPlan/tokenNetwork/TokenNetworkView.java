@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.14 2003-12-03 02:29:51 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.15 2003-12-11 22:26:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -155,7 +155,10 @@ public class TokenNetworkView extends PartialPlanView {
    *
    */
   public void redraw() {
-    new RedrawViewThread().start();
+    Thread thread = new RedrawViewThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {

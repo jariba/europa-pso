@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.10 2003-11-13 23:21:16 taylor Exp $
+// $Id: TransactionContentView.java,v 1.11 2003-12-11 22:25:07 miatauro Exp $
 //
 // PlanWorks
 //
@@ -85,7 +85,10 @@ public class TransactionContentView extends JGoView {
    *
    */
   public void redraw() {
-    new RedrawViewThread().start();
+    Thread thread = new RedrawViewThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {
