@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.26 2004-06-14 22:11:23 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.27 2004-08-06 00:53:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,12 +14,19 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.UniqueSet;
@@ -153,6 +160,48 @@ public class PwVariableImpl implements PwVariable {
     }
     retval.append(type).append("\n");
     return retval.toString();
+  }
+
+  public List getNeighbors() {
+    List classes = new LinkedList();
+    classes.add(PwConstraint.class);
+    classes.add(PwVariableContainer.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    List retval = new LinkedList();
+    boolean addedParent = false;
+    for(Iterator it = classes.iterator(); it.hasNext();) {
+      Class cclass = (Class) it.next();
+      if(cclass.equals(PwConstraint.class)) {
+        retval.addAll(getConstraintList());
+      }
+      else if(!addedParent && cclass.equals(PwVariableContainer.class)) {
+        retval.add(getParent());
+        addedParent = true;
+      }
+      else if(!addedParent && cclass.equals(PwToken.class) &&
+              getParent() instanceof PwToken) {
+        retval.add(getParent());
+        addedParent = true;
+      }
+      else if(!addedParent && cclass.equals(PwObject.class) &&
+              getParent() instanceof PwObject) {
+        retval.add(getParent());
+        addedParent = true;
+      }
+      else if(!addedParent && cclass.equals(PwRuleInstance.class) &&
+              getParent() instanceof PwRuleInstance) {
+        retval.add(getParent());
+        addedParent = true;
+      }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
   }
 
 } // end class PwVariableImpl

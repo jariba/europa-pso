@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwChoiceImpl.java,v 1.5 2004-08-05 00:24:22 taylor Exp $
+// $Id: PwChoiceImpl.java,v 1.6 2004-08-06 00:53:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -133,4 +134,8 @@ public class PwChoiceImpl implements PwChoice {
     }
     return retval.toString();
   }
+
+  public List getNeighbors(){return null;}
+  public List getNeighbors(List classes){return null;}
+  public List getNeighbors(List classes, Set ids){return null;}
 }

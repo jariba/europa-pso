@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.7 2004-06-21 22:42:58 taylor Exp $
+// $Id: PwDBTransactionImpl.java,v 1.8 2004-08-06 00:53:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
@@ -190,5 +191,9 @@ public class PwDBTransactionImpl implements PwDBTransaction {
     }
     return null;
   }
+
+  public List getNeighbors(){return null;}
+  public List getNeighbors(List classes){return null;}
+  public List getNeighbors(List classes, Set ids){return null;}
 
 } // end class PwDBTransactionImpl

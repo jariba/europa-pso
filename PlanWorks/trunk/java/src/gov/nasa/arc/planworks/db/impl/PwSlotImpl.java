@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.29 2004-03-23 18:20:49 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.30 2004-08-06 00:53:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.db.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -153,4 +154,8 @@ public class PwSlotImpl implements PwSlot {
   public String toOutputString() {
     return null;
   }
+
+  public List getNeighbors(){return null;}
+  public List getNeighbors(List classes){return null;}
+  public List getNeighbors(List classes, Set ids){return null;}
 } // end class PwSlotImpl

@@ -4,13 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDecisionImpl.java,v 1.6 2004-08-05 00:24:22 taylor Exp $
+// $Id: PwDecisionImpl.java,v 1.7 2004-08-06 00:53:25 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -86,5 +87,9 @@ public class PwDecisionImpl implements PwDecision {
     retval.append("\n");
     return retval.toString();
   }
+
+  public List getNeighbors(){return null;}
+  public List getNeighbors(List classes){return null;}
+  public List getNeighbors(List classes, Set ids){return null;}
 
 }
