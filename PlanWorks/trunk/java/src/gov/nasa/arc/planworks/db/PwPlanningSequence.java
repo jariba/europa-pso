@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.15 2003-10-02 23:15:32 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.16 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -81,8 +81,8 @@ public interface PwPlanningSequence extends ViewableObject {
    *
    * @return - <code>List</code> of String
    */
-
   public abstract List listPartialPlanNames();
+
   /**
    * <code>getPartialPlan</code>
    *

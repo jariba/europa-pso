@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.3 2003-10-07 02:13:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -57,6 +57,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -224,28 +225,38 @@ public class SequenceStepsView extends SequenceView {
 
 
   private void renderHistogram() {
-    int x = 10, y = 10, height = 5;
-    PwToken activeToken = null;
-    String tokenTransaction = "transaction";
-    int stepNumber = 1;
-    while (x < 500) {
-      if (stepNumber == 23) {
-        tokenTransaction = "tokenCreated";
-      } else if (stepNumber == 30) {
-        tokenTransaction = "tokenInserted";
-      } else if (stepNumber == 33) {
-        tokenTransaction = "tokenFreed";
-      } else if (stepNumber == 40) {
-        tokenTransaction = "tokenDeleted";
-      } else {
-        tokenTransaction = "transaction";
+    System.err.println( "stepCount " + planSequence.getStepCount());
+    System.err.println( "stepNumbers " + planSequence.listPartialPlanNames());
+    
+    int x = ViewConstants.STEP_VIEW_X_INIT, y = ViewConstants.STEP_VIEW_Y_INIT;
+    Iterator stepItr = planSequence.listPartialPlanNames().iterator();
+    while (stepItr.hasNext()) {
+      String partialPlanName = (String) stepItr.next();
+      int stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
+      PwPartialPlan partialPlan = null;
+      List transactionList = null;
+      try {
+        partialPlan = planSequence.getPartialPlan( partialPlanName);
+        transactionList = planSequence.listTransactions( stepNumber);
+        System.err.println( "stepNum " + stepNumber);
+        if (transactionList != null) {
+          System.err.println( "transactionList size " + transactionList.size());
+        }
+      } catch (ResourceNotFoundException rnfExcep) {
+        int index = rnfExcep.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog
+          (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println( rnfExcep);
+        rnfExcep.printStackTrace();
+        System.exit( -1);
       }
-      StepElement stepElement = new StepElement( x, y, height, stepNumber, activeToken,
-                                                 tokenTransaction);
+      StepElement stepElement = new StepElement( x, y, partialPlan.getPlanDBSize(),
+                                                 partialPlanName, partialPlan,
+                                                 transactionList);
+
       document.addObjectAtTail( stepElement);
-      stepNumber++;
-      x += 10;
-      height += 5;
+      x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       tmpStepList.add( stepElement);
     }
     stepList = tmpStepList;

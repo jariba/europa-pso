@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
+// $Id: TemporalNode.java,v 1.3 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks
 //
@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
@@ -158,7 +159,26 @@ public class TemporalNode extends BasicNode implements Extent {
     this.backgroundColor = backgroundColor;
     this.isFreeToken = isFreeToken;
     this.temporalExtentView = temporalExtentView;
-    String nodeLabel2 = null;
+    String [] labelLines = TemporalNode.createNodeLabel( token);
+    predicateName = labelLines[0];
+    StringBuffer labelBuf = new StringBuffer( predicateName);
+    labelBuf.append( "\n").append( labelLines[1]);
+    nodeLabel = labelBuf.toString();
+    nodeLabelWidth = TemporalNode.getNodeLabelWidth( labelLines, temporalExtentView);
+    markAndBridgeList = new ArrayList();
+    cellRow = Algorithms.NO_ROW;
+  } // end constructor
+
+
+  /**
+   * <code>createNodeLabel</code>
+   *
+   * @param token - <code>PwToken</code> - 
+   * @return - <code>String[]</code> - 
+   */
+  public static String [] createNodeLabel( PwToken token) {
+    String [] labelLines = new String [2];
+    String predicateName = null, nodeLabel2 = null;
     if (token != null) {
       predicateName = token.getPredicate().getName();
       nodeLabel2 = "key=" + token.getId().toString();
@@ -166,19 +186,27 @@ public class TemporalNode extends BasicNode implements Extent {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
       nodeLabel2 = "";
     }
-    StringBuffer labelBuf = new StringBuffer( predicateName);
-    labelBuf.append( "\n").append( nodeLabel2);
-    nodeLabel = labelBuf.toString();
-    nodeLabelWidth =
-      Math.max(
-               SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
-                                                  predicateName),
-               SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
-                                                  nodeLabel2)) +
+    labelLines[0] = predicateName;
+    labelLines[1] = nodeLabel2;
+    return labelLines;
+  } // end createNodeLabel
+
+
+  /**
+   * <code>getNodeLabelWidth</code>
+   *
+   * @param labelLines - <code>String[]</code> - 
+   * @param temporalExtentView - <code>TemporalExtentView</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static int getNodeLabelWidth( String [] labelLines,
+                                       TemporalExtentView temporalExtentView) {
+    return Math.max( SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
+                                                        labelLines[0]),
+                     SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
+                                                        labelLines[1])) +
       (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2);
-    markAndBridgeList = new ArrayList();
-    cellRow = Algorithms.NO_ROW;
-  } // end constructor
+  } // end getNodeLabelWidth
 
 
   /**

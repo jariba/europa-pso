@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.35 2003-10-04 01:15:56 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.36 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +38,7 @@ import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.OneToManyMap;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
@@ -277,9 +280,15 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
    *
    * @return List of Strings
    */
-
   public List listPartialPlanNames() {
-    return new ArrayList(partialPlans.keySet());
+    // return new ArrayList(partialPlans.keySet());
+    List names = new ArrayList();
+    Iterator keyItr = partialPlans.keySet().iterator();
+    while (keyItr.hasNext()) {
+      names.add( (String) keyItr.next());
+    }
+    Collections.sort( names, new PartialPlanNameComparator());
+    return names;
   }
   /**
    * <code>getPartialPlan</code>
@@ -384,5 +393,21 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     this.name = seqName;
   }
 
+
+  private class PartialPlanNameComparator implements Comparator {
+    public PartialPlanNameComparator() {
+    }
+    // discard "step" prefix
+    public int compare(Object o1, Object o2) {
+      Integer s1 = new Integer( ((String) o1).substring( 4));
+      Integer s2 = new Integer( ((String) o2).substring( 4));
+      return s1.compareTo(s2);
+    }
+    public boolean equals(Object o1, Object o2) {
+      Integer s1 = new Integer( ((String) o1).substring( 4));
+      Integer s2 = new Integer( ((String) o2).substring( 4));
+      return s1.equals(s2);
+    }
+  }
 
 }

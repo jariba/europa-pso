@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.3 2003-08-29 01:21:39 taylor Exp $
+// $Id: Utilities.java,v 1.4 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks
 //
@@ -16,6 +16,11 @@ package gov.nasa.arc.planworks.util;
 import java.awt.Container;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -72,6 +77,34 @@ public class Utilities {
     }
   }
 
+
+  /**
+   * <code>getUrlLeaf</code>
+   *
+   * @param seqUrl - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String getUrlLeaf( String seqUrl) {
+    int index = seqUrl.lastIndexOf( System.getProperty( "file.separator"));
+    return seqUrl.substring( index + 1);
+  }
+
+
+  /**
+   * <code>sortStringKeySet</code> - sort Hash map keys, that are Strings
+   *
+   * @param map - <code>Map</code> - 
+   * @return - <code>List</code> - of String
+   */
+  public static List sortStringKeySet( Map map) {
+    List names = new ArrayList();
+    Iterator keyItr = map.keySet().iterator();
+    while (keyItr.hasNext()) {
+      names.add( (String) keyItr.next());
+    }
+    Collections.sort( names, new StringNameComparator());
+    return names;
+  } // end sortStringKeySet
 
 
 } // end class Utilities

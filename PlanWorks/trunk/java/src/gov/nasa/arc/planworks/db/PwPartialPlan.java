@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.20 2003-09-29 23:52:11 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.21 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -166,7 +166,13 @@ public interface PwPartialPlan extends ViewableObject {
    *
    * @param seqName - <code>String</code> - 
    */
-  public void setSeqName( String seqName);
+  public abstract void setSeqName( String seqName);
 
+  /**
+   * <code>getPlanDBSize</code> - sum of hash map sizes of all plan objects
+   *
+   * @return - <code>int</code> - 
+   */
+  public abstract int getPlanDBSize();
 
 } // end interface PwPartialPlan

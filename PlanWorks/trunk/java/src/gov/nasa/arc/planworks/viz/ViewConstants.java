@@ -277,5 +277,12 @@ public interface ViewConstants {
    */
   public static final int FRAME_DECORATION_WIDTH = 8;
 
+  public static final int STEP_VIEW_X_INIT = 10;
+
+  public static final int STEP_VIEW_Y_INIT = 10;
+
+  public static final int STEP_VIEW_STEP_WIDTH = 10;
+
+  public static final int STEP_VIEW_DB_SIZE_SCALING = 10;
 
 } // end ViewConstants

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.62 2003-10-04 01:15:56 taylor Exp $
+// $Id: PlanWorks.java,v 1.63 2003-10-07 02:13:33 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -54,6 +54,7 @@ import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -234,7 +235,7 @@ public class PlanWorks extends MDIDesktopFrame {
         break;
       }
     }
-    createSupportedViewNames();
+    supportedViewNames = Utilities.sortStringKeySet( viewClassNameMap);
     this.setVisible( true);
     if(usingSplash) {
       this.toBack();
@@ -336,28 +337,8 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
-  protected void createSupportedViewNames() {
-    supportedViewNames = new ArrayList();
-    Iterator viewsItr = viewClassNameMap.keySet().iterator();
-    while (viewsItr.hasNext()) {
-      supportedViewNames.add( (String) viewsItr.next());
-    }
-    Collections.sort( supportedViewNames, new ViewNameComparator());
-  } // end createSupportedViewNames
-
   protected String trimView( String viewName) {
     return viewName.substring( 0, viewName.indexOf( " View"));
-  }
-
-  /**
-   * <code>getUrlLeaf</code>
-   *
-   * @param seqUrl - <code>String</code> - 
-   * @return - <code>String</code> - 
-   */
-  public String getUrlLeaf( String seqUrl) {
-    int index = seqUrl.lastIndexOf( System.getProperty( "file.separator"));
-    return seqUrl.substring( index + 1);
   }
 
   private String getSequenceMenuItemName( String seqName, JMenu seqPartialPlanViewMenu) {
@@ -482,7 +463,7 @@ public class PlanWorks extends MDIDesktopFrame {
     Iterator seqUrlsItr = planSeqNames.iterator();
     while (seqUrlsItr.hasNext()) {
       String seqUrl = (String) seqUrlsItr.next();
-      String seqName = getSequenceMenuItemName( getUrlLeaf( seqUrl),
+      String seqName = getSequenceMenuItemName( Utilities.getUrlLeaf( seqUrl),
                                                 seqPartialPlanViewMenu);
       //System.err.println( "  sequenceName " + seqName);
       sequenceNameMap.put(seqUrl, seqName);
@@ -783,31 +764,17 @@ public class PlanWorks extends MDIDesktopFrame {
     public SeqNameComparator() {
     }
     public int compare(Object o1, Object o2) {
-      String s1 = getUrlLeaf((String) o1);
-      String s2 = getUrlLeaf((String) o2);
+      String s1 = Utilities.getUrlLeaf((String) o1);
+      String s2 = Utilities.getUrlLeaf((String) o2);
       return s1.compareTo(s2);
     }
     public boolean equals(Object o1, Object o2) {
-      String s1 = getUrlLeaf((String)o1);
-      String s2 = getUrlLeaf((String)o2);
+      String s1 = Utilities.getUrlLeaf((String)o1);
+      String s2 = Utilities.getUrlLeaf((String)o2);
       return s1.equals(s2);
     }
   }
 
-  private class ViewNameComparator implements Comparator {
-    public ViewNameComparator() {
-    }
-    public int compare(Object o1, Object o2) {
-      String s1 = (String) o1;
-      String s2 = (String) o2;
-      return s1.compareTo(s2);
-    }
-    public boolean equals(Object o1, Object o2) {
-      String s1 = (String)o1;
-      String s2 = (String)o2;
-      return s1.equals(s2);
-    }
-  }
 
 } // end  class PlanWorks
         
