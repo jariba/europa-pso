@@ -4,20 +4,28 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.19 2003-09-04 00:27:36 taylor Exp $
+# $Id: README,v 1.20 2003-09-05 22:09:27 taylor Exp $
 #
 
 SUMMARY
 =======
 Milestone 5 adds the Constraint Network View. Because of its
 complexity, initially only the token nodes are displayed.  They
-are mouse clickable: left, display and layout the token's
-variable and constraint nodes; right, remove the token's
-variable and constraint nodes.  The automatic expansion of the 
-four view internal frame windows, now restricts the expansion
-to the size of the enclosing PlanWorks frame.  The Content
-Specification processor now filters time intervals, as well as
-tokens, and predicates.  
+are "opened" by mouse clicks which lay out the token's
+variable nodes. Clicking on variable nodes "opens" them to show
+or link to their nearest neighbors (constraints or tokens).
+Similarly, clicking on constraint nodes "opens" their nearest 
+neighbors.  Clicking on an "open" node (bold border), "closes"
+that nodes nearest neighbor nodes/links, provided the link counts
+are 1.  Then the node becomes "closed" and has an unbold border.
+
+The Temporal Extent View layout has been improved.  Free tokens
+are now presented in all views.  The automatic expansion of the 
+four view internal frame windows, now restricts the expansion to 
+the size of the enclosing PlanWorks frame.  
+
+The Content Specification processor now filters time intervals, as 
+well as tokens, and predicates.  
 
 PRs fixed:
 o #2011: Temporal extent view is wrong
@@ -48,10 +56,10 @@ Set environment varibles:
     e.g. tcsh: set path = ($path <root>/PlanWorks/java/lib/apache-ant/bin)
 
   o OSTYPE - linux, solaris, or darwin (MacOS)
-    should be set by user's standard environment
+    Should be set by user's standard environment
 
   o USER - user's account name, used in defining the data base collection
-    should be set by user's standard environment
+    Should be set by user's standard environment
 
 BUILDING THE PARTIAL PLAN WRITER
 ================================
@@ -99,11 +107,17 @@ Default target: planWorks
 
 PREVIOUS MILESTONES
 ===================
-24july 03:Milestone 4 adds the Temporal Extent View.  It also automatically
+===================
+
+24july03: Milestone 4 
+=====================
+Milestone 4 adds the Temporal Extent View.  It also automatically
 expands the three view internal frame windows to display their
 content, without scrolling.
 
-17july03: Milestone 3 changes the backend data base content from XML accessed by
+17july03: Milestone 3 
+=====================
+Milestone 3 changes the backend data base content from XML accessed by
 eXist using XPATH, to MySQL.  This results in a performance improvement 
 of at least a factor of 3, and much simpler and quicker data
 base queries by the Content Specification processor.  An XML to
@@ -112,14 +126,24 @@ to MySQL files.  The Token Network view has been added.  Project
 management is now handled completely in MysQL, rather than using
 Java "beans".  The Content Specification processor now filters only
 by tokens, and predicates.  It will later add time intervals.
+PRs & CRs completed:
+  #1841: Suggestion: group timelines for the same object
+         Use alternating colors for grouping
+  #1844: Suggestion: consider making interval endpoints immovable
+  #1851: Closed View Windows are not restored by Partial Plan->seq->plan->view
+  #1990: INSTALLATION: Problems with build.xml under linux
 
-19june03: Milestone 2 integrates the Multiple Document Interface (MDI) for window
+19june03: Milestone 2 
+=====================
+Milestone 2 integrates the Multiple Document Interface (MDI) for window
 management, project management (creating, saving, opening and deleting),
 the plan generator, and the Content Specification functionality for 
 filtering partial plan rendering in the user selected views, which is 
 currently restricted to the Timeline View.
 
-27may03: Milestone 1 includes basic Timeline View, basic eXist XPATH DB
+27may03: Milestone 1 
+=====================
+Milestone 1 includes basic Timeline View, basic eXist XPATH DB
 implementation, ant build/startup script, and basic JFCUnit test of 
 Timeline View with major deficiencies.
 
@@ -142,8 +166,3 @@ Other files used by  Emacs/XEmacs/JDE:
   PlanWorks/java/planWorks.TAGS
 
 
-PRs & CRs completed for PW_M_3
-==============================
-#1841: Suggestion: group timelines for the same object
-       Use alternating colors for grouping
-#1844: Suggestion: consider making interval endpoints immovable
