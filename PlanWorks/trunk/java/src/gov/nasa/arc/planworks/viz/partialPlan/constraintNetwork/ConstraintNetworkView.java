@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.69 2004-06-16 22:09:12 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.70 2004-06-21 22:43:02 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -123,7 +123,8 @@ public class ConstraintNetworkView extends PartialPlanView {
   private boolean isDebugTraverse;
   private boolean isLayoutNeeded;
   private PartialPlanViewState s;
-  private JGoArea focusNode; // ConstraintNetworkTokenNode/ConstraintNode/VariableNode
+  private JGoArea focusNode; // VariableContainerNode/ConstraintNode/VariableNode
+  private Integer focusNodeId;
   private NewConstraintNetworkLayout newLayout;
   private boolean isStepButtonView;
 
@@ -337,6 +338,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     startTimeMSecs = 0L;
     isLayoutNeeded = false;
     focusNode = null;
+    focusNodeId = null;
 
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
@@ -475,6 +477,33 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public void setFocusNode( JGoArea node) {
     this.focusNode = node;
+  }
+
+  /**
+   * <code>getFocusNode</code>
+   *
+   * @return - <code>JGoArea</code> - 
+   */
+  public JGoArea getFocusNode() {
+    return focusNode;
+  }
+
+  /**
+   * <code>getFocusNodeId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public Integer getFocusNodeId( ) {
+    return focusNodeId;
+  }
+
+  /**
+   * <code>setFocusNodeId</code>
+   *
+   * @param id - <code>Integer</code> - 
+   */
+  public void setFocusNodeId( Integer id) {
+    this.focusNodeId = id;
   }
 
   /**
@@ -1573,12 +1602,14 @@ public class ConstraintNetworkView extends PartialPlanView {
       else {
         PwVariable variableToFind = partialPlan.getVariable( nodeKey);
         if (variableToFind != null) {
-          findAndSelectVariable( variableToFind);
+          boolean doRedraw = true;
+          findAndSelectVariable( variableToFind, doRedraw);
         } 
         else {
           PwConstraint constraintToFind = partialPlan.getConstraint( nodeKey);
           if (constraintToFind != null) {
-            findAndSelectConstraint( constraintToFind);
+            boolean isVariableOpened = false;
+            findAndSelectConstraint( constraintToFind, isVariableOpened);
           }
           else {
             PwRuleInstance ruleInstanceToFind = partialPlan.getRuleInstance( nodeKey);
@@ -1628,6 +1659,8 @@ public class ConstraintNetworkView extends PartialPlanView {
                               contToFind.getName() +
                               " (key=" + contToFind.getId().toString() + ")");
           NodeGenerics.focusViewOnNode( (JGoArea) contNode, isHighlightNode, this);
+          constraintNetworkView.setFocusNode( (JGoArea) contNode);
+          constraintNetworkView.setFocusNodeId( contNode.getContainer().getId());
           isTokenFound = true;
           break;
         }
@@ -1649,16 +1682,18 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
     } // end findAndSelectToken
 
-    private void findAndSelectVariable( PwVariable variableToFind) {
+    private boolean findAndSelectVariable( PwVariable variableToFind, boolean doRedraw) {
       boolean isVariableFound = false;
       boolean isHighlightNode = true;
       Iterator variableNodeListItr = constraintNetworkView.getVariableNodeList().iterator();
       while (variableNodeListItr.hasNext()) {
         VariableNode variableNode = (VariableNode) variableNodeListItr.next();
         if (variableNode.getVariable().getId().equals( variableToFind.getId())) {
-          System.err.println( "ConstraintNetworkView found variable: " +
-                              variableToFind.getDomain().toString() + " (key=" +
-                              variableToFind.getId().toString() + ")");
+          if (doRedraw) {
+            System.err.println( "ConstraintNetworkView found variable: " +
+                                variableToFind.getDomain().toString() + " (key=" +
+                                variableToFind.getId().toString() + ")");
+          }
           if (! variableNode.inLayout()) {
             VariableContainerNode parentNode = 
               (VariableContainerNode) variableNode.getContainerNodeList().get( 0);
@@ -1666,13 +1701,14 @@ public class ConstraintNetworkView extends PartialPlanView {
                                 parentNode.getContainer().getName() +
                                 " (key=" + parentNode.getContainer().getId() + ")");
             // open connecting token to display it
-            parentNode.addContainerNodeVariables( parentNode, constraintNetworkView);
+            parentNode.addContainerNodeVariables( parentNode, constraintNetworkView, doRedraw);
             parentNode.setAreNeighborsShown( true);
           }
           constraintNetworkView.setFocusNode( variableNode);
+          constraintNetworkView.setFocusNodeId( variableNode.getVariable().getId());
           NodeGenerics.focusViewOnNode( variableNode, isHighlightNode, this);
           isVariableFound = true;
-          return;
+          return isVariableFound;
         }
       }
       if (! isVariableFound) {
@@ -1684,22 +1720,29 @@ public class ConstraintNetworkView extends PartialPlanView {
                                          "Variable Not Found in ConstraintNetworkView",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
-          return;
+          return isVariableFound;
         }
         Integer parentId = variableToFind.getParent().getId();
         Iterator parentIterator = constraintNetworkView.getContainerNodeList().iterator();
         while(parentIterator.hasNext()) {
           VariableContainerNode parent = (VariableContainerNode) parentIterator.next();
           if(parent.getContainer().getId().equals(parentId)) {
-            parent.addContainerNodeVariables(parent, constraintNetworkView);
+            parent.addContainerNodeVariables(parent, constraintNetworkView, doRedraw);
             parent.setAreNeighborsShown(true);
             Iterator varIterator = parent.getVariableNodes().iterator();
             while(varIterator.hasNext()) {
               VariableNode variableNode = (VariableNode) varIterator.next();
               if(variableNode.getVariable().getId().equals(variableToFind.getId())) {
+                if (doRedraw) {
+                  System.err.println( "ConstraintNetworkView found variable: " +
+                                      variableToFind.getDomain().toString() + " (key=" +
+                                      variableToFind.getId().toString() + ")");
+                }
                 constraintNetworkView.setFocusNode(variableNode);
+                constraintNetworkView.setFocusNodeId( variableNode.getVariable().getId());
                 NodeGenerics.focusViewOnNode(variableNode, isHighlightNode, this);
-                return;
+                isVariableFound = true;
+                return isVariableFound;
               }
             }
           }
@@ -1711,11 +1754,12 @@ public class ConstraintNetworkView extends PartialPlanView {
                                      "Variable Not Found in ConstraintNetworkView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
+      return isVariableFound;
     } // end findAndSelectVariable
 
-    private void findAndSelectConstraint( PwConstraint constraintToFind) {
-      boolean isConstraintFound = false;
-      boolean isHighlightNode = true;
+    private void findAndSelectConstraint( PwConstraint constraintToFind,
+                                          boolean isVariableOpened) {
+      boolean isConstraintFound = false, doRedraw = true, isHighlightNode = true;
       Iterator constraintNodeListItr = constraintNetworkView.getConstraintNodeList().iterator();
       while (constraintNodeListItr.hasNext()) {
         ConstraintNode constraintNode = (ConstraintNode) constraintNodeListItr.next();
@@ -1742,7 +1786,8 @@ public class ConstraintNetworkView extends PartialPlanView {
                 parentNode = 
                   (VariableContainerNode) variableNode.getContainerNodeList().get( 0);
                 // open connecting token to display variable node
-                parentNode.addContainerNodeVariables( parentNode, constraintNetworkView);
+                parentNode.addContainerNodeVariables( parentNode, constraintNetworkView,
+                                                      doRedraw);
                 parentNode.setAreNeighborsShown( true);
               }
               System.err.println( "ConstraintNetworkView found token: " +
@@ -1755,9 +1800,22 @@ public class ConstraintNetworkView extends PartialPlanView {
             variableNode.setAreNeighborsShown( true);
           }
           constraintNetworkView.setFocusNode( constraintNode);
+          constraintNetworkView.setFocusNodeId( constraintNode.getConstraint().getId());
           NodeGenerics.focusViewOnNode( constraintNode, isHighlightNode, this);
           isConstraintFound = true;
           break;
+        }
+      }
+      if ((! isConstraintFound) && (! isVariableOpened)) {
+        // open one of its variables
+        isVariableOpened = true;
+        boolean doRedrawVar = false;
+        PwVariable variable = (PwVariable) constraintToFind.getVariablesList().get( 0);
+        if (findAndSelectVariable( variable, doRedrawVar)) {
+          VariableNode variableNode = (VariableNode) constraintNetworkView.getFocusNode();
+          constraintNetworkView.createConstrsAndLinksForVar( variableNode);
+          findAndSelectConstraint( constraintToFind, isVariableOpened);
+          isConstraintFound = true;
         }
       }
       if (! isConstraintFound) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.14 2004-06-16 22:09:07 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.15 2004-06-21 22:42:59 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -200,6 +200,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     windowMenu.add(tileItem);
     windowMenu.add(cascadeItem);
     windowMenu.addSeparator();
+    windowMenu.addSeparator();
     windowMenu.validate();
 
     ListIterator windowIterator = sortWindows( windows).listIterator();
@@ -259,7 +260,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
         if (isFirst) {
           isFirst = false;
         } else {
-          sortedWindows.add( null); // marker for JMenu separator
+          sortedWindows.add( null); // new sequence marker for JMenu separator
+          sortedWindows.add( null); // new sequence marker for JMenu separator
         }
         Collections.sort( windowsForSeq, new StepNumberComparator());
         int numSeqWindows = windowsForSeq.size();
@@ -357,6 +359,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
         windowCnt++;
       } // end for
 //           System.err.println( "viewsAtStep.size() " + viewsAtStep.size());
+      sortedWindows.add( null); // new step marker for JMenu separator
       Collections.sort( viewsAtStep, new ViewNameComparator( seqName));
       for (int i = 0, n = viewsAtStep.size(); i < n; i++) {
         sortedWindows.add ( (MDIInternalFrame) viewsAtStep.get( i));

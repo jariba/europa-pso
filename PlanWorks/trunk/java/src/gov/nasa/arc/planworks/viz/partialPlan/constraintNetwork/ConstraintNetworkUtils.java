@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.4 2004-05-28 20:21:19 taylor Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.5 2004-06-21 22:43:02 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
@@ -77,11 +78,11 @@ public final class ConstraintNetworkUtils {
   }
 
   protected static void addContainerNodeVariables(VariableContainerNode node,
-                                                  ConstraintNetworkView view) {
+                                                  ConstraintNetworkView view, boolean doRedraw) {
     view.setStartTimeMSecs(System.currentTimeMillis());
     boolean areNodesChanged = view.addVariableNodes(node);
     boolean areLinksChanged = view.addVariableToContainerLinks(node);
-    if(areNodesChanged || areLinksChanged) {
+    if(doRedraw && (areNodesChanged || areLinksChanged)) {
       view.setLayoutNeeded();
       view.setFocusNode((JGoArea) node);
       view.redraw();
@@ -135,6 +136,11 @@ public final class ConstraintNetworkUtils {
         }
       });
     menu.add(navItem);
+
+//     if (node instanceof ConstraintNetworkRuleInstanceNode) {
+//       menu.add( ViewGenerics.createRuleInstanceViewItem( (RuleInstanceNode) node, view));
+//     }
+
     ViewGenerics.showPopupMenu(menu, view, viewCoords);
   }
 
@@ -144,7 +150,8 @@ public final class ConstraintNetworkUtils {
     JGoObject obj = view.pickDocObject(docCoords, false);
     if(MouseEventOSX.isMouseLeftClick(modifiers, PlanWorks.isMacOSX())) {
       if(!node.areNeighborsShown()) {
-        node.addContainerNodeVariables(node, cNetView);
+        boolean doRedraw = true;
+        node.addContainerNodeVariables(node, cNetView, doRedraw);
       }
       else {
         node.removeContainerNodeVariables(node, cNetView);

@@ -361,6 +361,6 @@ public abstract class ViewConstants {
 
   public static final String NODE_SHAPES_FRAME = "PlanWorks Node Shapes";
   public static final int NODE_SHAPES_FRAME_WIDTH = 550;
-  public static final int NODE_SHAPES_FRAME_HEIGHT = 300;
+  public static final int NODE_SHAPES_FRAME_HEIGHT = 325;
 
 } // end ViewConstants

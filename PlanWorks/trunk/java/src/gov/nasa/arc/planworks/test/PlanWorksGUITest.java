@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.12 2004-06-17 20:38:02 miatauro Exp $
+// $Id: PlanWorksGUITest.java,v 1.13 2004-06-21 22:42:59 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -60,11 +60,13 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
+import gov.nasa.arc.planworks.db.PwDecision;
 import gov.nasa.arc.planworks.db.PwPartialPlan;    
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
@@ -74,6 +76,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -87,6 +90,7 @@ import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkResourceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkRuleInstanceNode;
@@ -129,6 +133,26 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQue
  */
 public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   
+  // there must be a listener for every partial plan view - with this view ordering
+  // ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()
+
+  private static final int CONSTRAINT_NETWORK_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
+  private static final int DB_TRANSACTION_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
+  private static final int DECISION_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DECISION_VIEW);
+  private static final int RESOURCE_PROFILE_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_PROFILE_VIEW);
+  private static final int RESOURCE_TRANSACTION_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_TRANSACTION_VIEW);
+  private static final int TEMPORAL_EXTENT_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TEMPORAL_EXTENT_VIEW);
+  private static final int TIMELINE_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TIMELINE_VIEW);
+  private static final int TOKEN_NETWORK_VIEW_INDEX =
+    ViewConstants.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TOKEN_NETWORK_VIEW);
+
   private PlanWorks planWorks;
   private JFCTestHelper helper;
 
@@ -142,19 +166,23 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   private boolean viewListenerWait04;
   private boolean viewListenerWait05;
   private boolean viewListenerWait06;
+  private boolean viewListenerWait07;
+  private boolean viewListenerWait08;
 
   public PlanWorksGUITest(String test) {
     super(test);
   }
 
+  // implements IdSource
   public int incEntityIdInt() {
     return ++entityIdInt;
   }
   
+  // implements IdSource
   public void resetEntityIdInt() {
     entityIdInt = 0;
   }
-  
+
   public boolean getViewListenerWait01() {
     return viewListenerWait01;
   }
@@ -203,6 +231,22 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     viewListenerWait06 = value;
   }
 
+  public boolean getViewListenerWait07() {
+    return viewListenerWait07;
+  }
+
+  public void setViewListenerWait07( boolean value) {
+    viewListenerWait07 = value;
+  }
+
+  public boolean getViewListenerWait08() {
+    return viewListenerWait08;
+  }
+
+  public void setViewListenerWait08( boolean value) {
+    viewListenerWait08 = value;
+  }
+
 
   public void setUp() throws Exception {
     try {
@@ -226,7 +270,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       // 1-4 used by planViz01 & planViz02 (destructively modified)
       // 5-6 used by planViz03, planViz04 & planViz05
       // 5-7 used by planViz06, planViz07, & planViz08
-      sequenceUrls = PWSetupHelper.buildTestData( numSequences, numSteps, this, PWTestHelper.GUI_TEST_DIR);
+      sequenceUrls = PWSetupHelper.buildTestData( numSequences, numSteps, this,
+                                                  PWTestHelper.GUI_TEST_DIR);
 
       // System.exit( 0);
 
@@ -257,6 +302,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       planViz05(); 
       planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
       planViz10(); 
+      planViz11(); 
 
       PWTestHelper.exitPlanWorks( helper, this);
 
@@ -385,10 +431,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     SequenceStepsView seqStepsView =
       PWTestHelper.getSequenceStepsView( PWTestHelper.SEQUENCE_NAME, helper, this);
 
-    ViewListener viewListener = null;
+    List viewListenerList = createViewListenerList();
     String viewMenuItemName = "Open " + ViewConstants.TIMELINE_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener, helper, this);
+                                                viewMenuItemName, viewListenerList,
+                                                helper, this);
 
     PWTestHelper.handleDialog( "Resource Not Found Exception", "OK",
                                "Failed to get file listing for " + stepName, helper, this);
@@ -544,11 +591,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       PWTestHelper.getSequenceStepsView( PWTestHelper.SEQUENCE_NAME, helper, this);
     int stepNumber = 1;
     String viewMenuItemName = "Open " + ViewConstants.TIMELINE_VIEW;
-    viewListener01.reset();
+    List viewListenerList = createViewListenerList();
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener01,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-    viewListener01.viewWait();
+    viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
 
     // then sequence (1) timeline view
     viewListener01.reset();
@@ -557,11 +604,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     viewListener01.viewWait();
     SequenceStepsView seqStepsView1 =
       PWTestHelper.getSequenceStepsView( PWTestHelper.SEQUENCE_NAME + " (1)", helper, this);
-    viewListener01.reset();
+    viewListenerListReset( TIMELINE_VIEW_INDEX, viewListenerList);
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView1, stepNumber,
-                                                viewMenuItemName, viewListener01,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-    viewListener01.viewWait();
+    viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
     // then sequence (2) timeline view
     viewListener01.reset();
     PWTestHelper.openSequenceStepsView( PWTestHelper.SEQUENCE_NAME + " (2)",
@@ -569,15 +616,17 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     viewListener01.viewWait();
     SequenceStepsView seqStepsView2 =
       PWTestHelper.getSequenceStepsView( PWTestHelper.SEQUENCE_NAME + " (2)", helper, this);
-    viewListener01.reset();
+    viewListenerListReset( TIMELINE_VIEW_INDEX, viewListenerList);
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView2, stepNumber,
-                                                viewMenuItemName, viewListener01,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-    viewListener01.viewWait();
+    viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
+    // then sequence (2) timeline view
     // now select the timeline view from the first sequence
     // view exists, so no wait needed
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, null, helper, this);
+                                                viewMenuItemName, viewListenerList,
+                                                helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
 
    // post condition: seqStepsView timeline view has focus
@@ -860,8 +909,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     int totalSeqQueryCnt = 2, totalSeqStepsCnt = 2;
     internalFrameCnt = PWTestHelper.getAllInternalFrames().size();
     assertTrueVerbose( "There are not " +  String.valueOf( totalFrameCnt) + " frames (found " +
-                       String.valueOf( internalFrameCnt) + ")", (internalFrameCnt == totalFrameCnt),
-                       "not ");
+                       String.valueOf( internalFrameCnt) + ")",
+                       (internalFrameCnt == totalFrameCnt), "not ");
     sequenceQueryCnt =
       PWTestHelper.getInternalFramesByPrefixName( ViewConstants.SEQUENCE_QUERY_TITLE).size();
     sequenceStepsViewCnt = PWTestHelper.getInternalFramesByPrefixName
@@ -902,77 +951,55 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     SequenceStepsView seqStepsView =
       PWTestHelper.getSequenceStepsView( PWTestHelper.SEQUENCE_NAME, helper, this);
 
-    viewListener01.reset();
+    List viewListenerList = createViewListenerList();
     String viewMenuItemName = "Open " + ViewConstants.CONSTRAINT_NETWORK_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener01,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
    String viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
      System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
-   viewListener01.viewWait();
-   String constraintNetworkViewName =
-     ViewConstants.CONSTRAINT_NETWORK_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) PWTestHelper.findComponentByName
-      ( ConstraintNetworkView.class, constraintNetworkViewName, Finder.OP_EQUALS);
-    assertNotNullVerbose( constraintNetworkViewName + " not found", constraintNetworkView,
-                          "not ");
+   viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
+   ConstraintNetworkView constraintNetworkView =
+     (ConstraintNetworkView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.CONSTRAINT_NETWORK_VIEW, viewNameSuffix, this);
     viewList.add( constraintNetworkView);
 
-    ViewListener viewListener02 = new ViewListenerWait02( this);
     viewMenuItemName = "Open " + ViewConstants.TEMPORAL_EXTENT_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener02,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-   viewListener02.viewWait();
-   String temporalExtentViewName =
-     ViewConstants.TEMPORAL_EXTENT_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+    viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
     TemporalExtentView temporalExtentView =
-      (TemporalExtentView) PWTestHelper.findComponentByName
-      ( TemporalExtentView.class, temporalExtentViewName, Finder.OP_EQUALS);
-    assertNotNullVerbose( temporalExtentViewName + " not found", temporalExtentView, "not ");
+      (TemporalExtentView) PWTestHelper.getPartialPlanView
+      ( ViewConstants.TEMPORAL_EXTENT_VIEW, viewNameSuffix, this);
     viewList.add( temporalExtentView);
 
-    ViewListener viewListener03 = new ViewListenerWait03( this);
     viewMenuItemName = "Open " + ViewConstants.TIMELINE_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener03,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-   viewListener03.viewWait();
-   String timelineViewName =
-     ViewConstants.TIMELINE_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
-    TimelineView timelineView =
-      (TimelineView) PWTestHelper.findComponentByName
-      ( TimelineView.class, timelineViewName, Finder.OP_EQUALS);
-    assertNotNullVerbose( timelineViewName + " not found", timelineView, "not ");
+    viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
+    TimelineView timelineView = (TimelineView) PWTestHelper.getPartialPlanView
+      ( ViewConstants.TIMELINE_VIEW, viewNameSuffix, this);
     viewList.add( timelineView);
 
-    ViewListener viewListener04 = new ViewListenerWait04( this);
     viewMenuItemName = "Open " + ViewConstants.TOKEN_NETWORK_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener04,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-   viewListener04.viewWait();
-   String tokenNetworkViewName =
-     ViewConstants.TOKEN_NETWORK_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
-    TokenNetworkView tokenNetworkView =
-      (TokenNetworkView) PWTestHelper.findComponentByName
-      ( TokenNetworkView.class, tokenNetworkViewName, Finder.OP_EQUALS);
-    assertNotNullVerbose( tokenNetworkViewName + " not found", tokenNetworkView, "not ");
+    viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
+    TokenNetworkView tokenNetworkView = (TokenNetworkView) PWTestHelper.getPartialPlanView
+      ( ViewConstants.TOKEN_NETWORK_VIEW, viewNameSuffix, this);
     viewList.add( tokenNetworkView);
 
-    ViewListener viewListener05 = new ViewListenerWait05( this);
     viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListener05,
+                                                viewMenuItemName, viewListenerList,
                                                 helper, this);
-   viewListener05.viewWait();
-   String dbTransactionViewName =
-     ViewConstants.DB_TRANSACTION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
-    DBTransactionView dbTransactionView =
-      (DBTransactionView) PWTestHelper.findComponentByName
-      ( DBTransactionView.class, dbTransactionViewName, Finder.OP_EQUALS);
-    assertNotNullVerbose( dbTransactionViewName + " not found", dbTransactionView, "not ");
+    viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+     DBTransactionView dbTransactionView =
+       (DBTransactionView) PWTestHelper.getPartialPlanView
+       ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, this);
     viewList.add( dbTransactionView);
 
     PwPlanningSequence planSeq =
@@ -989,9 +1016,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 
     planViz10DBTrans( dbTransactionView, stepNumber, planSeq, partialPlan);
 
+    // no need to wait on these calls, since all the views currently exist
     viewMenuItemName = "Hide All Views";
     PWTestHelper.seqStepsViewStepItemSelection
-      ( seqStepsView, stepNumber, viewMenuItemName, viewListener01, helper, this);
+      ( seqStepsView, stepNumber, viewMenuItemName, viewListenerList, helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
     Iterator viewItr = viewList.iterator();
     while (viewItr.hasNext()) {
@@ -1002,7 +1030,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 
     viewMenuItemName = "Show All Views";
     PWTestHelper.seqStepsViewStepItemSelection
-      ( seqStepsView, stepNumber, viewMenuItemName, viewListener01, helper, this);
+      ( seqStepsView, stepNumber, viewMenuItemName, viewListenerList, helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
     viewItr = viewList.iterator();
     while (viewItr.hasNext()) {
@@ -1013,7 +1041,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 
     viewMenuItemName = "Close All Views";
     PWTestHelper.seqStepsViewStepItemSelection
-      ( seqStepsView, stepNumber, viewMenuItemName, viewListener01, helper, this);
+      ( seqStepsView, stepNumber, viewMenuItemName, viewListenerList, helper, this);
     // viewSet is set to null, if there are no views
     ViewSet viewSet = PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);
     assertNullVerbose( "Partial Plan view set is not null", viewSet, " not");
@@ -2003,7 +2031,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                                  PwPlanningSequence planSeq,  PwPartialPlan partialPlan)
     throws Exception {
     ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
-    // try{Thread.sleep(6000);}catch(Exception e){}
+
+    try{Thread.sleep(6000);}catch(Exception e){}
+
     List transactionList = planSeq.getTransactionsList( partialPlan.getId());
     int numTransactions = transactionList.size();
     int numTransactionEntries = dbTransactionView.getDBTransactionList().size();
@@ -2017,6 +2047,17 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     String transName = null, fieldObjName = null;
     String variableNamePrefix = DbConstants.VARIABLE_ALL_TYPES.substring
       ( 0, DbConstants.VARIABLE_ALL_TYPES.length() - 1);
+    List decisionList = null;
+    try {
+      decisionList = planSeq.getOpenDecisionsForStep( stepNumber);
+    } catch ( ResourceNotFoundException rnfExcep) {
+      int index = rnfExcep.getMessage().indexOf( ":");
+      JOptionPane.showMessageDialog
+        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+      System.err.println( rnfExcep);
+      rnfExcep.printStackTrace();
+    }
     int columnCnt = tableModel.getColumnCount() - 1; // last column is empty
     for (int rowIndx = 0; rowIndx < tableModel.getRowCount(); rowIndx++) {
       for (int colIndx = 0; colIndx < columnCnt; colIndx++) {
@@ -2062,16 +2103,25 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
           PwToken tokenObject = partialPlan.getToken( objectId);
           PwConstraint constraintObject = partialPlan.getConstraint( objectId);
           PwVariable variableObject = partialPlan.getVariable( objectId);
+          PwDecision decisionObject = null;
+          Iterator decisionItr = decisionList.iterator();
+          while (decisionItr.hasNext()) {
+            PwDecision decision = (PwDecision) decisionItr.next();
+            if (decision.getId().equals( objectId)) {
+              decisionObject = decision;
+            }
+          }
 //           assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
 //                              ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
 //                              "' '" + objectId + "' not found",
 //                              ((tokenObject != null) || (constraintObject != null) ||
-//                               (variableObject != null)), " not");
+//                               (variableObject != null) || (decisionObject != null)),
+//                              " not");
           assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
                       ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
                       "' '" + objectId + "' not found",
                       ((tokenObject != null) || (constraintObject != null) ||
-                       (variableObject != null)));
+                       (variableObject != null) || (decisionObject != null)));
 
         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
           int fieldStepNumber = Integer.parseInt( transField);
@@ -2137,8 +2187,332 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   }
 
 
+  public void planViz11() throws Exception {
+    int stepNumber = 1, seqUrlIndex = 4;
+    List viewList = new ArrayList();
+    String sequenceDirectory =  System.getProperty( "planworks.test.data.dir") +
+      System.getProperty( "file.separator") + PWTestHelper.GUI_TEST_DIR;
+    File [] sequenceFileArray = new File [1];
+    sequenceFileArray[0] = new File( sequenceDirectory +
+                                     System.getProperty("file.separator") +
+                                     sequenceUrls.get( seqUrlIndex));
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
+                                helper, this, planWorks);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+    PWTestHelper.addSequencesToProject( helper, this, planWorks);
 
-  private void assertTrueVerbose( String failureMsg, boolean condition, String replacement)
+    ViewListener viewListener01 = new ViewListenerWait01( this);
+    PWTestHelper.openSequenceStepsView( PWTestHelper.SEQUENCE_NAME, viewListener01,
+                                       helper, this);
+    viewListener01.viewWait();
+    SequenceStepsView seqStepsView =
+      PWTestHelper.getSequenceStepsView( PWTestHelper.SEQUENCE_NAME, helper, this);
+
+    List viewListenerList = createViewListenerList();
+    String viewMenuItemName = "Open All Views";
+    PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
+                                                viewMenuItemName, viewListenerList,
+                                                helper, this);
+   viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( DECISION_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
+   viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
+   String viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
+     System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
+   PwPlanningSequence planSeq =
+     planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
+   PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
+   Integer timelineId = ((PwTimeline) partialPlan.getTimelineList().get( 0)).getId();
+   Integer slottedTokenId = ((PwToken) partialPlan.getSlottedTokenList().get( 0)).getId();
+   Integer freeTokenId = ((PwToken) partialPlan.getFreeTokenList().get( 0)).getId();
+   assertNotNullVerbose( "Did not find timeline id in partial plan",
+                         timelineId, "not ");
+   assertNotNullVerbose( "Did not find slotted token id in partial plan",
+                         slottedTokenId, "not ");
+   assertNotNullVerbose( "Did not find free token id in partial plan",
+                         freeTokenId, "not ");
+   Integer slotId = ((PwSlot) partialPlan.getSlotList().get( 0)).getId();
+   assertNotNullVerbose( "Did not find slot id in partial plan", slotId, "not ");
+   Integer variableId = ((PwVariable) partialPlan.getVariableList().get( 0)).getId();
+   assertNotNullVerbose( "Did not find variable id in partial plan", variableId, "not ");
+   Integer constraintId = ((PwConstraint) partialPlan.getConstraintList().get( 0)).getId();
+   assertNotNullVerbose( "Did not find constraint id in partial plan", constraintId, "not ");
+   Integer ruleInstanceId = ((PwRuleInstance) partialPlan.getRuleInstanceList().get( 0)).getId();
+   assertNotNullVerbose( "Did not find rule instance id in partial plan",
+                         ruleInstanceId, "not ");
+   ConstraintNetworkView constraintNetworkView =
+     (ConstraintNetworkView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.CONSTRAINT_NETWORK_VIEW, viewNameSuffix, this);
+   TemporalExtentView temporalExtentView =
+     (TemporalExtentView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.TEMPORAL_EXTENT_VIEW, viewNameSuffix, this);
+   TimelineView timelineView = (TimelineView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.TIMELINE_VIEW, viewNameSuffix, this);
+   TokenNetworkView tokenNetworkView = (TokenNetworkView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.TOKEN_NETWORK_VIEW, viewNameSuffix, this);
+
+   System.err.println( "Method 2 -------------");
+   ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", slottedTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " + slottedTokenId.toString() +
+                      " (slotted token)",
+                      constraintNetworkView.getFocusNodeId().equals( slottedTokenId), "not ");
+
+   ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", slottedTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Temporal Extent focus node id is not " + slottedTokenId.toString() +
+                      " (slotted token)",
+                      temporalExtentView.getFocusNodeId().equals( slottedTokenId), "not ");
+
+   ViewGenerics.raiseFrame( timelineView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( timelineView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", slottedTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Timeline focus node id is not " + slottedTokenId.toString() +
+                      " (slotted token)",
+                      timelineView.getFocusNodeId().equals( slottedTokenId), "not ");
+
+   ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( tokenNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", slottedTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Token Network focus node id is not " + slottedTokenId.toString() +
+                      " (slotted token)",
+                      tokenNetworkView.getFocusNodeId().equals( slottedTokenId), "not ");
+
+   System.err.println( "Method 3 -------------");
+   ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", freeTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " + freeTokenId.toString() +
+                      " (free token)",
+                      constraintNetworkView.getFocusNodeId().equals( freeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", freeTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Temporal Extent focus node id is not " + freeTokenId.toString() +
+                      " (free token)",
+                      temporalExtentView.getFocusNodeId().equals( freeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( timelineView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( timelineView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", freeTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Timeline focus node id is not " + freeTokenId.toString() +
+                      " (free token)",
+                      timelineView.getFocusNodeId().equals( freeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( tokenNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", freeTokenId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Token Network focus node id is not " + freeTokenId.toString() +
+                      " (free token)",
+                      tokenNetworkView.getFocusNodeId().equals( freeTokenId), "not ");
+
+   ViewGenerics.raiseFrame(timelineView .getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( timelineView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", slotId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Timeline focus node id is not " + slotId.toString() + " (slot)",
+                      timelineView.getFocusNodeId().equals( slotId), "not ");
+
+   PWTestHelper.viewBackgroundItemSelection( timelineView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", timelineId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Timeline focus node id is not " + timelineId.toString() + " (timeline)",
+                      timelineView.getFocusNodeId().equals( timelineId), "not ");
+
+   ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", variableId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " + variableId.toString() +
+                      " (variable)",
+                      constraintNetworkView.getFocusNodeId().equals( variableId), "not ");
+
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", constraintId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " + constraintId.toString() +
+                      " (constraint) - variableNode ! inLayout",
+                      constraintNetworkView.getFocusNodeId().equals( constraintId), "not ");
+   ConstraintNode constraintNode = (ConstraintNode) constraintNetworkView.getFocusNode();
+   VariableNode variableNode = null;
+   Iterator varItr = constraintNode.getVariableNodes().iterator();
+   while (varItr.hasNext()) {
+     VariableNode varNode = (VariableNode)  varItr.next();
+     if (varNode.inLayout()) {
+       variableNode = varNode;
+       break;
+     }
+   }
+   assertNotNullVerbose( "Constraint Network in-layout variable node of constraint node " +
+                         "is not found", variableNode, "not ");
+   variableNode.doMouseClick( MouseEvent.BUTTON1_MASK, variableNode.getLocation(),
+                             new Point( 0, 0), constraintNetworkView.getJGoView());
+   flushAWT(); awtSleep();
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", constraintId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " + constraintId.toString() +
+                      " (constraint) - variableNode inLayout",
+                      constraintNetworkView.getFocusNodeId().equals( constraintId), "not ");
+
+   ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( tokenNetworkView, "Find by Key", helper,
+                                             this);
+   PWTestHelper.handleDialogValueEntry( "Find by Key", ruleInstanceId.toString(),
+                                         helper, this);
+   assertTrueVerbose( "Token Network focus node id is not " + ruleInstanceId.toString() +
+                      " (rule instance)",
+                      tokenNetworkView.getFocusNodeId().equals( ruleInstanceId), "not ");
+
+   System.err.println( "Method 4 -------------");
+   TokenNode slottedTokenNode = null;
+   Iterator nodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
+   while (nodeKeyItr.hasNext()) {
+     TokenNode tokenNode = tokenNetworkView.getTokenNode( (Integer) nodeKeyItr.next());
+     if (tokenNode.getToken().isSlotted()) {
+       slottedTokenNode = tokenNode;
+       break;
+     }
+   }
+   slottedTokenNode.doMouseClick( MouseEvent.BUTTON3_MASK, slottedTokenNode.getLocation(),
+                                  new Point( 0, 0), tokenNetworkView.getJGoView());
+   flushAWT(); awtSleep();
+   PWTestHelper.selectViewMenuItem( tokenNetworkView, "Set Active Token", helper, this);
+   PwToken activeToken = ((PartialPlanViewSet) tokenNetworkView.getViewSet()).getActiveToken();
+   assertTrueVerbose( "Slotted token node (id=" + slottedTokenNode.getToken().getId() +
+                      ") is not set to active token",
+                      activeToken.getId().equals( slottedTokenNode.getToken().getId()), "not ");
+
+   System.err.println( "Method 5 -------------");
+   ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
+   Integer activeTokenId = activeToken.getId();
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Snap to Active Token",
+                                             helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " +
+                      activeTokenId.toString() + " (slotted token)",
+                      constraintNetworkView.getFocusNodeId().equals( activeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Snap to Active Token",
+                                             helper, this);
+   assertTrueVerbose( "Temporal Extent focus node id is not " +
+                      activeTokenId.toString() + " (slotted token)",
+                      temporalExtentView.getFocusNodeId().equals( activeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( timelineView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( timelineView, "Snap to Active Token",
+                                             helper, this);
+   assertTrueVerbose( "Timeline focus node id is not " +
+                      activeTokenId.toString() + " (slotted token)",
+                      timelineView.getFocusNodeId().equals( activeTokenId), "not ");
+
+   System.err.println( "Method 6 -------------");
+   TokenNode freeTokenNode = null;
+   Iterator nodeItr = timelineView.getFreeTokenNodeList().iterator();
+   while (nodeItr.hasNext()) {
+     TokenNode tokenNode = (TokenNode) nodeItr.next();
+     if (tokenNode.getToken().isFree()) {
+       freeTokenNode = tokenNode;
+       break;
+     }
+   }
+   freeTokenNode.doMouseClick( MouseEvent.BUTTON3_MASK, freeTokenNode.getLocation(),
+                                  new Point( 0, 0), timelineView.getJGoView());
+   flushAWT(); awtSleep();
+   PWTestHelper.selectViewMenuItem( timelineView, "Set Active Token", helper, this);
+   activeToken = ((PartialPlanViewSet) timelineView.getViewSet()).getActiveToken();
+   assertTrueVerbose( "Free token node (id=" + freeTokenNode.getToken().getId() +
+                      ") is not set to active token",
+                      activeToken.getId().equals( freeTokenNode.getToken().getId()), "not ");
+
+   System.err.println( "Method 7 -------------");
+   ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
+   activeTokenId = activeToken.getId();
+   PWTestHelper.viewBackgroundItemSelection( constraintNetworkView, "Snap to Active Token",
+                                             helper, this);
+   assertTrueVerbose( "Constraint Network focus node id is not " +
+                      activeTokenId.toString() + " (free token)",
+                      constraintNetworkView.getFocusNodeId().equals( activeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Snap to Active Token",
+                                             helper, this);
+   assertTrueVerbose( "Temporal Extent focus node id is not " +
+                      activeTokenId.toString() + " (free token)",
+                      temporalExtentView.getFocusNodeId().equals( activeTokenId), "not ");
+
+   ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( tokenNetworkView, "Snap to Active Token",
+                                             helper, this);
+   assertTrueVerbose( "TokenNetwork focus node id is not " +
+                      activeTokenId.toString() + " (free token)",
+                      tokenNetworkView.getFocusNodeId().equals( activeTokenId), "not ");
+
+   System.err.println( "Method 8 -------------");
+   ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
+   int xLoc = 50, yLoc = 10;
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Set Time Scale Line",
+                                             new Point( xLoc, yLoc), helper, this);
+   int scaleMarkXLoc =
+     ((TemporalExtentView.TimeScaleMark) temporalExtentView.getTimeScaleMark()).getXLoc();
+   assertTrueVerbose( "Temporal Extent View time scale mark is not located at x = " +
+                      scaleMarkXLoc, (scaleMarkXLoc == xLoc), "not ");
+                      
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Hide Node Labels",
+                                             new Point( xLoc, yLoc), helper, this); 
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Show Node Labels",
+                                             new Point( xLoc, yLoc), helper, this); 
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Show Earliest",
+                                             new Point( xLoc, yLoc), helper, this); 
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Show Latest",
+                                             new Point( xLoc, yLoc), helper, this); 
+   PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Show Intervals",
+                                             new Point( xLoc, yLoc), helper, this); 
+   System.err.println( "Method 9 -------------");
+
+
+
+
+
+
+   PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
+
+   System.err.println( "\nPLANVIZ_11 COMPLETED\n");
+  } // end planViz11
+
+
+
+
+
+  public void assertTrueVerbose( String failureMsg, boolean condition, String replacement)
     throws AssertionFailedError {
     if (condition) {
       System.err.println( "AssertTrue: " + failureMsg.replaceAll( replacement, ""));
@@ -2147,7 +2521,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     }
   } // end assertTrueVerbose
 
-  private void assertFalseVerbose( String failureMsg, boolean condition, String replacement)
+  public void assertFalseVerbose( String failureMsg, boolean condition, String replacement)
     throws AssertionFailedError {
     if (! condition) {
       System.err.println( "AssertFalse: " + failureMsg.replaceAll( replacement, ""));
@@ -2156,7 +2530,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     }
   } // end assertFalseVerbose
 
-  private void assertNotNullVerbose( String failureMsg, Object object, String replacement)
+  public void assertNotNullVerbose( String failureMsg, Object object, String replacement)
     throws AssertionFailedError{
     if (object != null) {
       System.err.println( "AssertNotNull: " + failureMsg.replaceAll( replacement, ""));
@@ -2166,7 +2540,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   } // end assertTrueVerbose
 
 
-  private void assertNullVerbose( String failureMsg, Object object, String replacement)
+  public void assertNullVerbose( String failureMsg, Object object, String replacement)
     throws AssertionFailedError{
     if (object == null) {
       System.err.println( "AssertNull: " + failureMsg.replaceAll( replacement, ""));
@@ -2344,6 +2718,129 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     } 
   } // end class ViewListenerWait06
 
+  public class ViewListenerWait07 extends ViewListener {
+    private PlanWorksGUITest guiTest;
+    public ViewListenerWait07( PlanWorksGUITest guiTest) {
+      super();
+      this.guiTest = guiTest;
+      guiTest.setViewListenerWait07( false);
+    }
+    public void reset() {
+      guiTest.setViewListenerWait07( false);
+    }
+    public void initDrawingEnded() {
+      String shortClassName = this.getClass().getName();
+      int index = shortClassName.indexOf( "$");
+      System.err.println( shortClassName.substring( index + 1) + " released");
+      guiTest.setViewListenerWait07( true);
+    }
+    public void viewWait() {
+      while (! guiTest.getViewListenerWait07()) {
+        try {
+          Thread.currentThread().sleep(50);
+        } catch (InterruptedException excp) {
+        }
+        // System.err.println( "viewListenerWait07 still false");
+      }
+      flushAWT(); awtSleep();
+    } 
+  } // end class ViewListenerWait07
+
+  public class ViewListenerWait08 extends ViewListener {
+    private PlanWorksGUITest guiTest;
+    public ViewListenerWait08( PlanWorksGUITest guiTest) {
+      super();
+      this.guiTest = guiTest;
+      guiTest.setViewListenerWait08( false);
+    }
+    public void reset() {
+      guiTest.setViewListenerWait08( false);
+    }
+    public void initDrawingEnded() {
+      String shortClassName = this.getClass().getName();
+      int index = shortClassName.indexOf( "$");
+      System.err.println( shortClassName.substring( index + 1) + " released");
+      guiTest.setViewListenerWait08( true);
+    }
+    public void viewWait() {
+      while (! guiTest.getViewListenerWait08()) {
+        try {
+          Thread.currentThread().sleep(50);
+        } catch (InterruptedException excp) {
+        }
+        // System.err.println( "viewListenerWait08 still false");
+      }
+      flushAWT(); awtSleep();
+    } 
+  } // end class ViewListenerWait08
+
+  // needed for calls to PWTestHelper.seqStepsViewStepItemSelection
+  private List createViewListenerList() {
+    List viewListenerList = new ArrayList();
+    viewListenerList.add( new ViewListenerWait01( this));
+    viewListenerList.add( new ViewListenerWait02( this));
+    viewListenerList.add( new ViewListenerWait03( this));
+    viewListenerList.add( new ViewListenerWait04( this));
+    viewListenerList.add( new ViewListenerWait05( this));
+    viewListenerList.add( new ViewListenerWait06( this));
+    viewListenerList.add( new ViewListenerWait07( this));
+    viewListenerList.add( new ViewListenerWait08( this));
+    if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+      System.err.println( "createViewListenerList: num listeners not = " +
+                           ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+      System.exit( -1);
+    }
+    return viewListenerList;
+  } // end createViewListenerList
+
+  private void viewListenerListWait( int viewIndex, List viewListenerList) {
+    if (viewIndex == CONSTRAINT_NETWORK_VIEW_INDEX) {
+      ((ViewListenerWait01)  viewListenerList.get( CONSTRAINT_NETWORK_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == DB_TRANSACTION_VIEW_INDEX) {
+      ((ViewListenerWait02)  viewListenerList.get( DB_TRANSACTION_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == DECISION_VIEW_INDEX) {
+      ((ViewListenerWait03)  viewListenerList.get( DECISION_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == RESOURCE_PROFILE_VIEW_INDEX) {
+      ((ViewListenerWait04)  viewListenerList.get( RESOURCE_PROFILE_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == RESOURCE_TRANSACTION_VIEW_INDEX) {
+      ((ViewListenerWait05)  viewListenerList.get( RESOURCE_TRANSACTION_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == TEMPORAL_EXTENT_VIEW_INDEX) {
+      ((ViewListenerWait06)  viewListenerList.get( TEMPORAL_EXTENT_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == TIMELINE_VIEW_INDEX) {
+      ((ViewListenerWait07)  viewListenerList.get( TIMELINE_VIEW_INDEX)).viewWait();
+    } else if (viewIndex == TOKEN_NETWORK_VIEW_INDEX) {
+      ((ViewListenerWait08)  viewListenerList.get(  TOKEN_NETWORK_VIEW_INDEX)).viewWait();
+    } else {
+      System.err.println( "viewListenerListWait: listener for index " + viewIndex +
+                          " not found");
+      System.exit( -1);
+    }
+  } // end viewListenerListWait
+
+
+  private void viewListenerListReset( int viewIndex, List viewListenerList) {
+    if (viewIndex == CONSTRAINT_NETWORK_VIEW_INDEX) {
+      ((ViewListenerWait01)  viewListenerList.get( CONSTRAINT_NETWORK_VIEW_INDEX)).reset();
+    } else if (viewIndex == DB_TRANSACTION_VIEW_INDEX) {
+      ((ViewListenerWait02)  viewListenerList.get( DB_TRANSACTION_VIEW_INDEX)).reset();
+    } else if (viewIndex == DECISION_VIEW_INDEX) {
+      ((ViewListenerWait03)  viewListenerList.get( DECISION_VIEW_INDEX)).reset();
+    } else if (viewIndex == RESOURCE_PROFILE_VIEW_INDEX) {
+      ((ViewListenerWait04)  viewListenerList.get( RESOURCE_PROFILE_VIEW_INDEX)).reset();
+    } else if (viewIndex == RESOURCE_TRANSACTION_VIEW_INDEX) {
+      ((ViewListenerWait05)  viewListenerList.get( RESOURCE_TRANSACTION_VIEW_INDEX)).reset();
+    } else if (viewIndex == TEMPORAL_EXTENT_VIEW_INDEX) {
+      ((ViewListenerWait06)  viewListenerList.get( TEMPORAL_EXTENT_VIEW_INDEX)).reset();
+    } else if (viewIndex == TIMELINE_VIEW_INDEX) {
+      ((ViewListenerWait07)  viewListenerList.get( TIMELINE_VIEW_INDEX)).reset();
+    } else if (viewIndex == TOKEN_NETWORK_VIEW_INDEX) {
+      ((ViewListenerWait08)  viewListenerList.get(  TOKEN_NETWORK_VIEW_INDEX)).reset();
+    } else {
+      System.err.println( "viewListenerListReset: listener for index " + viewIndex +
+                          " not found");
+      System.exit( -1);
+    }
+  } // end viewListenerListReset
 
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();

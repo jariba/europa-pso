@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkRuleInstanceNode.java,v 1.2 2004-06-15 19:26:46 taylor Exp $
+// $Id: ConstraintNetworkRuleInstanceNode.java,v 1.3 2004-06-21 22:43:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -179,13 +179,14 @@ public class ConstraintNetworkRuleInstanceNode extends RuleInstanceNode implemen
     ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
   } // end mouseRightPopupMenu
 
-  public void addContainerNodeVariables(Object n, Object v) {
-    addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v);
+  public void addContainerNodeVariables(Object n, Object v, boolean doRedraw) {
+    addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v, doRedraw);
   }
 
   public void addContainerNodeVariables( VariableContainerNode objNode,
-                                            ConstraintNetworkView constraintNetworkView) {
-    ConstraintNetworkUtils.addContainerNodeVariables(objNode, constraintNetworkView);
+                                         ConstraintNetworkView constraintNetworkView,
+                                         boolean doRedraw) {
+    ConstraintNetworkUtils.addContainerNodeVariables(objNode, constraintNetworkView, doRedraw);
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
   } // end addTokenNodeVariables 

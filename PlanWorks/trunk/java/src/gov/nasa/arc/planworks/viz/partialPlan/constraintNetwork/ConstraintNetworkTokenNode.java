@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.19 2004-06-10 01:36:02 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.20 2004-06-21 22:43:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -245,8 +245,8 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
                                                         (ConstraintNetworkView) partialPlanView);
   } // end doMouseClick   
 
-  public void addContainerNodeVariables(Object n, Object v) {
-    addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v);
+  public void addContainerNodeVariables(Object n, Object v, boolean doRedraw) {
+    addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v, doRedraw);
   }
 
   /**
@@ -257,8 +257,9 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
    * @param constraintNetworkView - <code>ConstraintNetworkView</code> - 
    */
   public void addContainerNodeVariables( VariableContainerNode tokenNode,
-                                            ConstraintNetworkView constraintNetworkView) {
-    ConstraintNetworkUtils.addContainerNodeVariables(tokenNode, constraintNetworkView);
+                                         ConstraintNetworkView constraintNetworkView,
+                                         boolean doRedraw) {
+    ConstraintNetworkUtils.addContainerNodeVariables(tokenNode, constraintNetworkView, doRedraw);
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
   } // end addTokenNodeVariables

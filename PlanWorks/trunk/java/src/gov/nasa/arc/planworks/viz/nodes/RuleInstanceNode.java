@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.4 2004-06-16 22:09:10 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.5 2004-06-21 22:43:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -31,6 +31,7 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
@@ -272,6 +273,14 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
                                          final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
+    if (ruleInstanceNode.getRuleInstance().getVariables().size() > 0) {
+      PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+      String partialPlanName = partialPlan.getPartialPlanName();
+      PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
+      partialPlanView.createAnOpenViewFindItem
+        ( partialPlan, partialPlanName, planSequence, mouseRightPopup,
+          ViewConstants.CONSTRAINT_NETWORK_VIEW, ruleInstanceNode.getRuleInstance().getId());
+    }
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
@@ -279,7 +288,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
           MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-          contentPane.add( new NavigatorView( RuleInstanceNode.this.getRuleInstance(),
+          contentPane.add( new NavigatorView( ruleInstanceNode.getRuleInstance(),
                                               partialPlan, partialPlanView.getViewSet(),
                                               viewSetKey, navigatorFrame));
         }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.31 2004-06-10 01:35:57 taylor Exp $
+// $Id: DbConstants.java,v 1.32 2004-06-21 22:42:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -151,6 +151,10 @@ public interface DbConstants {
    *
    */
   public static final String SOURCE_UNKNOWN = "UNKNOWN";
+
+  public static final String ASSIGN_NEXT_DECISION_STARTED = "ASSIGN_NEXT_DECISION_STARTED";
+
+  public static final String ASSIGN_NEXT_DECISION_SUCCEEDED = "ASSIGN_NEXT_DECISION_SUCCEEDED";
 
 
   /**
@@ -343,6 +347,7 @@ public interface DbConstants {
   public static final String TT_EXECUTION = "EXECUTION";
   public static final String TT_SPECIFICATION = "SPECIFICATION";
   public static final String TT_UNDO = "UNDO";
+  public static final String TT_ASSIGNMENT = "ASSIGNMENT";
 
   public static final String [] TT_CREATION_NAMES = new String [] {
     TOKEN_CREATED, VARIABLE_CREATED, CONSTRAINT_CREATED, OBJECT_CREATED };
@@ -367,6 +372,8 @@ public interface DbConstants {
     VARIABLE_DOMAIN_SET_TO_SINGLETON, VARIABLE_DOMAIN_SET};
   public static final String [] TT_UNDO_NAMES = new String [] {
     };
+  public static final String [] TT_ASSIGNMENT_NAMES = new String [] {
+    ASSIGN_NEXT_DECISION_STARTED, ASSIGN_NEXT_DECISION_SUCCEEDED};
   
   public static final String TBL_CONSTRAINT = "VConstraint";
   public static final String TBL_CONSTVARMAP = "ConstraintVarMap";

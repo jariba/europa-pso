@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.50 2004-06-15 19:26:45 taylor Exp $
+# $Id: GETTING_STARTED,v 1.51 2004-06-21 22:42:57 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -273,13 +273,13 @@ make visible two small hollow squares, one at the "root" of the link, and the
 other at the tip of the arrow.  Mouse-Right on the token nodes offers the selections
 "Open Navigator View", and "Set Active Token".
 
-Mouse-Right on the rule instance nodes brings up the selections "Open Navigator
-View" and "Open Rule Instance View".  Selecting the second creates an internal 
-frame titled "RuleInstanceView of <plan-name>/stepnn - n", which displays the 
-"from" token, and "to" token key values and predicates, followed by the text of 
-the rule.  A "RuleInstanceView ..." internal frame may be created for every rule 
-instance node in the Token Network View.  Mouse-Right: "Close Rule Instance Views"
-on the view background can be used to remove all "Rule Instance Views".
+Mouse-Right on the rule instance nodes brings up the selections "Open Constraint
+Network View", "Open Navigator View" and "Open Rule Instance View".  Selecting the 
+third creates an internal frame titled "RuleInstanceView of <plan-name>/stepnn - n", 
+which displays the "from" token, and "to" token key values and predicates, followed 
+by the text of the rule.  A "RuleInstanceView ..." internal frame may be created for 
+every rule instance node in the Token Network View.  Mouse-Right: "Close Rule 
+Instance Views" on the view background can be used to remove all "Rule Instance Views".
 
 
 Node Focus in Views

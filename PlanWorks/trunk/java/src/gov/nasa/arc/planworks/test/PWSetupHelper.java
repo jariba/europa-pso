@@ -4,31 +4,24 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.10 2004-06-17 20:38:02 miatauro Exp $
+// $Id: PWSetupHelper.java,v 1.11 2004-06-21 22:42:59 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 
-import junit.framework.Assert;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
+import gov.nasa.arc.planworks.db.impl.PwDecisionImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
-import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
+import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwRuleImpl;
@@ -39,6 +32,15 @@ import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import junit.framework.Assert;
 
 
 /**
@@ -72,6 +74,7 @@ public abstract class PWSetupHelper {
   public static final int NUM_CONSTRAINTS_PER_TOKEN = 1;
   public static final int NUM_CONSTRAINTS_PER_RESOURCE = 0;
 
+  private static List decisionsForStep;
 
   public static List buildTestData( final int numSequences, final int numSteps,
                                     final IdSource idSource, final String dest) {
@@ -142,7 +145,7 @@ public abstract class PWSetupHelper {
       partialPlanName;
     System.err.println( "partialPlanUrl " + partialPlanUrl);
     writeDirectory( partialPlanUrl);
-    PwPartialPlanImpl partialPlan = null;
+    PwPartialPlanImpl partialPlan = null; decisionsForStep = new ArrayList();
     try {
       partialPlan = new PwPartialPlanImpl( sequenceUrl, partialPlanName, planSequence,
                                            partialPlanId, model);
@@ -202,8 +205,13 @@ public abstract class PWSetupHelper {
 
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RESOURCE_INSTANTS_EXT,
                           "");
+    StringBuffer decisionsBuffer = new StringBuffer();
+    Iterator decisionsItr = decisionsForStep.iterator();
+    while (decisionsItr.hasNext()) {
+      decisionsBuffer.append( ((PwDecisionImpl) decisionsItr.next()).toOutputString());
+    }
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_DECISIONS_EXT,
-                          "");    
+                          decisionsBuffer.toString());    
     StringBuffer ruleInstancesBuffer = new StringBuffer();
     Iterator ruleInstancesItr = partialPlan.getRuleInstanceList().iterator();
     while (ruleInstancesItr.hasNext()) {
@@ -254,6 +262,7 @@ public abstract class PWSetupHelper {
                                                 final PwPlanningSequenceImpl planSequence,
                                                 final int stepNum,
                                                 final IdSource idSource) {
+    Integer decisionTokenId = null;
     for (int i = 0; i < NUM_OBJECTS; i++) {
       Integer objectId = new Integer( idSource.incEntityIdInt());
       StringBuffer componentIds = new StringBuffer();
@@ -280,6 +289,7 @@ public abstract class PWSetupHelper {
         StringTokenizer strTok = new StringTokenizer( tokenIds, ",");
         while (strTok.hasMoreTokens()) {
           Integer tokenId = Integer.valueOf( strTok.nextToken());
+          decisionTokenId = tokenId;
           timeline.addToken( tokenId);
         }
         strTok = new StringTokenizer( slotIds, ",");
@@ -304,6 +314,13 @@ public abstract class PWSetupHelper {
                  objectId.toString(), componentIds.toString(), "", "", partialPlan,
                  planSequence, stepNum, idSource);
     }
+    Integer decisionId = new Integer( idSource.incEntityIdInt());
+    addTransaction( DbConstants.ASSIGN_NEXT_DECISION_SUCCEEDED,
+                    new Integer( idSource.incEntityIdInt()),
+                    DbConstants.SOURCE_USER, decisionId, new Integer( stepNum),
+                    partialPlan.getId(), null, planSequence);
+    boolean unit = false;
+    addDecision( decisionId, DbConstants.D_TOKEN, decisionTokenId, unit, partialPlan);
   } // end createObjectTableEntries
 
   private static StringBuffer addResourcesAndInstants( final Integer objectId,
@@ -629,9 +646,10 @@ public abstract class PWSetupHelper {
     PwConstraintImpl constraint = new PwConstraintImpl( name, id, type, variableIds,
                                                         partialPlan);
     partialPlan.addConstraint( id, constraint);
+    String [] info = new String [] { name };
     addTransaction( DbConstants.CONSTRAINT_CREATED, new Integer( idSource.incEntityIdInt()),
                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
-                    partialPlan.getId(), null, planSequence);
+                    partialPlan.getId(), info, planSequence);
     return constraint;
   } // end addConstraint
 
@@ -663,11 +681,20 @@ public abstract class PWSetupHelper {
                                               final String transInfo, 
                                               final PwPartialPlanImpl partialPlan) {
     Integer ruleInstanceId = null; //dummy value until this code is fixed
-    new PwResourceTransactionImpl( id, isValueToken, predName, startVarId,
-                                   endVarId, durationVarId, stateVarId,
-                                   objectVarId, parentId, ruleInstanceId,
-                                   paramVarIds, transInfo, partialPlan);
+    PwResourceTransactionImpl resourceTransaction =
+      new PwResourceTransactionImpl( id, isValueToken, predName, startVarId,
+                                     endVarId, durationVarId, stateVarId,
+                                     objectVarId, parentId, ruleInstanceId,
+                                     paramVarIds, transInfo, partialPlan);
+    partialPlan.addResourceTransaction( id, resourceTransaction);
   } // end addResourceTransaction
+
+  private static void addDecision( final Integer id, final int type, Integer entityId,
+                                   boolean unit, PwPartialPlanImpl partialPlan) {
+    PwDecisionImpl decision =
+      new PwDecisionImpl( id, type, entityId, unit, partialPlan);
+    decisionsForStep.add( decision);
+  } // end addDecision
 
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.6 2004-05-21 21:38:55 taylor Exp $
+// $Id: PwDBTransactionImpl.java,v 1.7 2004-06-21 22:42:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -139,8 +139,12 @@ public class PwDBTransactionImpl implements PwDBTransaction {
     retval.append(entityId).append("\t").append(source).append("\t");
     retval.append(transactionId).append("\t").append(stepNumber).append("\t").append(sequenceId);
     retval.append("\t").append(partialPlanId).append("\t");
-    for(int i = 0; i < info.length; i++) {
-      retval.append(info[i]).append(",");
+    if (! getTransactionType(name).equals( DbConstants.TT_ASSIGNMENT)) {
+      for(int i = 0; i < info.length; i++) {
+        retval.append(info[i]).append(",");
+      }
+    } else {
+      retval.append("\\N");
     }
     retval.append("\n");
     return retval.toString();
@@ -168,6 +172,8 @@ public class PwDBTransactionImpl implements PwDBTransaction {
       transactionType = DbConstants.TT_SPECIFICATION;
     } else if (findElementInStringArray( DbConstants.TT_UNDO_NAMES, name) != null) {
       transactionType = DbConstants.TT_UNDO;
+    } else if (findElementInStringArray( DbConstants.TT_ASSIGNMENT_NAMES, name) != null) {
+      transactionType = DbConstants.TT_ASSIGNMENT;
     }
     if (transactionType == null) {
       System.err.println( "PwDBTransactionImpl.toOutputString.getTransactionType" +

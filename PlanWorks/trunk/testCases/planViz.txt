@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.48 2004-06-15 19:26:48 taylor Exp $
+// $Id: planViz.txt,v 1.49 2004-06-21 22:43:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -380,7 +380,7 @@ Pre-conditions:
 Method:
   1. Using either the Constraint Network, Temporal Extent, Timeline, or
      Token Network view, choose keys for a timeline, a slotted token, a free token,
-     a slot, a variable, and a constraint.
+     a slot, a variable, a constrain, and a rule instance.
   2. Mouse-Right click, in turn, on the Constraint Network , Temporal Extent, 
      Timeline, and Token Network views, selecting "Find by Key",
      entering the slotted token key value, and then selecting "Enter".
@@ -390,7 +390,8 @@ Method:
      For the Timeline view, enter the slot key value in "Find by Key".
      For the Timeline view, enter the timeline key value in "Find by Key".
      For the Constraint Network view, enter the variable and constraint
-     key values in "Find by Key".
+     key values in "Find by Key".  For the Token Network view, enter the
+     rule instance key  value in "Find by Key".
   4. Arbitrarily, pick a slotted token node in one of the views, and Mouse-
      Right click on the node, selecting "Set Active Token".
   5. In each of the other views, except for the DBTransaction view, Mouse-

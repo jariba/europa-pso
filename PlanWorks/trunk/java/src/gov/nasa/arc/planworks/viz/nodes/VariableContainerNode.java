@@ -30,9 +30,10 @@ public interface VariableContainerNode {
   public abstract void incrVariableLinkCount();
   public abstract void decVariableLinkCount();
   public abstract void setVisible(boolean b);
-  public abstract void addContainerNodeVariables(Object p, Object v);
+  public abstract void addContainerNodeVariables(Object p, Object v, boolean doRedraw);
   public abstract void mouseRightPopupMenu(Point p);
-  public abstract void addContainerNodeVariables(VariableContainerNode n, ConstraintNetworkView v);
+  public abstract void addContainerNodeVariables(VariableContainerNode n,
+                                                 ConstraintNetworkView v, boolean doRedraw);
   public abstract void removeContainerNodeVariables(VariableContainerNode n,
                                                     ConstraintNetworkView v);
 }

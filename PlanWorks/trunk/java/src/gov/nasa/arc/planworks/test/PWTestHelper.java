@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.8 2004-06-14 22:11:23 taylor Exp $
+// $Id: PWTestHelper.java,v 1.9 2004-06-21 22:42:59 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -52,8 +52,14 @@ import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
@@ -477,6 +483,18 @@ public abstract class PWTestHelper {
     guiTest.flushAWT(); guiTest.awtSleep();
   } // end handleComboDialog
 
+  public static void handleDialogValueEntry( String dialogName, String valueString,
+                                             JFCTestHelper helper, PlanWorksGUITest guiTest) {
+    JTextField field = (JTextField) PWTestHelper.findComponentByClass( JTextField.class);
+    // System.err.println( "handleDialogValueEntry field " + field);
+    Assert.assertNotNull( "Could not find entry field for '" + dialogName + "'", field);
+    field.setText( null);
+    helper.sendString( new StringEventData( guiTest, field, valueString));
+    helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
+    System.err.println( dialogName + ": '" + valueString + "' entered");
+    guiTest.flushAWT(); guiTest.awtSleep();
+  } // end handleDialogValueEntry
+
   /**
    * <code>getPlanSequenceMenu</code>
    *
@@ -552,7 +570,7 @@ public abstract class PWTestHelper {
   public static void seqStepsViewStepItemSelection( SequenceStepsView seqStepsView,
                                                     int stepNumber,
                                                     String viewMenuItemName,
-                                                    ViewListener viewListener,
+                                                    List viewListenerList,
                                                     JFCTestHelper helper,
                                                     PlanWorksGUITest guiTest)
     throws Exception {
@@ -565,7 +583,7 @@ public abstract class PWTestHelper {
     //                                                MouseEvent.BUTTON3_MASK));
     stepElement.doMouseClickWithListener( MouseEvent.BUTTON3_MASK, stepElement.getLocation(),
                                           new Point( 0, 0), seqStepsView.getJGoView(),
-                                          viewListener);
+                                          viewListenerList);
     guiTest.flushAWT(); guiTest.awtSleep();
     // try{Thread.sleep(2000);}catch(Exception e){}
 
@@ -598,8 +616,37 @@ public abstract class PWTestHelper {
     PWTestHelper.selectViewMenuItem( view, viewMenuItemName, helper, guiTest);
   } // end viewBackgroundItemSelection
 
-  private static void selectViewMenuItem( VizView view, String viewMenuItemName,
-                                          JFCTestHelper helper, PlanWorksGUITest guiTest)
+  /**
+   * <code>viewBackgroundItemSelection</code>
+   *
+   * @param view - <code>VizView</code> - 
+   * @param viewMenuItemName - <code>String</code> - 
+   * @param location - <code>Point</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void viewBackgroundItemSelection( VizView view, String viewMenuItemName,
+                                                  Point location, JFCTestHelper helper,
+                                                  PlanWorksGUITest guiTest)
+    throws Exception {
+    JGoView jGoView = view.getJGoView();
+    jGoView.doBackgroundClick( MouseEvent.BUTTON3_MASK, location, new Point( 0, 0));
+    guiTest.flushAWT(); guiTest.awtSleep();
+    PWTestHelper.selectViewMenuItem( view, viewMenuItemName, helper, guiTest);
+  } // end viewBackgroundItemSelection
+
+  /**
+   * <code>selectViewMenuItem</code>
+   *
+   * @param view - <code>VizView</code> - 
+   * @param viewMenuItemName - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void selectViewMenuItem( VizView view, String viewMenuItemName,
+                                         JFCTestHelper helper, PlanWorksGUITest guiTest)
     throws Exception {  
     JPopupMenu popupMenu =
       (JPopupMenu) PWTestHelper.findComponentByClass( JPopupMenu.class);
@@ -873,6 +920,65 @@ public abstract class PWTestHelper {
     helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
   } // end setSequenceQueryField
 
+
+  /**
+   * <code>getPartialPlanView</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param viewNameSuffix - <code>String</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @return - <code>PartialPlanView</code> - 
+   */
+  public static PartialPlanView getPartialPlanView( String viewName, String viewNameSuffix,
+                                                    PlanWorksGUITest guiTest) {
+    if (viewName.equals( ViewConstants.CONSTRAINT_NETWORK_VIEW)) {
+      String constraintNetworkViewTitle =
+        ViewConstants.CONSTRAINT_NETWORK_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      ConstraintNetworkView constraintNetworkView =
+        (ConstraintNetworkView) PWTestHelper.findComponentByName
+        ( ConstraintNetworkView.class, constraintNetworkViewTitle, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( constraintNetworkViewTitle + " not found",
+                                    constraintNetworkView, "not ");
+      return constraintNetworkView;
+    } else if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) {
+      String dbTransactionViewName =
+        ViewConstants.DB_TRANSACTION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      DBTransactionView dbTransactionView =
+        (DBTransactionView) PWTestHelper.findComponentByName
+        ( DBTransactionView.class, dbTransactionViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( dbTransactionViewName + " not found",
+                                    dbTransactionView, "not ");
+      return dbTransactionView;
+    } else if (viewName.equals( ViewConstants.TEMPORAL_EXTENT_VIEW)) {
+      String temporalExtentViewTitle =
+        ViewConstants.TEMPORAL_EXTENT_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      TemporalExtentView temporalExtentView =
+        (TemporalExtentView) PWTestHelper.findComponentByName
+        ( TemporalExtentView.class, temporalExtentViewTitle, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( temporalExtentViewTitle + " not found",
+                                    temporalExtentView, "not ");
+      return temporalExtentView;
+    } else if (viewName.equals( ViewConstants.TIMELINE_VIEW)) {
+      String timelineViewName =
+        ViewConstants.TIMELINE_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      TimelineView timelineView =
+        (TimelineView) PWTestHelper.findComponentByName
+        ( TimelineView.class, timelineViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( timelineViewName + " not found", timelineView, "not ");
+      return timelineView;
+    } else if (viewName.equals( ViewConstants.TOKEN_NETWORK_VIEW)) {
+      String tokenNetworkViewName =
+        ViewConstants.TOKEN_NETWORK_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      TokenNetworkView tokenNetworkView =
+        (TokenNetworkView) PWTestHelper.findComponentByName
+        ( TokenNetworkView.class, tokenNetworkViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( tokenNetworkViewName + " not found",
+                                    tokenNetworkView, "not ");
+      return tokenNetworkView;
+    } else {
+      return null;
+    }
+  } // end getPartialPlanView
 
 
 } // end abstract class PWTestHelper

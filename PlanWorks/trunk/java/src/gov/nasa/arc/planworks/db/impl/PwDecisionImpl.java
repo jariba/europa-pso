@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDecisionImpl.java,v 1.4 2004-06-03 17:33:35 taylor Exp $
+// $Id: PwDecisionImpl.java,v 1.5 2004-06-21 22:42:58 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -72,8 +72,10 @@ public class PwDecisionImpl implements PwDecision {
   }
 
   public final String toOutputString() {
-    StringBuffer retval = new StringBuffer(partialPlan.getId().toString()).append("\t").append(id.toString()).append("\t").append(type);
-    retval.append("\t").append(entityId.toString()).append("\t");
+    StringBuffer retval = new StringBuffer(partialPlan.getId().toString()).append("\t");
+    retval.append(id.toString()).append("\t");
+    retval.append(type).append("\t");
+    retval.append(entityId.toString()).append("\t");
     if(unit) {
       retval.append(1);
     }
@@ -81,8 +83,12 @@ public class PwDecisionImpl implements PwDecision {
       retval.append(0);
     }
     retval.append("\t");
-    for(Iterator i = choiceList.iterator(); i.hasNext();) {
-      retval.append(((PwChoice)i.next()).toOutputString());
+    if (choiceList.size() > 0) {
+      for(Iterator i = choiceList.iterator(); i.hasNext();) {
+        retval.append(((PwChoice)i.next()).toOutputString());
+      }
+    } else {
+      retval.append("\\N");
     }
     retval.append("\n");
     return retval.toString();
