@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.6 2003-07-11 00:02:31 taylor Exp $
+// $Id: VizView.java,v 1.7 2003-07-14 20:52:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -70,23 +70,45 @@ public class VizView extends JPanel {
   public boolean isContentSpecRendered( String viewName, boolean showDialog) {
     Iterator validIterator = validTokenIds.iterator();
     List unDisplayedIds = new ArrayList();
+    List extraDisplayedIds = new ArrayList();
+    StringBuffer message = new StringBuffer();
+    boolean error = false;
+
     while (validIterator.hasNext()) {
       Integer key = (Integer) validIterator.next();
       if (displayedTokenIds.indexOf( key) == -1) {
         unDisplayedIds.add( key);
       }
     }
+    Iterator displayedIterator = displayedTokenIds.iterator();
+    while(displayedIterator.hasNext()) {
+      Integer key = (Integer) displayedIterator.next();
+      if(validTokenIds.indexOf(key) == -1) {
+        extraDisplayedIds.add(key);
+      }
+    }
+    message.append("\n");
+    if(extraDisplayedIds.size() != 0) {
+      if(showDialog) {
+        message.append(viewName).append(": invalidTokenIds ").append(extraDisplayedIds.toString());
+        message.append(" displayed.");
+      }
+      error = true;
+    }
     if (unDisplayedIds.size() != 0) {
       if (showDialog) {
-        String msg = viewName + ": validTokenIds " + unDisplayedIds  + " not displayed";
-        JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, msg, "View Rendering Exception",
-           JOptionPane.ERROR_MESSAGE);
+        message.append(viewName).append(": validTokenIds ").append(unDisplayedIds.toString());
+        message.append(" not displayed.");
+      }
+      error = true;
+    }
+    if(error) {
+      if(showDialog) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, message.toString(), "View Rendering Exception", JOptionPane.ERROR_MESSAGE);
       }
       return false;
-    } else {
-      return true;
     }
+    return true;
   } // end isContentSpecRendered
 
   /**

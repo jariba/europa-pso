@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineBox.java,v 1.3 2003-06-16 18:51:10 miatauro Exp $
+// $Id: TimelineBox.java,v 1.4 2003-07-14 20:52:21 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
+import java.util.Map;
 /**
  * <code>TimelineBox</code> -
  *                      SpecBox->PredicateBox
@@ -16,7 +17,7 @@ package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
  */
 
 public class TimelineBox extends SpecBox {
-  public TimelineBox(boolean first) {
-    super(first, "Timeline");
+  public TimelineBox(boolean first, Map timelineNames) {
+    super(first, "Timeline", timelineNames);
   }
 }
