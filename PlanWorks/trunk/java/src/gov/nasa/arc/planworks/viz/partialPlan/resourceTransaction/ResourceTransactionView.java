@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.9 2004-03-06 02:22:36 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.10 2004-03-07 01:49:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
@@ -365,9 +366,18 @@ public class ResourceTransactionView extends ResourceView  {
     createTimeMarkItem( timeMarkItem, resource);
     mouseRightPopup.add( timeMarkItem);
 
-    JMenuItem activeResourceItem = new JMenuItem( "Snap to Active Resource Transaction");
-    createActiveResourceItem( activeResourceItem);
-    mouseRightPopup.add( activeResourceItem);
+    if (((PartialPlanViewSet) this.getViewSet()).getActiveResource() != null) {
+      JMenuItem activeResourceItem = new JMenuItem( "Snap to Active Resource");
+      createActiveResourceItem( activeResourceItem);
+      mouseRightPopup.add( activeResourceItem);
+    }
+
+    if (((PartialPlanViewSet) this.getViewSet()).getActiveToken() != null) {
+      JMenuItem activeResourceTransItem =
+        new JMenuItem( "Snap to Active Resource Transaction");
+      createActiveResourceTransItem( activeResourceTransItem);
+      mouseRightPopup.add( activeResourceTransItem);
+    }
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
@@ -380,8 +390,8 @@ public class ResourceTransactionView extends ResourceView  {
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
-  private void createActiveResourceItem( final JMenuItem activeResourceItem) {
-    activeResourceItem.addActionListener( new ActionListener() {
+  private void createActiveResourceTransItem( final JMenuItem activeResourceTransItem) {
+    activeResourceTransItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
           PwToken activeToken =
             ((PartialPlanViewSet) ResourceTransactionView.this.getViewSet()).getActiveToken();
@@ -394,8 +404,21 @@ public class ResourceTransactionView extends ResourceView  {
           }
         }
       });
-  } // end createActiveResourceItem
+  } // end createActiveResourceTransItem
 
+
+  private void createActiveResourceItem( final JMenuItem activeResourceItem) {
+    activeResourceItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          PwResource activeResource = 
+            ((PartialPlanViewSet) ResourceTransactionView.this.getViewSet()).getActiveResource();
+          if (activeResource != null) {
+            int xLoc = 0;
+            findAndSelectResource ( activeResource, xLoc);
+          }
+        }
+      });
+  } // end createActiveResourceItem
 
 //   private void createNodeByKeyItem( final JMenuItem nodeByKeyItem) {
 //     nodeByKeyItem.addActionListener( new ActionListener() {
@@ -436,12 +459,20 @@ public class ResourceTransactionView extends ResourceView  {
                             resourceToFind.getName() + 
                             " (key=" + resourceToFind.getId().toString() + ")");
         isResourceFound = true;
-
+        this.getJGoLevelScaleViewSelection().clearSelection();
         this.getJGoExtentViewHScrollBar().
           setValue( Math.max( 0, (int) (xLoc - (this.getJGoExtentViewSize().getWidth() / 2))));
         this.getJGoExtentViewVScrollBar().
           setValue( Math.max( 0, (int) (findResourceYLoc( resourceToFind) -
                                    (this.getJGoExtentViewSize().getHeight() / 2))));
+        Iterator nameNodeItr = resourceNameNodeList.iterator();
+        while (nameNodeItr.hasNext()) {
+          ResourceNameNode nameNode = (ResourceNameNode) nameNodeItr.next();
+          if (nameNode.getResource().getId().equals( resourceToFind.getId())) {
+            this.getJGoLevelScaleViewSelection().extendSelection( nameNode);
+            break;
+          }
+        }
       }
     }
     if (! isResourceFound) {
@@ -500,13 +531,14 @@ public class ResourceTransactionView extends ResourceView  {
                                   resourceTransToFind.getName() + 
                                   " (key=" + resourceTransToFind.getId().toString() + ")");
               isResourceTransFound = true;
-
+              this.getJGoExtentViewSelection().clearSelection();
               this.getJGoExtentViewHScrollBar().
                 setValue( Math.max( 0, (int) (transObject.getLocation().getX() -
                                               (this.getJGoExtentViewSize().getWidth() / 2))));
               this.getJGoExtentViewVScrollBar().
                 setValue( Math.max( 0, (int) (transObject.getLocation().getY() -
                                               (this.getJGoExtentViewSize().getHeight() / 2))));
+              this.getJGoExtentViewSelection().extendSelection( transObject);
               break foundIt;
             }
           }

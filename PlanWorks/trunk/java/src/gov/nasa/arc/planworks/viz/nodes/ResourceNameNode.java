@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNameNode.java,v 1.2 2004-03-06 02:22:34 taylor Exp $
+// $Id: ResourceNameNode.java,v 1.3 2004-03-07 01:49:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
@@ -87,8 +88,8 @@ public class ResourceNameNode extends JGoText {
   public final boolean doMouseClick( final int modifiers, final Point docCoords,
                                      final Point viewCoords, final JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
-            System.err.println( "doMouseClick obj class " +
-                                obj.getTopLevelObject().getClass().getName());
+//     System.err.println( "doMouseClick obj class " +
+//                         obj.getTopLevelObject().getClass().getName());
     ResourceNameNode resourceNameNode = (ResourceNameNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
@@ -114,6 +115,16 @@ public class ResourceNameNode extends JGoText {
         }
       });
     mouseRightPopup.add( navigatorItem);
+
+    JMenuItem activeResourceItem = new JMenuItem( "Set Active Resource");
+    activeResourceItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          ((PartialPlanViewSet) resourceView.getViewSet()).setActiveResource( resource);
+          System.err.println( "ResourceNameNode setActiveResource: " + resource.getName() +
+                              " (key=" + resource.getId().toString() + ")");
+        }
+      });
+    mouseRightPopup.add( activeResourceItem);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, resourceView, viewCoords);
   } // end mouseRightPopupMenu

@@ -346,7 +346,7 @@ public class PwModelImpl PwModelImpl31,718
   public List listParameters(PwModelImpl.listParameters165,5705
   public List listRules(PwModelImpl.listRules174,5864
 
-src/gov/nasa/arc/planworks/db/impl/PwObjectImpl.java,645
+src/gov/nasa/arc/planworks/db/impl/PwObjectImpl.java,702
 public class PwObjectImpl PwObjectImpl33,789
   public PwObjectImpl(PwObjectImpl.PwObjectImpl53,1414
   public Integer getId(PwObjectImpl.getId92,2779
@@ -358,6 +358,7 @@ public class PwObjectImpl PwObjectImpl33,789
   public List getVariables(PwObjectImpl.getVariables131,3680
   public List getTokens(PwObjectImpl.getTokens147,4176
   public void addToken(PwObjectImpl.addToken163,4664
+  public String toString(PwObjectImpl.toString169,4790
 
 src/gov/nasa/arc/planworks/db/impl/PwParameterImpl.java,229
 public class PwParameterImpl PwParameterImpl29,645
@@ -435,69 +436,69 @@ public class PwPartialPlanImpl PwPartialPlanImpl56,1764
   public List getSlaveTokenIds(PwPartialPlanImpl.getSlaveTokenIds1148,40361
 
 src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java,5722
-public class PwPlanningSequenceImpl PwPlanningSequenceImpl56,1718
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl79,2582
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl119,4133
-  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile156,5588
-  private void loadStatsFile(PwPlanningSequenceImpl.loadStatsFile160,5730
-  private void loadTransactions(PwPlanningSequenceImpl.loadTransactions165,5896
-  public void cleanTransactions(PwPlanningSequenceImpl.cleanTransactions172,6201
-  public int getStepCount(PwPlanningSequenceImpl.getStepCount208,7546
-  public String getUrl(PwPlanningSequenceImpl.getUrl217,7683
-  public Long getId(PwPlanningSequenceImpl.getId221,7731
-  public PwModel getModel(PwPlanningSequenceImpl.getModel231,7936
-  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList244,8201
-  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList260,8748
-  public List getPartialPlansList(PwPlanningSequenceImpl.getPartialPlansList270,9060
-  public List getPartialPlanNamesList(PwPlanningSequenceImpl.getPartialPlanNamesList288,9561
-  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan305,10104
-  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan328,10942
-  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan339,11388
-  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan343,11550
-  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan348,11758
-  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan352,11919
-  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan365,12418
-  public PwPartialPlan getPartialPlanIfLoaded(PwPlanningSequenceImpl.getPartialPlanIfLoaded383,13117
-  public void delete(PwPlanningSequenceImpl.delete392,13482
-  public void setContentSpec(PwPlanningSequenceImpl.setContentSpec400,13745
-  public List getContentSpec(PwPlanningSequenceImpl.getContentSpec405,13855
-  public void setName(PwPlanningSequenceImpl.setName415,14091
-  public String getName(PwPlanningSequenceImpl.getName424,14257
-  private List getTransactionsById(PwPlanningSequenceImpl.getTransactionsById431,14343
-  public List getTransactionsForConstraint(PwPlanningSequenceImpl.getTransactionsForConstraint446,14745
-  public List getTransactionsForToken(PwPlanningSequenceImpl.getTransactionsForToken450,14898
-  public List getTransactionsForVariable(PwPlanningSequenceImpl.getTransactionsForVariable454,15042
-  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange458,15193
-  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange478,15637
-  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted482,15792
-  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted492,16311
-  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted506,17062
-  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted516,17525
-  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted525,18017
-  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted539,18746
-  public List getStepsWithRestrictions(PwPlanningSequenceImpl.getStepsWithRestrictions549,19187
-  public List getStepsWithRelaxations(PwPlanningSequenceImpl.getStepsWithRelaxations553,19307
-  public List getStepsWithUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithUnitVariableBindingDecisions557,19425
-  public List getStepsWithNonUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithNonUnitVariableBindingDecisions561,19572
-  public List getFreeTokensAtStep(PwPlanningSequenceImpl.getFreeTokensAtStep571,19858
-  private List getTokensById(PwPlanningSequenceImpl.getTokensById578,20146
-  public List getUnboundVariablesAtStep(PwPlanningSequenceImpl.getUnboundVariablesAtStep599,21081
-  private void loadPartialPlanFiles(PwPlanningSequenceImpl.loadPartialPlanFiles606,21414
-  private List getVariablesById(PwPlanningSequenceImpl.getVariablesById612,21670
-  public int [] getPlanDBSize(PwPlanningSequenceImpl.getPlanDBSize627,22470
-  public List getPlanDBSizeList(PwPlanningSequenceImpl.getPlanDBSizeList635,22772
-  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId639,22859
-  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId644,23042
-  public void refresh(PwPlanningSequenceImpl.refresh648,23157
-  private class PartialPlanNameComparator PwPlanningSequenceImpl.PartialPlanNameComparator667,23843
-    public PartialPlanNameComparator(PwPlanningSequenceImpl.PartialPlanNameComparator.PartialPlanNameComparator668,23909
-    public int compare(PwPlanningSequenceImpl.PartialPlanNameComparator.compare671,23985
-    public boolean equals(PwPlanningSequenceImpl.PartialPlanNameComparator.equals676,24193
-  private String validateSequenceDirectory(PwPlanningSequenceImpl.validateSequenceDirectory682,24405
-  class StepDirectoryComparator PwPlanningSequenceImpl.StepDirectoryComparator706,25236
-    public StepDirectoryComparator(PwPlanningSequenceImpl.StepDirectoryComparator.StepDirectoryComparator707,25292
-    public int compare(PwPlanningSequenceImpl.StepDirectoryComparator.compare709,25337
-    public boolean equals(PwPlanningSequenceImpl.StepDirectoryComparator.equals726,25856
+public class PwPlanningSequenceImpl PwPlanningSequenceImpl56,1720
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl79,2584
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl119,4135
+  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile156,5590
+  private void loadStatsFile(PwPlanningSequenceImpl.loadStatsFile160,5732
+  private void loadTransactions(PwPlanningSequenceImpl.loadTransactions165,5898
+  public void cleanTransactions(PwPlanningSequenceImpl.cleanTransactions172,6203
+  public int getStepCount(PwPlanningSequenceImpl.getStepCount208,7548
+  public String getUrl(PwPlanningSequenceImpl.getUrl217,7685
+  public Long getId(PwPlanningSequenceImpl.getId221,7733
+  public PwModel getModel(PwPlanningSequenceImpl.getModel231,7938
+  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList244,8203
+  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList260,8750
+  public List getPartialPlansList(PwPlanningSequenceImpl.getPartialPlansList270,9062
+  public List getPartialPlanNamesList(PwPlanningSequenceImpl.getPartialPlanNamesList288,9563
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan305,10106
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan328,10944
+  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan339,11390
+  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan343,11552
+  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan348,11760
+  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan352,11921
+  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan365,12420
+  public PwPartialPlan getPartialPlanIfLoaded(PwPlanningSequenceImpl.getPartialPlanIfLoaded383,13119
+  public void delete(PwPlanningSequenceImpl.delete392,13484
+  public void setContentSpec(PwPlanningSequenceImpl.setContentSpec400,13747
+  public List getContentSpec(PwPlanningSequenceImpl.getContentSpec405,13857
+  public void setName(PwPlanningSequenceImpl.setName415,14093
+  public String getName(PwPlanningSequenceImpl.getName424,14259
+  private List getTransactionsById(PwPlanningSequenceImpl.getTransactionsById431,14345
+  public List getTransactionsForConstraint(PwPlanningSequenceImpl.getTransactionsForConstraint446,14747
+  public List getTransactionsForToken(PwPlanningSequenceImpl.getTransactionsForToken450,14900
+  public List getTransactionsForVariable(PwPlanningSequenceImpl.getTransactionsForVariable454,15044
+  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange458,15195
+  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange478,15639
+  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted482,15794
+  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted487,16009
+  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted492,16231
+  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted497,16457
+  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted501,16645
+  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted506,16845
+  public List getStepsWithRestrictions(PwPlanningSequenceImpl.getStepsWithRestrictions511,17049
+  public List getStepsWithRelaxations(PwPlanningSequenceImpl.getStepsWithRelaxations515,17169
+  public List getStepsWithUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithUnitVariableBindingDecisions519,17287
+  public List getStepsWithNonUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithNonUnitVariableBindingDecisions523,17434
+  public List getFreeTokensAtStep(PwPlanningSequenceImpl.getFreeTokensAtStep533,17720
+  private List getTokensById(PwPlanningSequenceImpl.getTokensById540,18008
+  public List getUnboundVariablesAtStep(PwPlanningSequenceImpl.getUnboundVariablesAtStep561,18943
+  private void loadPartialPlanFiles(PwPlanningSequenceImpl.loadPartialPlanFiles568,19276
+  private List getVariablesById(PwPlanningSequenceImpl.getVariablesById574,19532
+  public int [] getPlanDBSize(PwPlanningSequenceImpl.getPlanDBSize589,20332
+  public List getPlanDBSizeList(PwPlanningSequenceImpl.getPlanDBSizeList597,20634
+  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId601,20721
+  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId606,20904
+  public void refresh(PwPlanningSequenceImpl.refresh610,21019
+  private class PartialPlanNameComparator PwPlanningSequenceImpl.PartialPlanNameComparator629,21705
+    public PartialPlanNameComparator(PwPlanningSequenceImpl.PartialPlanNameComparator.PartialPlanNameComparator630,21771
+    public int compare(PwPlanningSequenceImpl.PartialPlanNameComparator.compare633,21847
+    public boolean equals(PwPlanningSequenceImpl.PartialPlanNameComparator.equals638,22055
+  private String validateSequenceDirectory(PwPlanningSequenceImpl.validateSequenceDirectory644,22267
+  class StepDirectoryComparator PwPlanningSequenceImpl.StepDirectoryComparator668,23098
+    public StepDirectoryComparator(PwPlanningSequenceImpl.StepDirectoryComparator.StepDirectoryComparator669,23154
+    public int compare(PwPlanningSequenceImpl.StepDirectoryComparator.compare671,23199
+    public boolean equals(PwPlanningSequenceImpl.StepDirectoryComparator.equals688,23718
 
 src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java,452
 public class PwPredicateImpl PwPredicateImpl37,884
@@ -509,25 +510,25 @@ public class PwPredicateImpl PwPredicateImpl37,884
   public PwParameterImpl addParameter(PwPredicateImpl.addParameter104,2464
 
 src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,1382
-public class PwProjectImpl PwProjectImpl48,1379
-  synchronized public static void initProjects(PwProjectImpl.initProjects56,1549
-  public static PwProject createProject(PwProjectImpl.createProject76,2300
-  private static void connectToDataBase(PwProjectImpl.connectToDataBase94,2868
-  public static PwProject getProject(PwProjectImpl.getProject114,3782
-  public static List listProjects(PwProjectImpl.listProjects126,4163
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl143,4670
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl159,5270
-  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog189,6421
-  public Integer getId(PwProjectImpl.getId209,7239
-  protected void setId(PwProjectImpl.setId213,7288
-  public String getName(PwProjectImpl.getName222,7451
-  public List listPlanningSequences(PwProjectImpl.listPlanningSequences232,7719
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence248,8262
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence266,8981
-  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence283,9718
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence294,10181
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence307,10668
-  public void delete(PwProjectImpl.delete323,11205
+public class PwProjectImpl PwProjectImpl48,1377
+  synchronized public static void initProjects(PwProjectImpl.initProjects56,1547
+  public static PwProject createProject(PwProjectImpl.createProject76,2298
+  private static void connectToDataBase(PwProjectImpl.connectToDataBase94,2866
+  public static PwProject getProject(PwProjectImpl.getProject114,3780
+  public static List listProjects(PwProjectImpl.listProjects126,4161
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl143,4668
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl159,5268
+  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog189,6419
+  public Integer getId(PwProjectImpl.getId209,7237
+  protected void setId(PwProjectImpl.setId213,7286
+  public String getName(PwProjectImpl.getName222,7449
+  public List listPlanningSequences(PwProjectImpl.listPlanningSequences232,7717
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence248,8260
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence266,8979
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence283,9716
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence294,10179
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence308,10717
+  public void delete(PwProjectImpl.delete325,11305
 
 src/gov/nasa/arc/planworks/db/impl/PwResourceImpl.java,619
 public class PwResourceImpl PwResourceImpl33,805
@@ -540,7 +541,7 @@ public class PwResourceImpl PwResourceImpl33,805
   public List getTransactionSet(PwResourceImpl.getTransactionSet110,2891
   public List getInstantList(PwResourceImpl.getInstantList119,3062
 
-src/gov/nasa/arc/planworks/db/impl/PwResourceInstantImpl.java,489
+src/gov/nasa/arc/planworks/db/impl/PwResourceInstantImpl.java,555
 public class PwResourceInstantImpl PwResourceInstantImpl35,1000
   public PwResourceInstantImpl(PwResourceInstantImpl.PwResourceInstantImpl44,1232
   public Integer getId(PwResourceInstantImpl.getId67,1956
@@ -548,6 +549,7 @@ public class PwResourceInstantImpl PwResourceInstantImpl35,1000
   public double getLevelMin(PwResourceInstantImpl.getLevelMin85,2226
   public double getLevelMax(PwResourceInstantImpl.getLevelMax94,2369
   public List getTransactions(PwResourceInstantImpl.getTransactions98,2427
+  public String toString(PwResourceInstantImpl.toString110,2795
 
 src/gov/nasa/arc/planworks/db/impl/PwResourceTransactionImpl.java,416
 public class PwResourceTransactionImpl PwResourceTransactionImpl33,959
@@ -597,34 +599,34 @@ public class PwTimelineImpl PwTimelineImpl31,708
   private void createEmptySlots(PwTimelineImpl.createEmptySlots94,2750
   private void calculateSlotTimes(PwTimelineImpl.calculateSlotTimes109,3300
 
-src/gov/nasa/arc/planworks/db/impl/PwTokenImpl.java,1367
-public class PwTokenImpl PwTokenImpl39,1128
-  public PwTokenImpl(PwTokenImpl.PwTokenImpl58,1667
-  public Integer getId(PwTokenImpl.getId109,3589
-  public Integer getParentId(PwTokenImpl.getParentId118,3719
-  public Integer getObjectId(PwTokenImpl.getObjectId127,3861
-  public String getPredicateName(PwTokenImpl.getPredicateName140,4133
-  public String getName(PwTokenImpl.getName144,4201
-  protected int getSlotIndex(PwTokenImpl.getSlotIndex148,4260
-  public PwVariable getStartVariable(PwTokenImpl.getStartVariable155,4406
-  public PwVariable getEndVariable(PwTokenImpl.getEndVariable164,4595
-  public Integer getEarliestStart(PwTokenImpl.getEarliestStart174,4840
-  public Integer getLatestEnd(PwTokenImpl.getLatestEnd191,5410
-  public PwVariable getDurationVariable(207,5906
-  public PwVariable getObjectVariable(216,6102
-  public PwVariable getStateVariable(225,6294
-  public List getTokenRelationIdsList(235,6558
-  public List getVariables(239,6649
-  public List getVariablesList(248,6848
-  public List getTokenVarsList(261,7179
-  public List getParamVarsList(276,7563
-  public Integer getSlotId(289,7893
-  public boolean isFree(298,8062
-  public boolean isSlotted(307,8276
-  public boolean isBaseToken(316,8522
-  public String toString(331,9144
-  public void addParamVar(356,10114
-  public void addTokenRelation(365,10314
+src/gov/nasa/arc/planworks/db/impl/PwTokenImpl.java,1365
+public class PwTokenImpl PwTokenImpl39,1130
+  public PwTokenImpl(PwTokenImpl.PwTokenImpl58,1669
+  public Integer getId(PwTokenImpl.getId109,3591
+  public Integer getParentId(PwTokenImpl.getParentId118,3721
+  public Integer getObjectId(PwTokenImpl.getObjectId127,3863
+  public String getPredicateName(PwTokenImpl.getPredicateName140,4135
+  public String getName(PwTokenImpl.getName144,4203
+  protected int getSlotIndex(PwTokenImpl.getSlotIndex148,4262
+  public PwVariable getStartVariable(PwTokenImpl.getStartVariable155,4408
+  public PwVariable getEndVariable(PwTokenImpl.getEndVariable164,4597
+  public Integer getEarliestStart(PwTokenImpl.getEarliestStart174,4842
+  public Integer getLatestEnd(PwTokenImpl.getLatestEnd191,5412
+  public PwVariable getDurationVariable(207,5908
+  public PwVariable getObjectVariable(216,6104
+  public PwVariable getStateVariable(225,6296
+  public List getTokenRelationIdsList(235,6560
+  public List getVariables(239,6651
+  public List getVariablesList(248,6850
+  public List getTokenVarsList(261,7181
+  public List getParamVarsList(276,7565
+  public Integer getSlotId(289,7895
+  public boolean isFree(298,8064
+  public boolean isSlotted(307,8278
+  public boolean isBaseToken(316,8524
+  public String toString(326,8756
+  public void addParamVar(351,9726
+  public void addTokenRelation(360,9926
 
 src/gov/nasa/arc/planworks/db/impl/PwTokenQueryImpl.java,536
 public class PwTokenQueryImpl PwTokenQueryImpl26,627
@@ -680,7 +682,7 @@ public class FileUtils FileUtils30,667
   public static String getCanonicalPath(FileUtils.getCanonicalPath55,1256
   public static String validateSequenceDirectory(FileUtils.validateSequenceDirectory75,1947
 
-src/gov/nasa/arc/planworks/db/util/MySQLDB.java,6330
+src/gov/nasa/arc/planworks/db/util/MySQLDB.java,6768
 public class MySQLDB MySQLDB52,2005
   private MySQLDB(MySQLDB.MySQLDB61,2343
   synchronized public static void startDatabase(MySQLDB.startDatabase71,2583
@@ -744,10 +746,14 @@ public class MySQLDB MySQLDB52,2005
   synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1374,55260
   synchronized public static List queryTokenRelationIdsForToken(MySQLDB.queryTokenRelationIdsForToken1400,56372
   synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1416,56932
-class ObjectIdComparator ObjectIdComparator1431,57490
-  public ObjectIdComparator(ObjectIdComparator.ObjectIdComparator1432,57539
-  public boolean equals(ObjectIdComparator.equals1434,57575
-  public int compare(ObjectIdComparator.compare1437,57633
+  synchronized public static List queryConstraintTransactionNames(MySQLDB.queryConstraintTransactionNames1430,57490
+  synchronized public static List queryTokenTransactionNames(MySQLDB.queryTokenTransactionNames1434,57616
+  synchronized public static List queryVariableTransactionNames(MySQLDB.queryVariableTransactionNames1438,57732
+  synchronized public static List queryTransactionNames(MySQLDB.queryTransactionNames1442,57849
+class ObjectIdComparator ObjectIdComparator1458,58283
+  public ObjectIdComparator(ObjectIdComparator.ObjectIdComparator1459,58332
+  public boolean equals(ObjectIdComparator.equals1461,58368
+  public int compare(ObjectIdComparator.compare1464,58426
 
 src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java,1267
 public class PartialPlanContentSpec PartialPlanContentSpec37,1276
@@ -994,13 +1000,14 @@ public class ColorMap ColorMap29,670
   private static void fillColorMap(ColorMap.fillColorMap42,846
   public static Color getColor(ColorMap.getColor81,2799
 
-src/gov/nasa/arc/planworks/util/ColorStream.java,314
-public class ColorStream ColorStream10,191
-  public ColorStream(ColorStream.ColorStream22,480
-  public ColorStream(ColorStream.ColorStream29,609
-  public ColorStream(ColorStream.ColorStream38,862
-  private Color nextColor(ColorStream.nextColor41,989
-  public Color getColor(ColorStream.getColor62,1478
+src/gov/nasa/arc/planworks/util/ColorStream.java,379
+public class ColorStream ColorStream11,220
+  public ColorStream(ColorStream.ColorStream23,528
+  public ColorStream(ColorStream.ColorStream31,678
+  public ColorStream(ColorStream.ColorStream39,901
+  private void initColorList(ColorStream.initColorList43,1031
+  private Color nextColor(ColorStream.nextColor50,1181
+  public Color getColor(ColorStream.getColor71,1670
 
 src/gov/nasa/arc/planworks/util/DirectoryChooser.java,259
 public class DirectoryChooser DirectoryChooser32,801
@@ -1331,11 +1338,13 @@ public class QueryResultField QueryResultField41,1129
   public String getToolTipText(QueryResultField.getToolTipText112,3422
   public boolean doMouseClick(QueryResultField.doMouseClick129,3866
 
-src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java,275
-public class ResourceNameNode ResourceNameNode27,638
-  public ResourceNameNode(ResourceNameNode.ResourceNameNode32,720
-  public final String getToolTipText(ResourceNameNode.getToolTipText42,961
-  public final boolean doMouseClick(ResourceNameNode.doMouseClick58,1476
+src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java,436
+public class ResourceNameNode ResourceNameNode45,1332
+  public ResourceNameNode(ResourceNameNode.ResourceNameNode51,1451
+  public final PwResource getResource(ResourceNameNode.getResource63,1785
+  public final String getToolTipText(ResourceNameNode.getToolTipText72,1941
+  public final boolean doMouseClick(ResourceNameNode.doMouseClick88,2456
+  private void mouseRightPopupMenu(ResourceNameNode.mouseRightPopupMenu103,3183
 
 src/gov/nasa/arc/planworks/viz/nodes/ResourceNode.java,483
 public class ResourceNode ResourceNode34,1055
@@ -1391,11 +1400,11 @@ public class VariableQueryHeaderNode VariableQueryHeaderNode45,1387
   private void sortVariableQueryList(VariableQueryHeaderNode.sortVariableQueryList112,3485
 
 src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java,310
-public class AskNodeByKey AskNodeByKey44,1481
-  public AskNodeByKey(AskNodeByKey.AskNodeByKey62,1984
-  public Integer getNodeKey(AskNodeByKey.getNodeKey116,3636
-  private void addInputListener(AskNodeByKey.addInputListener120,3693
-  private boolean isNodeKeyValid(AskNodeByKey.isNodeKeyValid172,5902
+public class AskNodeByKey AskNodeByKey44,1483
+  public AskNodeByKey(AskNodeByKey.AskNodeByKey62,1986
+  public Integer getNodeKey(AskNodeByKey.getNodeKey116,3638
+  private void addInputListener(AskNodeByKey.addInputListener120,3695
+  private boolean isNodeKeyValid(AskNodeByKey.isNodeKeyValid172,5904
 
 src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java,437
 public class CreatePartialPlanViewThread CreatePartialPlanViewThread36,1089
@@ -1404,35 +1413,35 @@ public class CreatePartialPlanViewThread CreatePartialPlanViewThread36,1089
   public void run(CreatePartialPlanViewThread.run78,2535
   private void createPartialPlanView(CreatePartialPlanViewThread.createPartialPlanView99,3197
 
-src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java,2422
-public class PartialPlanView PartialPlanView83,2880
-  public PartialPlanView(PartialPlanView.PartialPlanView100,3316
-  public PwPartialPlan getPartialPlan(PartialPlanView.getPartialPlan113,3644
-  public PartialPlanViewState getState(PartialPlanView.getState117,3715
-  public void setState(PartialPlanView.setState121,3806
-  protected boolean isContentSpecRendered(PartialPlanView.isContentSpecRendered143,4536
-  protected boolean isTimelineInContentSpec(PartialPlanView.isTimelineInContentSpec194,6266
-  protected boolean isSlotInContentSpec(PartialPlanView.isSlotInContentSpec227,7312
-  protected boolean isTokenInContentSpec(PartialPlanView.isTokenInContentSpec258,8185
-  protected int addStepButtons(PartialPlanView.addStepButtons270,8504
-  class StepButtonListener PartialPlanView.StepButtonListener304,10492
-    public StepButtonListener(PartialPlanView.StepButtonListener.StepButtonListener308,10629
-    public void actionPerformed(PartialPlanView.StepButtonListener.actionPerformed313,10785
-  private void moveSequenceStepsViewHighlight(PartialPlanView.moveSequenceStepsViewHighlight438,16303
-  class ButtonAdjustmentListener PartialPlanView.ButtonAdjustmentListener491,18801
-    public ButtonAdjustmentListener(PartialPlanView.ButtonAdjustmentListener.ButtonAdjustmentListener495,18953
-    public void adjustmentValueChanged(PartialPlanView.ButtonAdjustmentListener.adjustmentValueChanged500,19126
-  class ButtonViewListener PartialPlanView.ButtonViewListener528,20788
-    public ButtonViewListener(PartialPlanView.ButtonViewListener.ButtonViewListener532,20931
-    public void viewChanged(PartialPlanView.ButtonViewListener.viewChanged537,21098
-  protected void expandViewFrameForStepButtons(PartialPlanView.expandViewFrameForStepButtons555,21869
-  public void createOpenViewItems(PartialPlanView.createOpenViewItems576,23016
-  public void createRaiseContentSpecItem(PartialPlanView.createRaiseContentSpecItem597,23971
-  public MDIInternalFrame openNavigatorViewFrame(PartialPlanView.openNavigatorViewFrame620,24797
-  private String getNavigatorViewName(PartialPlanView.getNavigatorViewName635,25675
-  public boolean doesViewFrameExist(PartialPlanView.doesViewFrameExist656,26558
-  public void createCloseNavigatorWindowsItem(PartialPlanView.createCloseNavigatorWindowsItem681,27477
-  public Color getTimelineColor(PartialPlanView.getTimelineColor713,28755
+src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java,2419
+public class PartialPlanView PartialPlanView69,2312
+  public PartialPlanView(PartialPlanView.PartialPlanView86,2748
+  public PwPartialPlan getPartialPlan(PartialPlanView.getPartialPlan99,3076
+  public PartialPlanViewState getState(PartialPlanView.getState103,3147
+  public void setState(PartialPlanView.setState107,3238
+  protected boolean isContentSpecRendered(PartialPlanView.isContentSpecRendered129,3968
+  protected boolean isTimelineInContentSpec(PartialPlanView.isTimelineInContentSpec180,5698
+  protected boolean isSlotInContentSpec(PartialPlanView.isSlotInContentSpec213,6744
+  protected boolean isTokenInContentSpec(PartialPlanView.isTokenInContentSpec244,7617
+  protected int addStepButtons(PartialPlanView.addStepButtons256,7936
+  class StepButtonListener PartialPlanView.StepButtonListener290,9924
+    public StepButtonListener(PartialPlanView.StepButtonListener.StepButtonListener294,10061
+    public void actionPerformed(PartialPlanView.StepButtonListener.actionPerformed299,10217
+  private void moveSequenceStepsViewHighlight(PartialPlanView.moveSequenceStepsViewHighlight424,15735
+  class ButtonAdjustmentListener PartialPlanView.ButtonAdjustmentListener477,18233
+    public ButtonAdjustmentListener(PartialPlanView.ButtonAdjustmentListener.ButtonAdjustmentListener481,18385
+    public void adjustmentValueChanged(PartialPlanView.ButtonAdjustmentListener.adjustmentValueChanged486,18558
+  class ButtonViewListener PartialPlanView.ButtonViewListener509,19865
+    public ButtonViewListener(PartialPlanView.ButtonViewListener.ButtonViewListener513,20008
+    public void viewChanged(PartialPlanView.ButtonViewListener.viewChanged518,20175
+  protected void expandViewFrameForStepButtons(PartialPlanView.expandViewFrameForStepButtons536,20946
+  public void createOpenViewItems(PartialPlanView.createOpenViewItems557,22093
+  public void createRaiseContentSpecItem(PartialPlanView.createRaiseContentSpecItem578,23048
+  public MDIInternalFrame openNavigatorViewFrame(PartialPlanView.openNavigatorViewFrame601,23874
+  private String getNavigatorViewName(PartialPlanView.getNavigatorViewName616,24752
+  public boolean doesViewFrameExist(PartialPlanView.doesViewFrameExist637,25635
+  public void createCloseNavigatorWindowsItem(PartialPlanView.createCloseNavigatorWindowsItem662,26554
+  public Color getTimelineColor(PartialPlanView.getTimelineColor694,27832
 
 src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java,440
 public class PartialPlanViewMenu PartialPlanViewMenu33,905
@@ -1447,23 +1456,23 @@ public class PartialPlanViewMenuItem PartialPlanViewMenuItem27,733
   public String getPartialPlanName(PartialPlanViewMenuItem.getPartialPlanName37,1067
 
 src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java,1318
-public class PartialPlanViewSet PartialPlanViewSet64,2316
-  public PartialPlanViewSet(PartialPlanViewSet.PartialPlanViewSet82,2956
-  public PartialPlanViewSet(PartialPlanViewSet.PartialPlanViewSet98,3564
-  private void commonConstructor(PartialPlanViewSet.commonConstructor106,3907
-  public MDIInternalFrame openView(PartialPlanViewSet.openView144,5918
-  public MDIInternalFrame openView(PartialPlanViewSet.openView156,6396
-  public ColorStream getColorStream(PartialPlanViewSet.getColorStream187,7473
-  public PwToken getActiveToken(PartialPlanViewSet.getActiveToken196,7656
-  public void setActiveToken(PartialPlanViewSet.setActiveToken205,7845
-  public PwResource getActiveResource(PartialPlanViewSet.getActiveResource214,8041
-  public void setActiveResource(PartialPlanViewSet.setActiveResource223,8251
-  public List getCurrentSpec(PartialPlanViewSet.getCurrentSpec227,8343
-  public List getSecondaryTokens(PartialPlanViewSet.getSecondaryTokens236,8556
-  public void setSecondaryTokens(PartialPlanViewSet.setSecondaryTokens245,8765
-  public int getNavigatorFrameCnt(PartialPlanViewSet.getNavigatorFrameCnt254,8946
-  public void incrNavigatorFrameCnt(PartialPlanViewSet.incrNavigatorFrameCnt262,9076
-  public List getPartialPlanViews(PartialPlanViewSet.getPartialPlanViews272,9322
+public class PartialPlanViewSet PartialPlanViewSet65,2361
+  public PartialPlanViewSet(PartialPlanViewSet.PartialPlanViewSet83,3001
+  public PartialPlanViewSet(PartialPlanViewSet.PartialPlanViewSet99,3609
+  private void commonConstructor(PartialPlanViewSet.commonConstructor107,3952
+  public MDIInternalFrame openView(PartialPlanViewSet.openView153,6270
+  public MDIInternalFrame openView(PartialPlanViewSet.openView158,6414
+  public ColorStream getColorStream(PartialPlanViewSet.getColorStream169,6765
+  public PwToken getActiveToken(PartialPlanViewSet.getActiveToken178,6948
+  public void setActiveToken(PartialPlanViewSet.setActiveToken187,7137
+  public PwResource getActiveResource(PartialPlanViewSet.getActiveResource196,7333
+  public void setActiveResource(PartialPlanViewSet.setActiveResource205,7543
+  public List getCurrentSpec(PartialPlanViewSet.getCurrentSpec209,7635
+  public List getSecondaryTokens(PartialPlanViewSet.getSecondaryTokens218,7848
+  public void setSecondaryTokens(PartialPlanViewSet.setSecondaryTokens227,8057
+  public int getNavigatorFrameCnt(PartialPlanViewSet.getNavigatorFrameCnt236,8238
+  public void incrNavigatorFrameCnt(PartialPlanViewSet.incrNavigatorFrameCnt244,8368
+  public List getPartialPlanViews(PartialPlanViewSet.getPartialPlanViews254,8614
 
 src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewState.java,437
 public class PartialPlanViewState PartialPlanViewState16,368
@@ -1472,56 +1481,59 @@ public class PartialPlanViewState PartialPlanViewState16,368
   public final Point getContentSpecWindowLocation(PartialPlanViewState.getContentSpecWindowLocation30,724
   public final void setContentSpecWindowLocation(PartialPlanViewState.setContentSpecWindowLocation34,826
 
-src/gov/nasa/arc/planworks/viz/partialPlan/ResourceView.java,4098
-public abstract class ResourceView ResourceView78,2595
-  public ResourceView(ResourceView.ResourceView122,3973
-  public ResourceView(ResourceView.ResourceView138,4474
-  private void resourceViewInit(ResourceView.resourceViewInit147,4806
-  private void createLevelScaleAndExtentPanel(ResourceView.createLevelScaleAndExtentPanel163,5402
-  private void createFillerAndRulerPanel(ResourceView.createFillerAndRulerPanel192,6738
-  public final void init(ResourceView.init235,8586
-  public final void redraw(ResourceView.redraw319,11890
-  class RedrawViewThread ResourceView.RedrawViewThread329,12121
-    public RedrawViewThread(ResourceView.RedrawViewThread.RedrawViewThread331,12164
-    public final void run(ResourceView.RedrawViewThread.run334,12223
-  public final JGoView getJGoExtentView(ResourceView.getJGoExtentView354,12960
-  public final JGoDocument getJGoExtentDocument(ResourceView.getJGoExtentDocument363,13176
-  public final Dimension getJGoExtentViewSize(ResourceView.getJGoExtentViewSize372,13376
-  public final JScrollBar getJGoExtentViewHScrollBar(ResourceView.getJGoExtentViewHScrollBar381,13582
-  public final JScrollBar getJGoExtentViewVScrollBar(ResourceView.getJGoExtentViewVScrollBar390,13804
-  public final JGoDocument getJGoLevelScaleDocument(ResourceView.getJGoLevelScaleDocument399,14055
-  public final int getLevelScaleViewWidth(ResourceView.getLevelScaleViewWidth408,14259
-  public final double getTimeScale(ResourceView.getTimeScale417,14428
-  public final int getTimeScaleStart(ResourceView.getTimeScaleStart426,14600
-  public final int getTimeScaleEnd(ResourceView.getTimeScaleEnd435,14777
-  public final int getStartYLoc(ResourceView.getStartYLoc444,14947
-  public final TimeScaleView getJGoRulerView(ResourceView.getJGoRulerView453,15106
-  protected void renderResourceExtent(ResourceView.renderResourceExtent464,15364
-  protected PwResource findNearestResource(ResourceView.findNearestResource468,15435
-  protected void mouseRightPopupMenu(ResourceView.mouseRightPopupMenu473,15544
-  public final void equalizeViewWidthsAndHeights(ResourceView.equalizeViewWidthsAndHeights487,16104
-  private void equalizeViewWidths(ResourceView.equalizeViewWidths515,17598
-  private void equalizeViewHeights(ResourceView.equalizeViewHeights538,18791
-  class LevelScalePanel ResourceView.LevelScalePanel587,21392
-    public LevelScalePanel(ResourceView.LevelScalePanel.LevelScalePanel593,21508
-    public final Dimension getMinimumSize(ResourceView.LevelScalePanel.getMinimumSize602,21679
-    public final Dimension getMaximumSize(ResourceView.LevelScalePanel.getMaximumSize616,22228
-    public final Dimension getPreferredSize(ResourceView.LevelScalePanel.getPreferredSize630,22782
-  class FillerAndRulerPanel ResourceView.FillerAndRulerPanel655,23794
-    public FillerAndRulerPanel(ResourceView.FillerAndRulerPanel.FillerAndRulerPanel661,23918
-    public final Dimension getMinimumSize(ResourceView.FillerAndRulerPanel.getMinimumSize670,24092
-    public final Dimension getMaximumSize(ResourceView.FillerAndRulerPanel.getMaximumSize681,24514
-    public final Dimension getPreferredSize(ResourceView.FillerAndRulerPanel.getPreferredSize692,24945
-  class HorizontalScrollBarListener ResourceView.HorizontalScrollBarListener705,25472
-    public final void adjustmentValueChanged(ResourceView.HorizontalScrollBarListener.adjustmentValueChanged713,25785
-  class VerticalScrollBarListener ResourceView.VerticalScrollBarListener735,26734
-    public final void adjustmentValueChanged(ResourceView.VerticalScrollBarListener.adjustmentValueChanged743,27050
-  class ExtentView ResourceView.ExtentView773,28323
-    public ExtentView(ResourceView.ExtentView.ExtentView779,28430
-    public final void doBackgroundClick(ResourceView.ExtentView.doBackgroundClick792,28873
-  public class TimeScaleMark ResourceView.TimeScaleMark815,29660
-    public TimeScaleMark(ResourceView.TimeScaleMark.TimeScaleMark824,29846
-    public final String getToolTipText(ResourceView.TimeScaleMark.getToolTipText832,30075
+src/gov/nasa/arc/planworks/viz/partialPlan/ResourceView.java,4398
+public abstract class ResourceView ResourceView58,1732
+  public ResourceView(ResourceView.ResourceView161,3936
+  public ResourceView(ResourceView.ResourceView177,4437
+  private void resourceViewInit(ResourceView.resourceViewInit186,4769
+  private void createLevelScaleAndExtentPanel(ResourceView.createLevelScaleAndExtentPanel202,5389
+  private void createFillerAndRulerPanel(ResourceView.createFillerAndRulerPanel231,6725
+  public final void init(ResourceView.init274,8573
+  public final void redraw(ResourceView.redraw358,11877
+  class RedrawViewThread ResourceView.RedrawViewThread368,12108
+    public RedrawViewThread(ResourceView.RedrawViewThread.RedrawViewThread370,12151
+    public final void run(ResourceView.RedrawViewThread.run373,12210
+  public final JGoView getJGoExtentView(ResourceView.getJGoExtentView393,12947
+  public final JGoDocument getJGoExtentDocument(ResourceView.getJGoExtentDocument402,13163
+  public final Dimension getJGoExtentViewSize(ResourceView.getJGoExtentViewSize411,13363
+  public final JScrollBar getJGoExtentViewHScrollBar(ResourceView.getJGoExtentViewHScrollBar420,13569
+  public final JScrollBar getJGoExtentViewVScrollBar(ResourceView.getJGoExtentViewVScrollBar429,13791
+  public final JGoSelection getJGoExtentViewSelection(ResourceView.getJGoExtentViewSelection438,14012
+  public final JGoSelection getJGoLevelScaleViewSelection(ResourceView.getJGoLevelScaleViewSelection447,14230
+  public final JGoDocument getJGoLevelScaleDocument(ResourceView.getJGoLevelScaleDocument456,14482
+  public final int getLevelScaleViewWidth(ResourceView.getLevelScaleViewWidth465,14686
+  public final double getTimeScale(ResourceView.getTimeScale474,14855
+  public final int getTimeScaleStart(ResourceView.getTimeScaleStart483,15027
+  public final int getTimeScaleEnd(ResourceView.getTimeScaleEnd492,15204
+  public final int getStartYLoc(ResourceView.getStartYLoc501,15374
+  public final TimeScaleView getJGoRulerView(ResourceView.getJGoRulerView510,15533
+  public final void addResourceNameNode(ResourceView.addResourceNameNode519,15719
+  protected final void equalizeViewWidthsAndHeights(ResourceView.equalizeViewWidthsAndHeights564,17116
+  private void equalizeViewWidths(ResourceView.equalizeViewWidths592,18613
+  private void equalizeViewHeights(ResourceView.equalizeViewHeights615,19806
+  class LevelScalePanel ResourceView.LevelScalePanel662,22277
+    public LevelScalePanel(ResourceView.LevelScalePanel.LevelScalePanel668,22393
+    public final Dimension getMinimumSize(ResourceView.LevelScalePanel.getMinimumSize677,22564
+    public final Dimension getMaximumSize(ResourceView.LevelScalePanel.getMaximumSize691,23113
+    public final Dimension getPreferredSize(ResourceView.LevelScalePanel.getPreferredSize705,23667
+  class FillerAndRulerPanel ResourceView.FillerAndRulerPanel730,24679
+    public FillerAndRulerPanel(ResourceView.FillerAndRulerPanel.FillerAndRulerPanel736,24803
+    public final Dimension getMinimumSize(ResourceView.FillerAndRulerPanel.getMinimumSize745,24977
+    public final Dimension getMaximumSize(ResourceView.FillerAndRulerPanel.getMaximumSize756,25399
+    public final Dimension getPreferredSize(ResourceView.FillerAndRulerPanel.getPreferredSize767,25830
+  class HorizontalScrollBarListener ResourceView.HorizontalScrollBarListener780,26357
+    public final void adjustmentValueChanged(ResourceView.HorizontalScrollBarListener.adjustmentValueChanged788,26670
+  class VerticalScrollBarListener ResourceView.VerticalScrollBarListener810,27619
+    public final void adjustmentValueChanged(ResourceView.VerticalScrollBarListener.adjustmentValueChanged818,27935
+  class ExtentView ResourceView.ExtentView845,29059
+    public ExtentView(ResourceView.ExtentView.ExtentView851,29166
+    public final void doBackgroundClick(ResourceView.ExtentView.doBackgroundClick864,29609
+  public class TimeScaleMark ResourceView.TimeScaleMark887,30396
+    public TimeScaleMark(ResourceView.TimeScaleMark.TimeScaleMark896,30587
+    public final String getToolTipText(ResourceView.TimeScaleMark.getToolTipText909,30914
+  public static int renderBordersUpper(ResourceView.renderBordersUpper925,31325
+  public static void renderBordersLower(ResourceView.renderBordersLower954,32546
+  public static void renderResourceName(ResourceView.renderResourceName972,33315
 
 src/gov/nasa/arc/planworks/viz/partialPlan/TimeScaleView.java,978
 public class TimeScaleView TimeScaleView49,1497
@@ -1727,15 +1739,15 @@ public class ConstraintNetworkView ConstraintNetworkView93,3625
     public ConstraintJGoView(ConstraintNetworkView.ConstraintJGoView.ConstraintJGoView1382,53771
     public void doBackgroundClick(ConstraintNetworkView.ConstraintJGoView.doBackgroundClick1395,54225
     private void mouseRightPopupMenu(ConstraintNetworkView.ConstraintJGoView.mouseRightPopupMenu1405,54582
-    private void createActiveTokenItem(ConstraintNetworkView.ConstraintJGoView.createActiveTokenItem1453,56766
-    private void createNodeByKeyItem(ConstraintNetworkView.ConstraintJGoView.createNodeByKeyItem1466,57294
-    private void createChangeLayoutItem(ConstraintNetworkView.ConstraintJGoView.createChangeLayoutItem1503,58845
-    private void findAndSelectContainer(ConstraintNetworkView.ConstraintJGoView.findAndSelectContainer1520,59438
-    private void findAndSelectVariable(ConstraintNetworkView.ConstraintJGoView.findAndSelectVariable1553,61124
-    private void findAndSelectConstraint(ConstraintNetworkView.ConstraintJGoView.findAndSelectConstraint1617,64643
-    private VariableContainerNode getOpenContainerNode(ConstraintNetworkView.ConstraintJGoView.getOpenContainerNode1675,67867
-    private VariableNode getVariableNodeInLayout(ConstraintNetworkView.ConstraintJGoView.getVariableNodeInLayout1686,68297
-    private void createOverviewWindowItem(ConstraintNetworkView.ConstraintJGoView.createOverviewWindowItem1697,68721
+    private void createActiveTokenItem(ConstraintNetworkView.ConstraintJGoView.createActiveTokenItem1456,56892
+    private void createNodeByKeyItem(ConstraintNetworkView.ConstraintJGoView.createNodeByKeyItem1469,57420
+    private void createChangeLayoutItem(ConstraintNetworkView.ConstraintJGoView.createChangeLayoutItem1506,58971
+    private void findAndSelectContainer(ConstraintNetworkView.ConstraintJGoView.findAndSelectContainer1523,59564
+    private void findAndSelectVariable(ConstraintNetworkView.ConstraintJGoView.findAndSelectVariable1556,61250
+    private void findAndSelectConstraint(ConstraintNetworkView.ConstraintJGoView.findAndSelectConstraint1620,64769
+    private VariableContainerNode getOpenContainerNode(ConstraintNetworkView.ConstraintJGoView.getOpenContainerNode1678,67993
+    private VariableNode getVariableNodeInLayout(ConstraintNetworkView.ConstraintJGoView.getVariableNodeInLayout1689,68423
+    private void createOverviewWindowItem(ConstraintNetworkView.ConstraintJGoView.createOverviewWindowItem1700,68847
 
 src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkViewState.java,512
 public class ConstraintNetworkViewState ConstraintNetworkViewState19,599
@@ -1922,46 +1934,48 @@ public class ModelClassNavNode ModelClassNavNode42,1245
   private boolean addObjects(ModelClassNavNode.addObjects285,8271
   private boolean removeObjects(ModelClassNavNode.removeObjects300,8984
 
-src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java,2992
-public class NavigatorView NavigatorView79,3061
-  public NavigatorView(NavigatorView.NavigatorView118,4036
-  public NavigatorView(NavigatorView.NavigatorView138,4848
-  public NavigatorView(NavigatorView.NavigatorView158,5666
-  public NavigatorView(NavigatorView.NavigatorView178,6489
-  public NavigatorView(NavigatorView.NavigatorView198,7287
-  public NavigatorView(NavigatorView.NavigatorView217,8034
-  public NavigatorView(NavigatorView.NavigatorView236,8790
-  public NavigatorView(NavigatorView.NavigatorView255,9555
-  public NavigatorView(NavigatorView.NavigatorView274,10324
-  private void commonConstructor(NavigatorView.commonConstructor285,10810
-  public final void init(NavigatorView.init323,12093
-  public final void redraw(NavigatorView.redraw384,14714
-  class RedrawViewThread NavigatorView.RedrawViewThread390,14860
-    public RedrawViewThread(NavigatorView.RedrawViewThread.RedrawViewThread392,14903
-    public final void run(NavigatorView.RedrawViewThread.run395,14962
-  private void redrawView(NavigatorView.redrawView401,15064
-  public final JGoDocument getJGoDocument(NavigatorView.getJGoDocument437,16506
-  protected final void setStartTimeMSecs(NavigatorView.setStartTimeMSecs446,16681
-  public final void setLayoutNeeded(NavigatorView.setLayoutNeeded454,16827
-  public final boolean isLayoutNeeded(NavigatorView.isLayoutNeeded463,17016
-  public final PwPartialPlan getPartialPlan(NavigatorView.getPartialPlan472,17185
-  public final void setFocusNode(NavigatorView.setFocusNode481,17363
-  private void renderInitialNode(NavigatorView.renderInitialNode485,17461
-  protected final ExtendedBasicNode addEntityNavNode(NavigatorView.addEntityNavNode543,20218
-  protected final ModelClassNavNode addModelClassNavNode(NavigatorView.addModelClassNavNode582,21730
-  protected final TimelineNavNode addTimelineNavNode(NavigatorView.addTimelineNavNode605,22652
-  protected final ResourceNavNode addResourceNavNode(NavigatorView.addResourceNavNode628,23578
-  protected final SlotNavNode addSlotNavNode(NavigatorView.addSlotNavNode651,24488
-  protected final TokenNavNode addTokenNavNode(NavigatorView.addTokenNavNode685,25803
-  protected final VariableNavNode addVariableNavNode(NavigatorView.addVariableNavNode708,26754
-  protected final ConstraintNavNode addConstraintNavNode(NavigatorView.addConstraintNavNode731,27720
-  protected final boolean addNavigatorLinkNew(NavigatorView.addNavigatorLinkNew757,28895
-  private void setNodesLinksVisible(NavigatorView.setNodesLinksVisible781,29726
-  class NavigatorJGoView NavigatorView.NavigatorJGoView817,30999
-    public NavigatorJGoView(NavigatorView.NavigatorJGoView.NavigatorJGoView823,31118
-    public final void doBackgroundClick(NavigatorView.NavigatorJGoView.doBackgroundClick834,31404
-  private void mouseRightPopupMenu(NavigatorView.mouseRightPopupMenu845,31859
-  private void createOverviewWindowItem(NavigatorView.createOverviewWindowItem862,32642
+src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java,3116
+public class NavigatorView NavigatorView81,3211
+  public NavigatorView(NavigatorView.NavigatorView120,4188
+  public NavigatorView(NavigatorView.NavigatorView140,5000
+  public NavigatorView(NavigatorView.NavigatorView160,5818
+  public NavigatorView(NavigatorView.NavigatorView180,6641
+  public NavigatorView(NavigatorView.NavigatorView192,7162
+  public NavigatorView(NavigatorView.NavigatorView212,7947
+  public NavigatorView(NavigatorView.NavigatorView231,8694
+  public NavigatorView(NavigatorView.NavigatorView242,9165
+  public NavigatorView(NavigatorView.NavigatorView262,10004
+  public NavigatorView(NavigatorView.NavigatorView281,10769
+  public NavigatorView(NavigatorView.NavigatorView300,11538
+  private void commonConstructor(NavigatorView.commonConstructor311,12024
+  public final void init(NavigatorView.init349,13307
+  public final void redraw(NavigatorView.redraw410,15928
+  class RedrawViewThread NavigatorView.RedrawViewThread416,16074
+    public RedrawViewThread(NavigatorView.RedrawViewThread.RedrawViewThread418,16117
+    public final void run(NavigatorView.RedrawViewThread.run421,16176
+  private void redrawView(NavigatorView.redrawView427,16278
+  public final JGoDocument getJGoDocument(NavigatorView.getJGoDocument463,17720
+  protected final void setStartTimeMSecs(NavigatorView.setStartTimeMSecs472,17895
+  public final void setLayoutNeeded(NavigatorView.setLayoutNeeded480,18041
+  public final boolean isLayoutNeeded(NavigatorView.isLayoutNeeded489,18230
+  public final PwPartialPlan getPartialPlan(NavigatorView.getPartialPlan498,18399
+  public final void setFocusNode(NavigatorView.setFocusNode507,18577
+  private void renderInitialNode(NavigatorView.renderInitialNode511,18675
+  protected final ExtendedBasicNode addEntityNavNode(NavigatorView.addEntityNavNode578,21984
+  protected final ModelClassNavNode addModelClassNavNode(NavigatorView.addModelClassNavNode617,23496
+  protected final TimelineNavNode addTimelineNavNode(NavigatorView.addTimelineNavNode640,24418
+  protected final ResourceNavNode addResourceNavNode(NavigatorView.addResourceNavNode663,25344
+  protected final SlotNavNode addSlotNavNode(NavigatorView.addSlotNavNode686,26254
+  protected final TokenNavNode addTokenNavNode(NavigatorView.addTokenNavNode720,27569
+  protected final VariableNavNode addVariableNavNode(NavigatorView.addVariableNavNode743,28520
+  protected final ConstraintNavNode addConstraintNavNode(NavigatorView.addConstraintNavNode766,29486
+  protected final boolean addNavigatorLinkNew(NavigatorView.addNavigatorLinkNew792,30661
+  private void setNodesLinksVisible(NavigatorView.setNodesLinksVisible816,31492
+  class NavigatorJGoView NavigatorView.NavigatorJGoView852,32765
+    public NavigatorJGoView(NavigatorView.NavigatorJGoView.NavigatorJGoView858,32884
+    public final void doBackgroundClick(NavigatorView.NavigatorJGoView.doBackgroundClick869,33170
+  private void mouseRightPopupMenu(NavigatorView.mouseRightPopupMenu880,33625
+  private void createOverviewWindowItem(NavigatorView.createOverviewWindowItem897,34408
 
 src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java,212
 public class NavigatorViewLayout NavigatorViewLayout31,764
@@ -2100,110 +2114,106 @@ public class VariableNavNode VariableNavNode48,1503
   private boolean addVariableObjects(VariableNavNode.addVariableObjects321,9546
   private boolean removeVariableObjects(VariableNavNode.removeVariableObjects336,10274
 
-src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfile.java,2351
-public class ResourceProfile ResourceProfile60,1867
-  public ResourceProfile(ResourceProfile.ResourceProfile100,3271
-  public static int getNodeLabelWidth(ResourceProfile.getNodeLabelWidth128,4346
-  public static int getTickLabelMaxWidth(ResourceProfile.getTickLabelMaxWidth143,4870
-  private static double[] getResourceMinMax(ResourceProfile.getResourceMinMax160,5661
-  public final void configure(ResourceProfile.configure180,6385
-  public final PwResource getResource(ResourceProfile.getResource217,7711
-  public final String getName(ResourceProfile.getName226,7869
-  public final int getExtentYTop(ResourceProfile.getExtentYTop235,8023
-  public final int getExtentYBottom(ResourceProfile.getExtentYBottom244,8175
-  public final int getProfileYOrigin(ResourceProfile.getProfileYOrigin253,8334
-  private void renderBorders(ResourceProfile.renderBorders257,8407
-  private void renderResourceName(ResourceProfile.renderResourceName288,9930
-  private void renderLevelScaleLinesAndTicks(ResourceProfile.renderLevelScaleLinesAndTicks299,10573
-  private void renderLimits(ResourceProfile.renderLimits348,13184
-  private void renderLevels(ResourceProfile.renderLevels376,14908
-  private int scaleResourceLevel(ResourceProfile.scaleResourceLevel418,17432
-  public  class ProfileLine ResourceProfile.ProfileLine456,18532
-    public ProfileLine(ResourceProfile.ProfileLine.ProfileLine462,18651
-    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText471,18798
-  public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText481,19071
-    public final boolean doMouseClick(ResourceProfile.ProfileLine.doMouseClick499,19672
-  public final int getStart(ResourceProfile.getStart524,20647
-  public final int getEnd(ResourceProfile.getEnd540,21239
-  public final int getRow(ResourceProfile.getRow561,22247
-  public final void setRow(ResourceProfile.setRow570,22402
-  public final String toString(ResourceProfile.toString579,22553
-  public final boolean equals(ResourceProfile.equals589,22766
-  public final int hashCode(ResourceProfile.hashCode598,22978
-  private int scaleY(ResourceProfile.scaleY602,23055
-  public final boolean doMouseClick(ResourceProfile.doMouseClick618,23538
-  private void mouseRightPopupMenu(ResourceProfile.mouseRightPopupMenu633,24284
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfile.java,1750
+public class ResourceProfile ResourceProfile60,1897
+  public ResourceProfile(ResourceProfile.ResourceProfile96,3098
+  public static int getNodeLabelWidth(ResourceProfile.getNodeLabelWidth125,4158
+  public static int getTickLabelMaxWidth(ResourceProfile.getTickLabelMaxWidth140,4682
+  private static double[] getResourceMinMax(ResourceProfile.getResourceMinMax157,5473
+  public final void configure(ResourceProfile.configure177,6197
+  public final PwResource getResource(ResourceProfile.getResource234,8823
+  public final String getName(ResourceProfile.getName243,8981
+  public final int getProfileYOrigin(ResourceProfile.getProfileYOrigin252,9139
+  private void renderLevelScaleLinesAndTicks(ResourceProfile.renderLevelScaleLinesAndTicks256,9212
+  private void renderLimits(ResourceProfile.renderLimits306,11868
+  private void renderLevels(ResourceProfile.renderLevels334,13592
+  private int scaleResourceLevel(ResourceProfile.scaleResourceLevel378,16278
+  public final String getToolTipText(ResourceProfile.getToolTipText387,16504
+  public final String getToolTipText(ResourceProfile.getToolTipText401,16914
+  public class ProfileLine ResourceProfile.ProfileLine415,17302
+    public ProfileLine(ResourceProfile.ProfileLine.ProfileLine421,17420
+    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText430,17567
+    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText440,17807
+    public final boolean doMouseClick(ResourceProfile.ProfileLine.doMouseClick453,18211
+  public final String toString(ResourceProfile.toString475,19091
+  public final boolean equals(ResourceProfile.equals485,19304
+  public final int hashCode(ResourceProfile.hashCode494,19516
 
-src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileView.java,1625
-public class ResourceProfileView ResourceProfileView87,3111
-  public ResourceProfileView(ResourceProfileView.ResourceProfileView98,3404
-  public ResourceProfileView(ResourceProfileView.ResourceProfileView110,3810
-  public final PartialPlanViewState getState(ResourceProfileView.getState120,4137
-  public final void setState(ResourceProfileView.setState132,4455
-  public final List getResourceProfileList(ResourceProfileView.getResourceProfileList144,4840
-  public int computeMaxResourceLabelWidth(ResourceProfileView.computeMaxResourceLabelWidth153,5023
-  public void renderResourceExtent(ResourceProfileView.renderResourceExtent180,6055
-  private void createResourceProfiles(ResourceProfileView.createResourceProfiles240,8875
-  private void layoutResourceProfiles(ResourceProfileView.layoutResourceProfiles256,9575
-  public PwResource findNearestResource(ResourceProfileView.findNearestResource332,12961
-  public void mouseRightPopupMenu(ResourceProfileView.mouseRightPopupMenu354,13676
-  private void createActiveResourceItem(ResourceProfileView.createActiveResourceItem398,15637
-  private PwResource getActiveResource(ResourceProfileView.getActiveResource419,16634
-  public final void findAndSelectResource(ResourceProfileView.findAndSelectResource460,18267
-  private int findResourceYLoc(ResourceProfileView.findResourceYLoc494,20010
-  private void createTimeMarkItem(ResourceProfileView.createTimeMarkItem508,20493
-  private void createOverviewWindowItem(ResourceProfileView.createOverviewWindowItem543,22274
-  public void createTimeMark(ResourceProfileView.createTimeMark564,23215
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileView.java,1859
+public class ResourceProfileView ResourceProfileView63,2315
+  public ResourceProfileView(ResourceProfileView.ResourceProfileView73,2607
+  public ResourceProfileView(ResourceProfileView.ResourceProfileView85,3013
+  public final PartialPlanViewState getState(ResourceProfileView.getState95,3340
+  public final void setState(ResourceProfileView.setState107,3658
+  public final List getResourceProfileList(ResourceProfileView.getResourceProfileList119,4043
+  public final int getCurrentYLoc(ResourceProfileView.getCurrentYLoc128,4212
+  public final void setCurrentYLoc(ResourceProfileView.setCurrentYLoc137,4368
+  protected final int computeMaxResourceLabelWidth(ResourceProfileView.computeMaxResourceLabelWidth146,4544
+  protected final void renderResourceExtent(ResourceProfileView.renderResourceExtent173,5586
+  private void createResourceProfiles(ResourceProfileView.createResourceProfiles232,8383
+  protected final PwResource findNearestResource(ResourceProfileView.findNearestResource288,10748
+  protected final void mouseRightPopupMenu(ResourceProfileView.mouseRightPopupMenu310,11472
+  private void createActiveResourceByTransItem(ResourceProfileView.createActiveResourceByTransItem363,13850
+  private PwResource findActiveResourceByTrans(ResourceProfileView.findActiveResourceByTrans385,14892
+  private void createActiveResourceItem(ResourceProfileView.createActiveResourceItem400,15543
+  public final void findAndSelectResource(ResourceProfileView.findAndSelectResource439,17086
+  private int findResourceYLoc(ResourceProfileView.findResourceYLoc481,19270
+  private void createTimeMarkItem(ResourceProfileView.createTimeMarkItem495,19753
+  private void createOverviewWindowItem(ResourceProfileView.createOverviewWindowItem530,21533
+  public final void createTimeMark(ResourceProfileView.createTimeMark551,22474
 
 src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileViewState.java,156
 class ResourceProfileViewState ResourceProfileViewState13,392
   public ResourceProfileViewState(ResourceProfileViewState.ResourceProfileViewState17,528
 
-src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionSet.java,2120
-public class ResourceTransactionSet ResourceTransactionSet65,2080
-  public ResourceTransactionSet(ResourceTransactionSet.ResourceTransactionSet97,3111
-  public static int getNodeLabelWidth(ResourceTransactionSet.getNodeLabelWidth126,4144
-  public final void configure(ResourceTransactionSet.configure139,4579
-  public final PwResource getResource(ResourceTransactionSet.getResource176,6330
-  public final String getName(ResourceTransactionSet.getName185,6488
-  public final int getTransactionSetYOrigin(ResourceTransactionSet.getTransactionSetYOrigin194,6653
-  public final List getTransactionObjectList(ResourceTransactionSet.getTransactionObjectList203,6836
-  private void renderBordersUpper(ResourceTransactionSet.renderBordersUpper207,6924
-  private void renderBordersLower(ResourceTransactionSet.renderBordersLower227,7880
-  private void renderResourceName(ResourceTransactionSet.renderResourceName239,8486
-  private void renderTransactions(ResourceTransactionSet.renderTransactions250,9150
-  private void checkIntervalForInfinity(ResourceTransactionSet.checkIntervalForInfinity284,11080
-  public  class TransactionObject ResourceTransactionSet.TransactionObject300,11692
-    public TransactionObject(ResourceTransactionSet.TransactionObject.TransactionObject311,12034
-    public PwResourceTransaction getTransaction(ResourceTransactionSet.TransactionObject.getTransaction322,12351
-    public final String getToolTipText(ResourceTransactionSet.TransactionObject.getToolTipText331,12534
-  public final String getToolTipText(ResourceTransactionSet.TransactionObject.getToolTipText356,13342
-    public final boolean doMouseClick(ResourceTransactionSet.TransactionObject.doMouseClick374,13943
-  public final String toString(ResourceTransactionSet.toString426,15742
-  public final boolean equals(ResourceTransactionSet.equals436,15962
-  public final int hashCode(ResourceTransactionSet.hashCode445,16181
-  public final boolean doMouseClick(ResourceTransactionSet.doMouseClick460,16563
-  private void mouseRightPopupMenu(ResourceTransactionSet.mouseRightPopupMenu476,17336
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionNode.java,608
+public  class ResourceTransactionNode ResourceTransactionNode49,1358
+    public ResourceTransactionNode(ResourceTransactionNode.ResourceTransactionNode61,1751
+    public PwResourceTransaction getTransaction(ResourceTransactionNode.getTransaction73,2141
+    public final String getToolTipText(ResourceTransactionNode.getToolTipText82,2324
+  public final String getToolTipText(ResourceTransactionNode.getToolTipText109,3216
+    public final boolean doMouseClick(ResourceTransactionNode.doMouseClick126,3791
+    private void mouseRightPopupMenu(ResourceTransactionNode.mouseRightPopupMenu142,4591
 
-src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionView.java,1685
-public class ResourceTransactionView ResourceTransactionView87,3183
-  public ResourceTransactionView(ResourceTransactionView.ResourceTransactionView106,3633
-  public ResourceTransactionView(ResourceTransactionView.ResourceTransactionView118,4047
-  public final PartialPlanViewState getState(ResourceTransactionView.getState128,4382
-  public final void setState(ResourceTransactionView.setState140,4704
-  public int computeMaxResourceLabelWidth(ResourceTransactionView.computeMaxResourceLabelWidth152,5084
-  public void renderResourceExtent(ResourceTransactionView.renderResourceExtent172,5779
-  public final List getResourceTransactionSetList(ResourceTransactionView.getResourceTransactionSetList194,6416
-  private void createResourceTransactionSets(ResourceTransactionView.createResourceTransactionSets273,10449
-  public PwResource findNearestResource(ResourceTransactionView.findNearestResource330,12969
-  public void mouseRightPopupMenu(ResourceTransactionView.mouseRightPopupMenu353,13719
-  private void createActiveResourceItem(ResourceTransactionView.createActiveResourceItem396,15694
-  public final void findAndSelectResource(ResourceTransactionView.findAndSelectResource438,17475
-  private int findResourceYLoc(ResourceTransactionView.findResourceYLoc472,19268
-  public final void findAndSelectResourceTransaction ResourceTransactionView.findAndSelectResourceTransaction486,19785
-  private void createTimeMarkItem(ResourceTransactionView.createTimeMarkItem536,22513
-  private void createOverviewWindowItem(ResourceTransactionView.createOverviewWindowItem571,24254
-  public void createTimeMark(ResourceTransactionView.createTimeMark592,25207
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionSet.java,1245
+public class ResourceTransactionSet ResourceTransactionSet66,2124
+  public ResourceTransactionSet(ResourceTransactionSet.ResourceTransactionSet92,2946
+  public static int getNodeLabelWidth(ResourceTransactionSet.getNodeLabelWidth121,3979
+  public final void configure(ResourceTransactionSet.configure134,4414
+  public final PwResource getResource(ResourceTransactionSet.getResource178,6478
+  public final String getName(ResourceTransactionSet.getName187,6636
+  public final List getTransactionObjectList(ResourceTransactionSet.getTransactionObjectList196,6802
+  public final int getTransactionSetYOrigin(ResourceTransactionSet.getTransactionSetYOrigin205,6985
+  private int renderTransactions(ResourceTransactionSet.renderTransactions209,7072
+  private void checkIntervalForInfinity(ResourceTransactionSet.checkIntervalForInfinity249,9152
+  public final String toString(ResourceTransactionSet.toString265,9756
+  public final boolean equals(ResourceTransactionSet.equals275,9976
+  public final int hashCode(ResourceTransactionSet.hashCode284,10195
+  public final boolean doMouseClick(ResourceTransactionSet.doMouseClick299,10577
+  private void mouseRightPopupMenu(ResourceTransactionSet.mouseRightPopupMenu315,11350
+
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionView.java,2000
+public class ResourceTransactionView ResourceTransactionView64,2389
+  public ResourceTransactionView(ResourceTransactionView.ResourceTransactionView76,2752
+  public ResourceTransactionView(ResourceTransactionView.ResourceTransactionView88,3166
+  public final PartialPlanViewState getState(ResourceTransactionView.getState98,3501
+  public final void setState(ResourceTransactionView.setState110,3823
+  protected final int computeMaxResourceLabelWidth(ResourceTransactionView.computeMaxResourceLabelWidth122,4203
+  protected final void renderResourceExtent(ResourceTransactionView.renderResourceExtent142,4908
+  public final List getResourceTransactionSetList(ResourceTransactionView.getResourceTransactionSetList164,5554
+  public final int getCurrentYLoc(ResourceTransactionView.getCurrentYLoc173,5737
+  public final void setCurrentYLoc(ResourceTransactionView.setCurrentYLoc182,5893
+  private void createResourceTransactionSets(ResourceTransactionView.createResourceTransactionSets261,9905
+  protected final PwResource findNearestResource(ResourceTransactionView.findNearestResource318,12400
+  protected final void mouseRightPopupMenu(ResourceTransactionView.mouseRightPopupMenu341,13159
+  private void createActiveResourceTransItem(ResourceTransactionView.createActiveResourceTransItem393,15528
+  private void createActiveResourceItem(ResourceTransactionView.createActiveResourceItem410,16370
+  public final void findAndSelectResource(ResourceTransactionView.findAndSelectResource448,17873
+  private int findResourceYLoc(ResourceTransactionView.findResourceYLoc490,20107
+  public final void findAndSelectResourceTransaction ResourceTransactionView.findAndSelectResourceTransaction509,20764
+  private void createTimeMarkItem(ResourceTransactionView.createTimeMarkItem560,23634
+  private void createOverviewWindowItem(ResourceTransactionView.createOverviewWindowItem595,25375
+  public final void createTimeMark(ResourceTransactionView.createTimeMark616,26328
 
 src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionViewState.java,176
 class ResourceTransactionViewState ResourceTransactionViewState13,400
@@ -2232,33 +2242,33 @@ public class TemporalExtentView TemporalExtentView80,2760
   public int getStartYLoc(TemporalExtentView.getStartYLoc350,11415
   public TimeScaleView getJGoRulerView(TemporalExtentView.getJGoRulerView359,11568
   private void createTemporalNodes(TemporalExtentView.createTemporalNodes363,11641
-  private void layoutTemporalNodes(TemporalExtentView.layoutTemporalNodes409,13890
-  private void iterateOverNodes(TemporalExtentView.iterateOverNodes447,15603
-  private void iterateOverJGoDocument(TemporalExtentView.iterateOverJGoDocument459,16130
-  private void equalizeViewWidths(TemporalExtentView.equalizeViewWidths482,16999
-  class RulerPanel TemporalExtentView.RulerPanel536,19840
-    public RulerPanel(TemporalExtentView.RulerPanel.RulerPanel542,19946
-    public Dimension getMinimumSize(TemporalExtentView.RulerPanel.getMinimumSize551,20095
-    public Dimension getMaximumSize(TemporalExtentView.RulerPanel.getMaximumSize562,20498
-  class ScrollBarListener TemporalExtentView.ScrollBarListener576,21002
-    public void adjustmentValueChanged(TemporalExtentView.ScrollBarListener.adjustmentValueChanged584,21305
-  class ExtentView TemporalExtentView.ExtentView611,22546
-    public ExtentView(TemporalExtentView.ExtentView.ExtentView617,22657
-    public void doBackgroundClick(TemporalExtentView.ExtentView.doBackgroundClick631,23158
-  private void mouseRightPopupMenu(TemporalExtentView.mouseRightPopupMenu644,23594
-  private void createTemporalDisplayItems(TemporalExtentView.createTemporalDisplayItems697,25669
-  private void createShowIntervalsItem(TemporalExtentView.createShowIntervalsItem726,26995
-  private void createShowEarliestItem(TemporalExtentView.createShowEarliestItem736,27335
-  private void createShowLatestItem(TemporalExtentView.createShowLatestItem746,27670
-  private void createShowLabelsItem(TemporalExtentView.createShowLabelsItem756,27995
-  private void createActiveTokenItem(TemporalExtentView.createActiveTokenItem770,28403
-  private void createNodeByKeyItem(TemporalExtentView.createNodeByKeyItem785,28944
-  public void findAndSelectToken(TemporalExtentView.findAndSelectToken811,30031
-  private void createTimeMarkItem(TemporalExtentView.createTimeMarkItem871,32615
-  private void createOverviewWindowItem(TemporalExtentView.createOverviewWindowItem891,33527
-  class TimeScaleMark TemporalExtentView.TimeScaleMark912,34443
-    public TimeScaleMark(TemporalExtentView.TimeScaleMark.TimeScaleMark921,34622
-    public String getToolTipText(TemporalExtentView.TimeScaleMark.getToolTipText929,34835
+  private void layoutTemporalNodes(TemporalExtentView.layoutTemporalNodes409,13905
+  private void iterateOverNodes(TemporalExtentView.iterateOverNodes447,15618
+  private void iterateOverJGoDocument(TemporalExtentView.iterateOverJGoDocument459,16145
+  private void equalizeViewWidths(TemporalExtentView.equalizeViewWidths482,17014
+  class RulerPanel TemporalExtentView.RulerPanel536,19855
+    public RulerPanel(TemporalExtentView.RulerPanel.RulerPanel542,19961
+    public Dimension getMinimumSize(TemporalExtentView.RulerPanel.getMinimumSize551,20110
+    public Dimension getMaximumSize(TemporalExtentView.RulerPanel.getMaximumSize562,20513
+  class ScrollBarListener TemporalExtentView.ScrollBarListener576,21017
+    public void adjustmentValueChanged(TemporalExtentView.ScrollBarListener.adjustmentValueChanged584,21320
+  class ExtentView TemporalExtentView.ExtentView611,22561
+    public ExtentView(TemporalExtentView.ExtentView.ExtentView617,22672
+    public void doBackgroundClick(TemporalExtentView.ExtentView.doBackgroundClick631,23173
+  private void mouseRightPopupMenu(TemporalExtentView.mouseRightPopupMenu644,23609
+  private void createTemporalDisplayItems(TemporalExtentView.createTemporalDisplayItems699,25773
+  private void createShowIntervalsItem(TemporalExtentView.createShowIntervalsItem728,27099
+  private void createShowEarliestItem(TemporalExtentView.createShowEarliestItem738,27439
+  private void createShowLatestItem(TemporalExtentView.createShowLatestItem748,27774
+  private void createShowLabelsItem(TemporalExtentView.createShowLabelsItem758,28099
+  private void createActiveTokenItem(TemporalExtentView.createActiveTokenItem772,28507
+  private void createNodeByKeyItem(TemporalExtentView.createNodeByKeyItem787,29048
+  public void findAndSelectToken(TemporalExtentView.findAndSelectToken813,30135
+  private void createTimeMarkItem(TemporalExtentView.createTimeMarkItem883,32953
+  private void createOverviewWindowItem(TemporalExtentView.createOverviewWindowItem903,33865
+  class TimeScaleMark TemporalExtentView.TimeScaleMark924,34781
+    public TimeScaleMark(TemporalExtentView.TimeScaleMark.TimeScaleMark933,34960
+    public String getToolTipText(TemporalExtentView.TimeScaleMark.getToolTipText941,35173
 
 src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentViewState.java,297
 class TemporalExtentViewState TemporalExtentViewState13,390
@@ -2369,13 +2379,13 @@ public class TimelineView TimelineView72,2447
     public TimelineJGoView(TimelineView.TimelineJGoView.TimelineJGoView625,24069
     public void doBackgroundClick(TimelineView.TimelineJGoView.doBackgroundClick637,24417
   private void mouseRightPopupMenu(TimelineView.mouseRightPopupMenu648,24807
-  private void createEnableAutoSnapItem(TimelineView.createEnableAutoSnapItem697,26946
-  private void createDisableAutoSnapItem(TimelineView.createDisableAutoSnapItem705,27228
-  private void createNodeByKeyItem(TimelineView.createNodeByKeyItem713,27514
-  private void createActiveTokenItem(TimelineView.createActiveTokenItem736,28461
-  private void findAndSelectToken(TimelineView.findAndSelectToken749,28957
-  private void findAndSelectSlot(TimelineView.findAndSelectSlot804,31470
-  private void createOverviewWindowItem(TimelineView.createOverviewWindowItem836,32918
+  private void createEnableAutoSnapItem(TimelineView.createEnableAutoSnapItem699,27035
+  private void createDisableAutoSnapItem(TimelineView.createDisableAutoSnapItem707,27317
+  private void createNodeByKeyItem(TimelineView.createNodeByKeyItem715,27603
+  private void createActiveTokenItem(TimelineView.createActiveTokenItem738,28550
+  private void findAndSelectToken(TimelineView.findAndSelectToken751,29046
+  private void findAndSelectSlot(TimelineView.findAndSelectSlot806,31559
+  private void createOverviewWindowItem(TimelineView.createOverviewWindowItem838,33007
 
 src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java,996
 public class TimelineViewTimelineNode TimelineViewTimelineNode58,1845
@@ -2423,10 +2433,10 @@ public class TokenNetworkView TokenNetworkView70,2414
     public TokenNetworkJGoView(TokenNetworkView.TokenNetworkJGoView.TokenNetworkJGoView335,12159
     public void doBackgroundClick(TokenNetworkView.TokenNetworkJGoView.doBackgroundClick347,12511
   private void mouseRightPopupMenu(TokenNetworkView.mouseRightPopupMenu358,12905
-  private void createActiveTokenItem(TokenNetworkView.createActiveTokenItem393,14457
-  private void createNodeByKeyItem(TokenNetworkView.createNodeByKeyItem406,14957
-  private void findAndSelectToken(TokenNetworkView.findAndSelectToken422,15661
-  private void createOverviewWindowItem(TokenNetworkView.createOverviewWindowItem457,17259
+  private void createActiveTokenItem(TokenNetworkView.createActiveTokenItem395,14546
+  private void createNodeByKeyItem(TokenNetworkView.createNodeByKeyItem408,15046
+  private void findAndSelectToken(TokenNetworkView.findAndSelectToken424,15750
+  private void createOverviewWindowItem(TokenNetworkView.createOverviewWindowItem459,17348
 
 src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java,422
 public class SequenceView SequenceView48,1426
@@ -2840,63 +2850,63 @@ public class UniqueKeyGroupBox UniqueKeyGroupBox18,490
   public void reset(UniqueKeyGroupBox.reset35,952
 
 src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/SequenceQueryWindow.java,5961
-public class SequenceQueryWindow SequenceQueryWindow62,2420
-  public SequenceQueryWindow(SequenceQueryWindow.SequenceQueryWindow174,7903
-  private void addMinorTypeBox(SequenceQueryWindow.addMinorTypeBox237,10147
-  private void refresh(SequenceQueryWindow.refresh245,10468
-  private void removeExtendedQueryComponents(SequenceQueryWindow.removeExtendedQueryComponents251,10562
-  private void extendQueryForStepsWhereConstraintTransacted(SequenceQueryWindow.extendQueryForStepsWhereConstraintTransacted262,10932
-  public MDIInternalFrame getSequenceQueryFrame(SequenceQueryWindow.getSequenceQueryFrame279,11525
-  public int getQueryResultFrameCnt(SequenceQueryWindow.getQueryResultFrameCnt288,11706
-  class QueryListener SequenceQueryWindow.QueryListener297,11958
-    public QueryListener(SequenceQueryWindow.QueryListener.QueryListener301,12055
-    public void actionPerformed(SequenceQueryWindow.QueryListener.actionPerformed305,12160
-    private void ensureSequenceStepsViewExists(SequenceQueryWindow.QueryListener.ensureSequenceStepsViewExists421,18538
-    private void renderStepQueryFrame(SequenceQueryWindow.QueryListener.renderStepQueryFrame449,19826
-    private void renderTransactionQueryFrame(SequenceQueryWindow.QueryListener.renderTransactionQueryFrame476,21113
-    private void renderFreeTokenQueryFrame(SequenceQueryWindow.QueryListener.renderFreeTokenQueryFrame500,22459
-    private void renderUnboundVariableQueryFrame(SequenceQueryWindow.QueryListener.renderUnboundVariableQueryFrame519,23511
-    private void renderDecisionQueryFrame(SequenceQueryWindow.QueryListener.renderDecisionQueryFrame538,24615
-    private StringBuffer getQueryStringBuf(SequenceQueryWindow.QueryListener.getQueryStringBuf554,25643
-    private String getKeyString(SequenceQueryWindow.QueryListener.getKeyString570,26318
-    private String getStepString(SequenceQueryWindow.QueryListener.getStepString582,26800
-    private List getStepsWhereConstraintTransacted(SequenceQueryWindow.QueryListener.getStepsWhereConstraintTransacted593,27168
-    private List getStepsWhereTokenTransacted(SequenceQueryWindow.QueryListener.getStepsWhereTokenTransacted616,28183
-    private List getStepsWhereVariableTransacted(SequenceQueryWindow.QueryListener.getStepsWhereVariableTransacted638,29096
-    private List getTransactionsForConstraint(SequenceQueryWindow.QueryListener.getTransactionsForConstraint661,30087
-    private List getTransactionsForToken(SequenceQueryWindow.QueryListener.getTransactionsForToken673,30544
-    private List getTransactionsForVariable(SequenceQueryWindow.QueryListener.getTransactionsForVariable685,30971
-    private List getTransactionsInRange(SequenceQueryWindow.QueryListener.getTransactionsInRange697,31416
-    private boolean isStepNumberValid(SequenceQueryWindow.QueryListener.isStepNumberValid730,32662
-    private List getFreeTokensAtStep(SequenceQueryWindow.QueryListener.getFreeTokensAtStep743,33150
-    private List getUnboundVariablesAtStep(SequenceQueryWindow.QueryListener.getUnboundVariablesAtStep769,34071
-    private List getDecisionsAtStep(SequenceQueryWindow.QueryListener.getDecisionsAtStep795,35033
-  class MajorTypeComboBox SequenceQueryWindow.MajorTypeComboBox824,35966
-    public MajorTypeComboBox(SequenceQueryWindow.MajorTypeComboBox.MajorTypeComboBox826,36013
-  class MinorTypeComboBox SequenceQueryWindow.MinorTypeComboBox837,36278
-    public MinorTypeComboBox(SequenceQueryWindow.MinorTypeComboBox.MinorTypeComboBox839,36325
-  class ConstraintTransComboBox SequenceQueryWindow.ConstraintTransComboBox849,36532
-    public ConstraintTransComboBox(SequenceQueryWindow.ConstraintTransComboBox.ConstraintTransComboBox851,36585
-  class TokenTransComboBox SequenceQueryWindow.TokenTransComboBox862,36848
-    public TokenTransComboBox(SequenceQueryWindow.TokenTransComboBox.TokenTransComboBox864,36896
-  class VariableTransComboBox SequenceQueryWindow.VariableTransComboBox875,37144
-    public VariableTransComboBox(SequenceQueryWindow.VariableTransComboBox.VariableTransComboBox877,37195
-  class MajorTypeListener SequenceQueryWindow.MajorTypeListener888,37452
-    public MajorTypeListener(SequenceQueryWindow.MajorTypeListener.MajorTypeListener893,37592
-    public void itemStateChanged(SequenceQueryWindow.MajorTypeListener.itemStateChanged899,37752
-    private void addStepField(SequenceQueryWindow.MajorTypeListener.addStepField941,39666
-  class MinorTypeListener SequenceQueryWindow.MinorTypeListener955,40116
-    public MinorTypeListener(SequenceQueryWindow.MinorTypeListener.MinorTypeListener960,40256
-    public void itemStateChanged(SequenceQueryWindow.MinorTypeListener.itemStateChanged966,40416
-    private void addIntegerField(SequenceQueryWindow.MinorTypeListener.addIntegerField991,41666
-    private void extendQueryForStepsWhereConstraintTransacted(SequenceQueryWindow.MinorTypeListener.extendQueryForStepsWhereConstraintTransacted1002,42097
-    private void extendQueryForStepsWhereTokenTransacted(SequenceQueryWindow.MinorTypeListener.extendQueryForStepsWhereTokenTransacted1010,42475
-    private void extendQueryForStepsWhereVariableTransacted(SequenceQueryWindow.MinorTypeListener.extendQueryForStepsWhereVariableTransacted1018,42823
-    private void extendQueryForTransactionsInRange(SequenceQueryWindow.MinorTypeListener.extendQueryForTransactionsInRange1026,43189
-  public void mouseEntered(SequenceQueryWindow.mouseEntered1053,44160
-  public void mouseExited(SequenceQueryWindow.mouseExited1062,44398
-  public void mouseClicked(SequenceQueryWindow.mouseClicked1071,44624
-  private void mouseRightPopupMenu(SequenceQueryWindow.mouseRightPopupMenu1080,44996
-  private void createCloseWindowsItem(SequenceQueryWindow.createCloseWindowsItem1089,45375
-  public void mousePressed(SequenceQueryWindow.mousePressed1118,46465
-  public void mouseReleased(SequenceQueryWindow.mouseReleased1127,46723
+public class SequenceQueryWindow SequenceQueryWindow63,2469
+  public SequenceQueryWindow(SequenceQueryWindow.SequenceQueryWindow180,8336
+  private void addMinorTypeBox(SequenceQueryWindow.addMinorTypeBox243,10580
+  private void refresh(SequenceQueryWindow.refresh251,10901
+  private void removeExtendedQueryComponents(SequenceQueryWindow.removeExtendedQueryComponents257,10995
+  private void extendQueryForStepsWhereConstraintTransacted(SequenceQueryWindow.extendQueryForStepsWhereConstraintTransacted268,11365
+  public MDIInternalFrame getSequenceQueryFrame(SequenceQueryWindow.getSequenceQueryFrame285,11958
+  public int getQueryResultFrameCnt(SequenceQueryWindow.getQueryResultFrameCnt294,12139
+  class QueryListener SequenceQueryWindow.QueryListener303,12391
+    public QueryListener(SequenceQueryWindow.QueryListener.QueryListener307,12488
+    public void actionPerformed(SequenceQueryWindow.QueryListener.actionPerformed311,12593
+    private void ensureSequenceStepsViewExists(SequenceQueryWindow.QueryListener.ensureSequenceStepsViewExists427,18971
+    private void renderStepQueryFrame(SequenceQueryWindow.QueryListener.renderStepQueryFrame455,20259
+    private void renderTransactionQueryFrame(SequenceQueryWindow.QueryListener.renderTransactionQueryFrame482,21546
+    private void renderFreeTokenQueryFrame(SequenceQueryWindow.QueryListener.renderFreeTokenQueryFrame506,22892
+    private void renderUnboundVariableQueryFrame(SequenceQueryWindow.QueryListener.renderUnboundVariableQueryFrame525,23944
+    private void renderDecisionQueryFrame(SequenceQueryWindow.QueryListener.renderDecisionQueryFrame544,25048
+    private StringBuffer getQueryStringBuf(SequenceQueryWindow.QueryListener.getQueryStringBuf560,26076
+    private String getKeyString(SequenceQueryWindow.QueryListener.getKeyString576,26751
+    private String getStepString(SequenceQueryWindow.QueryListener.getStepString588,27233
+    private List getStepsWhereConstraintTransacted(SequenceQueryWindow.QueryListener.getStepsWhereConstraintTransacted599,27601
+    private List getStepsWhereTokenTransacted(SequenceQueryWindow.QueryListener.getStepsWhereTokenTransacted622,28616
+    private List getStepsWhereVariableTransacted(SequenceQueryWindow.QueryListener.getStepsWhereVariableTransacted644,29529
+    private List getTransactionsForConstraint(SequenceQueryWindow.QueryListener.getTransactionsForConstraint667,30520
+    private List getTransactionsForToken(SequenceQueryWindow.QueryListener.getTransactionsForToken679,30977
+    private List getTransactionsForVariable(SequenceQueryWindow.QueryListener.getTransactionsForVariable691,31404
+    private List getTransactionsInRange(SequenceQueryWindow.QueryListener.getTransactionsInRange703,31849
+    private boolean isStepNumberValid(SequenceQueryWindow.QueryListener.isStepNumberValid736,33095
+    private List getFreeTokensAtStep(SequenceQueryWindow.QueryListener.getFreeTokensAtStep749,33583
+    private List getUnboundVariablesAtStep(SequenceQueryWindow.QueryListener.getUnboundVariablesAtStep775,34504
+    private List getDecisionsAtStep(SequenceQueryWindow.QueryListener.getDecisionsAtStep801,35466
+  class MajorTypeComboBox SequenceQueryWindow.MajorTypeComboBox830,36399
+    public MajorTypeComboBox(SequenceQueryWindow.MajorTypeComboBox.MajorTypeComboBox832,36446
+  class MinorTypeComboBox SequenceQueryWindow.MinorTypeComboBox843,36711
+    public MinorTypeComboBox(SequenceQueryWindow.MinorTypeComboBox.MinorTypeComboBox845,36758
+  class ConstraintTransComboBox SequenceQueryWindow.ConstraintTransComboBox855,36965
+    public ConstraintTransComboBox(SequenceQueryWindow.ConstraintTransComboBox.ConstraintTransComboBox857,37018
+  class TokenTransComboBox SequenceQueryWindow.TokenTransComboBox868,37281
+    public TokenTransComboBox(SequenceQueryWindow.TokenTransComboBox.TokenTransComboBox870,37329
+  class VariableTransComboBox SequenceQueryWindow.VariableTransComboBox881,37577
+    public VariableTransComboBox(SequenceQueryWindow.VariableTransComboBox.VariableTransComboBox883,37628
+  class MajorTypeListener SequenceQueryWindow.MajorTypeListener894,37885
+    public MajorTypeListener(SequenceQueryWindow.MajorTypeListener.MajorTypeListener899,38025
+    public void itemStateChanged(SequenceQueryWindow.MajorTypeListener.itemStateChanged905,38185
+    private void addStepField(SequenceQueryWindow.MajorTypeListener.addStepField947,40099
+  class MinorTypeListener SequenceQueryWindow.MinorTypeListener961,40549
+    public MinorTypeListener(SequenceQueryWindow.MinorTypeListener.MinorTypeListener966,40689
+    public void itemStateChanged(SequenceQueryWindow.MinorTypeListener.itemStateChanged972,40849
+    private void addIntegerField(SequenceQueryWindow.MinorTypeListener.addIntegerField997,42099
+    private void extendQueryForStepsWhereConstraintTransacted(SequenceQueryWindow.MinorTypeListener.extendQueryForStepsWhereConstraintTransacted1008,42530
+    private void extendQueryForStepsWhereTokenTransacted(SequenceQueryWindow.MinorTypeListener.extendQueryForStepsWhereTokenTransacted1016,42908
+    private void extendQueryForStepsWhereVariableTransacted(SequenceQueryWindow.MinorTypeListener.extendQueryForStepsWhereVariableTransacted1024,43256
+    private void extendQueryForTransactionsInRange(SequenceQueryWindow.MinorTypeListener.extendQueryForTransactionsInRange1032,43622
+  public void mouseEntered(SequenceQueryWindow.mouseEntered1059,44593
+  public void mouseExited(SequenceQueryWindow.mouseExited1068,44831
+  public void mouseClicked(SequenceQueryWindow.mouseClicked1077,45057
+  private void mouseRightPopupMenu(SequenceQueryWindow.mouseRightPopupMenu1086,45429
+  private void createCloseWindowsItem(SequenceQueryWindow.createCloseWindowsItem1095,45808
+  public void mousePressed(SequenceQueryWindow.mousePressed1124,46898
+  public void mouseReleased(SequenceQueryWindow.mouseReleased1133,47156

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.35 2004-03-06 02:22:36 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.36 2004-03-07 01:49:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -678,9 +678,11 @@ public class TemporalExtentView extends PartialPlanView  {
     createTimeMarkItem( timeMarkItem);
     mouseRightPopup.add( timeMarkItem);
 
-    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
-    createActiveTokenItem( activeTokenItem);
-    mouseRightPopup.add( activeTokenItem);
+    if (((PartialPlanViewSet) this.getViewSet()).getActiveToken() != null) {
+      JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+      createActiveTokenItem( activeTokenItem);
+      mouseRightPopup.add( activeTokenItem);
+    }
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();

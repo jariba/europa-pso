@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.30 2004-03-04 21:30:24 taylor Exp $
+# $Id: GETTING_STARTED,v 1.31 2004-03-07 01:49:25 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -129,6 +129,9 @@ transactions are rendered.
 Resource Views Mouse Operations
 --------------------------------
 Mouse over the resource names pops up a tool tip with the resource's key value.
+Mouse-Right on the resource names and on the resource transaction nodes offers 
+the selection "Open Navigator View".
+
 Mouse-Right on their "extent" backgrounds allows the setting of a vertical 
 time mark.  If both views are active for the same partial plan, the time mark 
 is rendered on the companion view, which is scrolled so the time mark is in 
@@ -184,7 +187,7 @@ Lays out the plan's token relations in directed graphs whose root nodes are the
 a  Content Filter specification is applied.  Mouse cursor over token nodes displays 
 "predicateName( parameterValues)", and the second line displays its slot key.
 
-Transaction View
+DB Transaction View
 ----------------
 Lists the transactions for this partial plan step.  Each entry includes the
 transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction source
@@ -232,10 +235,11 @@ connecting nodes, if needed.
 
 Token/Variable/Constraint/Slot/Object/Timeline/Resource Relationships
 ================================================================
-For all nodes, except empty slots, in the Constraint Network, the Temporal
-Extent, the Timeline, and the Token Network views, there is a 
-Mouse-Right selection "Open Navigator View" which allows navigation
-through all relationships in the partial plan data base.
+For all nodes, except empty slots, in the Constraint Network, the 
+Resource Profile, the Resource Transaction, the Temporal Extent, the 
+Timeline, and the Token Network views, there is a Mouse-Right selection 
+"Open Navigator View" which allows navigation through all relationships 
+in the partial plan data base.
 
 
 Content Filtering

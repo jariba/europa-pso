@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.47 2004-03-03 02:14:22 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.48 2004-03-07 01:49:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1424,9 +1424,12 @@ public class ConstraintNetworkView extends PartialPlanView {
       constraintNetworkView.createRaiseContentSpecItem( raiseContentSpecItem);
       mouseRightPopup.add( raiseContentSpecItem);
     
-      JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
-      createActiveTokenItem( activeTokenItem);
-      mouseRightPopup.add( activeTokenItem);
+      if (((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).
+          getActiveToken() != null) {
+        JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+        createActiveTokenItem( activeTokenItem);
+        mouseRightPopup.add( activeTokenItem);
+      }
 
       JMenuItem changeLayoutItem = null;
       if(constraintNetworkView.getNewLayout().layoutHorizontal()) {

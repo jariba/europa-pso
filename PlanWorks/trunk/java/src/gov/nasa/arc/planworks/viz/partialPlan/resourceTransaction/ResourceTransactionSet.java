@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.7 2004-03-06 02:22:35 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.8 2004-03-07 01:49:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,7 +15,6 @@ package gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,12 +26,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoRectangle;
-import com.nwoods.jgo.JGoStroke;
-import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
@@ -44,15 +38,10 @@ import gov.nasa.arc.planworks.db.PwIntervalDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
-import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.util.Algorithms;
-import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 
 
@@ -229,13 +218,14 @@ public class ResourceTransactionSet extends BasicNode {
 //                           " transEndX " + transEndX);
       int yDelta = ViewConstants.RESOURCE_TRANSACTION_HEIGHT;
       // force min width to 2, so that toolTip will show up
-      TransactionObject transactionObject =
-        new TransactionObject( transaction,
-                               new Point( transStartX, currentYLoc),
-                               new Dimension( Math.max( transEndX - transStartX, 2),
-                                              yDelta));
+      ResourceTransactionNode transactionObject =
+        new ResourceTransactionNode( transaction,
+                                     new Point( transStartX, currentYLoc),
+                                     new Dimension( Math.max( transEndX - transStartX, 2),
+                                                    yDelta), resourceTransactionView);
       transactionObject.setResizable( false); transactionObject.setDraggable( false);
-      transactionObject.setSelectable( false);
+      // allow Mouse-Right menu
+      // transactionObject.setSelectable( false);
       resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionObject);
       currentYLoc += yDelta;
       transactionObjectList.add( transactionObject);
@@ -255,134 +245,6 @@ public class ResourceTransactionSet extends BasicNode {
                           "; value = " + DbConstants.PLUS_INFINITY);
     }
   } // end checkIntervalForInfinity
-
-
-  /**
-   * <code>TransactionObject</code> - render transaction as a rectangle
-   *
-   */
-  public  class TransactionObject extends JGoRectangle {
-
-    private PwResourceTransaction transaction;
-
-    /**
-     * <code>TransactionObject</code> - constructor 
-     *
-     * @param transaction - <code>PwResourceTransaction</code> - 
-     * @param location - <code>Point</code> - 
-     * @param size - <code>Dimension</code> - 
-     */
-    public TransactionObject( PwResourceTransaction transaction, Point location,
-                              Dimension size) {
-      super( location, size);
-      this.transaction = transaction;
-    }
-
-    /**
-     * <code>getTransaction</code>
-     *
-     * @return - <code>PwResourceTransaction</code> - 
-     */
-    public PwResourceTransaction getTransaction() {
-      return transaction;
-    }
-
-    /**
-     * <code>getToolTipText</code>
-     *
-     * @return - <code>String</code> - 
-     */
-    public final String getToolTipText() {
-      StringBuffer tip = new StringBuffer( "<html>");
-      tip.append( transaction.getInterval().toString());
-      tip.append( ": ");
-      double maxDelta = transaction.getQuantityMax();
-      if (maxDelta > 0) {
-        tip.append( "+");
-      }
-      tip.append( new Double( maxDelta).toString());
-      tip.append( ", ");
-      double minDelta = transaction.getQuantityMin();
-      if (minDelta > 0) {
-        tip.append( "+");
-      }
-      tip.append( new Double( minDelta).toString());
-      tip.append( "<br>key = ");
-      tip.append( transaction.getId().toString());
-      tip.append( "</html>");
-      return tip.toString();
-    } // end getToolTipText
-
-  /**
-   * <code>getToolTipText</code> - when over 1/8 scale overview resource node
-   *
-   * @param isOverview - <code>boolean</code> - 
-   * @return - <code>String</code> - 
-   */
-  public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( resource.getName());
-    tip.append( "<br>transaction key=");
-    tip.append( transaction.getId().toString());
-    tip.append( "</html>");
-    return tip.toString();
-  } // end getToolTipText
-
-    /**
-     * <code>doMouseClick</code> - 
-     *
-     * @param modifiers - <code>int</code> - 
-     * @param docCoords - <code>Point</code> - 
-     * @param viewCoords - <code>Point</code> - 
-     * @param view - <code>JGoView</code> - 
-     * @return - <code>boolean</code> - 
-     */
-    public final boolean doMouseClick( final int modifiers, final Point docCoords,
-                                       final Point viewCoords, final JGoView view) {
-      JGoObject obj = view.pickDocObject( docCoords, false);
-      //         System.err.println( "doMouseClick obj class " +
-      //                             obj.getTopLevelObject().getClass().getName());
-      TransactionObject transactionObject = (TransactionObject) obj.getTopLevelObject();
-      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
-      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        //       mouseRightPopupMenu( viewCoords);
-        //       return true;
-      }
-      return false;
-    } // end doMouseClick   
-
-  } // end class TransactionObject
-
-
-
-//   /**
-//    * <code>getToolTipText</code> 
-//    *
-//    * @return - <code>String</code> - 
-//    */
-//   public final String getToolTipText() {
-//     StringBuffer tip = new StringBuffer( "<html>key = ");
-//     tip.append( resource.getId().toString());
-//     tip.append( "</html>");
-//     return tip.toString();
-//   } // end getToolTipText
-
-
-//   /**
-//    * <code>getToolTipText</code> - when over 1/8 scale overview resource node
-//    *
-//    * @param isOverview - <code>boolean</code> - 
-//    * @return - <code>String</code> - 
-//    */
-//   public final String getToolTipText( final boolean isOverview) {
-//     StringBuffer tip = new StringBuffer( "<html> ");
-//     tip.append( resource.getName());
-//     tip.append( "<br>key=");
-//     tip.append( resource.getId().toString());
-//     tip.append( "</html>");
-//     return tip.toString();
-//   } // end getToolTipText
 
   /**
    * <code>toString</code>
@@ -448,30 +310,15 @@ public class ResourceTransactionSet extends BasicNode {
           MDIInternalFrame navigatorFrame = resourceTransactionView.openNavigatorViewFrame();
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = resourceTransactionView.getPartialPlan();
-//           contentPane.add( new NavigatorView( ResourceTransactionSet.this, partialPlan,
-//                                               resourceTransactionView.getViewSet(),
-//                                               navigatorFrame));
+          //           contentPane.add( new NavigatorView( ResourceTransactionSet.this, partialPlan,
+          //                                               resourceTransactionView.getViewSet(),
+          //                                               navigatorFrame));
         }
       });
     mouseRightPopup.add( navigatorItem);
 
-    JMenuItem activeResourceItem = new JMenuItem( "Set Active Resource");
-    final PwResource activeResource = ResourceTransactionSet.this.getResource();
-    // check for empty slots
-    if (activeResource != null) {
-      activeResourceItem.addActionListener( new ActionListener() {
-          public final void actionPerformed( final ActionEvent evt) {
-            ((PartialPlanViewSet) resourceTransactionView.getViewSet()).
-              setActiveResource( activeResource);
-            System.err.println( "ResourceTransactionSet setActiveResource: " +
-                                activeResource.getName() +
-                                " (key=" + activeResource.getId().toString() + ")");
-          }
-        });
-      mouseRightPopup.add( activeResourceItem);
 
-      NodeGenerics.showPopupMenu( mouseRightPopup, resourceTransactionView, viewCoords);
-    }
+    NodeGenerics.showPopupMenu( mouseRightPopup, resourceTransactionView, viewCoords);
   } // end mouseRightPopupMenu
 
 
