@@ -24,14 +24,10 @@
 		<fileset dir="${PLANWORKS_ROOT}/xml/db/logs" includes="*.log"/>
 		<fileset dir="${PLANWORKS_ROOT}/xml/db/logs" includes="*.log*"/>
 	</delete>
-	<javac srcdir="${PLANWORKS_ROOT}/java/src/gov/nasa/arc/planworks/db/test" classpathref="exist.test.path" fork="true"/>
 	<java dir="${PLANWORKS_ROOT}/java/src" classname="gov.nasa.arc.planworks.db.test.ExistTest" fork="true" maxmemory="${arg_gcMax}">
 		<classpath refid="exist.test.path"/>
 		<arg line="-cs -verbose:gc -Xms${arg_gcInit}m -Dplanworks.root=${PLANWORKS_ROOT} -Duser=${env.USER} -Dexist.initdb=true -Dexist.home=${EXIST_HOME} -Dexist.conf.xml=${eXist_conf_file} gov.nasa.arc.planworks.db.test.ExistTest ${env.OSTYPE} ${PLANWORKS_ROOT}/${xml_files_dir}"/>
 	</java>
-	<delete>
-		<fileset dir="${PLANWORKS_ROOT}/java/src/gov/nasa/arc/planworks/db/test" includes="*.class"/>
-	</delete>
 </target>
 <target name="totalbuild">
 	<ant dir="../java"/>
