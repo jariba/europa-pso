@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.18 2003-11-11 02:44:50 taylor Exp $
+# $Id: GETTING_STARTED,v 1.19 2003-11-13 23:21:16 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -78,7 +78,8 @@ The active node ("opened" or "closed" by Mouse-Left click) is positioned in
 the center of the view after layout.
 
 Mouse cursor over token nodes displays "predicateName( parameterValues)"
-on the first line, and "Mouse-L: open nearest variables".  Mouse cursor over 
+on the first line, its slot key value on the second line, and 
+"Mouse-L: open nearest variables" on the third line.  Mouse cursor over 
 variable nodes displays "variableType" on the first line, and
 "Mouse-L: open nearest token links/constraints" on the second line.  
 Mouse cursor over constraint nodes displays "constraintType" on the first 
@@ -91,14 +92,18 @@ and end variable values.  The range of extent is shown by a horizontal line.
 The extent line and associated triangles are displayed immediately below 
 each predicate node.  Downward triangles are start times, upward triangles 
 are end times, leftward triangles are -Infinity, and rightward triangles are 
-+Infinity.  Mouse cursorover start/end interval "triangles" displays their 
++Infinity.  Mouse cursor over start/end interval "triangles" displays their 
 time scale value.  Mouse cursor over a token's duration  line displays the 
-duration interval.  Clicking Mouse-Right on the view background will pop-up a menu,
-one of whose selections is "Set Time Scale Line".  Selecting it will cause a
-red vertical time scale line to be drawn.  A Mouse-Right "Set Time Scale Line"
-selection at another location will move the time scale line.  Applying a 
-Content Specification filter will cause the view to be redrawn with only the 
-filtered predicates.
+duration interval.  Mouse cursor over the token node displays 
+"predicateName( parameterValues)" on the first line, and its slot key value 
+on the second line.
+
+Clicking Mouse-Right on the view background will pop-up a menu, one of whose 
+selections is "Set Time Scale Line".  Selecting it will cause a red vertical 
+time scale line to be drawn.  A Mouse-Right "Set Time Scale Line" selection 
+at another location will move the time scale line.  Applying a Content 
+Specification filter will cause the view to be redrawn with only the filtered 
+predicates.
 
 Timeline View
 -------------
@@ -109,14 +114,15 @@ Adjacent slots whose end and start intervals are equal will be drawn abutting
 each other.  Those that are not, will be drawn with a fixed space between them,
 and the later slot will have its time interval labels drawn "lower" than
 the previous slot, to prevent overlap.  Mouse cursor over timeline slots displays 
-the slot's "predicateName( parameterValues)".
+the slot's "predicateName( parameterValues)", and the second line displays the
+token keys(s).
 
 Token Network View
 ------------------
 Lays out the plan's token relations in directed graphs whose root nodes are the 
 "supreme" master tokens.  The Token Network View is freshly layed out after 
 a  Content Spec filter is applied.  Mouse cursor over token nodes displays 
-"predicateName( parameterValues)".  
+"predicateName( parameterValues)", and the second line displays its slot key.
 
 Transaction View
 ----------------
@@ -229,6 +235,10 @@ of the window brings up this dialog.
 
 The column header nodes of the "Query Results for ..." windows, offer sorting 
 of that columns's values, alternately in ascending order and desending order.
+
+The "Step" column values of Query Results windows for "Steps" and "Transactions" 
+queries, offer a Mouse-Right popup with actions on the partial plan views for 
+that step.
 
 
 Screen Management

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.28 2003-10-28 18:01:25 taylor Exp $
+// $Id: TokenNode.java,v 1.29 2003-11-13 23:21:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -33,6 +33,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -55,6 +56,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 public class TokenNode extends BasicNode {
 
   protected PwToken token;
+  protected PwSlot slot;
   protected Point tokenLocation;
   protected boolean isFreeToken;
   protected PartialPlanView partialPlanView;
@@ -66,16 +68,18 @@ public class TokenNode extends BasicNode {
    * <code>TokenNode</code> - constructor 
    *
    * @param token - <code>PwToken</code> - 
+   * @param slot - <code>PwSlot</code> - 
    * @param tokenLocation - <code>Point</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public TokenNode( PwToken token, Point tokenLocation, Color backgroundColor,
+  public TokenNode( PwToken token, PwSlot slot, Point tokenLocation, Color backgroundColor,
                     boolean isFreeToken, boolean isDraggable, PartialPlanView partialPlanView) {
     super();
     this.token = token;
+    this.slot = slot;
     this.tokenLocation = tokenLocation;
     this.isFreeToken = isFreeToken;
     this.partialPlanView = partialPlanView;
@@ -166,11 +170,20 @@ public class TokenNode extends BasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html> ");
     if (token != null) {
-      return token.toString();
+      tip.append( token.toString());
     } else {
-      return "";
+      tip.append( "<empty>");
     }
+    // check for free token
+    if (slot != null) {
+      tip.append( "<br>");
+      tip.append( "slot key=");
+      tip.append( slot.getId().toString());
+    }
+    tip.append( "</html>");
+    return tip.toString();
   } // end getToolTipText
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.8 2003-11-11 02:44:52 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.9 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,6 +135,35 @@ public class PartialPlanViewSet extends ViewSet {
     return views;
   }
 
+  /**
+   * <code>getPartialPlanViews</code>
+   *
+   * @param numToReturn - <code>int</code> - 0 => return all views
+   * @return - <code>List</code> - of PartialPlanView
+   */
+  public List getPartialPlanViews( int numToReturn) {
+    int numFound = 0;
+    List partialPlanViewList = new ArrayList();
+    List windowKeyList = new ArrayList( views.keySet());
+    Iterator windowListItr = windowKeyList.iterator();
+    while (windowListItr.hasNext()) {
+      Object viewWindowKey = (Object) windowListItr.next();
+      MDIInternalFrame viewFrame = (MDIInternalFrame) views.get( viewWindowKey);
+      Container contentPane = viewFrame.getContentPane();
+      Component[] components = contentPane.getComponents();
+      for (int i = 0, n = components.length; i < n; i++) {
+        Component component = components[i];
+        if (component instanceof PartialPlanView) {
+          partialPlanViewList.add( (PartialPlanView) component);
+          numFound++;
+          if ((numToReturn != 0) && (numFound >= numToReturn)) {
+            return partialPlanViewList;
+          }
+        }
+      }
+    }
+    return partialPlanViewList;
+  } // end getAllPartialPlanViews
 
 } // end class PartialPlanViewSet
 

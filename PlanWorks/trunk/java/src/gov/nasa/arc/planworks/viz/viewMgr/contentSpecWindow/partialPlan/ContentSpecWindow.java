@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.4 2003-11-11 02:44:53 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.5 2003-11-13 23:21:17 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -49,6 +49,8 @@ import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+
 
 /**
  * <code>ContentSpecWindow</code> -
@@ -372,6 +374,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
         catch(IllegalArgumentException e){return;}
 
         System.err.println("Applying Specification...");
+        forceConstraintNetworkViewLayout();
         try {
           List specList = new ArrayList();
           specList.add( timeline);
@@ -393,6 +396,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
         specWindow.contentSpec.printSpec();
       }
       else if(ae.getActionCommand().equals("Reset Spec")) {
+        forceConstraintNetworkViewLayout();
         
         try{specWindow.contentSpec.resetSpec();}catch(Exception e){}
         specWindow.timeIntervalGroup.reset();
@@ -404,6 +408,20 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
       }
     }
   } // end class SpecButtonListener
+
+  private void forceConstraintNetworkViewLayout() {
+    int numToReturn = 0; // all of them
+    List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
+    Iterator viewsItr = partialPlanViews.iterator();
+    while (viewsItr.hasNext()) {
+      PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+      if (partialPlanView instanceof ConstraintNetworkView) {
+        ((ConstraintNetworkView) partialPlanView).setLayoutNeeded();
+        ((ConstraintNetworkView) partialPlanView).setFocusNode( null);
+        break;
+      }
+    }
+  } // end forceConstraintNetworkViewLayout
 
   /**
    * mouseEntered - implement MouseListener - do nothing
@@ -442,30 +460,16 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     PwPartialPlan partialPlan = contentSpec.getPartialPlan();
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
-
-    List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
-    Iterator windowListItr = windowKeyList.iterator();
-    foundIt:
-    while (windowListItr.hasNext()) {
-      Object viewWindowKey = (Object) windowListItr.next();
-      MDIInternalFrame viewFrame =
-        (MDIInternalFrame) partialPlanViewSet.getViews().get( viewWindowKey);
-      Container contentPane = viewFrame.getContentPane();
-      Component[] components = contentPane.getComponents();
-      for (int i = 0, n = components.length; i < n; i++) {
-        Component component = components[i];
-        if (component instanceof PartialPlanView) {
-          ((PartialPlanView) component).createOpenViewItems( partialPlan, partialPlanName,
-                                                             planSequence, mouseRightPopup, "");
-
-          ((VizView) component).createAllViewItems( partialPlan, partialPlanName,
+    int numToReturn = 1;
+    List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
+    if (partialPlanViews.size() > 0) {
+      ((PartialPlanView) partialPlanViews.get(0)).
+        createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup, "");
+      ((PartialPlanView) partialPlanViews.get(0)).
+        createAllViewItems( partialPlan, partialPlanName,
                                                     planSequence, mouseRightPopup);
-          break foundIt;
-        }
-      }
-
+      NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     }
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
   /**

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.54 2003-11-11 02:44:51 taylor Exp $
+# $Id: README,v 1.55 2003-11-13 23:21:16 taylor Exp $
 #
 
 SUMMARY
@@ -24,6 +24,22 @@ o The Content Spec window's background areas now offer Mouse-Right
 o The Sequence Query dialog for "Steps" queries now accepts an empty
   key slot, which will return the steps for all keys for the specified 
   contraint, token, or variable transaction type.
+o The Sequence Query dialog no longer requires the use of the "Reset Query"
+  button between successive queries.
+o The object key values displayed in the Timeline view are now specified as
+  to type: timeline, slot, and token.  The token key(s) are displayed as
+  the second line of the slot node tooltip.
+o Slotted tokens in all partial plan views, except for Transaction view,
+  have a tooltip with a second line which displays their slot key value.
+o Clicking on the "Apply Spec" and "Reset Spec" buttons of the Content
+  Spec dialog cause the Constraint Network view to displayed with a
+  fresh layout.
+o The "Step" column values of Query Results windows for "Steps" and 
+  "Transactions" queries, now offer a Mouse-Right popup with actions
+  on the partial plan views for that step.
+
+o  GNATS PRs and CRs completed:
+   #2172: Invalid behaviour for sequence windows after closing and opening.
 
 
 CVS CHECKOUT

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.14 2003-11-06 00:02:19 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.15 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -257,9 +257,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                                   (((VariableNode) focusNode).inLayout())) ||
                                  ((focusNode instanceof ConstraintNode) &&
                                   (((ConstraintNode) focusNode).inLayout())));
-      if (focusNode != null) {
-        NodeGenerics.focusViewOnNode( focusNode, isHighlightNode, jGoView);
-      }
+      NodeGenerics.focusViewOnNode( focusNode, isHighlightNode, jGoView);
       isLayoutNeeded = false;
     }
     this.setVisible( true);
@@ -376,10 +374,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true;
     Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+    PwSlot slot = null;
     while (freeTokenItr.hasNext()) {
       PwToken token = (PwToken) freeTokenItr.next();
       ConstraintNetworkTokenNode freeTokenNode =
-        new ConstraintNetworkTokenNode( token, new Point( x, y), backgroundColor,
+        new ConstraintNetworkTokenNode( token, slot, new Point( x, y), backgroundColor,
                                         isFreeToken, isDraggable, this);
       if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
         x += freeTokenNode.getSize().getWidth() * 0.5;
@@ -409,7 +408,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
         ConstraintNetworkTokenNode tokenNode =
-          new ConstraintNetworkTokenNode( token, new Point( x, y), backgroundColor,
+          new ConstraintNetworkTokenNode( token, slot, new Point( x, y), backgroundColor,
                                           isFreeToken, isDraggable, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
           x += tokenNode.getSize().getWidth() * 0.5;

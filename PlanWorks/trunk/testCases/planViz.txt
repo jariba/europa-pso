@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.10 2003-11-11 02:44:53 taylor Exp $
+// $Id: planViz.txt,v 1.11 2003-11-13 23:21:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -217,10 +217,14 @@ Method:
      "Project->Delete Sequence ...".
   2. Delete "test-seq-3" sequence by using menu-bar selection of
      "Project->Delete Sequence ...".
+  3. Re-add "test-seq-3" sequence by using menu-bar selection of
+     "Project->Add Sequence ...".
 
 Post-conditions:
-  1. Four windows remain: the ContentSpec, the SequenceQuery, the TimelineView, 
-     and the SequenceStepsView of "test-seq-1".
+  1. Method:2 - Four windows remain: the ContentSpec, the SequenceQuery,
+     the TimelineView, and the SequenceStepsView of "test-seq-1".
+  2. Method:3 - there are now six windows: the SequenceQuery, and
+     SequenceStepsView of "test-seq-3" were added.
 
 Requirements: 3.10
 
@@ -265,20 +269,23 @@ Post-conditions:
      variable nodes (ovals) and constraint nodes (left/right pointed rectangles)
      are linked to the token nodes "opened" in Method:6.
      Mouse cursor over token nodes displays "predicateName( parameterValues)"
-     on the first line, and "Mouse-L: open nearest variables".  Mouse cursor over 
+     on the first line, its slot key value on the second line, and 
+     "Mouse-L: open nearest variables" on the third line.  Mouse cursor over 
      variable nodes displays "variableType" on the first line, and
      "Mouse-L: open nearest token links/constraints" on the second line.  
      Mouse cursor over constraint nodes displays "constraintType" on the first 
      line, and "Mouse-L: open nearest token variables" on the second line. 
   2. All token nodes appear in the Temporal Extent View.  Mouse cursor over 
-     the token nodes displays "predicateName( parameterValues)".  Mouse cursor
-     over start/end interval "triangles" displays their time scale value.
-     Mouse cursor over a token's duration  line displays the duration
-     interval.
+     a token node displays "predicateName( parameterValues)", and its slot 
+     key value on the second line.  Mouse cursor over start/end interval 
+     "triangles" displays their time scale value.  Mouse cursor over a token's 
+     duration line displays the duration interval.
   3. Timeline nodes and slot nodes appear in the Timeline View.  Mouse cursor
-     over timeline slots displays the slot's "predicateName( parameterValues)".
+     over timeline slots displays the slot's "predicateName( parameterValues)",
+     and the second line displays the token keys(s).
   4. Token nodes, with "master roots" appear in the Token Network View.
-     Mouse cursor over token nodes displays "predicateName( parameterValues)".
+     Mouse cursor over token nodes displays "predicateName( parameterValues)",
+     and the second line displays its slot key.
   5. Transaction entries appear in the Transaction View.  All transaction
      entries have values for OBJ_NAME.  Entries with TRANSACTION_TYPEs of
      VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  Entries with 
@@ -489,7 +496,9 @@ Method:
      Sort all the columns.
   9. On the background of the "SequenceQuery ..." dialog, click Mouse-Right
      and select "Discard Query Results Windows".
-
+ 10. On a "Step" column value of both a "Steps" and "Transactions" QueryResults
+     window, click Mouse-Right to popup a menu of individual and group
+     partial plan view operations.  Select one of the options.
 
 Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View windows appear.
@@ -507,6 +516,7 @@ Post-conditions:
      in the proper order.
   9. Method:9 - All "QueryResults" windows created from the "SequenceQuery ..." 
      dialog, will be deleted.
+ 10. Method:10 - The selected partial plan view(s) will be opened.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 

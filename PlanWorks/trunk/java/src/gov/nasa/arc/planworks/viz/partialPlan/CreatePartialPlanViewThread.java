@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.2 2003-11-06 00:02:18 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.3 2003-11-13 23:21:17 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -54,6 +54,13 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
     this.isInvokeAndWait = false;
   }  // end constructor
 
+  /**
+   * <code>CreatePartialPlanViewThread</code> - constructor 
+   *
+   * @param viewName - <code>String</code> - 
+   * @param menuItem - <code>PartialPlanViewMenuItem</code> - 
+   * @param isInvokeAndWait - <code>boolean</code> - 
+   */
   public CreatePartialPlanViewThread( String viewName,
                                       PartialPlanViewMenuItem menuItem,
                                       boolean isInvokeAndWait) {

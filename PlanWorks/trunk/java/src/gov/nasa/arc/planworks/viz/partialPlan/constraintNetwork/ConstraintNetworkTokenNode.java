@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.5 2003-11-06 00:02:19 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.6 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -36,6 +36,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -58,6 +59,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
  */
 public class ConstraintNetworkTokenNode extends TokenNode {
 
+  private PwSlot slot;
   private Map connectedTokenNodeMap;
   private List variableNodeList; // element VariableNode
   private boolean areNeighborsShown;
@@ -70,18 +72,20 @@ public class ConstraintNetworkTokenNode extends TokenNode {
    * <code>ConstraintNetworkTokenNode</code> - constructor 
    *
    * @param token - <code>PwToken</code> - 
+   * @param slot - <code>PwSlot</code> - 
    * @param tokenLocation - <code>Point</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public ConstraintNetworkTokenNode( PwToken token, Point tokenLocation,
+  public ConstraintNetworkTokenNode( PwToken token, PwSlot slot, Point tokenLocation,
                                      Color backgroundColor, boolean isFreeToken,
                                      boolean isDraggable,
                                      PartialPlanView partialPlanView) {
-    super( token, tokenLocation, backgroundColor, isFreeToken, isDraggable,
+    super( token, slot, tokenLocation, backgroundColor, isFreeToken, isDraggable,
            partialPlanView);
+    this.slot = slot;
     variableNodeList = new ArrayList();
     areNeighborsShown = false;
     hasDiscoveredLinks = false;
@@ -121,16 +125,27 @@ public class ConstraintNetworkTokenNode extends TokenNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html> ");
     String operation = null;
     if (areNeighborsShown) {
       operation = "close";
     } else {
       operation = "open";
     }
-    return "<html> " + token.toString() +
-      "<br> Mouse-L: " + operation + " nearest variables</html>";
+    if (token != null) {
+      tip.append( token.toString());
+    } else {
+      tip.append( "<empty>");
+    }
+    // check for free token
+    if (slot != null) {
+      tip.append( "<br>");
+      tip.append( "slot key=");
+      tip.append( slot.getId().toString());
+    }
+    tip.append( "<br> Mouse-L: ").append( operation).append( " nearest variables</html>");
+    return tip.toString();
   } // end getToolTipText
-
 
   /**
    * <code>getVariableNodeList</code>

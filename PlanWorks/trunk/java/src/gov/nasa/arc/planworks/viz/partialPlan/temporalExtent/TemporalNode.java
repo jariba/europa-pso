@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.4 2003-10-08 19:10:28 taylor Exp $
+// $Id: TemporalNode.java,v 1.5 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -314,13 +314,21 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html> ");
     if (token != null) {
-      return token.toString();
+      tip.append( token.toString());
     } else {
-      return "";
+      tip.append( "<empty>");
     }
+    // check for free token
+    if (slot != null) {
+      tip.append( "<br>");
+      tip.append( "slot key=");
+      tip.append( slot.getId().toString());
+    }
+    tip.append( "</html>");
+    return tip.toString();
   } // end getToolTipText
-
 
   /**
    * <code>getStart</code> - implements Extent
