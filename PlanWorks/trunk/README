@@ -4,47 +4,21 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.63 2003-12-31 01:02:19 taylor Exp $
+# $Id: README,v 1.64 2004-01-02 18:58:57 taylor Exp $
 #
 
 SUMMARY
 =======
-o Improved diagnostics for "Invalid Sequence Directory" error dialog.
-o The "Find Transaction by Obj_Key" Mouse-right popup selection and
-  the transaction entry column "OBJ_KEY", have now been properly
-  restricted to the partial plan Transaction View, the "Steps"
-  Sequence Query for "Where ..." queries with blank "Key" entries and
-  "With ..." queries, and the "Transactions" Sequence Query for
-  "In Range ..." queries.  The OBJ_KEY" value found using
-  "Find Transaction by Obj_Key" is now highlighted.
-o The Temporal Extent View now has an additional Mouse-Right selection:
-  "Hide/Show Node Labels".  These node labels are now aligned with
-  the earliest start times.
-o The Content Spec dialog has been renamed Content Filter.
-o The "window bar" buttons at the bottom of the DeskTop Frame have been
-  removed.  Use the "Window" pull-down menu.
-o The Constraint Network View's variable node tool tips have been
-  augmented to show the PARAMETER_VAR names and OBJECT_VAR names.
-o The Sequence Query dialog now has two new options: "Free Tokens At Step" 
-  and "Unbound Variables At Step".
-o Providing the Temporal Extent View is open for a partial plan step which
-  has a Timeline View, Mouse-Right on the Timeline View background offers
-  "Enable/Disable Auto Snap", which when enabled will cause the Temporal 
-  Extent View's focus to follow the mouse cursor's movement over Timeline 
-  View slots and free tokens.
+o In the Temporal Extent View, Mouse-Right on the background now offers
+  "Show Earliest" and "Show Latest", as options to "Show Intervals".
 
 o  GNATS PRs and CRs completed:
-   #2190: Align boxes in Temporal extent view with earliest start.
-   #2191: Integrate Localized Temporal Extent Vizualization with Timeline/Token view.
-   #2193: Provide stepping forward and backward capability for all views.
-   #2194: Rename Content Specification to Content Filter.
-   #2199: Provide actual parameter names.
-   #2206: Need ability to turn off auto outputing writing when using the planwriter.
+   #2192: Snap to Earliest Start/Latest end in Temporal extent view.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_11 PlanWorks
+> cvs co -r PW_M_12 PlanWorks
 
 
 PREREQUISITES
@@ -153,6 +127,41 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+30december03: Milestone 11
+=======
+o Improved diagnostics for "Invalid Sequence Directory" error dialog.
+o The "Find Transaction by Obj_Key" Mouse-right popup selection and
+  the transaction entry column "OBJ_KEY", have now been properly
+  restricted to the partial plan Transaction View, the "Steps"
+  Sequence Query for "Where ..." queries with blank "Key" entries and
+  "With ..." queries, and the "Transactions" Sequence Query for
+  "In Range ..." queries.  The OBJ_KEY" value found using
+  "Find Transaction by Obj_Key" is now highlighted.
+o The Temporal Extent View now has an additional Mouse-Right selection:
+  "Hide/Show Node Labels".  These node labels are now aligned with
+  the earliest start times.
+o The Content Spec dialog has been renamed Content Filter.
+o The "window bar" buttons at the bottom of the DeskTop Frame have been
+  removed.  Use the "Window" pull-down menu.
+o The Constraint Network View's variable node tool tips have been
+  augmented to show the PARAMETER_VAR names and OBJECT_VAR names.
+o The Sequence Query dialog now has two new options: "Free Tokens At Step" 
+  and "Unbound Variables At Step".
+o Providing the Temporal Extent View is open for a partial plan step which
+  has a Timeline View, Mouse-Right on the Timeline View background offers
+  "Enable/Disable Auto Snap", which when enabled will cause the Temporal 
+  Extent View's focus to follow the mouse cursor's movement over Timeline 
+  View slots and free tokens.
+
+o  GNATS PRs and CRs completed:
+   #2190: Align boxes in Temporal extent view with earliest start.
+   #2191: Integrate Localized Temporal Extent Vizualization with Timeline/Token view.
+   #2193: Provide stepping forward and backward capability for all views.
+   #2194: Rename Content Specification to Content Filter.
+   #2199: Provide actual parameter names.
+   #2206: Need ability to turn off auto outputing writing when using the planwriter.
+
 
 21november03: Milestone 10
 ==========================

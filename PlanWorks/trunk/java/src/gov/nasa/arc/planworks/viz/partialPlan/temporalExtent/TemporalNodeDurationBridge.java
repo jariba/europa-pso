@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeDurationBridge.java,v 1.3 2003-12-20 01:54:51 taylor Exp $
+// $Id: TemporalNodeDurationBridge.java,v 1.4 2004-01-02 18:58:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -54,18 +54,26 @@ public class TemporalNodeDurationBridge extends JGoStroke {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    StringBuffer buffer = new StringBuffer( "[");
-    if (minDurationTime == DbConstants.MINUS_INFINITY_INT) {
-      buffer.append( "-Infinity");
+    if (minDurationTime != maxDurationTime) {
+      StringBuffer buffer = new StringBuffer( "[");
+      if (minDurationTime == DbConstants.MINUS_INFINITY_INT) {
+        buffer.append( "-Infinity");
+      } else {
+        buffer.append( String.valueOf( minDurationTime));
+      }
+      if (maxDurationTime == DbConstants.PLUS_INFINITY_INT) {
+        buffer.append( ", ").append( "Infinity");
+      } else {
+        buffer.append( ", ").append( String.valueOf( maxDurationTime));
+      }
+      return  buffer.append( "]").toString();
     } else {
-      buffer.append( String.valueOf( minDurationTime));
+      if (maxDurationTime == DbConstants.PLUS_INFINITY_INT) {
+        return "Infinity";
+      } else {
+        return String.valueOf( maxDurationTime);
+      }
     }
-    if (maxDurationTime == DbConstants.PLUS_INFINITY_INT) {
-      buffer.append( ", ").append( "Infinity");
-    } else {
-      buffer.append( ", ").append( String.valueOf( maxDurationTime));
-    }
-    return  buffer.append( "]").toString();
   }
 
 } // end class TemporalNodeDurationBridge

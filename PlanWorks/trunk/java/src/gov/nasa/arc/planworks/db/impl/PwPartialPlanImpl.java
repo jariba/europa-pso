@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.63 2003-12-29 21:21:33 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.64 2004-01-02 18:58:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -130,7 +130,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
     //cleanTransactions();
-    //checkPlan();
+    checkPlan();
   } // end createPartialPlan
 
   //  private void loadFiles(File planDir) throws ResourceNotFoundException {

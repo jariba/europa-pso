@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.21 2003-12-31 01:02:21 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.22 2004-01-02 18:58:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -76,6 +76,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class TemporalExtentView extends PartialPlanView  {
 
+  protected static final int SHOW_INTERVALS = 0;
+  protected static final int SHOW_EARLIEST = 1;
+  protected static final int SHOW_LATEST = 2;
+  private static final String SHOW_INTERVALS_LABEL = "Show Intervals";
+  private static final String SHOW_EARLIEST_LABEL = "Show Earliest";
+  private static final String SHOW_LATEST_LABEL = "Show Latest";
+
   private long startTimeMSecs;
   private ViewSet viewSet;
   private ExtentView jGoExtentView;
@@ -100,6 +107,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private JGoStroke timeScaleMark;
   private static Point docCoords;
   private boolean isShowLabels;
+  private int temporalDisplayMode;
 
 
   /**
@@ -120,6 +128,7 @@ public class TemporalExtentView extends PartialPlanView  {
     maxCellRow = 0;
     timeScaleMark = null;
     isShowLabels = true;
+    temporalDisplayMode = SHOW_INTERVALS;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -227,6 +236,7 @@ public class TemporalExtentView extends PartialPlanView  {
     public void run() {
       boolean isRedraw = true;
       renderTemporalExtent( isRedraw);
+      addStepButtons(jGoExtentView);
     } //end run
 
   } // end class RedrawViewThread
@@ -615,7 +625,8 @@ public class TemporalExtentView extends PartialPlanView  {
                 TemporalNode temporalNode = 
                   new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
                                     earliestDurationString, latestDurationString,
-                                    timelineColor, isFreeToken, this); 
+                                    timelineColor, isFreeToken, isShowLabels,
+                                    temporalDisplayMode, this); 
                 tmpTemporalNodeList.add( temporalNode);
                 jGoExtentView.getDocument().addObjectAtTail( temporalNode);
                 previousSlot = slot;
@@ -655,7 +666,8 @@ public class TemporalExtentView extends PartialPlanView  {
         TemporalNode temporalNode = 
           new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
                             earliestDurationString, latestDurationString,
-                            backgroundColor, isFreeToken, this); 
+                            backgroundColor, isFreeToken, isShowLabels,
+                            temporalDisplayMode, this); 
         tmpTemporalNodeList.add(temporalNode );
         // nodes are always in front of any links
         jGoExtentView.getDocument().addObjectAtTail( temporalNode);
@@ -693,7 +705,7 @@ public class TemporalExtentView extends PartialPlanView  {
         maxCellRow = temporalNode.getRow();
       }
       // render the node
-      temporalNode.configure( isShowLabels);
+      temporalNode.configure();
     }
   } // end layoutTemporalNodes
 
@@ -951,6 +963,8 @@ public class TemporalExtentView extends PartialPlanView  {
     createShowLabelsItem( showLabelsItem);
     mouseRightPopup.add( showLabelsItem);
 
+    createTemporalDisplayItems( mouseRightPopup);
+
     mouseRightPopup.addSeparator();
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
@@ -980,6 +994,65 @@ public class TemporalExtentView extends PartialPlanView  {
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
+
+
+  private void createTemporalDisplayItems( JPopupMenu mouseRightPopup) {
+    JMenuItem showIntervalsItem = null;
+    JMenuItem showEarliestItem = null;
+    JMenuItem showLatestItem = null;
+    if (temporalDisplayMode == SHOW_INTERVALS) {
+      showEarliestItem = new JMenuItem( SHOW_EARLIEST_LABEL);
+      createShowEarliestItem( showEarliestItem);
+      mouseRightPopup.add( showEarliestItem);
+      showLatestItem = new JMenuItem( SHOW_LATEST_LABEL);
+      createShowLatestItem( showLatestItem);
+      mouseRightPopup.add( showLatestItem);
+    } else if (temporalDisplayMode == SHOW_EARLIEST) {
+      showIntervalsItem = new JMenuItem( SHOW_INTERVALS_LABEL);
+      createShowIntervalsItem( showIntervalsItem);
+      mouseRightPopup.add( showIntervalsItem);
+      showLatestItem = new JMenuItem( SHOW_LATEST_LABEL);
+      createShowLatestItem( showLatestItem);
+      mouseRightPopup.add( showLatestItem);
+    } else if (temporalDisplayMode == SHOW_LATEST) {
+      showEarliestItem = new JMenuItem( SHOW_EARLIEST_LABEL);
+      createShowEarliestItem( showEarliestItem);
+      mouseRightPopup.add( showEarliestItem);
+      showIntervalsItem = new JMenuItem( SHOW_INTERVALS_LABEL);
+      createShowIntervalsItem( showIntervalsItem);
+      mouseRightPopup.add( showIntervalsItem);
+    }
+  } // end createTemporalDisplayItems
+  
+
+  private void createShowIntervalsItem( JMenuItem showIntervalsItem) {
+    showIntervalsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          temporalDisplayMode = SHOW_INTERVALS;
+          TemporalExtentView.this.redraw();
+        }
+      });
+  } // end createShowIntervalsItem
+
+
+  private void createShowEarliestItem( JMenuItem showEarliestItem) {
+    showEarliestItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          temporalDisplayMode = SHOW_EARLIEST;
+          TemporalExtentView.this.redraw();
+        }
+      });
+  } // end createShowEarliestItem
+
+
+  private void createShowLatestItem( JMenuItem showLatestItem) {
+    showLatestItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          temporalDisplayMode = SHOW_LATEST;
+          TemporalExtentView.this.redraw();
+        }
+      });
+  } // end createShowLatestItem
 
 
   private void createShowLabelsItem( JMenuItem showLabelsItem) {
