@@ -12,7 +12,8 @@ CREATE TABLE ConstraintVarMap (
   ConstraintId int(11) NOT NULL default '0',
   VariableId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) unsigned NOT NULL default '0',
-  PRIMARY KEY  (PartialPlanId,ConstraintId,VariableId)
+  PRIMARY KEY  (PartialPlanId,ConstraintId,VariableId),
+  INDEX (ConstraintId), INDEX(VariableId)
 ) TYPE=MyISAM;
 
 --
@@ -28,7 +29,8 @@ CREATE TABLE EnumeratedDomain (
   EnumeratedDomainId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   Domain blob,
-  PRIMARY KEY  (PartialPlanId,EnumeratedDomainId)
+  PRIMARY KEY  (PartialPlanId,EnumeratedDomainId),
+  INDEX (EnumeratedDomainId)
 ) TYPE=MyISAM;
 
 --
@@ -41,12 +43,13 @@ CREATE TABLE EnumeratedDomain (
 --
 
 CREATE TABLE IntervalDomain (
-  IntervalDomainid int(11) NOT NULL default '0',
+  IntervalDomainId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   LowerBound varchar(255) default NULL,
   UpperBound varchar(255) default NULL,
   IntervalDomainType enum('INTEGER_SORT','REAL_SORT') default NULL,
-  PRIMARY KEY  (PartialPlanId,IntervalDomainid)
+  PRIMARY KEY  (PartialPlanId,IntervalDomainid),
+  INDEX (IntervalDomainId)
 ) TYPE=MyISAM;
 
 --
@@ -62,7 +65,8 @@ CREATE TABLE Object (
   ObjectId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   ObjectName varchar(255) default NULL,
-  PRIMARY KEY  (PartialPlanId,ObjectId)
+  PRIMARY KEY  (PartialPlanId,ObjectId),
+  INDEX (ObjectId)
 ) TYPE=MyISAM;
 
 --
@@ -79,7 +83,9 @@ CREATE TABLE ParamVarTokenMap (
   TokenId int(11) NOT NULL default '0',
   ParameterId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
-  PRIMARY KEY  (PartialPlanId,TokenId,VariableId,ParameterId)
+  PRIMARY KEY  (PartialPlanId,TokenId,VariableId,ParameterId),
+  INDEX (VariableId), INDEX (TokenId), INDEX (ParameterId),
+  INDEX (VariableId, PartialPlanId)
 ) TYPE=MyISAM;
 
 --
@@ -96,7 +102,8 @@ CREATE TABLE Parameter (
   PredicateId int(11) default NULL,
   PartialPlanId bigint(20) NOT NULL default '0',
   ParameterName varchar(255) default NULL,
-  PRIMARY KEY  (PartialPlanId,ParameterId)
+  PRIMARY KEY  (PartialPlanId,ParameterId),
+  INDEX (ParameterId), INDEX (PredicateId)
 ) TYPE=MyISAM;
 
 --
@@ -115,7 +122,8 @@ CREATE TABLE PartialPlan (
   SequenceId int(11) NOT NULL default '-1',
   MinKey int(11) default NULL,
   MaxKey int(11) default NULL,
-  PRIMARY KEY  (PartialPlanId,SequenceId)
+  PRIMARY KEY  (PartialPlanId,SequenceId),
+  INDEX (PartialPlanId)
 ) TYPE=MyISAM;
 
 --
@@ -131,7 +139,8 @@ CREATE TABLE Predicate (
   PredicateId int(11) NOT NULL default '0',
   PredicateName varchar(25) default NULL,
   PartialPlanId bigint(20) NOT NULL default '0',
-  PRIMARY KEY  (PartialPlanId,PredicateId)
+  PRIMARY KEY  (PartialPlanId,PredicateId),
+  INDEX (PredicateId)
 ) TYPE=MyISAM;
 
 --
@@ -179,7 +188,8 @@ CREATE TABLE Slot (
   TimelineId int(11) default NULL,
   PartialPlanId bigint(20) NOT NULL default '0',
   ObjectId int(11) default NULL,
-  PRIMARY KEY  (PartialPlanId,SlotId)
+  PRIMARY KEY  (PartialPlanId,SlotId),
+  INDEX (SlotId)
 ) TYPE=MyISAM;
 
 --
@@ -196,7 +206,8 @@ CREATE TABLE Timeline (
   ObjectId int(11) default NULL,
   PartialPlanId bigint(20) NOT NULL default '0',
   TimelineName varchar(255) default NULL,
-  PRIMARY KEY  (PartialPlanId,TimelineId)
+  PRIMARY KEY  (PartialPlanId,TimelineId),
+  INDEX (TimelineId), INDEX (ObjectId)
 ) TYPE=MyISAM;
 
 --
@@ -222,7 +233,9 @@ CREATE TABLE Token (
   TimelineId int(11) default NULL,
   ObjectId int(11) default NULL,
   ObjectVarId int(11) default NULL,
-  PRIMARY KEY  (PartialPlanId,TokenId)
+  PRIMARY KEY  (PartialPlanId,TokenId),
+  INDEX (TokenId), INDEX (SlotId), INDEX (StartVarId), INDEX (EndVarId), INDEX (DurationVarId), 
+  INDEX (RejectVarId), INDEX (PredicateId), INDEX (TimelineId), INDEX (ObjectId), INDEX (ObjectVarId)
 ) TYPE=MyISAM;
 
 --
@@ -240,7 +253,8 @@ CREATE TABLE TokenRelation (
   TokenBId int(11) NOT NULL default '0',
   RelationType enum('CAUSAL','CONSTRAINT') NOT NULL default 'CAUSAL',
   TokenRelationId int(11) default NULL,
-  PRIMARY KEY  (PartialPlanId,TokenAId,TokenBId,RelationType)
+  PRIMARY KEY  (PartialPlanId,TokenAId,TokenBId,RelationType),
+  INDEX (TokenRelationId), INDEX (TokenAId), INDEX (TokenBId)
 ) TYPE=MyISAM;
 
 --
@@ -257,7 +271,8 @@ CREATE TABLE VConstraint (
   PartialPlanId bigint(20) NOT NULL default '0',
   ConstraintName varchar(255) default NULL,
   ConstraintType enum('TEMPORAL','ATEMPORAL') default NULL,
-  PRIMARY KEY  (PartialPlanId,ConstraintId)
+  PRIMARY KEY  (PartialPlanId,ConstraintId),
+  INDEX (ConstraintId), INDEX (ConstraintType)
 ) TYPE=MyISAM;
 
 --
@@ -275,7 +290,8 @@ CREATE TABLE Variable (
   DomainType enum('EnumeratedDomain','IntervalDomain') default NULL,
   DomainId int(10) unsigned default NULL,
   VariableType enum('START_VAR','END_VAR','DURATION_VAR','OBJECT_VAR','PARAMETER_VAR','REJECT_VAR') default NULL,
-  PRIMARY KEY  (PartialPlanId,VariableId)
+  PRIMARY KEY  (PartialPlanId,VariableId),
+  INDEX (VariableId), INDEX (DomainId), INDEX (VariableType)
 ) TYPE=MyISAM;
 
 --

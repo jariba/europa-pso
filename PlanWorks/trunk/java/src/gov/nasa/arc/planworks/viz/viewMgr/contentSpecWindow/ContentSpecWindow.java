@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.12 2003-08-01 18:21:10 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.13 2003-08-12 21:35:21 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -126,54 +126,6 @@ public class ContentSpecWindow extends JPanel {
     c.gridx++;
     gridBag.setConstraints(buttonPanel, c);
     add(buttonPanel);
-
-    getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, 
-                                             InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK, false),
-                      "shiftCtrlQPressed");
-    getActionMap().put("shiftCtrlQPressed", new QueryTestAction(contentSpec));
-  }
-
-  private static class QueryTestAction extends AbstractAction {
-    private ContentSpec contentSpec;
-    public QueryTestAction(ContentSpec contentSpec) {
-      super("shiftCtrlQPressed");
-      this.contentSpec = contentSpec;
-    }
-    public void actionPerformed(ActionEvent ae) {
-      System.err.println("shift ctrl q pressed");
-      new QueryTestWindow(contentSpec);
-    }
-  }
-
-  private static class QueryTestWindow extends JFrame {
-    protected ContentSpec contentSpec;
-    protected JTextField queryText;
-    public QueryTestWindow(ContentSpec contentSpec) {
-      super("Mike's Handy-Dandy Query Test Window");
-      this.contentSpec = contentSpec;
-      Container contentPane = getContentPane();
-      queryText = new JTextField(50);
-      contentPane.add(queryText, BorderLayout.EAST);
-      contentPane.add(new JButton(new QueryButtonAction(this)), BorderLayout.WEST);
-      setLocation(300, 300);
-      pack();
-      setVisible(true);
-    }
-    class QueryButtonAction extends AbstractAction {
-      private QueryTestWindow testWindow;
-      public QueryButtonAction(QueryTestWindow testWindow) {
-        super("Execute Query");
-        this.testWindow = testWindow;
-      }
-      public void actionPerformed(ActionEvent ae) {
-        try {
-          testWindow.contentSpec.executeQuery(testWindow.queryText.getText().trim());
-        }
-        catch(SQLException sqle) {
-          System.err.println(sqle);
-        }
-      }
-    }
   }
 
   /**

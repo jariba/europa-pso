@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.14 2003-07-02 23:19:19 miatauro Exp $
+// $Id: PwProject.java,v 1.15 2003-08-12 21:32:57 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,21 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  */
 public abstract class PwProject {
 
-
+  static {
+    try {
+      Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+      PwProjectImpl.initProjects();
+    } catch (IOException excp) {
+      System.err.println( excp);
+      System.exit( -1);
+    } catch (ResourceNotFoundException rnfExcp) {
+      System.err.println( rnfExcp);
+      System.exit( -1);
+    } catch (SQLException sqlExcp) {
+      System.err.println( sqlExcp);
+      System.exit( -1);
+    }
+  }
   /**
    * <code>initProjects</code> - register loaded XML files data base (eXist),
    *                             restore loaded projects configuration info,
@@ -39,9 +53,9 @@ public abstract class PwProject {
    *
    * @exception ResourceNotFoundException if an error occurs
    */
-  public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
+  /*  public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
     PwProjectImpl.initProjects();
-  }
+    }*/
 
   /**
    * <code>createProject</code> - using user supplied url, load XML formatted

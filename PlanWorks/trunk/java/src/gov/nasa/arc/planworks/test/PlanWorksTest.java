@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.7 2003-07-24 20:57:11 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.8 2003-08-12 21:34:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -100,12 +100,12 @@ public class PlanWorksTest extends JFCTestCase{
     System.err.println( "\nsetUp entered testType " + testType + "\n");
     helper = new JFCTestHelper();
 
-    try {
+    /*try {
       PwProject.initProjects();
     } catch (ResourceNotFoundException rnfExcep) {
       System.err.println( rnfExcep);
       System.exit( -1);
-    }
+      }*/
 
     planWorks = new PlanWorks( PlanWorks.buildConstantMenus());
     PlanWorks.setPlanWorks( planWorks);
@@ -374,14 +374,14 @@ public class PlanWorksTest extends JFCTestCase{
       }
       MenuElement [] elements = menuBar.getSubElements();
       for (int i = 0; i < elements.length; i++) {
-        if (((JMenu)elements[i]).getText().equals("Partial Plan")) {
+        if (((JMenu)elements[i]).getText().equals("Planning Sequence")) {
           partialPlanMenu = (JMenu) elements[i];
         }
       }
     }
-    assertNotNull("Failed to get \"Partial Plan\" menu.", partialPlanMenu);
-    assertTrue("Failed to get \"Partial Plan\" menu.",
-               partialPlanMenu.getText().equals("Partial Plan"));
+    assertNotNull("Failed to get \"Planning Sequence\" menu.", partialPlanMenu);
+    assertTrue("Failed to get \"Planning Sequence\" menu.",
+               partialPlanMenu.getText().equals("Planning Sequence"));
     return partialPlanMenu;
   } // end getPartialPlanMenu
 

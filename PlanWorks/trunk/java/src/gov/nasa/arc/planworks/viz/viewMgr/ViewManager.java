@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.11 2003-08-01 22:28:49 miatauro Exp $
+// $Id: ViewManager.java,v 1.12 2003-08-12 21:35:05 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -26,6 +26,11 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
  */
 
 public class ViewManager implements ViewSetRemover {
+  public static final String CNET_VIEW = "constraintNetworkView";
+  public static final String TEMPEXT_VIEW = "temporalExtentView";
+  public static final String TEMPNET_VIEW = "temporalNetworkView";
+  public static final String TIMELINE_VIEW = "timelineView";
+  public static final String TNET_VIEW = "tokenNetworkView";
   private MDIDesktopFrame desktopFrame;
   private HashMap viewSets;
 
