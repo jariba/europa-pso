@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraint.java,v 1.6 2003-08-12 22:53:30 miatauro Exp $
+// $Id: PwConstraint.java,v 1.7 2003-09-02 23:01:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -25,7 +25,11 @@ import java.util.List;
  */
 public interface PwConstraint {
 
-
+  public static final String varTempConst = "variableTempConstr";
+  public static final String unaryTempConst = "unaryTempConstr";
+  public static final String fixedTempConst = "fixedTempConstr";
+  public static final String unaryConst = "unaryConstr";
+  public static final String eqConst = "equalityConstr";
 
   /**
    * <code>getName</code>

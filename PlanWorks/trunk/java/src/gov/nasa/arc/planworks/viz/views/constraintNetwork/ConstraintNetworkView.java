@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.11 2003-08-29 22:08:59 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.12 2003-09-02 23:01:48 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -1180,8 +1181,15 @@ public class ConstraintNetworkView extends VizView {
     }
   } // end setLinksVisible
 
-
-
+  public List getTokenNodeList() {
+    return tokenNodeList;
+  }
+  public List getVariableNodeList() {
+    return variableNodeList;
+  }
+  public List getConstraintNodeList() {
+    return constraintNodeList;
+  }
 
 } // end class ConstraintNetworkView
 
