@@ -1,0 +1,89 @@
+First off, check out the latest version of Europa and build it.
+
+For the moment, there is no makefile to build the PartialPlanWriter
+class.  This is in my TODO, but not really important at the moment.
+To build the PartialPlanWriter, you must have checked out and built a
+reasonably recent version of Europa (cvs co NewPlan; cd NewPlan; make).  
+Execute the following commands (it helps to have put the path to Europa in
+the $EUROPA_HOME environment variable and the path to PlanWorks in the
+$PLANWORKS_HOME environment variable, unless you don't mind typing the
+paths or lots of "../"s):
+
+cd PlanWorks/cpp/integration/europa
+g++ -c PartialPlanWriter.cc -I$EUROPA_HOME/Includes -I$EUROPA_HOME/ConstraintNetwork -ggdb3 -Wall
+
+The following modifications must be made to your planner's source to
+utilize the PartialPlanWriter:
+1) #include "PartialPlanWriter.hh"
+2) construct the PartialPlanWriter.  It requires two arguments--a pointer
+to the TokenNetwork (so do this after the TokenNetwork is constructed) and
+a String containing the destination for output.  My construction line
+looks like this:
+String dest("./");
+PartialPlanWriter *planWriter = new PartialPlanWriter(&tokNet, dest); 
+3) Register the PartialPlanWriter as a subscriber.  i.e.:
+
+SubscriberId subId(planWriter);
+tokNet.getSubscriptionManager().registerSubscriber(subId);
+
+Currently the PartialPlanWriter writes automatically whenever
+MessageCollecter::flush() is called and does something.  This
+is the notional "plan step" right now.  If you absolutely need
+to make sure that the PartialPlanWriter writes out the final
+state of your plan, just call planWriter->write() when
+planning is complete.
+
+NOTE: If you register the PartialPlanWriter as a subscriber before the
+initial plan state is constructed, it will output information about the
+process of that construction, which can cause propagation and extra
+output, if you happen to be using EUROPA's (the ddl model parser in
+particular) output for testing.  To output the initial state, just call
+PartialPlanWriter::write() immediately after registering it.
+
+You also must modify the makefile to include the path
+to the PartialPlanWriter's header and object file.  For
+SimplePlanner, just add
+-I$(PLANWORKS_HOME)/cpp/integration/europa
+to the DIRFLAG line as well as
+$(PLANWORKS_HOME)/cpp/integration/europa/PartialPlanWriter.o
+to the OBJECTS line.
+
+Finally, execute
+cd $EUROPA_HOME
+make simple
+and the simplePlan will work as it's supposed to.  
+
+There are two convenience environment variables in the new
+PartialPlanWriter:
+
+PPW_WRITE_NSTEPS
+
+This tells the PartialPlanWriter how many actual plan steps to
+wait between writing out the data for a partial plan.  From a
+PlanWorks point of view, none of the intermediate steps were
+actually discrete steps, just part of the transition from the
+last written step to the current one. A value of 0 will
+prevent the PartialPlanWriter from writing at all (and thus
+incurring the overhead of writing to disk).
+
+PPW_WRITE_DEST
+
+You may want to change the destination to which the
+PartialPlanWriter writes without having to recompile your
+planner.  This variable does precisely that.  It will override
+any destination value passed to the PartialPlanWriter
+constructor.
+
+A note about the new output format:  Every planning sequence
+is now output in it's own unique directory with a millisecond
+timestamp suffixed to the name.  This number is semi-important
+for importing the data into the PlanWorks database, so don't
+change it.
+
+============================================
+
+Copying Sequence Directory Trees
+--------------------------------
+'<Sequence-name>1068153263616/sequence' contains the sequence url.
+If the tree is copied to another location, the url must be
+changed.
