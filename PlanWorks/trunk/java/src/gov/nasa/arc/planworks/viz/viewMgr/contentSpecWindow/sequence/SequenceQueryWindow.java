@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.4 2003-10-21 21:51:30 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.5 2003-10-23 18:28:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -53,11 +53,14 @@ public class SequenceQueryWindow extends JPanel {
   private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
     "Where Constraint Transacted ...";
   private static final String STEPS_WHERE_TOKEN_TRANSACTED = "Where Token Transacted ...";
-  private static final String STEPS_WHERE_VARIABLE_TRANSACTED = "Where Variable Transacted ...";
-  private static final String STEPS_WITH_NON_UNIT_DECISIONS = "With Non-Unit Decisions";
+  private static final String STEPS_WHERE_VARIABLE_TRANSACTED =
+    "Where Variable Transacted ...";
+  private static final String STEPS_WITH_NON_UNIT_VARIABLE_DECISIONS =
+    "With Non-Unit Variable Decisions";
   private static final String STEPS_WITH_RELAXATIONS = "With Relaxations";
   private static final String STEPS_WITH_RESTRICTIONS = "With Restrictions";
-  private static final String STEPS_WITH_UNIT_DECISIONS = "With Unit Decisions";
+  private static final String STEPS_WITH_UNIT_VARIABLE_DECISIONS =
+    "With Unit Variable Decisions";
   private static final List STEP_QUERIES;
   private static final String TRANSACTIONS_FOR_CONSTRAINT = "For Constraint ...";
   private static final String TRANSACTIONS_FOR_TOKEN = "For Token ...";
@@ -73,10 +76,10 @@ public class SequenceQueryWindow extends JPanel {
     STEP_QUERIES.add( STEPS_WHERE_CONSTRAINT_TRANSACTED);
     STEP_QUERIES.add( STEPS_WHERE_TOKEN_TRANSACTED);
     STEP_QUERIES.add( STEPS_WHERE_VARIABLE_TRANSACTED);
-    STEP_QUERIES.add( STEPS_WITH_NON_UNIT_DECISIONS); 
+    STEP_QUERIES.add( STEPS_WITH_NON_UNIT_VARIABLE_DECISIONS); 
     // STEP_QUERIES.add( STEPS_WITH_RELAXATIONS); // PlanWriter cannot get this from Europa
     STEP_QUERIES.add( STEPS_WITH_RESTRICTIONS);
-    STEP_QUERIES.add( STEPS_WITH_UNIT_DECISIONS); 
+    STEP_QUERIES.add( STEPS_WITH_UNIT_VARIABLE_DECISIONS); 
     TRANSACTION_QUERIES = new ArrayList();
     TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_CONSTRAINT);
     TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_TOKEN);
@@ -248,7 +251,7 @@ public class SequenceQueryWindow extends JPanel {
               stepList = getStepsWhereTokenTransacted();
             } else if (stepsQuery.equals( STEPS_WHERE_VARIABLE_TRANSACTED)) {
               stepList = getStepsWhereVariableTransacted();
-            } else if (stepsQuery.equals( STEPS_WITH_NON_UNIT_DECISIONS)) {
+            } else if (stepsQuery.equals( STEPS_WITH_NON_UNIT_VARIABLE_DECISIONS)) {
               stepList = ((PwPlanningSequence) queryWindow.viewable).
                 getStepsWithNonUnitVariableBindingDecisions();
             } else if (stepsQuery.equals( STEPS_WITH_RELAXATIONS)) {
@@ -257,7 +260,7 @@ public class SequenceQueryWindow extends JPanel {
             } else if (stepsQuery.equals( STEPS_WITH_RESTRICTIONS)) {
               stepList = ((PwPlanningSequence) queryWindow.viewable).
                 getStepsWithRestrictions();
-            } else if (stepsQuery.equals( STEPS_WITH_UNIT_DECISIONS)) {
+            } else if (stepsQuery.equals( STEPS_WITH_UNIT_VARIABLE_DECISIONS)) {
               stepList = ((PwPlanningSequence) queryWindow.viewable).
                 getStepsWithUnitVariableBindingDecisions();
             }

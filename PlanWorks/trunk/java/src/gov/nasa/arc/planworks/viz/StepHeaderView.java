@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.1 2003-10-18 01:27:54 taylor Exp $
+// $Id: StepHeaderView.java,v 1.2 2003-10-23 18:28:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,20 +46,20 @@ public class StepHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  private static final String KEY_HEADER =        "  KEY  "; 
-  private static final String TYPE_HEADER =      "           TYPE            "; 
-  private static final String SOURCE_HEADER =    " SOURCE  ";   
-  private static final String OBJECT_KEY_HEADER = "OBJ_KEY";
-  private static final String STEP_NUM_HEADER =  "STEP_NUM";
+  private static final String STEP_NUM_HEADER =   "  STEP  ";
+  private static final String KEY_HEADER =        "TX_KEY "; 
+  private static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
+  private static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
+  private static final String PREDICATE_HEADER =  "  PREDICATE  ";
 
 
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
+  private TextNode stepNumNode;
   private TextNode keyNode;
   private TextNode typeNode;
-  private TextNode sourceNode;
-  private TextNode objectKeyNode;
-  private TextNode stepNumNode;
+  private TextNode objectNameNode;
+  private TextNode predicateNode;
 
   /**
    * <code>StepHeaderView</code> - constructor 
@@ -93,6 +93,25 @@ public class StepHeaderView extends JGoView {
     configureTextNode( stepNumNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( stepNumNode);
     x += stepNumNode.getSize().getWidth();
+
+    keyNode = new TextNode( KEY_HEADER);
+    configureTextNode( keyNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( keyNode);
+    x += keyNode.getSize().getWidth();
+
+    typeNode = new TextNode( TYPE_HEADER);
+    configureTextNode( typeNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( typeNode);
+    x += typeNode.getSize().getWidth();
+
+    objectNameNode = new TextNode( OBJ_NAME_HEADER);
+    configureTextNode( objectNameNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( objectNameNode);
+    x += objectNameNode.getSize().getWidth();
+
+    predicateNode = new TextNode( PREDICATE_HEADER);
+    configureTextNode( predicateNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( predicateNode);
   } // end renderStepHeader
 
 
@@ -119,6 +138,42 @@ public class StepHeaderView extends JGoView {
    */
   public TextNode getStepNumNode()  {
     return this.stepNumNode;
+  }
+
+  /**
+   * Gets the value of keyNode
+   *
+   * @return the value of keyNode
+   */
+  public TextNode getKeyNode()  {
+    return this.keyNode;
+  }
+
+  /**
+   * Gets the value of typeNode
+   *
+   * @return the value of typeNode
+   */
+  public TextNode getTypeNode()  {
+    return this.typeNode;
+  }
+
+  /**
+   * Gets the value of objectNameNode
+   *
+   * @return the value of objectNameNode
+   */
+  public TextNode getObjectNameNode()  {
+    return this.objectNameNode;
+  }
+
+  /**
+   * Gets the value of predicateNode
+   *
+   * @return the value of predicateNode
+   */
+  public TextNode getPredicateNode()  {
+    return this.predicateNode;
   }
 
 

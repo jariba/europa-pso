@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionView.java,v 1.2 2003-10-18 01:27:55 taylor Exp $
+// $Id: TransactionView.java,v 1.3 2003-10-23 18:28:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.viz.TransactionContentView;
 import gov.nasa.arc.planworks.viz.TransactionHeaderView;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -223,7 +224,8 @@ public class TransactionView extends PartialPlanView {
     public Dimension getMinimumSize() {
       return new Dimension( (int) TransactionView.this.getSize().getWidth(),
                             (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
+                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight() +
+                            ViewConstants.TIMELINE_VIEW_Y_INIT);
     }
 
     /**
@@ -234,9 +236,21 @@ public class TransactionView extends PartialPlanView {
     public Dimension getMaximumSize() {
       return new Dimension( (int) TransactionView.this.getSize().getWidth(),
                             (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
+                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight() +
+                            ViewConstants.TIMELINE_VIEW_Y_INIT);
     }
 
+    /**
+     * <code>getPreferredSize</code> - determine initial size
+     *
+     * @return - <code>Dimension</code> - 
+     */
+    public Dimension getPreferredSize() {
+      return new Dimension( (int) TransactionView.this.getSize().getWidth(),
+                            (int) headerJGoView.getDocumentSize().getHeight() +
+                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight() +
+                            ViewConstants.TIMELINE_VIEW_Y_INIT);
+    }
   } // end class TransactionHeaderPanel
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.48 2003-10-23 18:20:02 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.49 2003-10-23 18:28:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -517,7 +517,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
        !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
       throw new IllegalArgumentException("transaction type");
     }
-    return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
+    return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, id, type));
   }
 
   public List getStepsWhereVariableTransacted(Integer id, String type) 
@@ -531,7 +531,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
        !type.equals(DbConstants.VARIABLE_ALL_TYPES)) {
       throw new IllegalArgumentException("transaction type");
     }
-    return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
+    return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, id, type));
   }
 
   public List getStepsWhereConstraintTransacted(Integer id, String type) 
@@ -541,7 +541,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
        !type.equals(DbConstants.CONSTRAINT_ALL_TYPES)) { 
       throw new IllegalArgumentException("transaction type");
     }
-    return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
+    return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type));
   }
 
   public List getStepsWithRestrictions() {
