@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.7 2003-12-20 01:54:51 taylor Exp $
+// $Id: TemporalNode.java,v 1.8 2003-12-31 01:02:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -226,14 +226,22 @@ public class TemporalNode extends BasicNode implements Extent {
       setLabelSpot( JGoObject.Center);
       initialize( tokenLocation, nodeLabel, isRectangular);
       // BasicNode's initial location is its center - move left edge to  earliestStartTime
-//       setLocation( Math.max( (int) (temporalExtentView.scaleTime( earliestStartTime) -
-//                                     (getSize().getWidth() * 0.5)),
-//                              (int) (getLocation().getX())),
-//                    (int) getLocation().getY());
+//       int newXLoc =
+//         (int) temporalExtentView.scaleTime
+//         ( (int) (earliestStartTime + temporalExtentView.scaleXLoc
+//                  ( (int) (getSize().getWidth() * 0.5))));
+
+//       int newXLoc =
+//         (int) temporalExtentView.scaleTime
+//         ( (int) (earliestStartTime + ((getSize().getWidth() * 0.5) /
+//                                       temporalExtentView.getTimeScale())));
+
       int newXLoc =
         (int) temporalExtentView.scaleTime
-        ( (int) (earliestStartTime + temporalExtentView.scaleXLoc
-                 ( (int) (getSize().getWidth() * 0.5))));
+        ( (int) (earliestStartTime + (((nodeLabelWidth -
+                                        (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2))
+                                       * 0.5) /
+                                      temporalExtentView.getTimeScale())));
       setLocation( newXLoc, (int) getLocation().getY());
 
       setBrush( JGoBrush.makeStockBrush( backgroundColor));  
@@ -568,19 +576,22 @@ public class TemporalNode extends BasicNode implements Extent {
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
     JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
-    activeTokenItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken = TemporalNode.this.getToken();
-          ((PartialPlanViewSet) temporalExtentView.getViewSet()).setActiveToken( activeToken);
-          ((PartialPlanViewSet) temporalExtentView.getViewSet()).setSecondaryTokens( null);
-          System.err.println( "TemporalNode setActiveToken: " +
-                              activeToken.getPredicate().getName() +
-                              " (key=" + activeToken.getId().toString() + ")");
-        }
-      });
-    mouseRightPopup.add( activeTokenItem);
+    final PwToken activeToken = TemporalNode.this.getToken();
+    // check for empty slots
+    if (activeToken != null) {
+      activeTokenItem.addActionListener( new ActionListener() {
+          public void actionPerformed( ActionEvent evt) {
+            ((PartialPlanViewSet) temporalExtentView.getViewSet()).setActiveToken( activeToken);
+            ((PartialPlanViewSet) temporalExtentView.getViewSet()).setSecondaryTokens( null);
+            System.err.println( "TemporalNode setActiveToken: " +
+                                activeToken.getPredicate().getName() +
+                                " (key=" + activeToken.getId().toString() + ")");
+          }
+        });
+      mouseRightPopup.add( activeTokenItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
+      NodeGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
+    }
   } // end mouseRightPopupMenu
 
 

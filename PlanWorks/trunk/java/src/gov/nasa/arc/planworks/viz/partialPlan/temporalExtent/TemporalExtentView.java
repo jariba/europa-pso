@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.20 2003-12-30 00:39:00 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.21 2003-12-31 01:02:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -509,7 +509,7 @@ public class TemporalExtentView extends PartialPlanView  {
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
-    System.err.println( " xOrigin " + xOrigin);
+    // System.err.println( " xOrigin " + xOrigin);
   } // end computeTimeScaleMetrics
 
   private void createTimeScale() {
@@ -953,8 +953,6 @@ public class TemporalExtentView extends PartialPlanView  {
 
     mouseRightPopup.addSeparator();
 
-    createSteppingItems(mouseRightPopup);
-
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);
     mouseRightPopup.add( nodeByKeyItem);
@@ -1005,7 +1003,8 @@ public class TemporalExtentView extends PartialPlanView  {
             ((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).getActiveToken();
           if (activeToken != null) {
             boolean isByKey = false;
-            findAndSelectToken( activeToken, isByKey);
+            PwSlot slot = null;
+            findAndSelectToken( activeToken, slot, isByKey);
           }
         }
       });
@@ -1022,14 +1021,23 @@ public class TemporalExtentView extends PartialPlanView  {
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             PwToken tokenToFind = partialPlan.getToken( nodeKey);
             boolean isByKey = true;
-            findAndSelectToken( tokenToFind, isByKey);
+            PwSlot slot = null;
+            findAndSelectToken( tokenToFind, slot, isByKey);
           }
         }
       });
   } // end createNodeByKeyItem
 
 
-  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
+  /**
+   * <code>findAndSelectToken</code> - handles empty slots and free tokens, as well
+   *                                   as slotted tokens
+   *
+   * @param tokenToFind - <code>PwToken</code> - null for empty slots
+   * @param slotToFind - <code>PwSlot</code> - null for free tokens
+   * @param isByKey - <code>boolean</code> - 
+   */
+  public void findAndSelectToken( PwToken tokenToFind, PwSlot slotToFind, boolean isByKey) {
     boolean isTokenFound = false;
     boolean isHighlightNode = true;
     Iterator temporalNodeListItr = temporalNodeList.iterator();
@@ -1037,27 +1045,38 @@ public class TemporalExtentView extends PartialPlanView  {
     foundMatch:
     while (temporalNodeListItr.hasNext()) {
       temporalNode = (TemporalNode) temporalNodeListItr.next();
+      // System.err.println( "token " + temporalNode.getToken() + " slot " +
+      //                    temporalNode.getSlot());
       if (temporalNode.getToken() != null) {
         if (temporalNode.getSlot() != null) {
           // check overloaded tokens, since only base tokens are rendered
           Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
           while (tokenListItr.hasNext()) {
-            if (((PwToken) tokenListItr.next()).getId().equals( tokenToFind.getId())) {
+            PwToken token = (PwToken) tokenListItr.next();
+            if ((tokenToFind != null) && token.getId().equals( tokenToFind.getId())) {
               isTokenFound = true;
               break foundMatch;
             }
           }
-        } else if (temporalNode.getToken().getId().equals( tokenToFind.getId())) {
+        } else if ((tokenToFind != null) &&
+                   temporalNode.getToken().getId().equals( tokenToFind.getId())) {
           // free token
           isTokenFound = true;
-          break foundMatch;          
+          break;          
         }
+      } else if ((slotToFind != null) &&
+                 temporalNode.getSlot().getId().equals( slotToFind.getId()))  {
+        // empty slot
+        isTokenFound = true;
+        break;          
       }
     }
     if (isTokenFound) {
-      System.err.println( "TemporalExtentView found token: " +
-                          tokenToFind.getPredicate().getName() +
-                          " (key=" + tokenToFind.getId().toString() + ")");
+      if (tokenToFind != null) {
+        System.err.println( "TemporalExtentView found token: " +
+                            tokenToFind.getPredicate().getName() +
+                            " (key=" + tokenToFind.getId().toString() + ")");
+      }
       NodeGenerics.focusViewOnNode( temporalNode, isHighlightNode, jGoExtentView);
       if (! isByKey) {
         // only base tokens are rendered in this view

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.19 2003-12-30 01:11:56 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.20 2003-12-31 01:02:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -593,8 +593,6 @@ public class TokenNetworkView extends PartialPlanView {
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
-
-    createSteppingItems(mouseRightPopup);
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);

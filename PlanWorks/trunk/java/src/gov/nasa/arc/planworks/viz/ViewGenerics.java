@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.5 2003-12-20 00:45:50 miatauro Exp $
+// $Id: ViewGenerics.java,v 1.6 2003-12-31 01:02:20 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,6 +51,7 @@ import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -194,6 +195,24 @@ public class ViewGenerics {
     }
   } // end raiseOverviewFrame
 
+
+  /**
+   * <code>getTemporalExtentView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>TemporalExtentView</code> - 
+   */
+  public static TemporalExtentView getTemporalExtentView( MDIInternalFrame frame) {
+    Container contentPane = frame.getContentPane();
+    for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
+      //       System.err.println( "i " + i + " " +
+      //                           contentPane.getComponent( i).getClass().getName());
+      if (contentPane.getComponent(i) instanceof TemporalExtentView) {
+        return (TemporalExtentView) contentPane.getComponent(i);
+      }
+    }
+    return null;
+  } // end getTemporalExtentView
 
 } // end class ViewGenerics 
 

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.23 2003-12-30 21:16:16 miatauro Exp $
+# $Id: GETTING_STARTED,v 1.24 2003-12-31 01:02:18 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -141,6 +141,12 @@ and the later slot will have its time interval labels drawn "lower" than
 the previous slot, to prevent overlap.  Mouse cursor over timeline slots displays 
 the slot's "predicateName( parameterValues)", and the second line displays the
 token keys(s).
+
+Providing the Temporal Extent View is open for a partial plan step which
+has a Timeline View, Mouse-Right on the Timeline View background offers 
+"Enable/Disable Auto Snap", which when enabled will cause the Temporal Extent 
+View's focus to follow the mouse cursor's movement over Timeline View slots 
+and free tokens.
 
 Token Network View
 ------------------

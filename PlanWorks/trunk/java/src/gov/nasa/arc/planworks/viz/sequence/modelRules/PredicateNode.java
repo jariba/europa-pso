@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PredicateNode.java,v 1.2 2003-12-12 01:23:06 taylor Exp $
+// $Id: PredicateNode.java,v 1.3 2003-12-31 01:02:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -261,7 +261,7 @@ public class PredicateNode extends BasicNode {
 
       // mouseRightPopupMenu( viewCoords);
 
-      return true;
+      // return true;
     }
     return false;
   } // end doMouseClick   
