@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkRuleInstanceNode.java,v 1.1 2004-06-10 19:11:06 taylor Exp $
+// $Id: ConstraintNetworkRuleInstanceNode.java,v 1.2 2004-06-15 19:26:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -176,8 +176,7 @@ public class ConstraintNetworkRuleInstanceNode extends RuleInstanceNode implemen
   } // end doMouseClick 
 
   public void mouseRightPopupMenu( Point viewCoords) {
-    // no Navigator View available for RuleInstanceNode
-    // ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
+    ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
   } // end mouseRightPopupMenu
 
   public void addContainerNodeVariables(Object n, Object v) {

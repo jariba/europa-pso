@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.6 2004-05-21 21:39:06 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.7 2004-06-15 19:26:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwSlot;
@@ -49,8 +50,11 @@ public final class NavNodeGenerics {
   public static final String TIMELINE_TO_VARIABLE_LINK_TYPE = "TitoV";
   public static final String TIMELINE_TO_RESOURCE_LINK_TYPE = "TitoR";
   public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
+  public static final String RULE_INST_TO_TOKEN_LINK_TYPE = "RutoT";
+  public static final String RULE_INST_TO_VARIABLE_LINK_TYPE = "RutoV";
   public static final String RESOURCE_TO_VARIABLE_LINK_TYPE = "RtoV";
   public static final String SLOT_TO_TOKEN_LINK_TYPE = "StoT";
+  public static final String TOKEN_TO_RULE_INST_LINK_TYPE = "TtoRu";
   public static final String TOKEN_TO_TOKEN_LINK_TYPE = "TtoT";
   public static final String TOKEN_TO_VARIABLE_LINK_TYPE = "TtoV";
   public static final String VARIABLE_TO_CONSTRAINT_LINK_TYPE = "VtoC";
@@ -81,6 +85,7 @@ public final class NavNodeGenerics {
     Iterator childEntityItr = navNode.getComponentEntityList().iterator();
     while (childEntityItr.hasNext()) {
       PwEntity childEntity = (PwEntity) childEntityItr.next();
+      // System.err.println( "addEntityNavNodes childEntity " + childEntity);
       navigatorView.addEntityNavNode( childEntity, isDebugPrint);
       areNodesChanged = true;
     }
@@ -396,6 +401,15 @@ public final class NavNodeGenerics {
     } else if ((fromNavNode instanceof ResourceNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
       return RESOURCE_TO_VARIABLE_LINK_TYPE;
+    } else if ((fromNavNode instanceof TokenNavNode) &&
+               (toNavNode instanceof RuleInstanceNavNode)) {
+      return TOKEN_TO_RULE_INST_LINK_TYPE;
+    } else if ((fromNavNode instanceof RuleInstanceNavNode) &&
+               (toNavNode instanceof TokenNavNode)) {
+      return RULE_INST_TO_TOKEN_LINK_TYPE;
+    } else if ((fromNavNode instanceof RuleInstanceNavNode) &&
+               (toNavNode instanceof VariableNavNode)) {
+      return RULE_INST_TO_VARIABLE_LINK_TYPE;
     } else {
       System.err.println( "NavNodeGenerics.getLinkType: no link type for " +
                           fromNavNode + " => " + toNavNode);
@@ -423,6 +437,8 @@ public final class NavNodeGenerics {
       // PwTimeline & PwResource as well
       variableColor =
         navigatorView.getTimelineColor( ((PwObject) variableContainer).getId());
+    } else if (variableContainer instanceof PwRuleInstance) {
+      variableColor = ViewConstants.RULE_INSTANCE_BG_COLOR;
     } else {
       System.err.println( "\nNavNodeGenerics.getVariableColor variable " + variable +
                           " not handled");

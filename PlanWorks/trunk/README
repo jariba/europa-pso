@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.102 2004-06-14 22:11:22 taylor Exp $
+# $Id: README,v 1.103 2004-06-15 19:26:45 taylor Exp $
 #
 
 SUMMARY
@@ -18,17 +18,18 @@ o The Token Network View handling of rules has been revised:
   - links between token nodes are no longer mouse sensitive;
   - rule instance nodes, rendered as ovals, with the instance key and the
     rule key values in the label, now are linked bewteen token nodes;
-  - Mouse-Right on the rule instance nodes brings up the selection 
-    "Open Rule Instance View".  Selecting it creates an internal frame titled
-    "RuleInstanceView of <plan-name>/stepnn - n", which displays the "from" token,
-    and "to" token key values and predicates, followed by the text of
-    the rule;
+  - Mouse-Right on the rule instance nodes brings up the selections "Open
+    "Navigator View" and "Open Rule Instance View".  Selecting the second
+    creates an internal frame titled "RuleInstanceView of <plan-name>/stepnn - n", 
+    which displays the "from" token, and "to" token key values and predicates, 
+    followed by the text of the rule;
   - A "RuleInstanceView ..." internal frame may be created for every rule instance
     node in the Token Network View;
   - Mouse-Right: "Close Rule Instance Views" on the view background has been added.
 
 o Rule Instance nodes, which have variables, now appear rendered as ovals in the
-  Constraint Network View.
+  Constraint Network View.  Rule Instance nodes are now included in the Navigator
+  View.
 
 o  GNATS PRs and CRs completed:
 

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.49 2004-06-14 22:11:21 taylor Exp $
+# $Id: GETTING_STARTED,v 1.50 2004-06-15 19:26:45 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -95,6 +95,11 @@ Token Network.  The key values for interval tokens, resource transactions,
 constraints, variables, timelines, resources, objects, rule instances,
 and slots appear in the appropriate node labels of the partial plan views. 
 
+The rendered node shapes are: interval tokens and resource transactions (rectangles); 
+resources (pinched/peaked rectangles); timelines (forward trapezoids); objects
+(backward trapezoids); rule instances (ellipses); variables("pinched" rectangles);
+constraints (left/right pointed rectangles); and slots (peaked rectangles).
+ 
 All partial plan views' Mouse-Right pop-ups offer the user selections
  ("Open <view-name> View") for the other partial plan views, which will 
 create them as needed.  All views, except for DB Transaction View, the
@@ -265,15 +270,16 @@ instance key and the rule key values in the label.
 Mouse cursor over token nodes displays "predicateName( parameterValues)", and 
 the second line displays its slot key.  Clicking Mouse-Left on a node link will 
 make visible two small hollow squares, one at the "root" of the link, and the 
-other at the tip of the arrow.
+other at the tip of the arrow.  Mouse-Right on the token nodes offers the selections
+"Open Navigator View", and "Set Active Token".
 
-Mouse-Right on the rule instance nodes brings up the selection "Open Rule
-Instance View".  Selecting it creates an internal frame titled "RuleInstanceView
-of <plan-name>/stepnn - n", which displays the "from" token, and "to" token key 
-values and predicates, followed by the text of the rule.  A "RuleInstanceView ..." 
-internal frame may be created for every rule instance node in the Token Network 
-View.  Mouse-Right: "Close Rule Instance Views" on the view background can be
-used to remove all "Rule Instance Views".
+Mouse-Right on the rule instance nodes brings up the selections "Open Navigator
+View" and "Open Rule Instance View".  Selecting the second creates an internal 
+frame titled "RuleInstanceView of <plan-name>/stepnn - n", which displays the 
+"from" token, and "to" token key values and predicates, followed by the text of 
+the rule.  A "RuleInstanceView ..." internal frame may be created for every rule 
+instance node in the Token Network View.  Mouse-Right: "Close Rule Instance Views"
+on the view background can be used to remove all "Rule Instance Views".
 
 
 Node Focus in Views
@@ -317,7 +323,7 @@ For all nodes, except empty slots, in the Constraint Network, the
 Resource Profile, the Resource Transaction, the Temporal Extent, the 
 Timeline, and the Token Network views, there is a Mouse-Right selection 
 "Open Navigator View" which allows navigation through all relationships 
-in the partial plan data base.
+in the partial plan data base, beginning with the selected entity.
 
 
 Content Filtering
