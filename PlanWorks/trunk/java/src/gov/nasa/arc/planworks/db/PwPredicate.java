@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicate.java,v 1.7 2003-12-16 23:18:27 miatauro Exp $
+// $Id: PwPredicate.java,v 1.8 2004-04-02 00:57:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -46,5 +46,4 @@ public interface PwPredicate {
    */
   public abstract List getParameterList();
 
-  public abstract PwParameter getParameter(Integer paramId);
 } // end interface PwPredicate
