@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.27 2004-01-02 21:16:35 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.28 2004-01-05 17:24:27 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -62,6 +62,7 @@ enum transactionTypes {TOKEN_CREATED = 0, TOKEN_DELETED, TOKEN_INSERTED, TOKEN_F
 const char *sourceTypeNames[3] = {"SYSTEM", "USER", "UNKNOWN"};
 
 #define TAB "\t"
+#define COLON ":"
 const String SNULL("\\N");
 const String CONSTRAINT_TOKEN("constraintToken");
 const String COMMA(",");
@@ -346,10 +347,10 @@ void PartialPlanWriter::write(void) {
   int timelineId = 0;
   while(!objectIterator.isDone()) {
     ObjectId objectId = objectIterator.item();
-    objectOut << objectId->getKey() << TAB << partialPlanId << TAB << objectId->getName() << endl;
+    objectOut << objectId->getKey() << TAB << partialPlanId << TAB << objectId->getName() << TAB;
     List<AttributeId> timelineNames = tnet->getAttributes(objectId);
     ListIterator<AttributeId> timelineNameIterator = ListIterator<AttributeId>(timelineNames);
-
+    //String emptySlotInfo("");
     while(!timelineNameIterator.isDone()) {
       AttributeId timelineAttId = timelineNameIterator.item();
       List<SlotInfo> slotList = tnet->getAllSlots(objectId, timelineAttId);
@@ -363,7 +364,10 @@ void PartialPlanWriter::write(void) {
       int slotIndex = 0;
       while(!slotIterator.isDone()) {
         SlotId slotId = slotIterator.item().getId();
-        if(slotId->isSlotEmpty() && slotId->getNextSlotId() == SlotId::noId()) {
+        if(slotId->isSlotEmpty()) {
+          if(slotId->getNextSlotId() != SlotId::noId()) {
+            objectOut << timelineId << COMMA << slotId->getKey() << COMMA << slotIndex << COLON;
+          }
           slotIterator.step();
           continue;
         }
@@ -383,6 +387,7 @@ void PartialPlanWriter::write(void) {
       timelineId++;
       timelineNameIterator.step();
     }
+    objectOut << endl;
     objectIterator.step();
   }
 
@@ -464,7 +469,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
   if(tokenId->getMasterToken().isValid()) {
     tokenRelationOut << partialPlanId << TAB << tokenId->getMasterToken()->getKey() << TAB
                      << tokenId->getKey() << TAB << "CAUSAL" << TAB << tokenRelationId << endl;
-    tokenRelationIds += String(tokenRelationId) + String(":");
+    tokenRelationIds += String(tokenRelationId) + COLON;
     tokenRelationId++;
   }
   if(tokenRelationIds == String("")) {
@@ -493,7 +498,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
                    /*,intDomainOut, enumDomainOut*/);
     //paramVarTokenMapOut << variableId->getKey() << TAB << tokenId->getKey() << TAB << paramIndex
     //                    << TAB << partialPlanId << endl;
-    paramVarIds += String(variableId->getKey()) + String(":");
+    paramVarIds += String(variableId->getKey()) + COLON;
     paramIndex++;
     paramVarIterator.step();
   }
