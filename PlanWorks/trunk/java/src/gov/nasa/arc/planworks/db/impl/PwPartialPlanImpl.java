@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.104 2004-08-07 01:18:25 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.105 2004-08-10 21:17:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1536,12 +1536,18 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return numCycles != 0;
   } // end progressMonitorWait
 
+  // boolean isPathDebug = true;
+  boolean isPathDebug = false;
+
   public List getPath(final Integer sKey, final Integer eKey, final List classes) {
     return getPath(sKey, eKey, classes, Integer.MAX_VALUE);
   }
 
   public List getPath(final Integer sKey, final Integer eKey, final List classes, 
                       final int maxLength) {
+    if (isPathDebug) {
+      System.err.println( "getPath: sKey " + sKey + " eKey " + eKey);
+    }
     long t1 = System.currentTimeMillis();
     PwEntity start, end;
     if(sKey == null)
@@ -1575,12 +1581,20 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   }
 
   private boolean pathExists(final PwEntity start, final Integer end, final List classes) {
+    if (isPathDebug) {
+      System.err.println("pathExists start " + start.getClass().getName());
+      System.err.println( "   id " + start.getId());
+   }
     LinkedList component = new LinkedList();
     buildConnectedComponent(start, classes, component);
     return component.contains(end);
   }
 
   private void buildConnectedComponent(final PwEntity ent, final List classes, LinkedList component) {
+    if (isPathDebug) {
+      System.err.println( "buildConnectedComponent " + ent.getClass().getName());
+      System.err.println( "   id " + ent.getId());
+    }
     if(component.contains(ent.getId()))
       return;
     component.addLast(ent.getId());
@@ -1621,4 +1635,19 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     classes.add(PwConstraint.class);
     return getPath(sKey, eKey, classes, maxLength);
   }
+
+  public List getTokenNetworkPath(final Integer sKey, final Integer eKey) {
+    LinkedList classes = new LinkedList();
+    classes.add(PwToken.class);
+    classes.add(PwRuleInstance.class);
+    return getPath(sKey, eKey, classes);
+  }
+  
+  public List getTokenNetworkPath(final Integer sKey, final Integer eKey, final int maxLength) {
+    LinkedList classes = new LinkedList();
+    classes.add(PwToken.class);
+    classes.add(PwRuleInstance.class);
+    return getPath(sKey, eKey, classes, maxLength);
+  }
+
 } // end class PwPartialPlanImpl

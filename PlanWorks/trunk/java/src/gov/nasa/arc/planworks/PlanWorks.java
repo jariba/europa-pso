@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.108 2004-08-05 00:24:21 taylor Exp $
+// $Id: PlanWorks.java,v 1.109 2004-08-10 21:17:06 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -174,8 +174,8 @@ public class PlanWorks extends MDIDesktopFrame {
           }
         });
       int imageIndex = (int) (Math.random() * 100) % imagePaths.length;
-      Image splashImage = Toolkit.getDefaultToolkit().createImage(imagePath + System.getProperty("file.separator")
-                                                                  + imagePaths[imageIndex]);
+      Image splashImage = Toolkit.getDefaultToolkit().
+	createImage(imagePath + System.getProperty("file.separator") + imagePaths[imageIndex]);
       SplashWindow.splash(splashImage);
     }
     else {
@@ -294,8 +294,9 @@ public class PlanWorks extends MDIDesktopFrame {
 //                         toolTipManager.getReshowDelay());
     // milliseconds
     toolTipManager.setInitialDelay( 100); // default 750
-    // toolTipManager.setDismissDelay( 8000); // default 4000
+    toolTipManager.setDismissDelay( 8000); // default 4000
     toolTipManager.setReshowDelay( 100); // default 500
+
     //executeDialog = new PlannerCommandLineDialog(this);
     //executeDialog.hide();
     this.nodeShapesFrame = null;

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.10 2004-07-27 21:58:16 taylor Exp $
+// $Id: TokenQueryView.java,v 1.11 2004-08-10 21:17:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -163,7 +163,16 @@ public class TokenQueryView extends SequenceView {
       }
       objectKeyColumnIndx = 1;
       stepNumberColumnIndx = 0;
-      TableSorter sorter = new TableSorter( new DBTransactionTableModel( columnNames, data));
+      TableSorter sorter = new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 1)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
+      sorter.setColumnComparator( Integer.class, DBTransactionTableModel.INTEGER_COMPARATOR);
       freeTokenTable = new DBTransactionTable( sorter, stepNumberColumnIndx, this);
       sorter.setTableHeader( freeTokenTable.getTableHeader());
       contentScrollPane = new JScrollPane( freeTokenTable);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.50 2004-08-05 00:24:26 taylor Exp $
+// $Id: PartialPlanView.java,v 1.51 2004-08-10 21:17:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -430,7 +430,7 @@ public class PartialPlanView extends VizView {
         JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), rnfe.getMessage(),
                                       "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
 
-        rnfe.printStackTrace();
+        // rnfe.printStackTrace();
         return;
       }
       catch (CreatePartialPlanException cppExcep) {

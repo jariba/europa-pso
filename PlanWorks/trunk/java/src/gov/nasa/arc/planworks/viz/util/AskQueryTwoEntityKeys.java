@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryTwoEntityKeys.java,v 1.1 2004-08-07 01:18:31 taylor Exp $
+// $Id: AskQueryTwoEntityKeys.java,v 1.2 2004-08-10 21:17:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -184,23 +184,26 @@ public class AskQueryTwoEntityKeys extends JDialog {
               }
 	      // System.err.println( "AskQueryTwoEntityKeys key1 " + typedText1 +
 	      //			  " key2 " + typedText2);
-	      if (! isValidEntityKey( entityKey1)) {
+	      if (! isValidEntityKey( entityKey1, keyType1)) {
 		JOptionPane.showMessageDialog
 		  ( PlanWorks.getPlanWorks(),
 		    "Sorry, \"" + entityKey1.toString() + "\" " +
 		    "is not a valid " + keyType1 + " key.",
 		    "Invalid " + keyType1 + " key", JOptionPane.ERROR_MESSAGE);
+                entityKey1 = null;
 	      }
-	      if (! isValidEntityKey( entityKey2)) {
+	      if (! isValidEntityKey( entityKey2, keyType2)) {
 		JOptionPane.showMessageDialog
 		  ( PlanWorks.getPlanWorks(),
 		    "Sorry, \"" + entityKey2.toString() + "\" " +
 		    "is not a valid " + keyType2 + " key.",
 		    "Invalid " + keyType2 + " key", JOptionPane.ERROR_MESSAGE);
+                entityKey2 = null;
 	      }
-	      // we're done; dismiss the dialog
-	      setVisible( false);
-
+	      if ((entityKey1 != null) && (entityKey2 != null)) {
+		// we're done; dismiss the dialog
+		setVisible( false);
+	      }
             } else { // user closed dialog or clicked cancel
               entityKey1 = null;
               entityKey2 = null;
@@ -212,9 +215,17 @@ public class AskQueryTwoEntityKeys extends JDialog {
   } // end addInputListener
 
 
-  private boolean isValidEntityKey( final Integer entityKey) {
-    // handles variables only
-    return (partialPlan.getVariable( entityKey) != null);
+  private boolean isValidEntityKey( final Integer entityKey, final String keyType) {
+    if (keyType.equals( "variable")) {
+      return (partialPlan.getVariable( entityKey) != null);
+    } else if (keyType.equals( "token")) {
+      return (partialPlan.getToken( entityKey) != null);
+    } else {
+      System.err.println( "AskQueryTwoEntityKeys.isValidEntityKey: keyType " + keyType +
+			  " not handled");
+      System.exit( -1);
+      return true;
+    }
   } // end isValidEntityKey
 
 

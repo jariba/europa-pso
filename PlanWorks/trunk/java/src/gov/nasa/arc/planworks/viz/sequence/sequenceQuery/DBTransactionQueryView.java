@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionQueryView.java,v 1.7 2004-07-27 21:58:15 taylor Exp $
+// $Id: DBTransactionQueryView.java,v 1.8 2004-08-10 21:17:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -151,6 +151,7 @@ public class DBTransactionQueryView extends SequenceView {
     add( transactionHeaderPanel, BorderLayout.NORTH);
 
     TableSorter sorter = createTableModelAndSorter();
+    sorter.setColumnComparator( Integer.class, DBTransactionTableModel.INTEGER_COMPARATOR);
     dbTransactionTable = new DBTransactionTable( sorter, stepNumberColumnIndx, this);
     sorter.setTableHeader( dbTransactionTable.getTableHeader());
     contentScrollPane = new JScrollPane( dbTransactionTable);
@@ -217,6 +218,15 @@ public class DBTransactionQueryView extends SequenceView {
       }
       objectKeyColumnIndx = 3;
       stepNumberColumnIndx = 4;
+      return new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 3) || (columnIndex == 4)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
     } else {
       // key specific queries
       objectKeyColumnIndx = -1;
@@ -240,7 +250,7 @@ public class DBTransactionQueryView extends SequenceView {
           data[row][3] = transaction.getStepNumber().toString();
           data[row][4] = transaction.getInfo()[0];
         }
-     } else if (query.indexOf( "Token") >= 0) {
+      } else if (query.indexOf( "Token") >= 0) {
         columnNames = new String[] { ViewConstants.DB_TRANSACTION_KEY_HEADER,
                                      ViewGenerics.computeTransactionNameHeader(),
                                      ViewConstants.DB_TRANSACTION_SOURCE_HEADER,
@@ -283,9 +293,16 @@ public class DBTransactionQueryView extends SequenceView {
           data[row][6] = transaction.getInfo()[2];
         }
       }
+      return new TableSorter( new DBTransactionTableModel( columnNames, data) {
+	  public Class getColumnClass(int columnIndex) {
+	    if ((columnIndex == 0) || (columnIndex == 3)) {
+	      return Integer.class;
+	    } else {
+	      return String.class;
+	    }
+	  }
+	});
     }
-
-    return new TableSorter( new DBTransactionTableModel( columnNames, data));
   } // end createTableModelAndSorter
 
 

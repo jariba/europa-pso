@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.80 2004-08-07 01:18:27 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.81 2004-08-10 21:17:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -134,7 +134,6 @@ public class ConstraintNetworkView extends PartialPlanView {
   private List highlightPathNodesList;
   private Integer variableKey1;
   private Integer variableKey2;
-  // private List varConstrKeyList;
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
@@ -1826,6 +1825,9 @@ public class ConstraintNetworkView extends PartialPlanView {
 				 "end variable key (int)", partialPlan);
     variableKey1 = twoKeysDialog.getEntityKey1();
     variableKey2 = twoKeysDialog.getEntityKey2();
+    if ((variableKey1 == null) || (variableKey2 == null)) {
+      return;
+    }
     boolean isFindVariablePath = true;
     FindVariablePath findVariablePath =  new FindVariablePath( partialPlan, viewSet,
 							       isFindVariablePath);
@@ -1886,7 +1888,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       setNodesLinksVisible();
       newLayout.performLayout();
       highlightPathNodesList = nodeList;
-      highlightPathNodes( nodeList);
+      NodeGenerics.highlightPathNodes( nodeList, jGoView);
       outputVariablePathNodes( nodeList);
     } finally {
       isInhibitRedraw = false;
@@ -1898,7 +1900,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 					final List nodeList) {
     highlightPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
-	  highlightPathNodes( nodeList);
+	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
 	  outputVariablePathNodes( nodeList);
 	}
       });
@@ -1939,18 +1941,6 @@ public class ConstraintNetworkView extends PartialPlanView {
       new MessageDialog( PlanWorks.getPlanWorks(), "Found Variable Path",
 			 nodeBuffer.toString());
   } // end outputVariablePathNodes
-
-  private void highlightPathNodes( List nodeList) {
-    JGoSelection selection = jGoView.getSelection();
-    selection.clearSelection();
-    Iterator nodeItr = nodeList.iterator();
-    while (nodeItr.hasNext()) {
-      selection.extendSelection( (JGoObject) nodeItr.next());
-    }
-    // position view at first path node
-    boolean isHighlightNode = false;
-    NodeGenerics.focusViewOnNode( (JGoObject) nodeList.get( 0), isHighlightNode, jGoView);
-  } // end highlightPathNodes
 
   private void findAndSelectContainer( PwVariableContainer contToFind, boolean isByKey) {
     boolean isTokenFound = false;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.20 2004-08-06 20:05:28 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.21 2004-08-10 21:17:08 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -345,7 +345,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       planViz05(); 
       planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
       planViz10(); 
-      planViz11(); // methods 1-16 of 18 complete
+      planViz11(); // methods 1-16 of 20 complete
       planViz12(); // methods 1-15 of 18 complete for TimelineView; no other views yet
 
       PWTestHelper.exitPlanWorks( helper, this);

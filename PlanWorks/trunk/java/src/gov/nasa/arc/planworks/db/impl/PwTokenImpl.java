@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.50 2004-08-06 00:53:26 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.51 2004-08-10 21:17:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -453,17 +453,28 @@ public class PwTokenImpl implements PwToken {
   }
 
   public List getNeighbors(List classes) {
-    LinkedList retval = new LinkedList();
+    List retval = new UniqueSet();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwRuleInstance.class))
-        retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
-      else if(cclass.equals(PwVariable.class))
+      if(cclass.equals(PwRuleInstance.class)) {
+	if ((getRuleInstanceId() != null) && (getRuleInstanceId().intValue() > 0)) {
+	  retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
+	}
+	Iterator slaveIdItr = partialPlan.getSlaveTokenIds( getId()).iterator();
+	while (slaveIdItr.hasNext()) {
+	  Integer ruleInstanceId =
+	    partialPlan.getToken( (Integer) slaveIdItr.next()).getRuleInstanceId();
+	  if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
+	    retval.add( partialPlan.getRuleInstance( ruleInstanceId));
+	  }
+	}
+      } else if(cclass.equals(PwVariable.class)) {
         retval.addAll(getVariablesList());
-      else if(cclass.equals(PwObject.class))
+      } else if(cclass.equals(PwObject.class)) {
         retval.add(partialPlan.getObject(getParentId()));
+      }
     }
-    return retval;
+    return new ArrayList( retval);
   }
 
   public List getNeighbors(List classes, Set ids) {

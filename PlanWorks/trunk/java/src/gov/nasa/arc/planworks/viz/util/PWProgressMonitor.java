@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.4 2004-08-06 20:05:29 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.5 2004-08-10 21:17:13 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -35,6 +35,7 @@ import javax.swing.UIManager;
 
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /** A class to monitor the progress of some operation. If it looks
@@ -85,6 +86,7 @@ public class PWProgressMonitor extends Object
 
   private Thread monitoredThread;
   private JPanel view;
+  private Thread thisThread;
 
 
     /**
@@ -117,7 +119,18 @@ public class PWProgressMonitor extends Object
                            int max,
                              Thread monitoredThread,
                              JPanel view) {
-        this(parentComponent, message, note, min, max, null, monitoredThread, view);
+        this(parentComponent, message, note, min, max, null, monitoredThread, view, null);
+    }
+
+    public PWProgressMonitor(Component parentComponent,
+                           Object message,
+                           String note,
+                           int min,
+                           int max,
+                             Thread monitoredThread,
+                             JPanel view,
+			     Thread thisThread) {
+        this(parentComponent, message, note, min, max, null, monitoredThread, view, thisThread);
     }
 
 
@@ -128,12 +141,14 @@ public class PWProgressMonitor extends Object
                             int max,
                             ProgressMonitor group,
                               Thread monitoredThread,
-                              JPanel view) {
+                              JPanel view,
+			      Thread thisThread) {
         this.min = min;
         this.max = max;
         this.parentComponent = parentComponent;
         this.monitoredThread = monitoredThread;
         this.view = view;
+	this.thisThread = thisThread;
 
         cancelOption = new Object[1];
         cancelOption[0] = UIManager.getString("OptionPane.cancelButtonText");
@@ -210,36 +225,43 @@ public class PWProgressMonitor extends Object
                         dialog.setVisible(false);
                         dialog.dispose();
 
-                        if (monitoredThread != null) { // added will taylor
+			// added will taylor
+                        if ((monitoredThread != null) && (view != null)) { 
                           System.err.print( "PWProgressMonitor stopped thread for '");
 			  if (view instanceof ConstraintNetworkView.FindVariablePath) {
 			    System.err.println( "FindVariablePath'");
 			    ConstraintNetworkView.FindVariablePath findVarPath =
 			      (ConstraintNetworkView.FindVariablePath) view;
 			    findVarPath.setVarConstrKeyList( new ArrayList());
-                          } else if (view != null) {
-                            if (view instanceof VizView) {
-                              VizView vizView = (VizView) view;
-                              vizView.closeView( vizView);
-                              System.err.println( vizView.getName() + "'");
-                            } else if (view instanceof SequenceQueryWindow) {
-                              System.err.println( "Sequence Query View'");
-                              SequenceQueryWindow seqQueryWindow =
-                                (SequenceQueryWindow) view;
-                              seqQueryWindow.getProgressMonitor().close();
-                              seqQueryWindow.setProgressMonitor( null);
-                            } else {
-                              System.err.println( "PWProgressMonitor: " +
-                                                  view.getClass().getName() + " not handled");
-                            }
+			    ((ConstraintNetworkView.ProgressMonitorThread) thisThread).
+			      setPMThreadCancel();
+			  } else if (view instanceof TokenNetworkView.FindTokenPath) {
+			    System.err.println( "FindTokenPath'");
+			    TokenNetworkView.FindTokenPath findTokenPath =
+			      (TokenNetworkView.FindTokenPath) view;
+			    findTokenPath.setTokenRuleKeyList( new ArrayList());
+			    ((TokenNetworkView.ProgressMonitorThread) thisThread).
+			      setPMThreadCancel();
+			  } else if (view instanceof VizView) {
+			    VizView vizView = (VizView) view;
+			    vizView.closeView( vizView);
+			    System.err.println( vizView.getName() + "'");
+			  } else if (view instanceof SequenceQueryWindow) {
+			    System.err.println( "Sequence Query View'");
+			    SequenceQueryWindow seqQueryWindow =
+			      (SequenceQueryWindow) view;
+			    seqQueryWindow.getProgressMonitor().close();
+			    seqQueryWindow.setProgressMonitor( null);
+			  } else {
+			    System.err.println( "PWProgressMonitor: " +
+						view.getClass().getName() + " not handled");
                           }
                           // monitoredThread.interrupt(); // does not stop JGo.performLyout
                           monitoredThread.stop(); // deprecated, but stops JGo.performLyout
                         }
-
                     }
                 }
-            });
+	      });
             return dialog;
         }
     }

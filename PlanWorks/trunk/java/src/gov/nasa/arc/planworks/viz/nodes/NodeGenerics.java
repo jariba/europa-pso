@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.30 2004-08-05 19:34:19 taylor Exp $
+// $Id: NodeGenerics.java,v 1.31 2004-08-10 21:17:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -226,6 +226,23 @@ public class NodeGenerics {
     }
   } // end selectSecondaryNodes
 
+
+  /**
+   * <code>highlightPathNodes</code>
+   *
+   * @param nodeList - <code>List</code> - 
+   */
+  public static void highlightPathNodes( List nodeList, JGoView jGoView) {
+    JGoSelection selection = jGoView.getSelection();
+    selection.clearSelection();
+    Iterator nodeItr = nodeList.iterator();
+    while (nodeItr.hasNext()) {
+      selection.extendSelection( (JGoObject) nodeItr.next());
+    }
+    // position view at first path node
+    boolean isHighlightNode = false;
+    NodeGenerics.focusViewOnNode( (JGoObject) nodeList.get( 0), isHighlightNode, jGoView);
+  } // end highlightPathNodes
 
   /**
    * <code>mapTokensToTokenNodes</code> - given a list of tokens and token nodes,

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionTableModel.java,v 1.1 2004-05-21 21:39:12 taylor Exp $
+// $Id: DBTransactionTableModel.java,v 1.2 2004-08-10 21:17:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.util;
 
+import java.util.Comparator;
 import javax.swing.table.AbstractTableModel;
 
 
@@ -26,6 +27,19 @@ public class DBTransactionTableModel extends AbstractTableModel {
 
   private String[] columnNames;
   private Object[][] data;
+
+    public static final Comparator INTEGER_COMPARATOR = new Comparator() {
+        public int compare(Object o1, Object o2) {
+	  Integer i1 = new Integer( (String) o1);
+	  Integer i2 = new Integer( (String) o2);
+	  return i1.compareTo( i2);
+        }
+        public boolean equals(Object o1, Object o2) {
+	  Integer i1 = new Integer( (String) o1);
+	  Integer i2 = new Integer( (String) o2);
+	  return i1.equals( i2);
+        }
+    };
 
   /**
    * <code>DBTransactionTableModel</code> - constructor 
