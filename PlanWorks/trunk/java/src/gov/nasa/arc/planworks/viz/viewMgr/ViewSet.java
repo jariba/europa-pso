@@ -4,11 +4,12 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.5 2003-06-11 17:20:09 miatauro Exp $
+// $Id: ViewSet.java,v 1.6 2003-06-11 17:47:53 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.awt.Container;
+import java.beans.PropertyVetoException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -88,7 +89,8 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     Collection viewSet = views.values();
     Iterator viewIterator = viewSet.iterator();
     while(viewIterator.hasNext()) {
-      ((MDIInternalFrame)viewIterator.next()).setClosed(true);
+      try{((MDIInternalFrame)viewIterator.next()).setClosed(true);}
+      catch(PropertyVetoException pve){}
     }
   }
   public boolean viewExists(String viewName) {
