@@ -59,6 +59,12 @@ public interface ViewConstants {
   public static final int TIMELINE_VIEW_FONT_STYLE = Font.PLAIN;
 
   /**
+   * constant <code>TIME_INTERVAL_STRINGS_OVERLAP_OFFSET</code>
+   *
+   */
+  public static final int TIME_INTERVAL_STRINGS_OVERLAP_OFFSET = 2;
+
+  /**
    * constant <code>TIMELINE_VIEW_EMPTY_NODE_LABEL</code>
    *
    */
@@ -69,6 +75,8 @@ public interface ViewConstants {
    *
    */
   public static final int TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN = 7;
+
+
 
   // nodes.TimelineNode
   // nodes.SlotNode

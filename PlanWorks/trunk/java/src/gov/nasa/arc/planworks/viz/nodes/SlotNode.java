@@ -162,10 +162,13 @@ public class SlotNode extends TextNode implements ViewConstants {
 
   private JGoText renderIntervalText( String text, Point textLoc) {
     // make sure that time interval strings do not overlap
-    int textLength = text.length() - 1;
+    int textLength = text.length() + ViewConstants.TIME_INTERVAL_STRINGS_OVERLAP_OFFSET;
     if (textLength > view.getSlotLabelMinLength()) {
       view.setSlotLabelMinLength( textLength);
     }
+    // System.err.println( "renderIntervalText: text '" + text + "' minLen " +
+    //                    view.getSlotLabelMinLength());
+
     // Object->JGoObject->JGoText
     JGoText textObject = new JGoText( textLoc, ViewConstants.TIMELINE_VIEW_FONT_SIZE,
                                       text, ViewConstants.TIMELINE_VIEW_FONT_NAME,
