@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.22 2004-08-23 22:07:40 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.23 2004-08-23 22:51:41 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -1909,15 +1909,6 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     RuleInstanceNode ruleInstanceNode = null;
     int numSlottedTokenNodes = 0, numFreeTokenNodes = 0, numResTransactionNodes = 0;
     int numRuleInstanceNodes = 0;
-    // token network now is incrementally rendered by the user.  Here we have
-    // no master/slave relationships => slotted tokens and resource transactions are all
-    // root nodes.  create free tokens
-    boolean isByKey = true;
-    Iterator freeTokenItr = partialPlan.getFreeTokenList().iterator();
-    while (freeTokenItr.hasNext()) {
-      PwToken freeToken = (PwToken) freeTokenItr.next();
-      tokenNetworkView.findAndSelectNode( ((PwToken) freeTokenItr.next()).getId(), isByKey);
-    }
     Iterator tokenNodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
     while (tokenNodeKeyItr.hasNext()) {
       TokenNetworkTokenNode tokenNode =

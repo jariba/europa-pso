@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.84 2004-08-21 00:31:54 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.85 2004-08-23 22:51:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -214,18 +214,6 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         }
       };
     worker.start();  
-  } // end constructor
-
-    /**
-     * <code>ConstraintNetworkView</code> - constructor 
-     *
-     * @param partialPlan - <code>ViewableObject</code> - 
-     * @param viewSet - <code>ViewSet</code> - 
-     * @param isFindVariablePath - <code>boolean</code> - 
-     */
-  public ConstraintNetworkView( ViewableObject partialPlan, ViewSet viewSet,
-				boolean isFindVariablePath) {
-    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
   } // end constructor
 
   private void constraintNetworkViewInit(ViewSet viewSet) {
@@ -1529,31 +1517,6 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       }
     }
   } // end setLinksVisible
-
-
-  /**
-   * <code>FindVariablePath</code> - used as arg to ProgressMonitorThread
-   *
-   */
-  public class FindVariablePath extends ConstraintNetworkView {
-
-    private List varConstrKeyList;
-
-    FindVariablePath( ViewableObject partialPlan, ViewSet viewSet,
-		      boolean isFindVariablePath) {
-      super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet, isFindVariablePath);
-    }
-
-    public List getVarConstrKeyList() {
-      return varConstrKeyList;
-    }
-
-    public void setVarConstrKeyList( List lst) {
-      // System.err.println( "setVarConstrKeyList " + lst);
-      varConstrKeyList = lst;
-    }
-
-  } // end class FindVariablePath
 
 
   /**
