@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstant.java,v 1.1 2004-02-03 20:43:45 taylor Exp $
+// $Id: PwResourceInstant.java,v 1.2 2004-02-27 18:04:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -12,6 +12,8 @@
 //
 
 package gov.nasa.arc.planworks.db;
+
+import java.util.List;
 
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
 
@@ -39,7 +41,7 @@ public interface PwResourceInstant {
    *
    * @return - <code>PwIntervalDomain</code> - 
    */
-  public abstract PwIntervalDomain getTime();
+  public abstract int getTime();
 
   /**
    * <code>getLevelMin</code>
@@ -55,5 +57,5 @@ public interface PwResourceInstant {
    */
   public abstract double getLevelMax();
 
-  
+  public abstract List getTransactions();
 } // end interface PwResourceInstant

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.21 2004-02-25 02:30:12 taylor Exp $
+// $Id: DbConstants.java,v 1.22 2004-02-27 18:04:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -87,13 +87,14 @@ public interface DbConstants {
    * constant <code>PP_PARAM_VAR_TOKEN_MAP_EXT</code>
    *
    */
-  //public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = "paramVarTokenMap";
 
   /**
    * constant <code>PP_CONSTRAINT_VAR_MAP_EXT</code>
    *
    */
   public static final String PP_CONSTRAINT_VAR_MAP_EXT = "constraintVarMap";
+
+  public static final String PP_RESOURCE_INSTANTS_EXT = "instants";
 
   public static final String SEQ_PP_STATS = "partialPlanStats";
 
@@ -109,10 +110,8 @@ public interface DbConstants {
    */
   public static final String [] PARTIAL_PLAN_FILE_EXTS =
     new String []
-      { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT,
-        PP_TOKENS_EXT, PP_VARIABLES_EXT,
-        PP_CONSTRAINTS_EXT, PP_TOKEN_RELATIONS_EXT,
-        PP_CONSTRAINT_VAR_MAP_EXT};
+      { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT, PP_TOKENS_EXT, PP_VARIABLES_EXT, PP_CONSTRAINTS_EXT, 
+        PP_TOKEN_RELATIONS_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_RESOURCE_INSTANTS_EXT};
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
@@ -264,10 +263,11 @@ public interface DbConstants {
   public static final String TBL_TOKENREL = "TokenRelation";
   public static final String TBL_VARIABLE = "Variable";
   public static final String TBL_TRANSACTION = "Transaction";
+  public static final String TBL_INSTANTS = "ResourceInstants";
 
   public static final String [] PW_DB_TABLES = new String [] {
     TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_TOKENREL,
-    TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT};
+    TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT, TBL_INSTANTS};
 
   // number of numeric characters in a type long value
   public static final int LONG_INT_LENGTH = 13;
@@ -284,17 +284,22 @@ public interface DbConstants {
   public static final String PARAMETER_VAR = "PARAMETER_VAR";
   public static final String STATE_VAR = "STATE_VAR";
   public static final String GLOBAL_VAR = "GLOBAL_VAR";
+  public static final String MEMBER_VAR = "MEMBER_VAR";
 
   public static final String [] DB_VARIABLE_TYPES = new String [] {
-    START_VAR, END_VAR, DURATION_VAR, OBJECT_VAR, PARAMETER_VAR, STATE_VAR, GLOBAL_VAR};
+    START_VAR, END_VAR, DURATION_VAR, OBJECT_VAR, PARAMETER_VAR, STATE_VAR, GLOBAL_VAR, MEMBER_VAR};
 
   //object types
   public static final int O_OBJECT = 0;
   public static final int O_TIMELINE = 1;
   public static final int O_RESOURCE = 2;
 
-  public static final Integer NO_ID = new Integer( -1);
+  public static final int T_INTERVAL = 0;
+  public static final int T_TRANSACTION = 1;
 
+  public static final Integer noId = new Integer(-1);
+
+  public static final Integer NO_ID = new Integer( -1);
 } // end interface DbConstants
 
     

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.1 2004-02-03 20:43:48 taylor Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.2 2004-02-27 18:04:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,10 +13,13 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
-import java.util.List;
+import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 
 
 /**
@@ -27,37 +30,24 @@ import gov.nasa.arc.planworks.db.PwResourceTransaction;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwResourceTransactionImpl implements PwResourceTransaction {
+public class PwResourceTransactionImpl extends PwTokenImpl implements PwResourceTransaction {
 
-  private Integer id;
-  private PwIntervalDomain interval;
   private double quantityMin;
   private double quantityMax;
 
-  public PwResourceTransactionImpl( Integer id, PwIntervalDomain interval,
-                                    double quantityMin, double quantityMax) {
-    this.id = id;
-    this.interval = interval;
-    this.quantityMin = quantityMin;
-    this.quantityMax = quantityMax;
-  }
-
-  /**
-   * <code>getId</code>
-   *
-   * @return id - <code>Integer</code> -
-   */
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * <code>getInterval</code>
-   *
-   * @return - <code>PwIntervalDomain</code> - 
-   */
-  public PwIntervalDomain getInterval() {
-    return interval;
+  public PwResourceTransactionImpl(final Integer id, final boolean isValueToken, 
+                                   final String predName, final Integer startVarId, 
+                                   final Integer endVarId, final Integer durationVarId,
+                                   final Integer stateVarId, final Integer objectVarId,
+                                   final Integer parentId, final String tokenRelationIds,
+                                   final String paramVarIds, final String transInfo, 
+                                   final PwPartialPlanImpl partialPlan) {
+    super(id, isValueToken, DbConstants.noId, predName, startVarId, endVarId, durationVarId, 
+          stateVarId, objectVarId, parentId, tokenRelationIds, paramVarIds, partialPlan);
+    StringTokenizer strTok = new StringTokenizer(transInfo, ",");
+    quantityMin = Double.parseDouble(strTok.nextToken());
+    quantityMax = Double.parseDouble(strTok.nextToken());
+    partialPlan.addResourceTransaction(id, this);
   }
 
   /**
@@ -78,5 +68,10 @@ public class PwResourceTransactionImpl implements PwResourceTransaction {
     return quantityMax;
   }
 
-  
+  public PwIntervalDomain getInterval() {
+    String type = "INTEGER_SORT";
+    PwIntervalDomain startDomain = (PwIntervalDomain) getStartVariable().getDomain();
+    PwIntervalDomain endDomain = (PwIntervalDomain) getEndVariable().getDomain();
+    return new PwIntervalDomainImpl(type, startDomain.getLowerBound(), endDomain.getUpperBound());
+  }
 } // end class PwResourceTransactionImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.22 2004-02-05 23:23:55 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.23 2004-02-27 18:04:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -85,40 +85,6 @@ public class PwSlotImpl implements PwSlot {
       retval.add( partialPlan.getToken( (Integer)tokenIdList.get( i)));
     return retval;
   }
-
-  /**
-   * <code>addToken</code>
-   *
-   * @param id - <code>Integer</code>
-   * @param isValueToken <code>Integer</code>
-   * @param slotId - <code>Integer</code>
-   * @param predicateId - <code>Integer</code>
-   * @param startVarId - <code>Integer</code>
-   * @param endVarId - <code>Integer</code>
-   * @param durationVarId - <code>Integer</code>
-   * @param objectId - <code>Integer</code>
-   * @param rejectVarId - <code>Integer</code>
-   * @param objectVarId - <code>Integer</code>
-   * @param timelineId - <code>Integer</code>
-   * @param tokenRelationIds - <code>List</code>
-   * @param paramVarIds - <code>List</code>
-   * @return - <code>PwTokenImpl</code> - 
-   */
-  public PwTokenImpl addToken(final Integer id, final boolean isValueToken, final Integer slotId, 
-                              final String predicateName, final Integer startVarId, 
-                              final Integer endVarId, final Integer durationVarId, 
-                              final Integer stateVarId, final Integer objectVarId, 
-                              final Integer timelineId, final List tokenRelationIds, 
-                              final List paramVarIds) {
-    PwTokenImpl token = new PwTokenImpl(id, isValueToken, slotId, predicateName, startVarId, 
-                                        endVarId, durationVarId, stateVarId, objectVarId,
-                                        timelineId, tokenRelationIds, paramVarIds, partialPlan);
-    if(!tokenIdList.contains(id)) {
-      tokenIdList.add( id);
-    }
-    partialPlan.addToken( id, token);
-    return token;
-  } // end addToken
 
   /**
    * <code>addToken</code>

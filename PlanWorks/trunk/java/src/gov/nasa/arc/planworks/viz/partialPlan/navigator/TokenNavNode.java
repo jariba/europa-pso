@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.6 2004-02-26 19:02:02 taylor Exp $
+// $Id: TokenNavNode.java,v 1.7 2004-02-27 18:05:42 miatauro Exp $
 //
 // PlanWorks
 //
@@ -25,6 +25,8 @@ import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
@@ -50,7 +52,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
 
   private PwToken token;
   private PwSlot slot;
-  private PwTimeline timeline;
+  private PwObject object;
   private PwPartialPlan partialPlan;
   private NavigatorView navigatorView;
   private String nodeLabel;
@@ -74,17 +76,17 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     super( ViewConstants.RECTANGLE);
     this.token = token;
     partialPlan = partialPlanView.getPartialPlan();
-    slot = null; timeline = null;
-    if (token.getSlotId() != null) {
+    slot = null; object = null;
+    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.noId)) {
       slot = (PwSlot) partialPlan.getSlot( token.getSlotId());
     }
-    if (token.getTimelineId() != null) {
-      timeline = partialPlan.getTimeline( token.getTimelineId());
+    if (token.getParentId() != null && !token.getParentId().equals(DbConstants.noId)) {
+      object = partialPlan.getObject( token.getParentId());
     }
-    if ((token.getSlotId() == null) &&
-        (token.getTimelineId() == null)) {
-      // free token
-    }
+//     if ((token.getSlotId() == null) &&
+//         (token.getTimelineId() == null)) {
+//       // free token
+//     }
 
     navigatorView = (NavigatorView) partialPlanView;
 
@@ -212,8 +214,8 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     List returnList = new ArrayList();
     if (slot != null) {
       returnList.add( slot);
-    } else if (timeline != null) {
-      returnList.add( timeline);
+    } else if (object != null) {
+      returnList.add( object);
     } else {
       // free token
     }

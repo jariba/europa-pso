@@ -169,10 +169,12 @@ CREATE TABLE ConstraintVarMap (
 -- Table structure for table 'Object'
 --
 
---EmptySlotInfo format is SlotId,SlotIndex:SlotId,SlotIndex for timelines
---and HorizonStart,HorizonEnd,LimitMin,LimitMax for resources
 --ChildObjectIds is a CSV
 --ObjectType is currently Object = 0, Timeline = 1, Resource = 2
+--If the object is a timeline:
+--ExtraData format SlotId,SlotIndex:SlotId,SlotIndex
+--If the object is a Resource:
+--ExtraData format HorizonStart,HorizonEnd,InitialCapacity,LimitMin,LimitMax
 CREATE TABLE Object (
   ObjectId int(11) NOT NULL default '0',
   ObjectType int(11) NOT NULL default '0',
@@ -181,7 +183,8 @@ CREATE TABLE Object (
   ObjectName varchar(255) NOT NULL default 'ErrorObject',
   ChildObjectIds blob default NULL,
   VariableIds blob default NULL,
-  EmptySlotInfo blob default NULL,
+  TokenIds blob default NULL,
+  ExtraInfo blob default NULL,
   PRIMARY KEY  (PartialPlanId,ObjectId),
   INDEX (ObjectId)
 ) TYPE=MyISAM;
@@ -244,6 +247,8 @@ CREATE TABLE Sequence (
 -- Table structure for table 'Token'
 --
 --TokenType currently IntervalToken = 0, ResourceTransaction = 1
+--If TokenType == ResourceTransaction
+--ExtraData format QuantityMin:QuantityMax
 
 CREATE TABLE Token (
   TokenId int(11) NOT NULL default '0',
@@ -258,15 +263,16 @@ CREATE TABLE Token (
   DurationVarId int(11) default NULL,
   StateVarId int(11) NOT NULL default '0',
   PredicateName varchar(255) default 'ErrorPredicate',
-  TimelineId int(11) default NULL,
-  TimelineName varchar(255) default 'ErrorTimeline',
+  ParentId int(11) default NULL,
+  ParentName varchar(255) default 'ErrorParentName',
   ObjectVarId int(11) default NULL,
   TokenRelationIds blob default NULL,
   ParamVarIds blob default NULL,
+  ExtraData blob default NULL,
   PRIMARY KEY  (PartialPlanId,TokenId),
-  INDEX (TokenId), INDEX (SlotId), INDEX (SlotIndex), INDEX (StartVarId), INDEX (EndVarId), 
-  INDEX (DurationVarId), INDEX (StateVarId), INDEX (PredicateName), INDEX (TimelineId), 
-  INDEX (ObjectVarId)
+  INDEX (TokenId), INDEX (SlotId), INDEX (SlotIndex), INDEX (StartVarId), 
+  INDEX (EndVarId), INDEX (DurationVarId), INDEX (StateVarId), 
+  INDEX (PredicateName), INDEX (ParentId), INDEX (ObjectVarId)
 ) TYPE=MyISAM;
 
 --
@@ -373,6 +379,18 @@ CREATE TABLE PartialPlanStats (
   NumTransactions int(11) NOT NULL default '0',
   PRIMARY KEY (SequenceId, PartialPlanId),
   INDEX (StepNum)
+) TYPE=MyISAM;
+
+CREATE TABLE ResourceInstants (
+  PartialPlanId bigint(20) NOT NULL default '0',
+  ResourceId int(11) NOT NULL default '0',
+  InstantId int(11) NOT NULL default '0',
+  TimePoint int(11) NOT NULL default '0',
+  LevelMin double(11,30) NOT NULL default '0',
+  LevelMax double(11,30) NOT NULL default '0',
+  Transactions blob default NULL,
+  PRIMARY KEY (PartialPlanId, ResourceId, InstantId),
+  INDEX (TimePoint)
 ) TYPE=MyISAM;
 
 --------------060506080005040106060505--

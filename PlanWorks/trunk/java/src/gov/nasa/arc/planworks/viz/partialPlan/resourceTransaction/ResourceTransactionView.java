@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.3 2004-02-12 21:42:41 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.4 2004-02-27 18:06:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -456,85 +456,85 @@ public class ResourceTransactionView extends PartialPlanView  {
     return jGoRulerView;
   }
 
-  private List createDummyData( final boolean isNameOnly) {
-    int startTime = 0, endTime = 0;
-    if (! isNameOnly) {
-      startTime = getTimeScaleStart();
-      endTime = getTimeScaleEnd();
-    }
-    List resourceList = new ArrayList();
-    List resourceInstantList = new ArrayList();
-    PwIntervalDomain instantDomain =
-      (PwIntervalDomain) new PwIntervalDomainImpl ( "type", "10", "10");
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99011), instantDomain, 4., 6.));
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99012),
-                                   new PwIntervalDomainImpl( "type", "20", "20"), 10., 14.));
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99013),
-                                   new PwIntervalDomainImpl( "type", "30", "30"), -2., 0.));
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99014),
-                                   new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
+//   private List createDummyData( final boolean isNameOnly) {
+//     int startTime = 0, endTime = 0;
+//     if (! isNameOnly) {
+//       startTime = getTimeScaleStart();
+//       endTime = getTimeScaleEnd();
+//     }
+//     List resourceList = new ArrayList();
+//     List resourceInstantList = new ArrayList();
+//     PwIntervalDomain instantDomain =
+//       (PwIntervalDomain) new PwIntervalDomainImpl ( "type", "10", "10");
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99011), instantDomain, 4., 6.));
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99012),
+//                                    new PwIntervalDomainImpl( "type", "20", "20"), 10., 14.));
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99013),
+//                                    new PwIntervalDomainImpl( "type", "30", "30"), -2., 0.));
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99014),
+//                                    new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
 
-    UniqueSet transactionSet = new UniqueSet();
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990111),
-                                       new PwIntervalDomainImpl( "type", "10", "50"), 2., 2.));
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990112),
-                                       new PwIntervalDomainImpl( "type", "20", "50"), 6., 6.));
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990113),
-                                       new PwIntervalDomainImpl( "type", "30", "50"), -8., -8.));
+//     UniqueSet transactionSet = new UniqueSet();
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990111),
+//                                        new PwIntervalDomainImpl( "type", "10", "50"), 2., 2.));
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990112),
+//                                        new PwIntervalDomainImpl( "type", "20", "50"), 6., 6.));
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990113),
+//                                        new PwIntervalDomainImpl( "type", "30", "50"), -8., -8.));
 
-    PwResource dummyResource =
-      new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
-                          transactionSet, resourceInstantList);
-    resourceList.add( dummyResource);
+//     PwResource dummyResource =
+//       new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
+//                           transactionSet, resourceInstantList);
+//     resourceList.add( dummyResource);
 
-    transactionSet = new UniqueSet();
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990111),
-                                       new PwIntervalDomainImpl( "type", "10", "50"), 2., 2.));
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990112),
-                                       new PwIntervalDomainImpl( "type", "20", "50"), 6., 6.));
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990113),
-                                       new PwIntervalDomainImpl( "type", "30", "50"), -8., -8.));
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990114),
-                                       new PwIntervalDomainImpl( "type", "40", "50"), 4., 4.));
-    transactionSet.add
-      ( new PwResourceTransactionImpl( new Integer( 990115),
-                                       new PwIntervalDomainImpl( "type", "50", "60"), -4., -4.));
+//     transactionSet = new UniqueSet();
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990111),
+//                                        new PwIntervalDomainImpl( "type", "10", "50"), 2., 2.));
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990112),
+//                                        new PwIntervalDomainImpl( "type", "20", "50"), 6., 6.));
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990113),
+//                                        new PwIntervalDomainImpl( "type", "30", "50"), -8., -8.));
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990114),
+//                                        new PwIntervalDomainImpl( "type", "40", "50"), 4., 4.));
+//     transactionSet.add
+//       ( new PwResourceTransactionImpl( new Integer( 990115),
+//                                        new PwIntervalDomainImpl( "type", "50", "60"), -4., -4.));
         
-    dummyResource =
-      new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
-                          transactionSet, resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
-                          transactionSet, resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
-                          transactionSet, resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
-                          transactionSet, resourceInstantList);
-    resourceList.add( dummyResource);
-    return resourceList;
-  } // end createDummyData
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
+//                           transactionSet, resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
+//                           transactionSet, resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
+//                           transactionSet, resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
+//                           transactionSet, resourceInstantList);
+//     resourceList.add( dummyResource);
+//     return resourceList;
+//   } // end createDummyData
 
 
   private void createResourceTransactionSets() {
     boolean isNamesOnly = false;
     // resourceList will come from partialPlan
-    List resourceList = createDummyData( isNamesOnly);
+    List resourceList = partialPlan.getResourceList();//createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -553,7 +553,7 @@ public class ResourceTransactionView extends PartialPlanView  {
     boolean isNamesOnly = true;
     int maxWidth = ViewConstants.JGO_SCROLL_BAR_WIDTH * 2;
     // resourceList will come from partialPlan
-    List resourceList = createDummyData( isNamesOnly);
+    List resourceList = partialPlan.getResourceList();//createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.1 2004-02-10 02:35:55 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.2 2004-02-27 18:06:23 miatauro Exp $
 //
 // PlanWorks
 //
@@ -234,7 +234,7 @@ public class ResourceTransactionSet extends BasicNode {
   } // end renderResourceName
 
   private void renderTransactions() {
-    UniqueSet transactionSet = resource.getTransactionSet();
+    List transactionSet = resource.getTransactionSet();
     Iterator transSetItr = transactionSet.iterator();
     resourceTransactionView.currentYLoc += 2;
     while (transSetItr.hasNext()) {

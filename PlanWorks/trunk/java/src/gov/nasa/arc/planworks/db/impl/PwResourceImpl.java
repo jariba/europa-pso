@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceImpl.java,v 1.1 2004-02-03 20:43:47 taylor Exp $
+// $Id: PwResourceImpl.java,v 1.2 2004-02-27 18:04:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,9 +13,13 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwResourceInstant;
 import gov.nasa.arc.planworks.util.UniqueSet;
 
 
@@ -26,48 +30,31 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwResourceImpl implements PwResource {
+public class PwResourceImpl extends PwObjectImpl implements PwResource {
 
-  private Integer id;
-  private String name;
   private double initialCapacity;
   private double levelLimitMin;
   private double levelLimitMax;
   private int horizonStart;
   private int horizonEnd;
-  private UniqueSet transactionSet; // element PwResourceTransaction
-  private List instantList; // element PwResourceInstant
+  private List instantIdList; 
 
-  public PwResourceImpl( Integer id, String name, double initialCapacity, double levelLimitMin,
-                         double levelLimitMax, int horizonStart, int horizonEnd,
-                         UniqueSet transactionSet, List instantList) {
-    this.id = id;
-    this.name = name;
-    this.initialCapacity = initialCapacity;
-    this.levelLimitMin = levelLimitMin;
-    this.levelLimitMax = levelLimitMax;
-    this.horizonStart = horizonStart;
-    this.horizonEnd = horizonEnd;
-    this.transactionSet = transactionSet;
-    this.instantList = instantList;
-  }
+  public PwResourceImpl(final Integer id, final int type, final Integer parentId,
+                        final String name, final String childObjectIds, final String resInfo,
+                        final String variableIds, final String tokenIds,
+                        final PwPartialPlanImpl partialPlan) {
+    super(id, type, parentId, name, childObjectIds, variableIds, tokenIds, partialPlan);
 
-  /**
-   * <code>getId</code>
-   *
-   * @return id - <code>Integer</code> -
-   */
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * <code>getName</code>
-   *
-   * @return name - <code>String</code> -
-   */
-  public String getName() {
-    return name;
+    StringTokenizer strTok = new StringTokenizer(resInfo, ",");
+    this.horizonStart = Integer.parseInt(strTok.nextToken());
+    this.horizonEnd = Integer.parseInt(strTok.nextToken());
+    this.initialCapacity = Double.parseDouble(strTok.nextToken());
+    this.levelLimitMin = Double.parseDouble(strTok.nextToken());
+    this.levelLimitMax = Double.parseDouble(strTok.nextToken());
+    this.instantIdList = new ArrayList();
+    while(strTok.hasMoreTokens()) {
+      instantIdList.add(Integer.valueOf(strTok.nextToken()));
+    }
   }
 
   /**
@@ -120,8 +107,8 @@ public class PwResourceImpl implements PwResource {
    *
    * @return <code>UniqueSet</code> - of PwResourceTransaction
    */
-  public UniqueSet getTransactionSet() {
-    return transactionSet;
+  public List getTransactionSet() {
+    return getTokens();
   }
 
   /**
@@ -130,7 +117,19 @@ public class PwResourceImpl implements PwResource {
    * @return - <code>List</code> - of PwResourceInstant
    */
   public List getInstantList() {
-    return instantList;
+    List retval = new ArrayList(instantIdList.size());
+    ListIterator instIdIterator = instantIdList.listIterator();
+    while(instIdIterator.hasNext()) {
+      Integer instId = (Integer) instIdIterator.next();
+      PwResourceInstant inst = partialPlan.getInstant(instId);
+      if(inst != null) {
+        retval.add(inst);
+      }
+      else {
+        System.err.println("PwResourceImpl.getInstantList: InstantId " + instId + " is null.");
+      }
+    }
+    return retval;
   }
 
 

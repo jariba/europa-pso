@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.85 2004-02-20 17:45:21 miatauro Exp $
+// $Id: MySQLDB.java,v 1.86 2004-02-27 18:04:59 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
+import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
@@ -35,11 +36,13 @@ import gov.nasa.arc.planworks.db.impl.PwParameterImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
+import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
+import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
+import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
-import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableQueryImpl;
 import gov.nasa.arc.planworks.util.OneToManyMap;
@@ -225,14 +228,17 @@ public class MySQLDB {
     Statement stmt = null;
     try {
       stmt = conn.createStatement();
-      stmt.execute("ANALYZE TABLE PartialPlan");
-      stmt.execute("ANALYZE TABLE Object");
-      stmt.execute("ANALYZE TABLE Token");
-      stmt.execute("ANALYZE TABLE Variable");
-      stmt.execute("ANALYZE TABLE VConstraint");
-      stmt.execute("ANALYZE TABLE ConstraintVarMap");
-      stmt.execute("ANALYZE TABLE TokenRelation");
-      stmt.execute("ANALYZE TABLE Transaction");
+      for(int i = 0; i < DbConstants.PW_DB_TABLES.length; i++) {
+        stmt.execute("ANALYZE TABLE " + DbConstants.PW_DB_TABLES[i]);
+      }
+//       stmt.execute("ANALYZE TABLE PartialPlan");
+//       stmt.execute("ANALYZE TABLE Object");
+//       stmt.execute("ANALYZE TABLE Token");
+//       stmt.execute("ANALYZE TABLE Variable");
+//       stmt.execute("ANALYZE TABLE VConstraint");
+//       stmt.execute("ANALYZE TABLE ConstraintVarMap");
+//       stmt.execute("ANALYZE TABLE TokenRelation");
+//       stmt.execute("ANALYZE TABLE Transaction");
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -629,7 +635,7 @@ public class MySQLDB {
   synchronized public static void createObjects(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet objects = 
-        queryDatabase("SELECT ObjectId, ObjectType, ParentId, ObjectName, ChildObjectIds, VariableIds, EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT ObjectId, ObjectType, ParentId, ObjectName, ChildObjectIds, VariableIds, TokenIds, ExtraInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
       while(objects.next()) {
         Integer objectId = new Integer(objects.getInt("ObjectId"));
         int type = objects.getInt("ObjectType");
@@ -645,23 +651,44 @@ public class MySQLDB {
         if(!objects.wasNull()) {
           variableIds = new String(blob.getBytes(1, (int) blob.length()));
         }
+        String tokenIds = null;
+        blob = objects.getBlob("TokenIds");
+        if(!objects.wasNull()) {
+          tokenIds = new String(blob.getBytes(1, (int) blob.length()));
+        }
         if(type == DbConstants.O_TIMELINE) {
           String emptySlots = null;
-          blob = objects.getBlob("EmptySlotInfo");
+          blob = objects.getBlob("ExtraInfo");
           if(!objects.wasNull()) {
             emptySlots = new String(blob.getBytes(1, (int) blob.length()));
           }
           partialPlan.addTimeline(objectId, 
                                   new PwTimelineImpl(objectId, type, parentId, name, 
                                                      childObjectIds, emptySlots, variableIds,
-                                                     partialPlan));
+                                                     tokenIds, partialPlan));
         }
         else if(type == DbConstants.O_RESOURCE) {
+          String resInfo = null;
+          blob = objects.getBlob("ExtraInfo");
+          if(!objects.wasNull()) {
+            resInfo = new String(blob.getBytes(1, (int) blob.length()));
+          }
+          System.err.println("instantiating resource: \n" +
+                             "id: " + objectId + "\n" + 
+                             "parent: " + parentId + "\n" + 
+                             "name: " + name + "\n" + 
+                             "children: " + childObjectIds + "\n" +
+                             "resource info: " + resInfo + "\n" +
+                             "variables: " + variableIds + "\n" +
+                             "tokens: " + tokenIds);
+          partialPlan.addResource(objectId, new PwResourceImpl(objectId, type, parentId, name,
+                                                               childObjectIds, resInfo, 
+                                                               variableIds, tokenIds, partialPlan));
         }
         else {
           partialPlan.addObject(objectId, 
                                 new PwObjectImpl(objectId, type, parentId, name, childObjectIds,
-                                                 variableIds, partialPlan));
+                                                 variableIds, tokenIds, partialPlan));
         }
       }
     }
@@ -715,122 +742,81 @@ public class MySQLDB {
    */
 
   synchronized public static void createSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
-    List objectIdList = partialPlan.getObjectIdList();
-    ListIterator objectIdIterator = objectIdList.listIterator();
-
     try {
-      ResultSet slotTokens = 
-        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.TimelineId FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.TimelineId, Token.SlotIndex, Token.TokenId"));
-      PwTimelineImpl timeline = null;
-      PwSlotImpl slot = null;
-      PwTokenImpl token = null;
-      while(slotTokens.next()) {
-        Integer timelineId = new Integer(slotTokens.getInt("Token.TimelineId"));
-        Integer slotId = new Integer(slotTokens.getInt("Token.SlotId"));
-        Integer tokenId = new Integer(slotTokens.getInt("Token.TokenId"));
-        if(slotTokens.wasNull()) {
-          tokenId = null;
+      ResultSet tokens = 
+        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData, Token.ParentId FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId"));
+      while(tokens.next()) {
+        Integer tokenId = new Integer(tokens.getInt("Token.TokenId"));
+        boolean isFreeToken = false;
+        boolean isValueToken = tokens.getBoolean("Token.IsValueToken");
+        Integer startVarId = new Integer(tokens.getInt("Token.StartVarId"));
+        Integer endVarId = new Integer(tokens.getInt("Token.EndVarId"));
+        Integer stateVarId = new Integer(tokens.getInt("Token.StateVarId"));
+        Integer durationVarId = new Integer(tokens.getInt("Token.DurationVarId"));
+        Integer objectVarId = new Integer(tokens.getInt("Token.ObjectVarId"));
+        Integer parentId = new Integer(tokens.getInt("Token.ParentId"));
+        String predName = tokens.getString("Token.PredicateName");
+        String paramVarIds = null;
+        Blob blob = tokens.getBlob("Token.ParamVarIds");
+        if(!tokens.wasNull()) {
+          paramVarIds = new String(blob.getBytes(1, (int) blob.length()));
         }
-        if(timeline == null || !timeline.getId().equals(timelineId)) {
-          System.err.println("Getting timeline " + timelineId);
-          timeline = (PwTimelineImpl) partialPlan.getTimeline(timelineId);
-          System.err.println("Got " + timeline);
+        String tokenRelIds = null;
+        blob = tokens.getBlob("Token.TokenRelationIds");
+        if(!tokens.wasNull()) {
+          tokenRelIds = new String(blob.getBytes(1, (int) blob.length()));
         }
-        if(slot == null || !slot.getId().equals(slotId)) {
-          slot = timeline.addSlot(slotId);
-        }
-        if(tokenId == null) {
-          token = null;
-          continue;
-        }
-        if(token == null || !token.getId().equals(tokenId)) {
-          token = new PwTokenImpl(tokenId, slotTokens.getBoolean("Token.IsValueToken"),
-                                  slot.getId(), 
-                                  slotTokens.getString("Token.PredicateName"),
-                                  new Integer(slotTokens.getInt("Token.StartVarId")),
-                                  new Integer(slotTokens.getInt("Token.EndVarId")),
-                                  new Integer(slotTokens.getInt("Token.DurationVarId")),
-                                  new Integer(slotTokens.getInt("Token.StateVarId")),
-                                  new Integer(slotTokens.getInt("Token.ObjectVarId")),
-                                  timeline.getId(), partialPlan);
-          Blob blob = slotTokens.getBlob("Token.ParamVarIds");
-          if(!slotTokens.wasNull()) {
-            String paramVarStr = new String(blob.getBytes(1, (int) blob.length()));
-            if(!paramVarStr.equals("NULL")) {
-              try {
-                StringTokenizer paramVarTok = new StringTokenizer(paramVarStr, ":");
-                while(paramVarTok.hasMoreTokens()) {
-                  token.addParamVar(Integer.decode(paramVarTok.nextToken()));
-                }
-              }
-              catch(NumberFormatException nfe) {
-                System.err.println(nfe.getMessage());
-              }
-            }
+        
+        if(tokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
+          String transInfo = null;
+          blob = tokens.getBlob("Token.ExtraData");
+          if(!tokens.wasNull()) {
+            transInfo = new String(blob.getBytes(1, (int) blob.length()));
           }
-          blob = slotTokens.getBlob("Token.TokenRelationIds");
-          if(!slotTokens.wasNull()) {
-            String tokenRelationStr = new String(blob.getBytes(1, (int) blob.length()));
-            if(!tokenRelationStr.equals("NULL")) {
-              try {
-                StringTokenizer tokenRelationTok = new StringTokenizer(tokenRelationStr, ":");
-                while(tokenRelationTok.hasMoreTokens()) {
-                  token.addTokenRelation(Integer.decode(tokenRelationTok.nextToken()));
-                }
-              }
-              catch(NumberFormatException nfe) {
-                System.err.println(nfe.getMessage());
-              }
-            }
-          }
-          slot.addToken(token);
+          new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
+                                        durationVarId, stateVarId, objectVarId, parentId, 
+                                        tokenRelIds, paramVarIds, transInfo, partialPlan);
+        }
+        else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+          new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
+                          predName, startVarId, endVarId, durationVarId, stateVarId, objectVarId,
+                          parentId, tokenRelIds, paramVarIds, partialPlan);
         }
       }
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
-      token = null;
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
       while(freeTokens.next()) {
         Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
-        if(token == null || !token.getId().equals(tokenId)) {
-          token = new PwTokenImpl(tokenId, freeTokens.getBoolean("Token.IsValueToken"),
-                                  (Integer) null, 
-                                  freeTokens.getString("Token.PredicateName"),
-                                  new Integer(freeTokens.getInt("Token.StartVarId")),
-                                  new Integer(freeTokens.getInt("Token.EndVarId")),
-                                  new Integer(freeTokens.getInt("Token.DurationVarId")),
-                                  new Integer(freeTokens.getInt("Token.StateVarId")),
-                                  new Integer(freeTokens.getInt("Token.ObjectVarId")),
-                                  (Integer) null, partialPlan);
-          Blob blob = freeTokens.getBlob("Token.ParamVarIds");
-          if(!freeTokens.wasNull()) {
-            String paramVarStr = new String(blob.getBytes(1, (int) blob.length()));
-            if(!paramVarStr.equals("NULL")) {
-              try {
-                StringTokenizer paramVarTok = new StringTokenizer(paramVarStr, ":");
-                while(paramVarTok.hasMoreTokens()) {
-                  token.addParamVar(Integer.decode(paramVarTok.nextToken()));
-                }
-              }
-              catch(NumberFormatException nfe) {
-                System.err.println(nfe.getMessage());
-              }
-            }
-          }
-          blob = freeTokens.getBlob("Token.TokenRelationIds");
-          if(!freeTokens.wasNull()) {
-            String tokenRelationStr = new String(blob.getBytes(1, (int) blob.length()));
-            if(!tokenRelationStr.equals("NULL")) {
-              try {
-                StringTokenizer tokenRelationTok = new StringTokenizer(tokenRelationStr, ":");
-                while(tokenRelationTok.hasMoreTokens()) {
-                  token.addTokenRelation(Integer.decode(tokenRelationTok.nextToken()));
-                }
-              }
-              catch(NumberFormatException nfe) {
-                System.err.println(nfe.getMessage());
-              }
-            }
-          }
-          partialPlan.addToken(tokenId, token);
+        boolean isFreeToken = true;
+        boolean isValueToken = freeTokens.getBoolean("Token.IsValueToken");
+        Integer startVarId = new Integer(freeTokens.getInt("Token.StartVarId"));
+        Integer endVarId = new Integer(freeTokens.getInt("Token.EndVarId"));
+        Integer stateVarId = new Integer(freeTokens.getInt("Token.StateVarId"));
+        Integer durationVarId = new Integer(freeTokens.getInt("Token.DurationVarId"));
+        Integer objectVarId = new Integer(freeTokens.getInt("Token.ObjectVarId"));
+        String predName = freeTokens.getString("Token.PredicateName");
+        String paramVarIds = null;
+        Blob blob = freeTokens.getBlob("Token.ParamVarIds");
+        if(!freeTokens.wasNull()) {
+          paramVarIds = new String(blob.getBytes(1, (int) blob.length()));
+        }
+        String tokenRelIds = null;
+        blob = freeTokens.getBlob("Token.TokenRelationIds");
+        if(!freeTokens.wasNull()) {
+          tokenRelIds = new String(blob.getBytes(1, (int) blob.length()));
+        }
+
+        if(freeTokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
+          String transInfo = null;
+          blob = freeTokens.getBlob("Token.ExtraData");
+          transInfo = new String(blob.getBytes(1, (int) blob.length()));
+          new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
+                                        durationVarId, stateVarId, objectVarId, DbConstants.noId,
+                                        tokenRelIds, paramVarIds, transInfo, partialPlan);
+        }
+        else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+          new PwTokenImpl(tokenId, isValueToken, DbConstants.noId, predName, startVarId, endVarId,
+                          durationVarId, stateVarId, objectVarId, DbConstants.noId, tokenRelIds,
+                          paramVarIds, partialPlan);
         }
       }
     }
@@ -937,6 +923,33 @@ public class MySQLDB {
                                                              new Integer(tokenRelations.getInt("TokenAId")),
                                                              new Integer(tokenRelations.getInt("TokenBId")),
                                                              tokenRelations.getString("RelationType"), partialPlan));
+      }
+    }
+    catch(SQLException sqle) {
+      System.err.println(sqle);
+      sqle.printStackTrace();
+    }
+  }
+
+  synchronized public static void queryResourceInstants(PwPartialPlanImpl partialPlan) {
+    try {
+      ResultSet resInsts = 
+        queryDatabase("SELECT InstantId, TimePoint, LevelMin, LevelMax, Transactions FROM ResourceInstants WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+      while(resInsts.next()) {
+        Integer instId = new Integer(resInsts.getInt("InstantId"));
+        String transactionIds = null;
+        Blob blob = resInsts.getBlob("Transactions");
+        if(!resInsts.wasNull()) {
+          transactionIds = new String(blob.getBytes(1, (int) blob.length()));
+        }
+        partialPlan.
+          addResourceInstant(instId, 
+                             new PwResourceInstantImpl(instId, 
+                                                       resInsts.getInt("TimePoint"),
+                                                       resInsts.getDouble("LevelMin"),
+                                                       resInsts.getDouble("LevelMax"),
+                                                       transactionIds,
+                                                       partialPlan));
       }
     }
     catch(SQLException sqle) {

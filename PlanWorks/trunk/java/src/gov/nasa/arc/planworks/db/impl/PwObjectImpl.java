@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.20 2004-02-19 21:56:47 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.21 2004-02-27 18:04:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,7 @@ import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 
 
@@ -37,6 +38,7 @@ public class PwObjectImpl implements PwObject {
   //private String emptySlotInfo;
   private List componentIdList; // element Integer
   private List variableIdList;
+  private List tokenIdList;
   protected PwPartialPlanImpl partialPlan;
   //  private boolean haveCreatedSlots;
   //   private boolean haveCalculatedSlotTimes;
@@ -50,7 +52,7 @@ public class PwObjectImpl implements PwObject {
    */
   public PwObjectImpl( final Integer id, final int objectType, final Integer parentId,
                        final String name, final String componentIds, final String variableIds,
-                       final PwPartialPlanImpl partialPlan) {
+                       final String tokenIds, final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.name = name;
     this.partialPlan = partialPlan;
@@ -73,22 +75,14 @@ public class PwObjectImpl implements PwObject {
         variableIdList.add(Integer.valueOf(strTok.nextToken()));
       }
     }
+    tokenIdList = new ArrayList();
+    if(tokenIds != null) {
+      StringTokenizer strTok = new StringTokenizer(tokenIds, ",");
+      while(strTok.hasMoreTokens()) {
+        tokenIdList.add(Integer.valueOf(strTok.nextToken()));
+      }
+    }
   } // end constructor
-
-
-  /**
-   * <code>addTimeline</code>
-   *
-   * @param name - <code>String</code> - 
-   * @param id - <code>Integer</code> - 
-   * @return timeline - <code>PwTimelineImpl</code> - 
-   */
-//   public PwTimelineImpl addTimeline( final String name, final Integer id) {
-//     timelineIdList.add(id);
-//     PwTimelineImpl timeline = new PwTimelineImpl( name, id, this.id, partialPlan);
-//     partialPlan.addTimeline( id, timeline);
-//     return timeline;
-//   } // end addTimeline
 
   /**
    * <code>getId</code>
@@ -148,6 +142,28 @@ public class PwObjectImpl implements PwObject {
       }
     }
     return retval;
+  }
+
+  public List getTokens() {
+    List retval = new ArrayList(tokenIdList.size());
+    ListIterator tokenIdIterator = tokenIdList.listIterator();
+    while(tokenIdIterator.hasNext()) {
+      Integer tokenId = (Integer) tokenIdIterator.next();
+      PwToken tok = partialPlan.getToken(tokenId);
+      if(tok != null) {
+        retval.add(tok);
+      }
+      else {
+        System.err.println("PwObjectImpl.getTokens: TokenId " + tokenId + " is null.");
+      }
+    }
+    return retval;
+  }
+
+  public void addToken(Integer tokenId) {
+    if(!tokenIdList.contains(tokenId)) {
+      tokenIdList.add(tokenId);
+    }
   }
 
 } // end class PwObjectImpl
