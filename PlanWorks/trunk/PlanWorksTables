@@ -206,10 +206,12 @@ CREATE TABLE ConstraintVarMap (
 -- Table structure for table 'Object'
 --
 
+--EmptySlotInfo format is TimelineId,SlotId,SlotIndex:TimelineId,SlotId,SlotIndex
 CREATE TABLE Object (
   ObjectId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   ObjectName varchar(255) NOT NULL default 'ErrorObject',
+  EmptySlotInfo blob default NULL,
   PRIMARY KEY  (PartialPlanId,ObjectId),
   INDEX (ObjectId)
 ) TYPE=MyISAM;
