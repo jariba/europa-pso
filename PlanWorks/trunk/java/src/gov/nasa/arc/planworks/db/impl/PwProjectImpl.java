@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.46 2004-03-26 22:09:02 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.47 2004-04-02 00:24:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -134,6 +134,15 @@ public class PwProjectImpl extends PwProject {
   private List planningSequences; // element PwPlanningSequence
   private Map sequenceIdUrlMap;
   
+  
+  //for use in testing only!
+  public PwProjectImpl(final Integer id, final String name) {
+    this.name = name;
+    this.id = id;
+    planningSequences = new ArrayList();
+    sequenceIdUrlMap = new HashMap();
+  }
+
   /**
    * <code>PwProjectImpl</code> - constructor 
    *                  create a new project from an url
@@ -293,6 +302,13 @@ public class PwProjectImpl extends PwProject {
     return retval;
   }
 
+  //for use in testing only!
+  public PwPlanningSequence addPlanningSequence(final PwPlanningSequenceImpl seq) {
+    sequenceIdUrlMap.put(seq.getId(), seq.getUrl());
+    planningSequences.add(seq);
+    return seq;
+  }
+
   public void deletePlanningSequence(final String seqName) throws ResourceNotFoundException {
     PwPlanningSequence seq = null;
     if((seq = closePlanningSequence(seqName)) != null) {
@@ -353,5 +369,9 @@ public class PwProjectImpl extends PwProject {
     System.err.println("Deleting project took " + (System.currentTimeMillis() - t1) + "ms");
   } // end delete
 
-
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(name).append("\n");
+    return retval.toString();
+  }
 } // end class PwProjectImpl
