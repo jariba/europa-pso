@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.10 2005-01-21 22:45:09 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.11 2005-04-13 21:09:45 pdaley Exp $
 //
 // PlanWorks
 //
@@ -56,6 +56,8 @@ public class ConfigureAndPlugins {
   public static final String PROJECT_MODEL_RULE_DELIMITERS = "projectModelRuleDelimiters";
   public static final String PLANNER_LIB_NAME_MATCH = ".so"; 
   public static final String PLANNER_CONTROL_JNI_LIB = "libPlannerControlJNI.so"; 
+  public static final String MACOSX_PLANNER_LIB_NAME_MATCH = ".dylib"; 
+  public static final String MACOSX_PLANNER_CONTROL_JNI_LIB = "libPlannerControlJNI.dylib"; 
   public static List PROJECT_CONFIG_PARAMS;
   public static List PROJECT_PATH_DIR_CONFIG_PARAMS;
 

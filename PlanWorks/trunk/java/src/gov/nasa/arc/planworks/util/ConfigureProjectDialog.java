@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.8 2004-12-08 20:57:28 pdaley Exp $
+// $Id: ConfigureProjectDialog.java,v 1.9 2005-04-13 21:10:42 pdaley Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -377,13 +377,19 @@ public class ConfigureProjectDialog extends JDialog {
 
     String plannerPathTemp = plannerPathField.getText().trim();
     // if (! plannerPath.equals( plannerPathTemp)) {
+      String plannerLibExtension;
+      if (PlanWorks.isMacOSX()) {
+        plannerLibExtension = ConfigureAndPlugins.MACOSX_PLANNER_LIB_NAME_MATCH;
+      } else {
+        plannerLibExtension = ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH;
+      }
       if (! doesPathExist( plannerPathTemp)) {
         haveSeenError = true;
-      } else if (plannerPathTemp.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
+      } else if (plannerPathTemp.indexOf( plannerLibExtension) == -1) {
         JOptionPane.showMessageDialog
           ( PlanWorks.getPlanWorks(),
             "Library name does not match 'lib<planner-name>" +
-            ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH + "'",
+            plannerLibExtension + "'",
             "Invalid Planner Library", JOptionPane.ERROR_MESSAGE);
         haveSeenError = true;
       } else {
