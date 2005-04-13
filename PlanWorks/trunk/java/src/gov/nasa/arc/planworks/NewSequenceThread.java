@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.16 2004-11-23 23:08:51 pdaley Exp $
+// $Id: NewSequenceThread.java,v 1.17 2005-04-13 21:10:09 pdaley Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -101,8 +101,14 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   } // end run
 
   private String getNewSequenceUrl() throws Exception {
+    String plannerControlJNIFile;
+    if (PlanWorks.isMacOSX()) {
+      plannerControlJNIFile = ConfigureAndPlugins.MACOSX_PLANNER_CONTROL_JNI_LIB;
+    } else {
+      plannerControlJNIFile = ConfigureAndPlugins.PLANNER_CONTROL_JNI_LIB;
+    }
     String plannerControlJNIPath = System.getProperty( "integration.home") +
-      System.getProperty( "file.separator") + ConfigureAndPlugins.PLANNER_CONTROL_JNI_LIB;
+      System.getProperty( "file.separator") + plannerControlJNIFile;
     if (! currentProject.getJNIAdapterLoaded()) {
       try {
         System.load( plannerControlJNIPath);
