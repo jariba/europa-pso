@@ -1,0 +1,10 @@
+// Configuration File for Projects
+// ===============================
+// PlanWorks JVM current directory = PlanWorks/java/src
+projectName default
+projectWorkingDir ../../../
+projectPlannerPath ../../../PLASMA/CBPlanner/component
+projectModelPath ../../../PLASMA/System/test
+projectModelInitStatePath ../../../PLASMA/System/test
+projectModelOutputDestDir ../../../PLASMA/System/test
+projectModelRuleDelimiters {}
