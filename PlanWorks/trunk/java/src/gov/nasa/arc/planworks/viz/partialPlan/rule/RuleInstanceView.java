@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceView.java,v 1.6 2004-07-27 21:58:14 taylor Exp $
+// $Id: RuleInstanceView.java,v 1.7 2005-04-26 15:25:26 pdaley Exp $
 //
 // PlanWorks
 //
@@ -28,6 +28,7 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -270,8 +271,14 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
 
     PwPartialPlan partialPlan = ruleInstanceNode.getPartialPlanView().getPartialPlan();
     textLoc = new Point( xMargin, lineHeight * lineCnt);
-    textObject = new JGoText( textLoc, partialPlan.getRule( ruleId).getText());
-    addText( textObject, xMargin);
+    PwRule rule = partialPlan.getRule( ruleId);
+    if ( rule != null ) {
+      textObject = new JGoText( textLoc, rule.getText());
+      addText( textObject, xMargin);
+    } else {
+      System.err.println( "Error: Rule text not found for rule " + ruleId );
+      System.err.println( "       Check RuleConfigSection of PlanWorks.cfg");
+    }
   } // end renderRuleText
 
   private int addText( final JGoText textObject, final int xMargin) {
