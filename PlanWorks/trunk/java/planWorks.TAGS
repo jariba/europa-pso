@@ -149,23 +149,24 @@ public class AddSequenceThread AddSequenceThread37,1016
   public void run(AddSequenceThread.run59,1531
   private void addSequence(AddSequenceThread.addSequence73,2125
 
-src/gov/nasa/arc/planworks/ConfigureAndPlugins.java,1496
-public class ConfigureAndPlugins ConfigureAndPlugins45,1135
-  private ConfigureAndPlugins(ConfigureAndPlugins.ConfigureAndPlugins98,3665
-  public static void processPlanWorksConfigFile(ConfigureAndPlugins.processPlanWorksConfigFile101,3704
-  private static void processPlanWorksConfigFileDoit(ConfigureAndPlugins.processPlanWorksConfigFileDoit120,4549
-  private static Object [] collectQuotedNameParts(ConfigureAndPlugins.collectQuotedNameParts203,8693
-  public static void mapPlugIn(ConfigureAndPlugins.mapPlugIn233,9772
-  public static void mapViewClass(ConfigureAndPlugins.mapViewClass269,11259
-  public static void mapRightClickForView(ConfigureAndPlugins.mapRightClickForView283,11808
-  public static void invokeLoadPlugin(ConfigureAndPlugins.invokeLoadPlugin298,12485
-  public static void processProjectsConfigFile(ConfigureAndPlugins.processProjectsConfigFile337,13987
-  private static Map processProjectsConfigFileImpl(ConfigureAndPlugins.processProjectsConfigFileImpl347,14349
-  public static boolean isProjectInConfigMap(ConfigureAndPlugins.isProjectInConfigMap413,16972
-  public static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue424,17306
-  private static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue466,19390
-  public static void updateProjectConfigMap(ConfigureAndPlugins.updateProjectConfigMap492,20208
-  public static void writeProjectConfigMap(ConfigureAndPlugins.writeProjectConfigMap512,20888
+src/gov/nasa/arc/planworks/ConfigureAndPlugins.java,1598
+public class ConfigureAndPlugins ConfigureAndPlugins45,1136
+  private ConfigureAndPlugins(ConfigureAndPlugins.ConfigureAndPlugins98,3666
+  public static void processPlanWorksConfigFile(ConfigureAndPlugins.processPlanWorksConfigFile101,3705
+  private static void processPlanWorksConfigFileDoit(ConfigureAndPlugins.processPlanWorksConfigFileDoit120,4550
+  private static Object [] collectQuotedNameParts(ConfigureAndPlugins.collectQuotedNameParts203,8694
+  public static void mapPlugIn(ConfigureAndPlugins.mapPlugIn233,9773
+  public static void mapViewClass(ConfigureAndPlugins.mapViewClass269,11260
+  public static void mapRightClickForView(ConfigureAndPlugins.mapRightClickForView283,11809
+  public static void invokeLoadPlugin(ConfigureAndPlugins.invokeLoadPlugin298,12486
+  public static void processProjectsConfigFile(ConfigureAndPlugins.processProjectsConfigFile337,13988
+  private static Map processProjectsConfigFileImpl(ConfigureAndPlugins.processProjectsConfigFileImpl347,14350
+  public static boolean isProjectInConfigMap(ConfigureAndPlugins.isProjectInConfigMap413,16973
+  public static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue424,17307
+  private static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue466,19391
+  public static List completeProjectConfigMap(ConfigureAndPlugins.completeProjectConfigMap492,20198
+  public static void updateProjectConfigMap(ConfigureAndPlugins.updateProjectConfigMap533,22096
+  public static void writeProjectConfigMap(ConfigureAndPlugins.writeProjectConfigMap558,23111
 
 src/gov/nasa/arc/planworks/CreateSequenceViewThread.java,308
 public class CreateSequenceViewThread CreateSequenceViewThread37,1135
@@ -203,19 +204,19 @@ public class InstantiateProjectThread InstantiateProjectThread41,1225
   public void run(InstantiateProjectThread.run66,1855
   private void instantiateProject(InstantiateProjectThread.instantiateProject76,2078
   private PwProject createProject(InstantiateProjectThread.createProject115,3783
-  private PwProject openProject(InstantiateProjectThread.openProject210,8405
+  private PwProject openProject(InstantiateProjectThread.openProject211,8462
 
-src/gov/nasa/arc/planworks/NewSequenceThread.java,801
+src/gov/nasa/arc/planworks/NewSequenceThread.java,802
 public class NewSequenceThread NewSequenceThread41,1407
   public NewSequenceThread(NewSequenceThread.NewSequenceThread59,1902
   public void run(NewSequenceThread.run70,2145
-  private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl93,3039
-  private void newSequence(NewSequenceThread.newSequence130,4431
-  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait184,7307
-  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait197,7824
-  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters226,9054
-  private void setConfigureParameters(NewSequenceThread.setConfigureParameters260,10679
-  private void getTransactionTypeStates(NewSequenceThread.getTransactionTypeStates277,11559
+  private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl103,3503
+  private void newSequence(NewSequenceThread.newSequence140,4895
+  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait194,7771
+  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait207,8288
+  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters236,9518
+  private void setConfigureParameters(NewSequenceThread.setConfigureParameters270,11143
+  private void getTransactionTypeStates(NewSequenceThread.getTransactionTypeStates287,12023
 
 src/gov/nasa/arc/planworks/PlannerControlJNI.java,57
 public class PlannerControlJNI PlannerControlJNI22,570
@@ -226,67 +227,66 @@ public class PlanWorks PlanWorks79,2767
   public PlanWorks(PlanWorks.PlanWorks229,8183
   public PlanWorks(PlanWorks.PlanWorks240,8480
   private void planWorksCommon(PlanWorks.planWorksCommon255,8935
-  private PlanWorks getPlanWorksInternal(PlanWorks.getPlanWorksInternal329,12071
-  public static PlanWorks getPlanWorks(PlanWorks.getPlanWorks338,12281
-  public static void setPlanWorks(PlanWorks.setPlanWorks347,12523
-  public static String getPlanWorksTitle(PlanWorks.getPlanWorksTitle362,12993
-  public final ViewManager getViewManager(PlanWorks.getViewManager371,13163
-  public final String getCurrentProjectName(PlanWorks.getCurrentProjectName380,13333
-  public void setCurrentProjectName(PlanWorks.setCurrentProjectName389,13516
-  public final PwProject getCurrentProject(PlanWorks.getCurrentProject398,13707
-  public final JFrame getNodeShapesFrame(PlanWorks.getNodeShapesFrame407,13878
-  public final void setNodeShapesFrame(PlanWorks.setNodeShapesFrame416,14053
-  public static JMenu getProjectMenu(PlanWorks.getProjectMenu425,14236
-  public static String getViewClassName(PlanWorks.getViewClassName435,14442
-  protected final List getProjectsLessCurrent(PlanWorks.getProjectsLessCurrent444,14663
-  public final MDIInternalFrame getSequenceStepsViewFrame(PlanWorks.getSequenceStepsViewFrame455,15047
-  protected final void setSequenceStepsViewFrame(PlanWorks.setSequenceStepsViewFrame465,15359
-  public final String getSequenceMenuName(PlanWorks.getSequenceMenuName476,15700
-  public final long getViewRenderingStartTime(PlanWorks.getViewRenderingStartTime486,15964
-  public final void setViewRenderingStartTime(PlanWorks.setViewRenderingStartTime496,16256
-  public void setInstantiateProjectThreadListener(PlanWorks.setInstantiateProjectThreadListener505,16561
-  public void setDeleteProjectThreadListener(PlanWorks.setDeleteProjectThreadListener514,16836
-  public void setNewSequenceThreadListener(PlanWorks.setNewSequenceThreadListener523,17099
-  public void setAddSequenceThreadListener(PlanWorks.setAddSequenceThreadListener532,17358
-  public void setDeleteSequenceThreadListener(PlanWorks.setDeleteSequenceThreadListener541,17617
-  protected static void setProjectMenuEnabled(PlanWorks.setProjectMenuEnabled551,17891
-  private String getSequenceMenuItemName(PlanWorks.getSequenceMenuItemName561,18287
-  public static JMenu[] buildConstantMenus(PlanWorks.buildConstantMenus590,19395
-  private void instantiateProjectThread(PlanWorks.instantiateProjectThread674,22713
-  private void deleteProjectThread(PlanWorks.deleteProjectThread683,23025
-  private void newSequenceThread(PlanWorks.newSequenceThread689,23209
-  private void addSequenceThread(PlanWorks.addSequenceThread695,23387
-  private void deleteSequenceThread(PlanWorks.deleteSequenceThread701,23565
-  private void configureProject(PlanWorks.configureProject707,23752
-  public final PwPlanningSequence getPlanSequence(PlanWorks.getPlanSequence739,25237
-  public final void addPlanSeqViewMenu(PlanWorks.addPlanSeqViewMenu766,26249
-  protected final JMenu buildPlanSeqViewMenu(PlanWorks.buildPlanSeqViewMenu786,26941
-  protected void createSequenceViewThread(PlanWorks.createSequenceViewThread817,28319
-  public final DirectoryChooser createSequenceDirChooser(PlanWorks.createSequenceDirChooser830,28800
-  public final DirectoryChooser createDirectoryChooser(PlanWorks.createDirectoryChooser847,29562
-  class SequenceDirectoryFilter PlanWorks.SequenceDirectoryFilter858,30040
-    public SequenceDirectoryFilter(PlanWorks.SequenceDirectoryFilter.SequenceDirectoryFilter860,30094
-    public final boolean accept(PlanWorks.SequenceDirectoryFilter.accept871,30388
-    public final String getDescription(PlanWorks.SequenceDirectoryFilter.getDescription898,31316
-  protected List askSequenceDirectory(PlanWorks.askSequenceDirectory910,31647
-  protected boolean addPlanningSequences(PlanWorks.addPlanningSequences964,34303
-  private void runTestWindow(PlanWorks.runTestWindow991,35451
-  class BrowseButtonListener PlanWorks.BrowseButtonListener1072,37965
-    public BrowseButtonListener(PlanWorks.BrowseButtonListener.BrowseButtonListener1074,38052
-    public void actionPerformed(PlanWorks.BrowseButtonListener.actionPerformed1077,38136
-  class TestButtonListener PlanWorks.TestButtonListener1087,38545
-    public TestButtonListener(PlanWorks.TestButtonListener.TestButtonListener1092,38738
-    public void actionPerformed(PlanWorks.TestButtonListener.actionPerformed1099,39022
-  public static boolean isMacOSX(PlanWorks.isMacOSX1127,39906
-  public static void main PlanWorks.main1136,40093
-  private class SeqNameComparator PlanWorks.SeqNameComparator1187,42031
-    public SeqNameComparator(PlanWorks.SeqNameComparator.SeqNameComparator1188,42089
-    public final int compare(PlanWorks.SeqNameComparator.compare1190,42128
-    public final boolean equals(PlanWorks.SeqNameComparator.equals1195,42337
+  private PlanWorks getPlanWorksInternal(PlanWorks.getPlanWorksInternal330,12167
+  public static PlanWorks getPlanWorks(PlanWorks.getPlanWorks339,12377
+  public static void setPlanWorks(PlanWorks.setPlanWorks348,12619
+  public static String getPlanWorksTitle(PlanWorks.getPlanWorksTitle363,13089
+  public final ViewManager getViewManager(PlanWorks.getViewManager372,13259
+  public final String getCurrentProjectName(PlanWorks.getCurrentProjectName381,13429
+  public void setCurrentProjectName(PlanWorks.setCurrentProjectName390,13612
+  public final PwProject getCurrentProject(PlanWorks.getCurrentProject399,13803
+  public final JFrame getNodeShapesFrame(PlanWorks.getNodeShapesFrame408,13974
+  public final void setNodeShapesFrame(PlanWorks.setNodeShapesFrame417,14149
+  public static JMenu getProjectMenu(PlanWorks.getProjectMenu426,14332
+  public static String getViewClassName(PlanWorks.getViewClassName436,14538
+  protected final List getProjectsLessCurrent(PlanWorks.getProjectsLessCurrent445,14759
+  public final MDIInternalFrame getSequenceStepsViewFrame(PlanWorks.getSequenceStepsViewFrame456,15143
+  protected final void setSequenceStepsViewFrame(PlanWorks.setSequenceStepsViewFrame466,15455
+  public final String getSequenceMenuName(PlanWorks.getSequenceMenuName477,15796
+  public final long getViewRenderingStartTime(PlanWorks.getViewRenderingStartTime487,16060
+  public final void setViewRenderingStartTime(PlanWorks.setViewRenderingStartTime497,16352
+  public void setInstantiateProjectThreadListener(PlanWorks.setInstantiateProjectThreadListener506,16657
+  public void setDeleteProjectThreadListener(PlanWorks.setDeleteProjectThreadListener515,16932
+  public void setNewSequenceThreadListener(PlanWorks.setNewSequenceThreadListener524,17195
+  public void setAddSequenceThreadListener(PlanWorks.setAddSequenceThreadListener533,17454
+  public void setDeleteSequenceThreadListener(PlanWorks.setDeleteSequenceThreadListener542,17713
+  protected static void setProjectMenuEnabled(PlanWorks.setProjectMenuEnabled552,17987
+  private String getSequenceMenuItemName(PlanWorks.getSequenceMenuItemName562,18383
+  public static JMenu[] buildConstantMenus(PlanWorks.buildConstantMenus591,19491
+  private void instantiateProjectThread(PlanWorks.instantiateProjectThread675,22809
+  private void deleteProjectThread(PlanWorks.deleteProjectThread684,23121
+  private void newSequenceThread(PlanWorks.newSequenceThread690,23305
+  private void addSequenceThread(PlanWorks.addSequenceThread696,23483
+  private void deleteSequenceThread(PlanWorks.deleteSequenceThread702,23661
+  private void configureProject(PlanWorks.configureProject708,23848
+  public final PwPlanningSequence getPlanSequence(PlanWorks.getPlanSequence740,25333
+  public final void addPlanSeqViewMenu(PlanWorks.addPlanSeqViewMenu767,26345
+  protected final JMenu buildPlanSeqViewMenu(PlanWorks.buildPlanSeqViewMenu787,27037
+  protected void createSequenceViewThread(PlanWorks.createSequenceViewThread818,28415
+  public final DirectoryChooser createSequenceDirChooser(PlanWorks.createSequenceDirChooser831,28896
+  public final DirectoryChooser createDirectoryChooser(PlanWorks.createDirectoryChooser848,29658
+  class SequenceDirectoryFilter PlanWorks.SequenceDirectoryFilter859,30136
+    public SequenceDirectoryFilter(PlanWorks.SequenceDirectoryFilter.SequenceDirectoryFilter861,30190
+    public final boolean accept(PlanWorks.SequenceDirectoryFilter.accept872,30484
+    public final String getDescription(PlanWorks.SequenceDirectoryFilter.getDescription899,31412
+  protected List askSequenceDirectory(PlanWorks.askSequenceDirectory911,31743
+  protected boolean addPlanningSequences(PlanWorks.addPlanningSequences965,34399
+  private void runTestWindow(PlanWorks.runTestWindow992,35547
+  class BrowseButtonListener PlanWorks.BrowseButtonListener1073,38061
+    public BrowseButtonListener(PlanWorks.BrowseButtonListener.BrowseButtonListener1075,38148
+    public void actionPerformed(PlanWorks.BrowseButtonListener.actionPerformed1078,38232
+  class TestButtonListener PlanWorks.TestButtonListener1088,38641
+    public TestButtonListener(PlanWorks.TestButtonListener.TestButtonListener1093,38834
+    public void actionPerformed(PlanWorks.TestButtonListener.actionPerformed1100,39118
+  public static boolean isMacOSX(PlanWorks.isMacOSX1128,40002
+  public static void main PlanWorks.main1137,40189
+  private class SeqNameComparator PlanWorks.SeqNameComparator1188,42127
+    public SeqNameComparator(PlanWorks.SeqNameComparator.SeqNameComparator1189,42185
+    public final int compare(PlanWorks.SeqNameComparator.compare1191,42224
+    public final boolean equals(PlanWorks.SeqNameComparator.equals1196,42433
 
-src/gov/nasa/arc/planworks/PlanWorksPlugin.java,129
-public abstract class PlanWorksPlugin PlanWorksPlugin24,550
-  public static void loadPlugin(PlanWorksPlugin.loadPlugin31,688
+src/gov/nasa/arc/planworks/PlanWorksPlugin.java,57
+public interface PlanWorksPlugin PlanWorksPlugin25,602
 
 src/gov/nasa/arc/planworks/SequenceViewMenuItem.java,540
 public class SequenceViewMenuItem SequenceViewMenuItem24,621
@@ -411,19 +411,19 @@ src/gov/nasa/arc/planworks/db/PwVariableQuery.java,57
 public interface PwVariableQuery PwVariableQuery24,575
 
 src/gov/nasa/arc/planworks/db/impl/PwChoiceImpl.java,803
-public class PwChoiceImpl PwChoiceImpl21,577
-  public PwChoiceImpl(PwChoiceImpl.PwChoiceImpl29,781
-  public final int getType(PwChoiceImpl.getType62,1857
-  public final Integer getId(PwChoiceImpl.getId63,1900
-  public final Integer getEntityId(PwChoiceImpl.getEntityId64,1943
-  public final double getValue(PwChoiceImpl.getValue65,1998
-  public final PwDomain getDomain(PwChoiceImpl.getDomain66,2046
-  public final String toString(PwChoiceImpl.toString68,2096
-  public final String toOutputString(PwChoiceImpl.toOutputString107,3367
-  public List getNeighbors(PwChoiceImpl.getNeighbors138,4384
-  public List getNeighbors(PwChoiceImpl.getNeighbors139,4427
-  public List getNeighbors(PwChoiceImpl.getNeighbors140,4482
-  public List getNeighbors(PwChoiceImpl.getNeighbors141,4546
+public class PwChoiceImpl PwChoiceImpl21,575
+  public PwChoiceImpl(PwChoiceImpl.PwChoiceImpl29,779
+  public final int getType(PwChoiceImpl.getType62,1855
+  public final Integer getId(PwChoiceImpl.getId63,1898
+  public final Integer getEntityId(PwChoiceImpl.getEntityId64,1941
+  public final double getValue(PwChoiceImpl.getValue65,1996
+  public final PwDomain getDomain(PwChoiceImpl.getDomain66,2044
+  public final String toString(PwChoiceImpl.toString68,2094
+  public final String toOutputString(PwChoiceImpl.toOutputString107,3365
+  public List getNeighbors(PwChoiceImpl.getNeighbors138,4386
+  public List getNeighbors(PwChoiceImpl.getNeighbors139,4429
+  public List getNeighbors(PwChoiceImpl.getNeighbors140,4484
+  public List getNeighbors(PwChoiceImpl.getNeighbors141,4548
 
 src/gov/nasa/arc/planworks/db/impl/PwConstraintImpl.java,1007
 public class PwConstraintImpl PwConstraintImpl35,927
@@ -757,36 +757,36 @@ public class PwPredicateImpl PwPredicateImpl36,838
 src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,2542
 public class PwProjectImpl PwProjectImpl44,1313
   public synchronized static void initProjects(PwProjectImpl.initProjects52,1483
-  public static PwProject createProject(PwProjectImpl.createProject102,4173
-  private static void connectToDataBase(PwProjectImpl.connectToDataBase121,4797
-  public static PwProject getProject(PwProjectImpl.getProject141,5719
-  public static List listProjects(PwProjectImpl.listProjects153,6100
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl171,6639
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl187,7168
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl219,8621
-  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog255,10005
-  public Integer getId(PwProjectImpl.getId275,10823
-  protected void setId(PwProjectImpl.setId279,10872
-  public String getName(PwProjectImpl.getName288,11035
-  public List listPlanningSequences(PwProjectImpl.listPlanningSequences352,12296
-  class PlanningSequenceNameEquals PwProjectImpl.PlanningSequenceNameEquals356,12423
-    public PlanningSequenceNameEquals(PwProjectImpl.PlanningSequenceNameEquals.PlanningSequenceNameEquals358,12511
-    public final boolean func(PwProjectImpl.PlanningSequenceNameEquals.func359,12581
-  class PlanningSequenceIdEquals PwProjectImpl.PlanningSequenceIdEquals362,12681
-    public PlanningSequenceIdEquals(PwProjectImpl.PlanningSequenceIdEquals.PlanningSequenceIdEquals364,12763
-    public final boolean func(PwProjectImpl.PlanningSequenceIdEquals.func365,12823
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence374,13066
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence389,13777
-  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence403,14423
-  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence415,14915
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence421,15105
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence428,15346
-  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence435,15581
-  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence453,16322
-  public void delete(PwProjectImpl.delete476,17204
-  public String toOutputString(PwProjectImpl.toOutputString483,17474
-  public boolean getJNIAdapterLoaded(PwProjectImpl.getJNIAdapterLoaded497,18035
-  public void setJNIAdapterLoaded(PwProjectImpl.setJNIAdapterLoaded501,18110
+  public static PwProject createProject(PwProjectImpl.createProject104,4317
+  private static void connectToDataBase(PwProjectImpl.connectToDataBase123,4941
+  public static PwProject getProject(PwProjectImpl.getProject143,5863
+  public static List listProjects(PwProjectImpl.listProjects155,6244
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl173,6783
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl189,7312
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl221,8765
+  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog257,10149
+  public Integer getId(PwProjectImpl.getId277,10967
+  protected void setId(PwProjectImpl.setId281,11016
+  public String getName(PwProjectImpl.getName290,11179
+  public List listPlanningSequences(PwProjectImpl.listPlanningSequences354,12440
+  class PlanningSequenceNameEquals PwProjectImpl.PlanningSequenceNameEquals358,12567
+    public PlanningSequenceNameEquals(PwProjectImpl.PlanningSequenceNameEquals.PlanningSequenceNameEquals360,12655
+    public final boolean func(PwProjectImpl.PlanningSequenceNameEquals.func361,12725
+  class PlanningSequenceIdEquals PwProjectImpl.PlanningSequenceIdEquals364,12825
+    public PlanningSequenceIdEquals(PwProjectImpl.PlanningSequenceIdEquals.PlanningSequenceIdEquals366,12907
+    public final boolean func(PwProjectImpl.PlanningSequenceIdEquals.func367,12967
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence376,13210
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence391,13921
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence405,14567
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence417,15059
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence423,15249
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence430,15490
+  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence437,15725
+  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence455,16466
+  public void delete(PwProjectImpl.delete478,17348
+  public String toOutputString(PwProjectImpl.toOutputString485,17618
+  public boolean getJNIAdapterLoaded(PwProjectImpl.getJNIAdapterLoaded499,18179
+  public void setJNIAdapterLoaded(PwProjectImpl.setJNIAdapterLoaded503,18254
 
 src/gov/nasa/arc/planworks/db/impl/PwResourceImpl.java,952
 public class PwResourceImpl PwResourceImpl42,1182
@@ -1338,21 +1338,21 @@ class FocusSwitcher FocusSwitcher101,2719
 src/gov/nasa/arc/planworks/mdi/TileCascader.java,49
 public interface TileCascader TileCascader3,37
 
-src/gov/nasa/arc/planworks/plugin/PluginEvent.java,614
-public class PluginEvent PluginEvent21,507
-	public PluginEvent(PluginEvent.PluginEvent46,1395
-	public void setSource(PluginEvent.setSource54,1623
-	public Object getSource(PluginEvent.getSource58,1691
-	public Object getGUISource(PluginEvent.getGUISource59,1735
-	public Object getDataSource(PluginEvent.getDataSource60,1782
-	public EventObject getEventSource(PluginEvent.getEventSource61,1834
-	public int getId(PluginEvent.getId62,1891
-	public String getText(PluginEvent.getText63,1924
-	public String getCommand(PluginEvent.getCommand64,1967
-	public String toString(PluginEvent.toString65,2013
+src/gov/nasa/arc/planworks/plugin/PwPluginEvent.java,642
+public class PwPluginEvent PwPluginEvent21,510
+	public PwPluginEvent(PwPluginEvent.PwPluginEvent47,1431
+	public void setSource(PwPluginEvent.setSource55,1661
+	public Object getSource(PwPluginEvent.getSource59,1729
+	public Object getGUISource(PwPluginEvent.getGUISource60,1773
+	public Object getDataSource(PwPluginEvent.getDataSource61,1820
+	public EventObject getEventSource(PwPluginEvent.getEventSource62,1872
+	public int getId(PwPluginEvent.getId63,1929
+	public String getText(PwPluginEvent.getText64,1962
+	public String getCommand(PwPluginEvent.getCommand65,2005
+	public String toString(PwPluginEvent.toString66,2051
 
-src/gov/nasa/arc/planworks/plugin/PluginListener.java,55
-public interface PluginListener PluginListener21,542
+src/gov/nasa/arc/planworks/plugin/PwPluginListener.java,59
+public interface PwPluginListener PwPluginListener21,545
 
 src/gov/nasa/arc/planworks/test/BackendTest.java,1304
 public class BackendTest BackendTest24,613
@@ -1400,7 +1400,7 @@ public class MySQLDBTest MySQLDBTest12,239
   private void checkRuleInstanceLoad(MySQLDBTest.checkRuleInstanceLoad301,11255
   private void checkDecisionLoad(MySQLDBTest.checkDecisionLoad321,12070
 
-src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java,7458
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java,7459
 public class PlanWorksGUITest PlanWorksGUITest52,2048
   public PlanWorksGUITest(PlanWorksGUITest.PlanWorksGUITest86,3222
   public int incEntityIdInt(PlanWorksGUITest.incEntityIdInt92,3332
@@ -1426,69 +1426,69 @@ public class PlanWorksGUITest PlanWorksGUITest52,2048
   public void setUp(PlanWorksGUITest.setUp174,5022
   public void tearDown(PlanWorksGUITest.tearDown236,7809
   public void planVizTests(PlanWorksGUITest.planVizTests243,8006
-  public class FrameXAscending PlanWorksGUITest.FrameXAscending269,9179
-    public FrameXAscending(PlanWorksGUITest.FrameXAscending.FrameXAscending270,9234
-    public int compare(PlanWorksGUITest.FrameXAscending.compare272,9271
-    public boolean equals(PlanWorksGUITest.FrameXAscending.equals278,9512
-  public static class PwDBTransactionFunctor PlanWorksGUITest.PwDBTransactionFunctor286,9787
-    public PwDBTransactionFunctor(PlanWorksGUITest.PwDBTransactionFunctor.PwDBTransactionFunctor288,9889
-    public boolean func(PlanWorksGUITest.PwDBTransactionFunctor.func289,9967
-  protected void invokeAllViewsSelections(PlanWorksGUITest.invokeAllViewsSelections294,10063
-  protected void waitForAllViews(PlanWorksGUITest.waitForAllViews352,13360
-  protected void createOverviewWindow(PlanWorksGUITest.createOverviewWindow412,17592
-  public void assertTrueVerbose(PlanWorksGUITest.assertTrueVerbose430,18304
-  public void assertFalseVerbose(PlanWorksGUITest.assertFalseVerbose439,18635
-  public void assertNotNullVerbose(PlanWorksGUITest.assertNotNullVerbose448,18971
-  public void assertNullVerbose(PlanWorksGUITest.assertNullVerbose458,19312
-  protected List createViewListenerList(PlanWorksGUITest.createViewListenerList470,19713
-  protected void viewListenerListWait(PlanWorksGUITest.viewListenerListWait488,20582
-  protected void viewListenerListReset(PlanWorksGUITest.viewListenerListReset513,22041
-  public static TestSuite suite(PlanWorksGUITest.suite538,23479
-  public static class ViewListenerWait01 PlanWorksGUITest.ViewListenerWait01553,23869
-    public ViewListenerWait01(PlanWorksGUITest.ViewListenerWait01.ViewListenerWait01555,23971
-    public void reset(PlanWorksGUITest.ViewListenerWait01.reset560,24127
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait01.initDrawingEnded563,24204
-    public void viewWait(PlanWorksGUITest.ViewListenerWait01.viewWait569,24475
-  public static class ViewListenerWait02 PlanWorksGUITest.ViewListenerWait02581,24832
-    public ViewListenerWait02(PlanWorksGUITest.ViewListenerWait02.ViewListenerWait02583,24934
-    public void reset(PlanWorksGUITest.ViewListenerWait02.reset588,25089
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait02.initDrawingEnded591,25166
-    public void viewWait(PlanWorksGUITest.ViewListenerWait02.viewWait597,25437
-  public static class ViewListenerWait03 PlanWorksGUITest.ViewListenerWait03609,25794
-    public ViewListenerWait03(PlanWorksGUITest.ViewListenerWait03.ViewListenerWait03611,25896
-    public void reset(PlanWorksGUITest.ViewListenerWait03.reset616,26051
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait03.initDrawingEnded619,26128
-    public void viewWait(PlanWorksGUITest.ViewListenerWait03.viewWait625,26399
-  public static class ViewListenerWait04 PlanWorksGUITest.ViewListenerWait04637,26756
-    public ViewListenerWait04(PlanWorksGUITest.ViewListenerWait04.ViewListenerWait04639,26858
-    public void reset(PlanWorksGUITest.ViewListenerWait04.reset644,27013
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait04.initDrawingEnded647,27090
-    public void viewWait(PlanWorksGUITest.ViewListenerWait04.viewWait653,27361
-  public static class ViewListenerWait05 PlanWorksGUITest.ViewListenerWait05665,27718
-    public ViewListenerWait05(PlanWorksGUITest.ViewListenerWait05.ViewListenerWait05667,27820
-    public void reset(PlanWorksGUITest.ViewListenerWait05.reset672,27975
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait05.initDrawingEnded675,28052
-    public void viewWait(PlanWorksGUITest.ViewListenerWait05.viewWait681,28323
-  public static class ViewListenerWait06 PlanWorksGUITest.ViewListenerWait06693,28680
-    public ViewListenerWait06(PlanWorksGUITest.ViewListenerWait06.ViewListenerWait06695,28782
-    public void reset(PlanWorksGUITest.ViewListenerWait06.reset700,28937
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait06.initDrawingEnded703,29014
-    public void viewWait(PlanWorksGUITest.ViewListenerWait06.viewWait709,29285
-  public static class ViewListenerWait07 PlanWorksGUITest.ViewListenerWait07721,29642
-    public ViewListenerWait07(PlanWorksGUITest.ViewListenerWait07.ViewListenerWait07723,29744
-    public void reset(PlanWorksGUITest.ViewListenerWait07.reset728,29899
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait07.initDrawingEnded731,29976
-    public void viewWait(PlanWorksGUITest.ViewListenerWait07.viewWait737,30247
-  public static class ViewListenerWait08 PlanWorksGUITest.ViewListenerWait08749,30604
-    public ViewListenerWait08(PlanWorksGUITest.ViewListenerWait08.ViewListenerWait08751,30706
-    public void reset(PlanWorksGUITest.ViewListenerWait08.reset756,30861
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait08.initDrawingEnded759,30938
-    public void viewWait(PlanWorksGUITest.ViewListenerWait08.viewWait765,31209
-  public static class ThreadListenerWait01 PlanWorksGUITest.ThreadListenerWait01777,31566
-    public ThreadListenerWait01(PlanWorksGUITest.ThreadListenerWait01.ThreadListenerWait01779,31672
-    public void reset(PlanWorksGUITest.ThreadListenerWait01.reset784,31831
-    public void threadEnded(PlanWorksGUITest.ThreadListenerWait01.threadEnded787,31910
-    public void threadWait(PlanWorksGUITest.ThreadListenerWait01.threadWait793,32178
+  public class FrameXAscending PlanWorksGUITest.FrameXAscending271,9220
+    public FrameXAscending(PlanWorksGUITest.FrameXAscending.FrameXAscending272,9275
+    public int compare(PlanWorksGUITest.FrameXAscending.compare274,9312
+    public boolean equals(PlanWorksGUITest.FrameXAscending.equals280,9553
+  public static class PwDBTransactionFunctor PlanWorksGUITest.PwDBTransactionFunctor288,9828
+    public PwDBTransactionFunctor(PlanWorksGUITest.PwDBTransactionFunctor.PwDBTransactionFunctor290,9930
+    public boolean func(PlanWorksGUITest.PwDBTransactionFunctor.func291,10008
+  protected void invokeAllViewsSelections(PlanWorksGUITest.invokeAllViewsSelections296,10104
+  protected void waitForAllViews(PlanWorksGUITest.waitForAllViews354,13401
+  protected void createOverviewWindow(PlanWorksGUITest.createOverviewWindow414,17633
+  public void assertTrueVerbose(PlanWorksGUITest.assertTrueVerbose432,18345
+  public void assertFalseVerbose(PlanWorksGUITest.assertFalseVerbose441,18676
+  public void assertNotNullVerbose(PlanWorksGUITest.assertNotNullVerbose450,19012
+  public void assertNullVerbose(PlanWorksGUITest.assertNullVerbose460,19353
+  protected List createViewListenerList(PlanWorksGUITest.createViewListenerList472,19754
+  protected void viewListenerListWait(PlanWorksGUITest.viewListenerListWait490,20623
+  protected void viewListenerListReset(PlanWorksGUITest.viewListenerListReset515,22082
+  public static TestSuite suite(PlanWorksGUITest.suite540,23520
+  public static class ViewListenerWait01 PlanWorksGUITest.ViewListenerWait01555,23910
+    public ViewListenerWait01(PlanWorksGUITest.ViewListenerWait01.ViewListenerWait01557,24012
+    public void reset(PlanWorksGUITest.ViewListenerWait01.reset562,24168
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait01.initDrawingEnded565,24245
+    public void viewWait(PlanWorksGUITest.ViewListenerWait01.viewWait571,24516
+  public static class ViewListenerWait02 PlanWorksGUITest.ViewListenerWait02583,24873
+    public ViewListenerWait02(PlanWorksGUITest.ViewListenerWait02.ViewListenerWait02585,24975
+    public void reset(PlanWorksGUITest.ViewListenerWait02.reset590,25130
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait02.initDrawingEnded593,25207
+    public void viewWait(PlanWorksGUITest.ViewListenerWait02.viewWait599,25478
+  public static class ViewListenerWait03 PlanWorksGUITest.ViewListenerWait03611,25835
+    public ViewListenerWait03(PlanWorksGUITest.ViewListenerWait03.ViewListenerWait03613,25937
+    public void reset(PlanWorksGUITest.ViewListenerWait03.reset618,26092
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait03.initDrawingEnded621,26169
+    public void viewWait(PlanWorksGUITest.ViewListenerWait03.viewWait627,26440
+  public static class ViewListenerWait04 PlanWorksGUITest.ViewListenerWait04639,26797
+    public ViewListenerWait04(PlanWorksGUITest.ViewListenerWait04.ViewListenerWait04641,26899
+    public void reset(PlanWorksGUITest.ViewListenerWait04.reset646,27054
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait04.initDrawingEnded649,27131
+    public void viewWait(PlanWorksGUITest.ViewListenerWait04.viewWait655,27402
+  public static class ViewListenerWait05 PlanWorksGUITest.ViewListenerWait05667,27759
+    public ViewListenerWait05(PlanWorksGUITest.ViewListenerWait05.ViewListenerWait05669,27861
+    public void reset(PlanWorksGUITest.ViewListenerWait05.reset674,28016
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait05.initDrawingEnded677,28093
+    public void viewWait(PlanWorksGUITest.ViewListenerWait05.viewWait683,28364
+  public static class ViewListenerWait06 PlanWorksGUITest.ViewListenerWait06695,28721
+    public ViewListenerWait06(PlanWorksGUITest.ViewListenerWait06.ViewListenerWait06697,28823
+    public void reset(PlanWorksGUITest.ViewListenerWait06.reset702,28978
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait06.initDrawingEnded705,29055
+    public void viewWait(PlanWorksGUITest.ViewListenerWait06.viewWait711,29326
+  public static class ViewListenerWait07 PlanWorksGUITest.ViewListenerWait07723,29683
+    public ViewListenerWait07(PlanWorksGUITest.ViewListenerWait07.ViewListenerWait07725,29785
+    public void reset(PlanWorksGUITest.ViewListenerWait07.reset730,29940
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait07.initDrawingEnded733,30017
+    public void viewWait(PlanWorksGUITest.ViewListenerWait07.viewWait739,30288
+  public static class ViewListenerWait08 PlanWorksGUITest.ViewListenerWait08751,30645
+    public ViewListenerWait08(PlanWorksGUITest.ViewListenerWait08.ViewListenerWait08753,30747
+    public void reset(PlanWorksGUITest.ViewListenerWait08.reset758,30902
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait08.initDrawingEnded761,30979
+    public void viewWait(PlanWorksGUITest.ViewListenerWait08.viewWait767,31250
+  public static class ThreadListenerWait01 PlanWorksGUITest.ThreadListenerWait01779,31607
+    public ThreadListenerWait01(PlanWorksGUITest.ThreadListenerWait01.ThreadListenerWait01781,31713
+    public void reset(PlanWorksGUITest.ThreadListenerWait01.reset786,31872
+    public void threadEnded(PlanWorksGUITest.ThreadListenerWait01.threadEnded789,31951
+    public void threadWait(PlanWorksGUITest.ThreadListenerWait01.threadWait795,32219
 
 src/gov/nasa/arc/planworks/test/PlanWorksGUITest01.java,202
 public class PlanWorksGUITest01 PlanWorksGUITest0119,421
@@ -1566,17 +1566,19 @@ public class PlanWorksGUITest12 PlanWorksGUITest1271,3861
   private static void validateTokenNetworkTokens(PlanWorksGUITest12.validateTokenNetworkTokens1471,80015
   private static boolean tokenNetworkTokenShown(PlanWorksGUITest12.tokenNetworkTokenShown1493,81095
 
-src/gov/nasa/arc/planworks/test/PlanWorksGUITest13.java,907
-public class PlanWorksGUITest13 PlanWorksGUITest1334,1182
-  private PlanWorksGUITest13(PlanWorksGUITest13.PlanWorksGUITest1336,1217
-  public static void planViz13(PlanWorksGUITest13.planViz1339,1255
-  private static void checkStepConstraintResults(PlanWorksGUITest13.checkStepConstraintResults418,23113
-  private static void checkStepVariableResults(PlanWorksGUITest13.checkStepVariableResults446,24774
-  private static void checkStepTokenResults(PlanWorksGUITest13.checkStepTokenResults474,26407
-  private static void checkTransConstraintResults(PlanWorksGUITest13.checkTransConstraintResults502,27998
-  private static void checkTransVariableResults(PlanWorksGUITest13.checkTransVariableResults519,29114
-  private static void checkTransTokenResults(PlanWorksGUITest13.checkTransTokenResults536,30216
-  private static void checkTransResults(PlanWorksGUITest13.checkTransResults553,31297
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest13.java,1097
+public class PlanWorksGUITest13 PlanWorksGUITest1340,1515
+  private PlanWorksGUITest13(PlanWorksGUITest13.PlanWorksGUITest1342,1550
+  public static void planViz13(PlanWorksGUITest13.planViz1345,1588
+  private static void checkStepConstraintResults(PlanWorksGUITest13.checkStepConstraintResults493,27199
+  private static void checkStepVariableResults(PlanWorksGUITest13.checkStepVariableResults521,28860
+  private static void checkStepTokenResults(PlanWorksGUITest13.checkStepTokenResults549,30493
+  private static void checkTransConstraintResults(PlanWorksGUITest13.checkTransConstraintResults577,32084
+  private static void checkTransVariableResults(PlanWorksGUITest13.checkTransVariableResults594,33200
+  private static void checkTransTokenResults(PlanWorksGUITest13.checkTransTokenResults611,34302
+  private static void checkTransResults(PlanWorksGUITest13.checkTransResults628,35383
+  private static void checkFreeTokenResults(PlanWorksGUITest13.checkFreeTokenResults649,36752
+  private static void checkVariableResults(PlanWorksGUITest13.checkVariableResults665,37630
 
 src/gov/nasa/arc/planworks/test/PlanWorksTest.java,236
 public class PlanWorksTest PlanWorksTest23,616
@@ -1676,14 +1678,14 @@ public abstract class PWTestHelper PWTestHelper90,3919
   public static void selectComboBoxItem(PWTestHelper.selectComboBoxItem1002,45549
   public static void applySequenceQuery(PWTestHelper.applySequenceQuery1040,47419
   public static void setSequenceQueryField(PWTestHelper.setSequenceQueryField1075,48916
-  public static PartialPlanView getPartialPlanView(PWTestHelper.getPartialPlanView1110,50416
-  public static ContentSpecWindow getContentSpecWindow(PWTestHelper.getContentSpecWindow1206,55900
-  public static void openAllExistingViews(PWTestHelper.openAllExistingViews1229,56998
-  public static void selectWindow(PWTestHelper.selectWindow1255,58168
-  public static void setQueryField(PWTestHelper.setQueryField1273,58914
-  public static void findEntityPath(PWTestHelper.findEntityPath1293,59770
-  public static void buttonLeftClick(PWTestHelper.buttonLeftClick1344,62408
-  public static void selectJOptionPaneItem(PWTestHelper.selectJOptionPaneItem1362,63166
+  public static PartialPlanView getPartialPlanView(PWTestHelper.getPartialPlanView1111,50460
+  public static ContentSpecWindow getContentSpecWindow(PWTestHelper.getContentSpecWindow1207,55944
+  public static void openAllExistingViews(PWTestHelper.openAllExistingViews1230,57042
+  public static void selectWindow(PWTestHelper.selectWindow1256,58212
+  public static void setQueryField(PWTestHelper.setQueryField1274,58958
+  public static void findEntityPath(PWTestHelper.findEntityPath1294,59814
+  public static void buttonLeftClick(PWTestHelper.buttonLeftClick1345,62452
+  public static void selectJOptionPaneItem(PWTestHelper.selectJOptionPaneItem1363,63210
 
 src/gov/nasa/arc/planworks/test/TestLangTest.java,473
 public class TestLangTest TestLangTest23,563
@@ -1776,54 +1778,54 @@ public class ColorStream ColorStream11,220
 src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java,2214
 public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog41,1279
   public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog67,2026
-  class PlannerPathButtonListener ConfigureNewSequenceDialog.PlannerPathButtonListener215,8091
-    public PlannerPathButtonListener(ConfigureNewSequenceDialog.PlannerPathButtonListener.PlannerPathButtonListener216,8153
-    public void actionPerformed(ConfigureNewSequenceDialog.PlannerPathButtonListener.actionPerformed218,8200
-  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener228,8579
-    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener229,8639
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed231,8684
-  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener241,9057
-    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener242,9126
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed244,9180
-  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener255,9632
-    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener256,9701
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed258,9755
-  private void addInputListener(ConfigureNewSequenceDialog.addInputListener271,10187
-  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues309,11601
-  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist360,13343
-  public String getPlannerPath(ConfigureNewSequenceDialog.getPlannerPath376,13791
-  public String getModelPath(ConfigureNewSequenceDialog.getModelPath394,14096
-  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir403,14251
-  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath412,14424
+  class PlannerPathButtonListener ConfigureNewSequenceDialog.PlannerPathButtonListener215,8110
+    public PlannerPathButtonListener(ConfigureNewSequenceDialog.PlannerPathButtonListener.PlannerPathButtonListener216,8172
+    public void actionPerformed(ConfigureNewSequenceDialog.PlannerPathButtonListener.actionPerformed218,8219
+  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener228,8598
+    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener229,8658
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed231,8703
+  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener241,9076
+    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener242,9145
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed244,9199
+  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener255,9651
+    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener256,9720
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed258,9774
+  private void addInputListener(ConfigureNewSequenceDialog.addInputListener271,10206
+  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues309,11620
+  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist360,13370
+  public String getPlannerPath(ConfigureNewSequenceDialog.getPlannerPath376,13818
+  public String getModelPath(ConfigureNewSequenceDialog.getModelPath394,14123
+  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir403,14278
+  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath412,14451
 
 src/gov/nasa/arc/planworks/util/ConfigureProjectDialog.java,2703
 public class ConfigureProjectDialog ConfigureProjectDialog40,1217
   public ConfigureProjectDialog ConfigureProjectDialog.ConfigureProjectDialog73,2228
-  class WorkingDirButtonListener ConfigureProjectDialog.WorkingDirButtonListener261,10261
-    public WorkingDirButtonListener(ConfigureProjectDialog.WorkingDirButtonListener.WorkingDirButtonListener262,10322
-    public void actionPerformed(ConfigureProjectDialog.WorkingDirButtonListener.actionPerformed264,10368
-  class PlannerPathButtonListener ConfigureProjectDialog.PlannerPathButtonListener276,10798
-    public PlannerPathButtonListener(ConfigureProjectDialog.PlannerPathButtonListener.PlannerPathButtonListener277,10860
-    public void actionPerformed(ConfigureProjectDialog.PlannerPathButtonListener.actionPerformed279,10907
-  class ModelPathButtonListener ConfigureProjectDialog.ModelPathButtonListener289,11286
-    public ModelPathButtonListener(ConfigureProjectDialog.ModelPathButtonListener.ModelPathButtonListener290,11346
-    public void actionPerformed(ConfigureProjectDialog.ModelPathButtonListener.actionPerformed292,11391
-  class ModelInitStatePathButtonListener ConfigureProjectDialog.ModelInitStatePathButtonListener302,11764
-    public ModelInitStatePathButtonListener(ConfigureProjectDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener303,11833
-    public void actionPerformed(ConfigureProjectDialog.ModelInitStatePathButtonListener.actionPerformed305,11887
-  class ModelOutputDestDirButtonListener ConfigureProjectDialog.ModelOutputDestDirButtonListener316,12288
-    public ModelOutputDestDirButtonListener(ConfigureProjectDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener317,12357
-    public void actionPerformed(ConfigureProjectDialog.ModelOutputDestDirButtonListener.actionPerformed319,12411
-  private void addInputListener(ConfigureProjectDialog.addInputListener331,12842
-  private boolean handleTextFieldValues(ConfigureProjectDialog.handleTextFieldValues367,14308
-  private boolean doesPathExist(ConfigureProjectDialog.doesPathExist438,16798
-  public String getProjectName(ConfigureProjectDialog.getProjectName454,17247
-  public String getPlannerPath(ConfigureProjectDialog.getPlannerPath463,17399
-  public String getWorkingDir(ConfigureProjectDialog.getWorkingDir467,17463
-  public String getModelPath(ConfigureProjectDialog.getModelPath485,17766
-  public String getModelOutputDestDir(ConfigureProjectDialog.getModelOutputDestDir494,17921
-  public String getModelInitStatePath(ConfigureProjectDialog.getModelInitStatePath503,18094
-  public String getModelRuleDelimiters(ConfigureProjectDialog.getModelRuleDelimiters507,18172
+  class WorkingDirButtonListener ConfigureProjectDialog.WorkingDirButtonListener261,10280
+    public WorkingDirButtonListener(ConfigureProjectDialog.WorkingDirButtonListener.WorkingDirButtonListener262,10341
+    public void actionPerformed(ConfigureProjectDialog.WorkingDirButtonListener.actionPerformed264,10387
+  class PlannerPathButtonListener ConfigureProjectDialog.PlannerPathButtonListener276,10817
+    public PlannerPathButtonListener(ConfigureProjectDialog.PlannerPathButtonListener.PlannerPathButtonListener277,10879
+    public void actionPerformed(ConfigureProjectDialog.PlannerPathButtonListener.actionPerformed279,10926
+  class ModelPathButtonListener ConfigureProjectDialog.ModelPathButtonListener289,11305
+    public ModelPathButtonListener(ConfigureProjectDialog.ModelPathButtonListener.ModelPathButtonListener290,11365
+    public void actionPerformed(ConfigureProjectDialog.ModelPathButtonListener.actionPerformed292,11410
+  class ModelInitStatePathButtonListener ConfigureProjectDialog.ModelInitStatePathButtonListener302,11783
+    public ModelInitStatePathButtonListener(ConfigureProjectDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener303,11852
+    public void actionPerformed(ConfigureProjectDialog.ModelInitStatePathButtonListener.actionPerformed305,11906
+  class ModelOutputDestDirButtonListener ConfigureProjectDialog.ModelOutputDestDirButtonListener316,12307
+    public ModelOutputDestDirButtonListener(ConfigureProjectDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener317,12376
+    public void actionPerformed(ConfigureProjectDialog.ModelOutputDestDirButtonListener.actionPerformed319,12430
+  private void addInputListener(ConfigureProjectDialog.addInputListener331,12861
+  private boolean handleTextFieldValues(ConfigureProjectDialog.handleTextFieldValues367,14327
+  private boolean doesPathExist(ConfigureProjectDialog.doesPathExist437,16788
+  public String getProjectName(ConfigureProjectDialog.getProjectName453,17237
+  public String getPlannerPath(ConfigureProjectDialog.getPlannerPath462,17389
+  public String getWorkingDir(ConfigureProjectDialog.getWorkingDir466,17453
+  public String getModelPath(ConfigureProjectDialog.getModelPath484,17756
+  public String getModelOutputDestDir(ConfigureProjectDialog.getModelOutputDestDir493,17911
+  public String getModelInitStatePath(ConfigureProjectDialog.getModelInitStatePath502,18084
+  public String getModelRuleDelimiters(ConfigureProjectDialog.getModelRuleDelimiters506,18162
 
 src/gov/nasa/arc/planworks/util/CreatePartialPlanException.java,275
 public class CreatePartialPlanException CreatePartialPlanException17,358
@@ -1903,14 +1905,14 @@ public class JarClassLoader JarClassLoader19,535
   public Class loadClassAndResolveIt(JarClassLoader.loadClassAndResolveIt84,2686
 
 src/gov/nasa/arc/planworks/util/MouseEventOSX.java,611
-public class MouseEventOSX MouseEventOSX24,657
-  private MouseEventOSX(MouseEventOSX.MouseEventOSX34,889
-  public static boolean isMouseLeftClick(MouseEventOSX.isMouseLeftClick47,1200
-  public static boolean isMouseLeftClick(MouseEventOSX.isMouseLeftClick75,2198
-  public static boolean isMouseMiddleClick(MouseEventOSX.isMouseMiddleClick103,3192
-  public static boolean isMouseMiddleClick(MouseEventOSX.isMouseMiddleClick131,4200
-  public static boolean isMouseRightClick(MouseEventOSX.isMouseRightClick160,5220
-  public static boolean isMouseRightClick(MouseEventOSX.isMouseRightClick189,6286
+public class MouseEventOSX MouseEventOSX24,658
+  private MouseEventOSX(MouseEventOSX.MouseEventOSX34,890
+  public static boolean isMouseLeftClick(MouseEventOSX.isMouseLeftClick47,1201
+  public static boolean isMouseLeftClick(MouseEventOSX.isMouseLeftClick78,2297
+  public static boolean isMouseMiddleClick(MouseEventOSX.isMouseMiddleClick109,3373
+  public static boolean isMouseMiddleClick(MouseEventOSX.isMouseMiddleClick137,4381
+  public static boolean isMouseRightClick(MouseEventOSX.isMouseRightClick166,5401
+  public static boolean isMouseRightClick(MouseEventOSX.isMouseRightClick200,6636
 
 src/gov/nasa/arc/planworks/util/OneToManyMap.java,603
 public class OneToManyMap OneToManyMap23,573
@@ -1945,34 +1947,36 @@ public class PlannerCommandLineDialog PlannerCommandLineDialog40,1213
     public CancelButtonListener(PlannerCommandLineDialog.CancelButtonListener.CancelButtonListener299,10778
     public void actionPerformed(PlannerCommandLineDialog.CancelButtonListener.actionPerformed302,10879
 
-src/gov/nasa/arc/planworks/util/PlannerController.java,2424
-public class PlannerController PlannerController49,1480
-  public PlannerController(PlannerController.PlannerController66,2090
-  public final MDIInternalFrame getWindowFrame(PlannerController.getWindowFrame169,5972
-  class WriteStepButtonListener PlannerController.WriteStepButtonListener174,6064
-    public WriteStepButtonListener(PlannerController.WriteStepButtonListener.WriteStepButtonListener176,6173
-    public void actionPerformed(PlannerController.WriteStepButtonListener.actionPerformed179,6304
-  class WriteStepJNIThread PlannerController.WriteStepJNIThread205,7341
-    public WriteStepJNIThread(PlannerController.WriteStepJNIThread.WriteStepJNIThread209,7466
-    public void run(PlannerController.WriteStepJNIThread.run214,7654
-  class WriteNextStepsButtonListener PlannerController.WriteNextStepsButtonListener231,8200
-    public WriteNextStepsButtonListener(PlannerController.WriteNextStepsButtonListener.WriteNextStepsButtonListener233,8314
-    public void actionPerformed(PlannerController.WriteNextStepsButtonListener.actionPerformed236,8450
-  class WriteNextStepsJNIThread PlannerController.WriteNextStepsJNIThread261,9420
-    public WriteNextStepsJNIThread(PlannerController.WriteNextStepsJNIThread.WriteNextStepsJNIThread265,9551
-    public void run(PlannerController.WriteNextStepsJNIThread.run270,9747
-  class CompleteButtonListener PlannerController.CompleteButtonListener287,10362
-    public CompleteButtonListener(PlannerController.CompleteButtonListener.CompleteButtonListener290,10523
-    public void actionPerformed(PlannerController.CompleteButtonListener.actionPerformed295,10789
-  class CompleteJNIThread PlannerController.CompleteJNIThread303,11057
-    public CompleteJNIThread(PlannerController.CompleteJNIThread.CompleteJNIThread307,11203
-    public void run(PlannerController.CompleteJNIThread.run313,11460
-  class TerminateButtonListener PlannerController.TerminateButtonListener341,12552
-    public TerminateButtonListener(PlannerController.TerminateButtonListener.TerminateButtonListener344,12714
-    public void actionPerformed(PlannerController.TerminateButtonListener.actionPerformed349,12982
-  class TerminateJNIThread PlannerController.TerminateJNIThread357,13228
-    public TerminateJNIThread(PlannerController.TerminateJNIThread.TerminateJNIThread360,13326
-    public void run(PlannerController.TerminateJNIThread.run364,13467
+src/gov/nasa/arc/planworks/util/PlannerController.java,2601
+public class PlannerController PlannerController53,1655
+  public PlannerController(PlannerController.PlannerController71,2302
+  public final MDIInternalFrame getWindowFrame(PlannerController.getWindowFrame180,6446
+  class WriteStepButtonListener PlannerController.WriteStepButtonListener185,6538
+    public WriteStepButtonListener(PlannerController.WriteStepButtonListener.WriteStepButtonListener187,6647
+    public void actionPerformed(PlannerController.WriteStepButtonListener.actionPerformed190,6778
+  class WriteStepJNIThread PlannerController.WriteStepJNIThread216,7815
+    public WriteStepJNIThread(PlannerController.WriteStepJNIThread.WriteStepJNIThread220,7940
+    public void run(PlannerController.WriteStepJNIThread.run225,8128
+  class WriteNextStepsButtonListener PlannerController.WriteNextStepsButtonListener262,9639
+    public WriteNextStepsButtonListener(PlannerController.WriteNextStepsButtonListener.WriteNextStepsButtonListener264,9753
+    public void actionPerformed(PlannerController.WriteNextStepsButtonListener.actionPerformed267,9889
+  class WriteNextStepsJNIThread PlannerController.WriteNextStepsJNIThread292,10859
+    public WriteNextStepsJNIThread(PlannerController.WriteNextStepsJNIThread.WriteNextStepsJNIThread296,10990
+    public void run(PlannerController.WriteNextStepsJNIThread.run301,11186
+  class CompleteButtonListener PlannerController.CompleteButtonListener338,12766
+    public CompleteButtonListener(PlannerController.CompleteButtonListener.CompleteButtonListener341,12927
+    public void actionPerformed(PlannerController.CompleteButtonListener.actionPerformed346,13193
+  class CompleteJNIThread PlannerController.CompleteJNIThread354,13461
+    public CompleteJNIThread(PlannerController.CompleteJNIThread.CompleteJNIThread358,13607
+    public void run(PlannerController.CompleteJNIThread.run364,13864
+  class TerminateButtonListener PlannerController.TerminateButtonListener402,15410
+    public TerminateButtonListener(PlannerController.TerminateButtonListener.TerminateButtonListener405,15572
+    public void actionPerformed(PlannerController.TerminateButtonListener.actionPerformed410,15840
+  class TerminateJNIThread PlannerController.TerminateJNIThread418,16081
+    public TerminateJNIThread(PlannerController.TerminateJNIThread.TerminateJNIThread421,16179
+    public void run(PlannerController.TerminateJNIThread.run425,16320
+  private void notifyPlannerStatus(PlannerController.notifyPlannerStatus440,16724
+  private void notifyPlannerException(PlannerController.notifyPlannerException458,17589
 
 src/gov/nasa/arc/planworks/util/ProgressMonitorException.java,259
 public class ProgressMonitorException ProgressMonitorException17,356
@@ -3801,23 +3805,27 @@ public class StepQueryView StepQueryView56,2021
     public final void doBackgroundClick(StepQueryView.QueryHeaderView.doBackgroundClick392,17591
     private void mouseRightPopupMenu(StepQueryView.QueryHeaderView.mouseRightPopupMenu404,18140
 
-src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TokenQueryView.java,514
+src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TokenQueryView.java,679
 public class TokenQueryView TokenQueryView56,2023
-  public TokenQueryView(TokenQueryView.TokenQueryView83,2944
-  public final void init(TokenQueryView.init134,4960
-  class QueryHeaderView TokenQueryView.QueryHeaderView213,9143
-    public QueryHeaderView(TokenQueryView.QueryHeaderView.QueryHeaderView215,9200
-  public final void doBackgroundClick(TokenQueryView.QueryHeaderView.doBackgroundClick226,9496
-    private void mouseRightPopupMenu(TokenQueryView.QueryHeaderView.mouseRightPopupMenu235,9901
+  public TokenQueryView(TokenQueryView.TokenQueryView84,2985
+  public final void init(TokenQueryView.init135,5001
+  public List getFreeTokenList(TokenQueryView.getFreeTokenList219,9256
+  public QueryHeaderView getHeaderJGoView(TokenQueryView.getHeaderJGoView228,9421
+  public class QueryHeaderView TokenQueryView.QueryHeaderView233,9499
+    public QueryHeaderView(TokenQueryView.QueryHeaderView.QueryHeaderView235,9563
+  public final void doBackgroundClick(TokenQueryView.QueryHeaderView.doBackgroundClick246,9859
+    private void mouseRightPopupMenu(TokenQueryView.QueryHeaderView.mouseRightPopupMenu255,10264
 
-src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/VariableQueryView.java,550
+src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/VariableQueryView.java,720
 public class VariableQueryView VariableQueryView61,2275
-  public VariableQueryView(VariableQueryView.VariableQueryView90,3275
-  public final void init(VariableQueryView.init142,5369
-  class QueryHeaderView VariableQueryView.QueryHeaderView240,10230
-    public QueryHeaderView(VariableQueryView.QueryHeaderView.QueryHeaderView242,10287
-    public final void doBackgroundClick(VariableQueryView.QueryHeaderView.doBackgroundClick253,10597
-    private void mouseRightPopupMenu(VariableQueryView.QueryHeaderView.mouseRightPopupMenu262,11018
+  public VariableQueryView(VariableQueryView.VariableQueryView91,3316
+  public final void init(VariableQueryView.init143,5410
+  public List getVariableList(VariableQueryView.getVariableList246,10342
+  public QueryHeaderView getHeaderJGoView(VariableQueryView.getHeaderJGoView255,10505
+  public class QueryHeaderView VariableQueryView.QueryHeaderView260,10583
+    public QueryHeaderView(VariableQueryView.QueryHeaderView.QueryHeaderView262,10647
+    public final void doBackgroundClick(VariableQueryView.QueryHeaderView.doBackgroundClick273,10957
+    private void mouseRightPopupMenu(VariableQueryView.QueryHeaderView.mouseRightPopupMenu282,11378
 
 src/gov/nasa/arc/planworks/viz/util/AskNodeByKey.java,367
 public class AskNodeByKey AskNodeByKey52,1966
