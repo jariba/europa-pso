@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.90 2004-10-13 23:49:02 taylor Exp $
+# $Id: build-tags-file.csh,v 1.91 2005-04-26 21:28:01 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -110,8 +110,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
     src/gov/nasa/arc/planworks/mdi/SplashWindow.java \
     src/gov/nasa/arc/planworks/mdi/TileCascader.java \
-    src/gov/nasa/arc/planworks/plugin/PluginEvent.java \
-    src/gov/nasa/arc/planworks/plugin/PluginListener.java \
+    src/gov/nasa/arc/planworks/plugin/PwPluginEvent.java \
+    src/gov/nasa/arc/planworks/plugin/PwPluginListener.java \
     src/gov/nasa/arc/planworks/test/BackendTest.java \
     src/gov/nasa/arc/planworks/test/IdSource.java \
     src/gov/nasa/arc/planworks/test/MySQLDBTest.java \
