@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.91 2005-04-26 21:28:01 taylor Exp $
+# $Id: build-tags-file.csh,v 1.92 2005-04-27 23:50:44 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -13,6 +13,7 @@ endif
 
 etags $etags_flag planWorks.TAGS \
     ../../../pub/JGo41/com/nwoods/jgo/JGoSelection.java \
+    ../../../pub/JGo41/com/nwoods/jgo/JGoView.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/Diamond.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/Hexagon.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/LeftTrapezoid.java \

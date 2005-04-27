@@ -41,6 +41,330 @@ public class JGoSelection JGoSelection58,2080
   public void setBoundingHandlePen(JGoSelection.setBoundingHandlePen815,25104
   public JGoPen getBoundingHandlePen(JGoSelection.getBoundingHandlePen819,25194
 
+../../../pub/JGo41/com/nwoods/jgo/JGoView.java,22261
+public class JGoView JGoView405,21192
+ public JGoView(JGoView.JGoView417,21697
+  public JGoView(JGoView.JGoView427,21897
+  private final void init(JGoView.init432,21960
+  public Frame getFrame(JGoView.getFrame534,24967
+  public void addNotify(JGoView.addNotify557,25658
+  public JGoViewCanvas getCanvas(JGoView.getCanvas572,25954
+  public JScrollBar getVerticalScrollBar(JGoView.getVerticalScrollBar585,26267
+  public void setVerticalScrollBar(JGoView.setVerticalScrollBar597,26547
+  public JScrollBar getHorizontalScrollBar(JGoView.getHorizontalScrollBar619,27154
+  public void setHorizontalScrollBar(JGoView.setHorizontalScrollBar631,27432
+  public boolean isHidingDisabledScrollbars(JGoView.isHidingDisabledScrollbars655,28109
+  public void setHidingDisabledScrollbars(JGoView.setHidingDisabledScrollbars670,28640
+  public JComponent getCorner(JGoView.getCorner685,29020
+  public void setCorner(JGoView.setCorner703,29604
+  public Image getBackgroundImage(JGoView.getBackgroundImage720,29986
+  public void setBackgroundImage(JGoView.setBackgroundImage733,30380
+  public JGoDocument createDefaultModel(JGoView.createDefaultModel750,30851
+  public JGoDocument getDocument(JGoView.getDocument760,31056
+  public void setDocument(JGoView.setDocument770,31269
+  public Dimension getDocumentSize(JGoView.getDocumentSize834,33387
+  public Point getDocumentTopLeft(JGoView.getDocumentTopLeft865,34442
+  public boolean isIncludingNegativeCoords(JGoView.isIncludingNegativeCoords881,34860
+  public void setIncludingNegativeCoords(JGoView.setIncludingNegativeCoords894,35222
+  public void convertViewToDoc(JGoView.convertViewToDoc915,35897
+  public void convertViewToDoc(JGoView.convertViewToDoc928,36266
+  public void convertViewToDoc(JGoView.convertViewToDoc940,36623
+  final public Point viewToDocCoords(JGoView.viewToDocCoords961,37251
+  final public Dimension viewToDocCoords(JGoView.viewToDocCoords978,37663
+  final public Rectangle viewToDocCoords(JGoView.viewToDocCoords996,38121
+  final public Rectangle viewToDocCoords(JGoView.viewToDocCoords1014,38629
+  final public Rectangle viewToDocCoords(JGoView.viewToDocCoords1034,39241
+  public void convertDocToView(JGoView.convertDocToView1051,39685
+  public void convertDocToView(JGoView.convertDocToView1064,40057
+  public void convertDocToView(JGoView.convertDocToView1076,40413
+  final public Point docToViewCoords(JGoView.docToViewCoords1098,41078
+  final public Dimension docToViewCoords(JGoView.docToViewCoords1114,41488
+  final public Rectangle docToViewCoords(JGoView.docToViewCoords1131,41954
+  final public Rectangle docToViewCoords(JGoView.docToViewCoords1149,42466
+  final public Rectangle docToViewCoords(JGoView.docToViewCoords1169,43090
+  final public void setViewPosition(JGoView.setViewPosition1185,43519
+  public void setViewPosition(JGoView.setViewPosition1200,43966
+  public Point getViewPosition(JGoView.getViewPosition1221,44582
+  public Dimension getExtentSize(JGoView.getExtentSize1230,44742
+  public Rectangle getViewRect(JGoView.getViewRect1243,45225
+  public void scrollRectToVisible(JGoView.scrollRectToVisible1255,45565
+  public void setScale(JGoView.setScale1287,46689
+  public double getScale(JGoView.getScale1304,47242
+  public double limitScale(JGoView.limitScale1319,47731
+  private final double getHorizScale(JGoView.getHorizScale1329,47978
+  private final double getVertScale(JGoView.getVertScale1334,48056
+  public double getHorizontalScale(JGoView.getHorizontalScale1341,48200
+  public void setHorizontalScale(JGoView.setHorizontalScale1345,48273
+  public double getVerticalcale(JGoView.getVerticalcale1354,48538
+  public void setVerticalScale(JGoView.setVerticalScale1358,48607
+  public JGoObject pickDocObject(JGoView.pickDocObject1380,49412
+  public JGoObject pickObject(JGoView.pickObject1406,50304
+  public int getNumObjects(JGoView.getNumObjects1439,51318
+  public boolean isEmpty(JGoView.isEmpty1447,51477
+  public JGoListPosition addObjectAtHead(JGoView.addObjectAtHead1462,51917
+  public JGoListPosition addObjectAtTail(JGoView.addObjectAtTail1490,52910
+  public JGoListPosition insertObjectBefore(JGoView.insertObjectBefore1523,54180
+  public JGoListPosition insertObjectAfter(JGoView.insertObjectAfter1559,55621
+  public void bringObjectToFront(JGoView.bringObjectToFront1593,56857
+  public void sendObjectToBack(JGoView.sendObjectToBack1611,57390
+  public void removeObject(JGoView.removeObject1625,57778
+  public JGoObject removeObjectAtPos(JGoView.removeObjectAtPos1647,58347
+  public JGoListPosition getFirstObjectPos(JGoView.getFirstObjectPos1660,58725
+  public JGoListPosition getLastObjectPos(JGoView.getLastObjectPos1665,58826
+  public JGoListPosition getNextObjectPos(JGoView.getNextObjectPos1670,58925
+  public JGoListPosition getNextObjectPosAtTop(JGoView.getNextObjectPosAtTop1702,59749
+  public JGoListPosition getPrevObjectPos(JGoView.getPrevObjectPos1718,60158
+  public JGoObject getObjectAtPos(JGoView.getObjectAtPos1723,60279
+  public JGoListPosition findObject(JGoView.findObject1728,60390
+  public JGoSelection createDefaultSelection(JGoView.createDefaultSelection1739,60625
+  public JGoSelection getSelection(JGoView.getSelection1750,60955
+  public JGoObject selectObject(JGoView.selectObject1764,61285
+  public void selectAll(JGoView.selectAll1774,61609
+  private boolean containsRect(JGoView.containsRect1798,62333
+  public void selectInBox(JGoView.selectInBox1830,63466
+  private void selectObjectInBox(JGoView.selectObjectInBox1853,64199
+  public Color getPrimarySelectionColor(JGoView.getPrimarySelectionColor1879,64976
+  public void setPrimarySelectionColor(JGoView.setPrimarySelectionColor1892,65369
+  public Color getSecondarySelectionColor(JGoView.getSecondarySelectionColor1908,65813
+  public void setSecondarySelectionColor(JGoView.setSecondarySelectionColor1921,66220
+  public class JGoViewCanvas JGoView.JGoViewCanvas1940,66950
+    public JGoViewCanvas(JGoView.JGoViewCanvas.JGoViewCanvas1946,67206
+    public void setBorder(JGoView.JGoViewCanvas.setBorder1956,67466
+    protected void paintComponent(JGoView.JGoViewCanvas.paintComponent1959,67530
+    protected void paintBorder(JGoView.JGoViewCanvas.paintBorder1960,67609
+    public void mouseClicked(JGoView.JGoViewCanvas.mouseClicked1963,67710
+    public void mousePressed(JGoView.JGoViewCanvas.mousePressed1964,67757
+    public void mouseReleased(JGoView.JGoViewCanvas.mouseReleased1965,67831
+    public void mouseEntered(JGoView.JGoViewCanvas.mouseEntered1966,67907
+    public void mouseExited(JGoView.JGoViewCanvas.mouseExited1967,67954
+    public void mouseMoved(JGoView.JGoViewCanvas.mouseMoved1970,68037
+    public void mouseDragged(JGoView.JGoViewCanvas.mouseDragged1971,68107
+    public void dragGestureRecognized(JGoView.JGoViewCanvas.dragGestureRecognized1974,68219
+    public void dragEnter(JGoView.JGoViewCanvas.dragEnter1977,68354
+    public void dragOver(JGoView.JGoViewCanvas.dragOver1978,68431
+    public void dropActionChanged(JGoView.JGoViewCanvas.dropActionChanged1979,68506
+    public void dragExit(JGoView.JGoViewCanvas.dragExit1980,68599
+    public void dragDropEnd(JGoView.JGoViewCanvas.dragDropEnd1981,68670
+    public void dragEnter(JGoView.JGoViewCanvas.dragEnter1984,68788
+    public void dragOver(JGoView.JGoViewCanvas.dragOver1985,68865
+    public void dropActionChanged(JGoView.JGoViewCanvas.dropActionChanged1986,68940
+    public void dragExit(JGoView.JGoViewCanvas.dragExit1987,69033
+    public void drop(JGoView.JGoViewCanvas.drop1988,69104
+    public Cursor getCursor(JGoView.JGoViewCanvas.getCursor1990,69173
+    public Insets getAutoscrollInsets(JGoView.JGoViewCanvas.getAutoscrollInsets1993,69264
+    public void autoscroll(JGoView.JGoViewCanvas.autoscroll1994,69346
+    public JToolTip createToolTip(JGoView.JGoViewCanvas.createToolTip1997,69449
+    public String getToolTipText(JGoView.JGoViewCanvas.getToolTipText1998,69521
+    public boolean isOptimizedDrawingEnabled(JGoView.JGoViewCanvas.isOptimizedDrawingEnabled2000,69608
+    protected void addImpl(JGoView.JGoViewCanvas.addImpl2005,69742
+    public void remove(JGoView.JGoViewCanvas.remove2010,69903
+    public void remove(JGoView.JGoViewCanvas.remove2015,70004
+    public void removeAll(JGoView.JGoViewCanvas.removeAll2020,70109
+  protected void onPaintComponent(JGoView.onPaintComponent2035,70402
+  protected void paintView(JGoView.paintView2092,72600
+  protected void paintPaperColor(JGoView.paintPaperColor2130,74083
+  protected void paintBackgroundDecoration(JGoView.paintBackgroundDecoration2158,75176
+  protected void paintDocumentObjects(JGoView.paintDocumentObjects2178,75842
+  protected void paintViewObjects(JGoView.paintViewObjects2231,77574
+  FontRenderContext getFontRenderContext(JGoView.getFontRenderContext2258,78294
+  public void updateScrollbars(JGoView.updateScrollbars2268,78637
+  public void updateView(JGoView.updateView2354,81774
+  public void updateView(JGoView.updateView2372,82341
+  public void addViewListener(JGoView.addViewListener2394,83051
+  public void removeViewListener(JGoView.removeViewListener2407,83393
+  final public void fireUpdate(JGoView.fireUpdate2426,84106
+  public void fireUpdate(JGoView.fireUpdate2447,84973
+  public void documentChanged(JGoView.documentChanged2532,87965
+  public void print(JGoView.print2639,91830
+  protected void printBegin(JGoView.printBegin2673,92926
+  public Dimension getPrintDocumentSize(JGoView.getPrintDocumentSize2710,94426
+  public Point getPrintDocumentTopLeft(JGoView.getPrintDocumentTopLeft2759,95976
+  protected Rectangle2D.Double getPrintPageRect(JGoView.getPrintPageRect2800,97249
+  protected double getPrintScale(JGoView.getPrintScale2818,98042
+  protected void printEnd(JGoView.printEnd2827,98285
+  public int print(JGoView.print2836,98504
+  public boolean isPrinting(JGoView.isPrinting2915,101402
+  protected void printDecoration(JGoView.printDecoration2935,102265
+  protected void printView(JGoView.printView2974,103983
+  public void doLayout(JGoView.doLayout3007,105248
+  public void setSize(JGoView.setSize3074,107553
+  final public void setSize(JGoView.setSize3083,107759
+  public void setBounds(JGoView.setBounds3091,107944
+  final public void setBounds(JGoView.setBounds3100,108158
+  public Dimension getPreferredSize(JGoView.getPreferredSize3108,108343
+  public Dimension getMinimumSize(JGoView.getMinimumSize3122,108811
+  protected void onScrollEvent(JGoView.onScrollEvent3136,109244
+  public void setKeyEnabled(JGoView.setKeyEnabled3158,109875
+  public boolean isKeyEnabled(JGoView.isKeyEnabled3175,110374
+  public void keyPressed(JGoView.keyPressed3186,110701
+  public void keyTyped(JGoView.keyTyped3193,110866
+  public void keyReleased(JGoView.keyReleased3196,110966
+  public void onKeyEvent(JGoView.onKeyEvent3211,111461
+  public boolean isFocusTraversable(JGoView.isFocusTraversable3248,112413
+  public boolean isIgnoreNextMouseDown(JGoView.isIgnoreNextMouseDown3258,112600
+  public void setIgnoreNextMouseDown(JGoView.setIgnoreNextMouseDown3271,112995
+  protected boolean keyMultipleSelect(JGoView.keyMultipleSelect3291,113638
+  protected boolean keyClearSelection(JGoView.keyClearSelection3308,114230
+  protected void initializeMouseHandling(JGoView.initializeMouseHandling3316,114420
+  class JGoViewHelper JGoView.JGoViewHelper3330,114887
+    JGoViewHelper(JGoView.JGoViewHelper.JGoViewHelper3332,114970
+    JGoViewHelper(JGoView.JGoViewHelper.JGoViewHelper3333,115005
+    JGoViewHelper(JGoView.JGoViewHelper.JGoViewHelper3334,115066
+    JGoViewHelper(JGoView.JGoViewHelper.JGoViewHelper3335,115142
+    public void mouseClicked(JGoView.JGoViewHelper.mouseClicked3337,115231
+    public void mouseReleased(JGoView.JGoViewHelper.mouseReleased3338,115278
+    public void mouseEntered(JGoView.JGoViewHelper.mouseEntered3339,115326
+    public void mouseExited(JGoView.JGoViewHelper.mouseExited3340,115373
+    public void mousePressed(JGoView.JGoViewHelper.mousePressed3342,115421
+    public void adjustmentValueChanged(JGoView.JGoViewHelper.adjustmentValueChanged3348,115561
+    public void run(JGoView.JGoViewHelper.run3353,115665
+  public void setMouseEnabled(JGoView.setMouseEnabled3378,116328
+  public boolean isMouseEnabled(JGoView.isMouseEnabled3397,117020
+  protected final MouseEvent getCurrentMouseEvent(JGoView.getCurrentMouseEvent3412,117473
+  protected void onMousePressed(JGoView.onMousePressed3420,117642
+  protected void onMouseReleased(JGoView.onMouseReleased3481,119382
+  protected void onMouseMoved(JGoView.onMouseMoved3513,120227
+  protected void onMouseDragged(JGoView.onMouseDragged3542,121059
+  public boolean doMouseDown(JGoView.doMouseDown3597,123161
+  public boolean doMouseMove(JGoView.doMouseMove3659,125304
+  public boolean doMouseUp(JGoView.doMouseUp3776,129214
+  public boolean doMouseClick(JGoView.doMouseClick3948,135461
+  public boolean doMouseDblClick(JGoView.doMouseDblClick3991,137013
+  public void doCancelMouse(JGoView.doCancelMouse4022,138007
+  public final int getState(JGoView.getState4100,140301
+  public void setState(JGoView.setState4109,140664
+  public final JGoObject getCurrentObject(JGoView.getCurrentObject4112,140809
+  public void setCurrentObject(JGoView.setCurrentObject4115,140976
+  public void doUncapturedMouseMove(JGoView.doUncapturedMouseMove4133,141734
+  public void setCursor(JGoView.setCursor4160,142638
+  public void setCursorImmediately(JGoView.setCursorImmediately4174,143025
+  public Cursor getDefaultCursor(JGoView.getDefaultCursor4183,143174
+  public void setDefaultCursor(JGoView.setDefaultCursor4198,143595
+  public void doBackgroundClick(JGoView.doBackgroundClick4212,143983
+  final public void doBackgroundClick(JGoView.doBackgroundClick4220,144222
+  public void doMoveSelection(JGoView.doMoveSelection4250,145720
+  public boolean isDragsRealtime(JGoView.isDragsRealtime4357,150237
+  public void setDragsRealtime(JGoView.setDragsRealtime4368,150605
+  public int getInternalMouseActions(JGoView.getInternalMouseActions4386,151189
+  public void setInternalMouseActions(JGoView.setInternalMouseActions4399,151739
+  public boolean isDragsSelectionImage(JGoView.isDragsSelectionImage4415,152123
+  public void setDragsSelectionImage(JGoView.setDragsSelectionImage4421,152362
+  class DragStroke JGoView.DragStroke4430,152623
+    public DragStroke(JGoView.DragStroke.DragStroke4432,152666
+    protected void gainedSelection(JGoView.DragStroke.gainedSelection4433,152694
+    protected void lostSelection(JGoView.DragStroke.lostSelection4434,152757
+  class DragRectangle JGoView.DragRectangle4437,152825
+    public DragRectangle(JGoView.DragRectangle.DragRectangle4439,152874
+    public DragRectangle(JGoView.DragRectangle.DragRectangle4440,152905
+    protected void gainedSelection(JGoView.DragRectangle.gainedSelection4441,152958
+    protected void lostSelection(JGoView.DragRectangle.lostSelection4442,153021
+  class DragImage JGoView.DragImage4445,153091
+    public DragImage(JGoView.DragImage.DragImage4447,153132
+    public DragImage(JGoView.DragImage.DragImage4448,153159
+    protected void gainedSelection(JGoView.DragImage.gainedSelection4449,153208
+    protected void lostSelection(JGoView.DragImage.lostSelection4450,153271
+  JGoSelection getDragSelection(JGoView.getDragSelection4454,153341
+  JGoSelection createDragSelection(JGoView.createDragSelection4457,153451
+  void makeDragSelection(JGoView.makeDragSelection4556,156915
+  void clearDragSelection(JGoView.clearDragSelection4582,157816
+  public void moveSelection(JGoView.moveSelection4617,159309
+  private boolean alreadyMoved(JGoView.alreadyMoved4655,160727
+  public void doCancelMoveSelection(JGoView.doCancelMoveSelection4671,161186
+  protected boolean startResizing(JGoView.startResizing4707,162648
+  protected void handleResizing(JGoView.handleResizing4749,164078
+  public void doCancelResize(JGoView.doCancelResize4792,165701
+  public String getToolTipText(JGoView.getToolTipText4822,166772
+    public void setEditControl(JGoView.setEditControl4852,167529
+    public JGoTextEdit getEditControl(JGoView.getEditControl4867,167927
+    public boolean isEditingTextControl(JGoView.isEditingTextControl4875,168104
+    public void doEndEdit(JGoView.doEndEdit4884,168318
+    void addControl(JGoView.addControl4894,168518
+    void removeControl(JGoView.removeControl4902,168703
+  protected void drawXORRect(JGoView.drawXORRect4925,169571
+  protected void drawXORBox(JGoView.drawXORBox4945,170374
+  public Graphics2D getJGoGraphics(JGoView.getJGoGraphics4975,171568
+  public void disposeJGoGraphics(JGoView.disposeJGoGraphics4986,171874
+  protected JGoHandle pickHandle(JGoView.pickHandle5000,172257
+  public void newLink(JGoView.newLink5029,173270
+  protected void noNewLink(JGoView.noNewLink5052,173911
+  public void reLink(JGoView.reLink5071,174531
+  protected void noReLink(JGoView.noReLink5092,175216
+  private void cacheValidLinks(JGoView.cacheValidLinks5106,175621
+  public boolean validLink(JGoView.validLink5139,176690
+  public boolean validSourcePort(JGoView.validSourcePort5160,177395
+  public boolean validDestinationPort(JGoView.validDestinationPort5179,178010
+  public int getPortGravity(JGoView.getPortGravity5195,178481
+  public JGoPort pickNearestPort(JGoView.pickNearestPort5210,179006
+  protected JGoPort pickPort(JGoView.pickPort5257,180463
+  public boolean startNewLink(JGoView.startNewLink5301,182440
+  public boolean startReLink(JGoView.startReLink5358,185001
+  protected JGoPort createTemporaryPortForNewLink(JGoView.createTemporaryPortForNewLink5422,187509
+  protected JGoLink createTemporaryLinkForNewLink(JGoView.createTemporaryLinkForNewLink5444,188375
+  public void lostOwnership(JGoView.lostOwnership5458,188771
+  public void copy(JGoView.copy5470,189142
+  public void copyToClipboard(JGoView.copyToClipboard5492,189891
+  public void cut(JGoView.cut5522,191049
+  public void deleteSelection(JGoView.deleteSelection5548,191998
+  public void paste(JGoView.paste5594,193576
+  public JGoCopyEnvironment pasteFromClipboard(JGoView.pasteFromClipboard5630,194701
+  public void initializeDragDropHandling(JGoView.initializeDragDropHandling5661,195773
+  public void setDragDropEnabled(JGoView.setDragDropEnabled5674,196175
+  public void setDragEnabled(JGoView.setDragEnabled5688,196598
+  public void setDropEnabled(JGoView.setDropEnabled5723,197863
+  public boolean isDragDropEnabled(JGoView.isDragDropEnabled5752,198822
+  public boolean isDragEnabled(JGoView.isDragEnabled5767,199368
+  public boolean isDropEnabled(JGoView.isDropEnabled5776,199578
+  public void onDragGestureRecognized(JGoView.onDragGestureRecognized5784,199750
+  public void dragGestureRecognized(JGoView.dragGestureRecognized5805,200515
+  public void onDragEnter(JGoView.onDragEnter5822,201056
+  public void onDragOver(JGoView.onDragOver5829,201232
+  public void onDropActionChanged(JGoView.onDropActionChanged5836,201406
+  public void onDragExit(JGoView.onDragExit5845,201639
+  public void onDragDropEnd(JGoView.onDragDropEnd5852,201809
+  public void dragEnter(JGoView.dragEnter5867,202181
+  public void dragOver(JGoView.dragOver5869,202301
+  public void dropActionChanged(JGoView.dropActionChanged5871,202420
+  public void dragExit(JGoView.dragExit5873,202548
+  public void dragDropEnd(JGoView.dragDropEnd5875,202663
+  public int convertActionToModifiers(JGoView.convertActionToModifiers5881,202823
+  public void onDragEnter(JGoView.onDragEnter5905,203531
+  public void onDragOver(JGoView.onDragOver5921,204015
+  public void onDropActionChanged(JGoView.onDropActionChanged5937,204496
+  public void onDragExit(JGoView.onDragExit5949,204783
+  public void onDrop(JGoView.onDrop5963,205049
+  public void dragEnter(JGoView.dragEnter5998,206135
+  public void dragOver(JGoView.dragOver6016,206621
+  public void dropActionChanged(JGoView.dropActionChanged6034,207106
+  public void dragExit(JGoView.dragExit6048,207478
+  public void drop(JGoView.drop6062,207973
+  public boolean isDropFlavorAcceptable(JGoView.isDropFlavorAcceptable6091,208819
+  public int computeAcceptableDrop(JGoView.computeAcceptableDrop6109,209537
+  public boolean doDrop(JGoView.doDrop6141,210925
+  public void completeDrop(JGoView.completeDrop6189,212637
+  public Insets getAutoscrollInsets(JGoView.getAutoscrollInsets6206,213114
+  public void setAutoscrollInsets(JGoView.setAutoscrollInsets6216,213325
+  public void autoscroll(JGoView.autoscroll6236,213948
+  public JGoLayer getFirstLayer(JGoView.getFirstLayer6342,217672
+  public JGoLayer getLastLayer(JGoView.getLastLayer6354,217919
+  public JGoLayer getNextLayer(JGoView.getNextLayer6367,218212
+  public JGoLayer getPrevLayer(JGoView.getPrevLayer6377,218469
+  public String getEditPresentationName(JGoView.getEditPresentationName6391,218900
+  public int getDebugFlags(JGoView.getDebugFlags6407,219349
+  public void setDebugFlags(JGoView.setDebugFlags6420,219658
+  void TRACE(JGoView.TRACE6423,219720
+  void TRACE(JGoView.TRACE6441,220409
+  int[] getTempXs(JGoView.getTempXs6461,221135
+  int[] getTempYs(JGoView.getTempYs6467,221274
+  Point getTempPoint(JGoView.getTempPoint6473,221413
+  Dimension getTempDimension(JGoView.getTempDimension6474,221461
+  Rectangle getTempRectangle(JGoView.getTempRectangle6475,221521
+  public static Color getDefaultPrimarySelectionColor(JGoView.getDefaultPrimarySelectionColor6517,223508
+  public static void setDefaultPrimarySelectionColor(JGoView.setDefaultPrimarySelectionColor6525,223682
+  public static Color getDefaultSecondarySelectionColor(JGoView.getDefaultSecondarySelectionColor6533,223864
+  public static void setDefaultSecondarySelectionColor(JGoView.setDefaultSecondarySelectionColor6541,224044
+  public static int getDefaultPortGravity(JGoView.getDefaultPortGravity6549,224249
+  public static void setDefaultPortGravity(JGoView.setDefaultPortGravity6558,224493
+
 ../../../pub/JGo41/com/nwoods/jgo/examples/Diamond.java,803
 public class Diamond Diamond24,822
   public Diamond(Diamond.Diamond25,865
@@ -149,24 +473,24 @@ public class AddSequenceThread AddSequenceThread37,1016
   public void run(AddSequenceThread.run59,1531
   private void addSequence(AddSequenceThread.addSequence73,2125
 
-src/gov/nasa/arc/planworks/ConfigureAndPlugins.java,1598
+src/gov/nasa/arc/planworks/ConfigureAndPlugins.java,1599
 public class ConfigureAndPlugins ConfigureAndPlugins45,1136
-  private ConfigureAndPlugins(ConfigureAndPlugins.ConfigureAndPlugins98,3666
-  public static void processPlanWorksConfigFile(ConfigureAndPlugins.processPlanWorksConfigFile101,3705
-  private static void processPlanWorksConfigFileDoit(ConfigureAndPlugins.processPlanWorksConfigFileDoit120,4550
-  private static Object [] collectQuotedNameParts(ConfigureAndPlugins.collectQuotedNameParts203,8694
-  public static void mapPlugIn(ConfigureAndPlugins.mapPlugIn233,9773
-  public static void mapViewClass(ConfigureAndPlugins.mapViewClass269,11260
-  public static void mapRightClickForView(ConfigureAndPlugins.mapRightClickForView283,11809
-  public static void invokeLoadPlugin(ConfigureAndPlugins.invokeLoadPlugin298,12486
-  public static void processProjectsConfigFile(ConfigureAndPlugins.processProjectsConfigFile337,13988
-  private static Map processProjectsConfigFileImpl(ConfigureAndPlugins.processProjectsConfigFileImpl347,14350
-  public static boolean isProjectInConfigMap(ConfigureAndPlugins.isProjectInConfigMap413,16973
-  public static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue424,17307
-  private static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue466,19391
-  public static List completeProjectConfigMap(ConfigureAndPlugins.completeProjectConfigMap492,20198
-  public static void updateProjectConfigMap(ConfigureAndPlugins.updateProjectConfigMap533,22096
-  public static void writeProjectConfigMap(ConfigureAndPlugins.writeProjectConfigMap558,23111
+  private ConfigureAndPlugins(ConfigureAndPlugins.ConfigureAndPlugins100,3831
+  public static void processPlanWorksConfigFile(ConfigureAndPlugins.processPlanWorksConfigFile103,3870
+  private static void processPlanWorksConfigFileDoit(ConfigureAndPlugins.processPlanWorksConfigFileDoit122,4715
+  private static Object [] collectQuotedNameParts(ConfigureAndPlugins.collectQuotedNameParts205,8859
+  public static void mapPlugIn(ConfigureAndPlugins.mapPlugIn235,9938
+  public static void mapViewClass(ConfigureAndPlugins.mapViewClass271,11425
+  public static void mapRightClickForView(ConfigureAndPlugins.mapRightClickForView285,11974
+  public static void invokeLoadPlugin(ConfigureAndPlugins.invokeLoadPlugin300,12651
+  public static void processProjectsConfigFile(ConfigureAndPlugins.processProjectsConfigFile339,14153
+  private static Map processProjectsConfigFileImpl(ConfigureAndPlugins.processProjectsConfigFileImpl349,14515
+  public static boolean isProjectInConfigMap(ConfigureAndPlugins.isProjectInConfigMap415,17138
+  public static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue426,17472
+  private static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue468,19556
+  public static List completeProjectConfigMap(ConfigureAndPlugins.completeProjectConfigMap494,20363
+  public static void updateProjectConfigMap(ConfigureAndPlugins.updateProjectConfigMap535,22261
+  public static void writeProjectConfigMap(ConfigureAndPlugins.writeProjectConfigMap560,23276
 
 src/gov/nasa/arc/planworks/CreateSequenceViewThread.java,308
 public class CreateSequenceViewThread CreateSequenceViewThread37,1135
@@ -211,12 +535,12 @@ public class NewSequenceThread NewSequenceThread41,1407
   public NewSequenceThread(NewSequenceThread.NewSequenceThread59,1902
   public void run(NewSequenceThread.run70,2145
   private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl103,3503
-  private void newSequence(NewSequenceThread.newSequence140,4895
-  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait194,7771
-  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait207,8288
-  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters236,9518
-  private void setConfigureParameters(NewSequenceThread.setConfigureParameters270,11143
-  private void getTransactionTypeStates(NewSequenceThread.getTransactionTypeStates287,12023
+  private void newSequence(NewSequenceThread.newSequence146,5115
+  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait200,7991
+  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait213,8508
+  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters242,9738
+  private void setConfigureParameters(NewSequenceThread.setConfigureParameters276,11363
+  private void getTransactionTypeStates(NewSequenceThread.getTransactionTypeStates293,12243
 
 src/gov/nasa/arc/planworks/PlannerControlJNI.java,57
 public class PlannerControlJNI PlannerControlJNI22,570
@@ -972,99 +1296,99 @@ public abstract class FileUtils FileUtils32,759
   public static String validateSequenceDirectory(FileUtils.validateSequenceDirectory137,4589
   public static boolean deleteDir(FileUtils.deleteDir210,7725
 
-src/gov/nasa/arc/planworks/db/util/MySQLDB.java,8711
-public class MySQLDB MySQLDB63,2396
-  private MySQLDB(MySQLDB.MySQLDB71,2628
-  synchronized public static void startDatabase(MySQLDB.startDatabase81,2868
-  synchronized public static void stopDatabase(MySQLDB.stopDatabase124,4840
-  synchronized public static void registerDatabase(MySQLDB.registerDatabase140,5389
-  synchronized public static void unregisterDatabase(MySQLDB.unregisterDatabase180,6450
-  synchronized public static ResultSet queryDatabase(MySQLDB.queryDatabase200,6797
-  synchronized public static int updateDatabase(MySQLDB.updateDatabase225,7435
-  synchronized public static void analyzeDatabase(MySQLDB.analyzeDatabase244,7967
-  synchronized public static void loadFile(MySQLDB.loadFile268,8598
-  synchronized public static void loadFile(MySQLDB.loadFile272,8795
-  synchronized public static String queryPartialPlanModelById(MySQLDB.queryPartialPlanModelById285,9408
-  synchronized public static List getProjectNames(MySQLDB.getProjectNames305,9940
-  synchronized public static boolean projectExists(MySQLDB.projectExists325,10399
-  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists344,10858
-  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists355,11168
-  synchronized public static String getSequenceUrl(MySQLDB.getSequenceUrl366,11471
-	synchronized public static Long getSequenceId(MySQLDB.getSequenceId378,11825
-  synchronized public static void setSequenceUrl(MySQLDB.setSequenceUrl391,12187
-  synchronized public static boolean partialPlanExists(MySQLDB.partialPlanExists403,12556
-  synchronized public static boolean transactionsInDatabase(MySQLDB.transactionsInDatabase414,12962
-  synchronized public static List queryPlanNamesInDatabase(MySQLDB.queryPlanNamesInDatabase427,13363
-  synchronized public static List queryPlanIdsInDatabase(MySQLDB.queryPlanIdsInDatabase440,13768
-  synchronized public static void addProject(MySQLDB.addProject460,14307
-  synchronized public static Integer latestProjectId(MySQLDB.latestProjectId470,14558
-  synchronized public static Long addSequence(MySQLDB.addSequence489,15053
-  synchronized public static Long latestSequenceId(MySQLDB.latestSequenceId504,15702
-  synchronized public static Integer getProjectIdByName(MySQLDB.getProjectIdByName524,16140
-  synchronized public static Map getSequences(MySQLDB.getSequences546,16707
-  synchronized public static void deleteProject(MySQLDB.deleteProject567,17302
-  synchronized public static void deletePlanningSequence(MySQLDB.deletePlanningSequence581,17830
-  synchronized public static List getPlanNamesInSequence(MySQLDB.getPlanNamesInSequence626,19958
-  synchronized public static Long getNewPartialPlanId(MySQLDB.getNewPartialPlanId648,20538
-  synchronized public static Long getPartialPlanIdByName(MySQLDB.getPartialPlanIdByName661,21019
-  synchronized public static Long getPartialPlanIdByStepNum(MySQLDB.getPartialPlanIdByStepNum680,21647
-  synchronized public static String getPartialPlanNameById(MySQLDB.getPartialPlanNameById699,22296
-  synchronized public static List queryPartialPlanNames(MySQLDB.queryPartialPlanNames713,22830
-  synchronized public static void createObjects(MySQLDB.createObjects733,23470
-  synchronized public static int countTransactions(MySQLDB.countTransactions789,26078
-  synchronized private static PwDBTransactionImpl instantiateTransaction(MySQLDB.instantiateTransaction802,26465
-  synchronized public static Map queryTransactions(MySQLDB.queryTransactions833,27703
-  synchronized public static void createSlotTokenNodesStructure(MySQLDB.createSlotTokenNodesStructure854,28662
-  synchronized public static void queryConstraints(MySQLDB.queryConstraints1005,37684
-  synchronized public static void queryVariables(MySQLDB.queryVariables1037,39345
-  synchronized public static void queryRuleInstances(MySQLDB.queryRuleInstances1085,41877
-  synchronized public static void queryResourceInstants(MySQLDB.queryResourceInstants1107,43072
-  synchronized public static Map queryRules(MySQLDB.queryRules1135,44434
-  synchronized public static List queryOpenDecisionsForStep(MySQLDB.queryOpenDecisionsForStep1203,47488
-  synchronized public static Integer queryCurrentDecisionIdForStep(MySQLDB.queryCurrentDecisionIdForStep1228,48656
-  synchronized public static List queryTransactionsForStep(MySQLDB.queryTransactionsForStep1242,49206
-  synchronized public static List queryTransactionsForConstraint(MySQLDB.queryTransactionsForConstraint1254,49846
-  synchronized public static List queryTransactionsForToken(MySQLDB.queryTransactionsForToken1269,50622
-  synchronized public static List queryTransactionsForVariable(MySQLDB.queryTransactionsForVariable1284,51374
-  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1299,52131
-  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1317,53083
-  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1335,54040
-  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1353,55017
-  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1370,55830
-  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1387,56649
-  synchronized public static List queryStepsWithRestrictions(MySQLDB.queryStepsWithRestrictions1404,57472
-  synchronized public static List queryStepsWithRelaxations(MySQLDB.queryStepsWithRelaxations1419,58205
-  synchronized public static List queryStepsWithUnitDecisions(MySQLDB.queryStepsWithUnitDecisions1436,59010
-  synchronized public static List queryStepsWithNonUnitDecisions(MySQLDB.queryStepsWithNonUnitDecisions1456,60003
-  synchronized public static List queryFreeTokensAtStep(MySQLDB.queryFreeTokensAtStep1472,60759
-  synchronized public static List queryUnboundVariablesAtStep(MySQLDB.queryUnboundVariablesAtStep1498,62009
-  synchronized private static boolean varDerivedDomainIsSingleton(MySQLDB.varDerivedDomainIsSingleton1536,63693
-  synchronized private static boolean varSpecDomainIsSingleton(MySQLDB.varSpecDomainIsSingleton1551,64182
-  synchronized private static boolean varDomainIsSingleton(MySQLDB.varDomainIsSingleton1571,64873
-  synchronized public static List queryPartialPlanSizes(MySQLDB.queryPartialPlanSizes1583,65272
-  synchronized public static int [] queryPartialPlanSize(MySQLDB.queryPartialPlanSize1602,65919
-  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1617,66450
-  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1628,66901
-  synchronized public static Map queryAllIdsForPartialPlan(MySQLDB.queryAllIdsForPartialPlan1640,67349
-  synchronized public static List queryRuleIdsForSequence(MySQLDB.queryRuleIdsForSequence1674,68939
-  synchronized public static List queryResourceIdsForObject(MySQLDB.queryResourceIdsForObject1689,69336
-  synchronized public static List queryTimelineIdsForObject(MySQLDB.queryTimelineIdsForObject1704,69944
-  synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1719,70552
-  synchronized public static Map queryAllChildRuleInstanceIds(MySQLDB.queryAllChildRuleInstanceIds1748,71746
-  synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1782,73097
-	synchronized public static List queryTransactionNameList(MySQLDB.queryTransactionNameList1796,73655
-	synchronized public static void queryTransactionNames(MySQLDB.queryTransactionNames1810,74013
-  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1856,75453
-  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1871,75898
-  synchronized public static Map queryStepNumPartialPlanIds(MySQLDB.queryStepNumPartialPlanIds1886,76395
-  synchronized public static boolean statsInDb(MySQLDB.statsInDb1902,77033
-  synchronized public static boolean rulesInDb(MySQLDB.rulesInDb1915,77426
-  synchronized public static boolean transactionsInDatabaseForStep(MySQLDB.transactionsInDatabaseForStep1928,77808
-  synchronized public static int maxStepForTransactionsInDb(MySQLDB.maxStepForTransactionsInDb1941,78235
-class EntityIdComparator EntityIdComparator1962,78937
-  public EntityIdComparator(EntityIdComparator.EntityIdComparator1963,78986
-  public boolean equals(EntityIdComparator.equals1965,79022
-  public int compare(EntityIdComparator.compare1968,79080
+src/gov/nasa/arc/planworks/db/util/MySQLDB.java,8712
+public class MySQLDB MySQLDB63,2398
+  private MySQLDB(MySQLDB.MySQLDB71,2630
+  synchronized public static void startDatabase(MySQLDB.startDatabase81,2870
+  synchronized public static void stopDatabase(MySQLDB.stopDatabase125,4921
+  synchronized public static void registerDatabase(MySQLDB.registerDatabase142,5548
+  synchronized public static void unregisterDatabase(MySQLDB.unregisterDatabase184,6744
+  synchronized public static ResultSet queryDatabase(MySQLDB.queryDatabase204,7091
+  synchronized public static int updateDatabase(MySQLDB.updateDatabase229,7729
+  synchronized public static void analyzeDatabase(MySQLDB.analyzeDatabase248,8261
+  synchronized public static void loadFile(MySQLDB.loadFile272,8892
+  synchronized public static void loadFile(MySQLDB.loadFile276,9089
+  synchronized public static String queryPartialPlanModelById(MySQLDB.queryPartialPlanModelById289,9702
+  synchronized public static List getProjectNames(MySQLDB.getProjectNames309,10234
+  synchronized public static boolean projectExists(MySQLDB.projectExists329,10693
+  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists348,11152
+  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists359,11462
+  synchronized public static String getSequenceUrl(MySQLDB.getSequenceUrl370,11765
+	synchronized public static Long getSequenceId(MySQLDB.getSequenceId382,12119
+  synchronized public static void setSequenceUrl(MySQLDB.setSequenceUrl395,12481
+  synchronized public static boolean partialPlanExists(MySQLDB.partialPlanExists407,12850
+  synchronized public static boolean transactionsInDatabase(MySQLDB.transactionsInDatabase418,13256
+  synchronized public static List queryPlanNamesInDatabase(MySQLDB.queryPlanNamesInDatabase431,13657
+  synchronized public static List queryPlanIdsInDatabase(MySQLDB.queryPlanIdsInDatabase444,14062
+  synchronized public static void addProject(MySQLDB.addProject464,14601
+  synchronized public static Integer latestProjectId(MySQLDB.latestProjectId474,14852
+  synchronized public static Long addSequence(MySQLDB.addSequence493,15347
+  synchronized public static Long latestSequenceId(MySQLDB.latestSequenceId508,15996
+  synchronized public static Integer getProjectIdByName(MySQLDB.getProjectIdByName528,16434
+  synchronized public static Map getSequences(MySQLDB.getSequences550,17001
+  synchronized public static void deleteProject(MySQLDB.deleteProject571,17596
+  synchronized public static void deletePlanningSequence(MySQLDB.deletePlanningSequence585,18124
+  synchronized public static List getPlanNamesInSequence(MySQLDB.getPlanNamesInSequence630,20252
+  synchronized public static Long getNewPartialPlanId(MySQLDB.getNewPartialPlanId652,20832
+  synchronized public static Long getPartialPlanIdByName(MySQLDB.getPartialPlanIdByName665,21313
+  synchronized public static Long getPartialPlanIdByStepNum(MySQLDB.getPartialPlanIdByStepNum684,21941
+  synchronized public static String getPartialPlanNameById(MySQLDB.getPartialPlanNameById703,22590
+  synchronized public static List queryPartialPlanNames(MySQLDB.queryPartialPlanNames717,23124
+  synchronized public static void createObjects(MySQLDB.createObjects737,23764
+  synchronized public static int countTransactions(MySQLDB.countTransactions793,26372
+  synchronized private static PwDBTransactionImpl instantiateTransaction(MySQLDB.instantiateTransaction806,26759
+  synchronized public static Map queryTransactions(MySQLDB.queryTransactions837,27997
+  synchronized public static void createSlotTokenNodesStructure(MySQLDB.createSlotTokenNodesStructure858,28956
+  synchronized public static void queryConstraints(MySQLDB.queryConstraints1009,37978
+  synchronized public static void queryVariables(MySQLDB.queryVariables1041,39639
+  synchronized public static void queryRuleInstances(MySQLDB.queryRuleInstances1089,42171
+  synchronized public static void queryResourceInstants(MySQLDB.queryResourceInstants1111,43366
+  synchronized public static Map queryRules(MySQLDB.queryRules1139,44728
+  synchronized public static List queryOpenDecisionsForStep(MySQLDB.queryOpenDecisionsForStep1207,47782
+  synchronized public static Integer queryCurrentDecisionIdForStep(MySQLDB.queryCurrentDecisionIdForStep1232,48950
+  synchronized public static List queryTransactionsForStep(MySQLDB.queryTransactionsForStep1246,49500
+  synchronized public static List queryTransactionsForConstraint(MySQLDB.queryTransactionsForConstraint1258,50140
+  synchronized public static List queryTransactionsForToken(MySQLDB.queryTransactionsForToken1273,50916
+  synchronized public static List queryTransactionsForVariable(MySQLDB.queryTransactionsForVariable1288,51668
+  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1303,52425
+  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1321,53377
+  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1339,54334
+  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1357,55311
+  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1374,56124
+  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1391,56943
+  synchronized public static List queryStepsWithRestrictions(MySQLDB.queryStepsWithRestrictions1408,57766
+  synchronized public static List queryStepsWithRelaxations(MySQLDB.queryStepsWithRelaxations1423,58499
+  synchronized public static List queryStepsWithUnitDecisions(MySQLDB.queryStepsWithUnitDecisions1440,59304
+  synchronized public static List queryStepsWithNonUnitDecisions(MySQLDB.queryStepsWithNonUnitDecisions1460,60297
+  synchronized public static List queryFreeTokensAtStep(MySQLDB.queryFreeTokensAtStep1476,61053
+  synchronized public static List queryUnboundVariablesAtStep(MySQLDB.queryUnboundVariablesAtStep1502,62303
+  synchronized private static boolean varDerivedDomainIsSingleton(MySQLDB.varDerivedDomainIsSingleton1540,63987
+  synchronized private static boolean varSpecDomainIsSingleton(MySQLDB.varSpecDomainIsSingleton1555,64476
+  synchronized private static boolean varDomainIsSingleton(MySQLDB.varDomainIsSingleton1575,65167
+  synchronized public static List queryPartialPlanSizes(MySQLDB.queryPartialPlanSizes1587,65566
+  synchronized public static int [] queryPartialPlanSize(MySQLDB.queryPartialPlanSize1606,66213
+  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1621,66744
+  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1632,67195
+  synchronized public static Map queryAllIdsForPartialPlan(MySQLDB.queryAllIdsForPartialPlan1644,67643
+  synchronized public static List queryRuleIdsForSequence(MySQLDB.queryRuleIdsForSequence1678,69233
+  synchronized public static List queryResourceIdsForObject(MySQLDB.queryResourceIdsForObject1693,69630
+  synchronized public static List queryTimelineIdsForObject(MySQLDB.queryTimelineIdsForObject1708,70238
+  synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1723,70846
+  synchronized public static Map queryAllChildRuleInstanceIds(MySQLDB.queryAllChildRuleInstanceIds1752,72040
+  synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1786,73391
+	synchronized public static List queryTransactionNameList(MySQLDB.queryTransactionNameList1800,73949
+	synchronized public static void queryTransactionNames(MySQLDB.queryTransactionNames1814,74307
+  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1860,75747
+  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1875,76192
+  synchronized public static Map queryStepNumPartialPlanIds(MySQLDB.queryStepNumPartialPlanIds1890,76689
+  synchronized public static boolean statsInDb(MySQLDB.statsInDb1906,77327
+  synchronized public static boolean rulesInDb(MySQLDB.rulesInDb1919,77720
+  synchronized public static boolean transactionsInDatabaseForStep(MySQLDB.transactionsInDatabaseForStep1932,78102
+  synchronized public static int maxStepForTransactionsInDb(MySQLDB.maxStepForTransactionsInDb1945,78529
+class EntityIdComparator EntityIdComparator1966,79231
+  public EntityIdComparator(EntityIdComparator.EntityIdComparator1967,79280
+  public boolean equals(EntityIdComparator.equals1969,79316
+  public int compare(EntityIdComparator.compare1972,79374
 
 src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java,1267
 public class PartialPlanContentSpec PartialPlanContentSpec37,1276
@@ -1776,27 +2100,27 @@ public class ColorStream ColorStream11,220
   public Color getColor(ColorStream.getColor71,1670
 
 src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java,2214
-public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog41,1279
-  public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog67,2026
-  class PlannerPathButtonListener ConfigureNewSequenceDialog.PlannerPathButtonListener215,8110
-    public PlannerPathButtonListener(ConfigureNewSequenceDialog.PlannerPathButtonListener.PlannerPathButtonListener216,8172
-    public void actionPerformed(ConfigureNewSequenceDialog.PlannerPathButtonListener.actionPerformed218,8219
-  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener228,8598
-    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener229,8658
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed231,8703
-  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener241,9076
-    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener242,9145
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed244,9199
-  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener255,9651
-    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener256,9720
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed258,9774
-  private void addInputListener(ConfigureNewSequenceDialog.addInputListener271,10206
-  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues309,11620
-  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist360,13370
-  public String getPlannerPath(ConfigureNewSequenceDialog.getPlannerPath376,13818
-  public String getModelPath(ConfigureNewSequenceDialog.getModelPath394,14123
-  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir403,14278
-  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath412,14451
+public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog41,1280
+  public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog67,2027
+  class PlannerPathButtonListener ConfigureNewSequenceDialog.PlannerPathButtonListener215,8111
+    public PlannerPathButtonListener(ConfigureNewSequenceDialog.PlannerPathButtonListener.PlannerPathButtonListener216,8173
+    public void actionPerformed(ConfigureNewSequenceDialog.PlannerPathButtonListener.actionPerformed218,8220
+  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener228,8599
+    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener229,8659
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed231,8704
+  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener241,9077
+    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener242,9146
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed244,9200
+  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener255,9652
+    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener256,9721
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed258,9775
+  private void addInputListener(ConfigureNewSequenceDialog.addInputListener271,10207
+  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues309,11621
+  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist366,13571
+  public String getPlannerPath(ConfigureNewSequenceDialog.getPlannerPath382,14019
+  public String getModelPath(ConfigureNewSequenceDialog.getModelPath400,14324
+  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir409,14479
+  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath418,14652
 
 src/gov/nasa/arc/planworks/util/ConfigureProjectDialog.java,2703
 public class ConfigureProjectDialog ConfigureProjectDialog40,1217
@@ -1818,14 +2142,14 @@ public class ConfigureProjectDialog ConfigureProjectDialog40,1217
     public void actionPerformed(ConfigureProjectDialog.ModelOutputDestDirButtonListener.actionPerformed319,12430
   private void addInputListener(ConfigureProjectDialog.addInputListener331,12861
   private boolean handleTextFieldValues(ConfigureProjectDialog.handleTextFieldValues367,14327
-  private boolean doesPathExist(ConfigureProjectDialog.doesPathExist437,16788
-  public String getProjectName(ConfigureProjectDialog.getProjectName453,17237
-  public String getPlannerPath(ConfigureProjectDialog.getPlannerPath462,17389
-  public String getWorkingDir(ConfigureProjectDialog.getWorkingDir466,17453
-  public String getModelPath(ConfigureProjectDialog.getModelPath484,17756
-  public String getModelOutputDestDir(ConfigureProjectDialog.getModelOutputDestDir493,17911
-  public String getModelInitStatePath(ConfigureProjectDialog.getModelInitStatePath502,18084
-  public String getModelRuleDelimiters(ConfigureProjectDialog.getModelRuleDelimiters506,18162
+  private boolean doesPathExist(ConfigureProjectDialog.doesPathExist443,16988
+  public String getProjectName(ConfigureProjectDialog.getProjectName459,17437
+  public String getPlannerPath(ConfigureProjectDialog.getPlannerPath468,17589
+  public String getWorkingDir(ConfigureProjectDialog.getWorkingDir472,17653
+  public String getModelPath(ConfigureProjectDialog.getModelPath490,17956
+  public String getModelOutputDestDir(ConfigureProjectDialog.getModelOutputDestDir499,18111
+  public String getModelInitStatePath(ConfigureProjectDialog.getModelInitStatePath508,18284
+  public String getModelRuleDelimiters(ConfigureProjectDialog.getModelRuleDelimiters512,18362
 
 src/gov/nasa/arc/planworks/util/CreatePartialPlanException.java,275
 public class CreatePartialPlanException CreatePartialPlanException17,358
@@ -3356,22 +3680,22 @@ class ResourceTransactionViewState ResourceTransactionViewState13,400
   public ResourceTransactionViewState(ResourceTransactionViewState.ResourceTransactionViewState17,540
 
 src/gov/nasa/arc/planworks/viz/partialPlan/rule/RuleInstanceView.java,1226
-public class RuleInstanceView RuleInstanceView52,1678
-  public RuleInstanceView(RuleInstanceView.RuleInstanceView73,2443
-  public final void init(RuleInstanceView.init130,4552
-  public final Integer getRuleInstanceId(RuleInstanceView.getRuleInstanceId180,6786
-  public final JGoDocument getJGoDocument(RuleInstanceView.getJGoDocument189,6984
-  protected final void setStartTimeMSecs(RuleInstanceView.setStartTimeMSecs198,7159
-  public final String getViewSetKey(RuleInstanceView.getViewSetKey207,7371
-  private void renderRuleText(RuleInstanceView.renderRuleText211,7439
-  private int addText(RuleInstanceView.addText277,10062
-  private class TokenIdComparator RuleInstanceView.TokenIdComparator299,10999
-    public TokenIdComparator(RuleInstanceView.TokenIdComparator.TokenIdComparator300,11057
-    public final int compare(RuleInstanceView.TokenIdComparator.compare302,11096
-    public final boolean equals(RuleInstanceView.TokenIdComparator.equals308,11364
-  public class RuleJGoView RuleInstanceView.RuleJGoView320,11651
-    public RuleJGoView(RuleInstanceView.RuleJGoView.RuleJGoView329,11881
-    public final void doBackgroundClick(RuleInstanceView.RuleJGoView.doBackgroundClick341,12250
+public class RuleInstanceView RuleInstanceView53,1719
+  public RuleInstanceView(RuleInstanceView.RuleInstanceView74,2484
+  public final void init(RuleInstanceView.init131,4593
+  public final Integer getRuleInstanceId(RuleInstanceView.getRuleInstanceId181,6827
+  public final JGoDocument getJGoDocument(RuleInstanceView.getJGoDocument190,7025
+  protected final void setStartTimeMSecs(RuleInstanceView.setStartTimeMSecs199,7200
+  public final String getViewSetKey(RuleInstanceView.getViewSetKey208,7412
+  private void renderRuleText(RuleInstanceView.renderRuleText212,7480
+  private int addText(RuleInstanceView.addText284,10331
+  private class TokenIdComparator RuleInstanceView.TokenIdComparator306,11268
+    public TokenIdComparator(RuleInstanceView.TokenIdComparator.TokenIdComparator307,11326
+    public final int compare(RuleInstanceView.TokenIdComparator.compare309,11365
+    public final boolean equals(RuleInstanceView.TokenIdComparator.equals315,11633
+  public class RuleJGoView RuleInstanceView.RuleJGoView327,11920
+    public RuleJGoView(RuleInstanceView.RuleJGoView.RuleJGoView336,12150
+    public final void doBackgroundClick(RuleInstanceView.RuleJGoView.doBackgroundClick348,12519
 
 src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java,4476
 public class TemporalExtentView TemporalExtentView86,3070
@@ -3518,48 +3842,52 @@ public class TimelineTokenNode TimelineTokenNode42,1363
   public TimelineTokenNode(TimelineTokenNode.TimelineTokenNode59,1909
   public boolean doUncapturedMouseMove(TimelineTokenNode.doUncapturedMouseMove77,2682
 
-src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java,3076
-public class TimelineView TimelineView80,2795
-  public TimelineView(TimelineView.TimelineView109,3759
-  public TimelineView(TimelineView.TimelineView130,4447
-  public TimelineView(TimelineView.TimelineView153,5179
-  public TimelineView(TimelineView.TimelineView179,6029
-  private void timelineViewInit(TimelineView.timelineViewInit198,6642
-  public void setState(TimelineView.setState222,7560
-  public void init(TimelineView.init248,8429
-  public void redraw(TimelineView.redraw298,10134
-  class RedrawViewThread TimelineView.RedrawViewThread304,10273
-    public RedrawViewThread(TimelineView.RedrawViewThread.RedrawViewThread306,10316
-    public void run(TimelineView.RedrawViewThread.run309,10375
-  private boolean renderTimelineAndSlotNodes(TimelineView.renderTimelineAndSlotNodes339,11494
-  public JGoView getJGoView(TimelineView.getJGoView360,12108
-  public JGoDocument getJGoDocument(TimelineView.getJGoDocument369,12259
-  public List getTimelineNodeList(TimelineView.getTimelineNodeList378,12440
-  public List getFreeTokenNodeList(TimelineView.getFreeTokenNodeList387,12604
-  public JGoArea getMouseOverNode(TimelineView.getMouseOverNode396,12828
-  public void setMouseOverNode(TimelineView.setMouseOverNode405,13001
-  public boolean isAutoSnapEnabled(TimelineView.isAutoSnapEnabled414,13195
-  public Integer getFocusNodeId(TimelineView.getFocusNodeId423,13358
-  private boolean createTimelineAndSlotNodes(TimelineView.createTimelineAndSlotNodes427,13423
-  private boolean createFreeTokenNodes(TimelineView.createFreeTokenNodes498,16222
-  private boolean createSlotNodes(TimelineView.createSlotNodes535,17925
-  private boolean computeTimeIntervalLabelSize(TimelineView.computeTimeIntervalLabelSize599,21017
-  private boolean outputNonMonotonicError(TimelineView.outputNonMonotonicError655,23404
-  private int computeTimelineNodesWidth(TimelineView.computeTimelineNodesWidth697,25540
-  public String getSlotNodeLabel(TimelineView.getSlotNodeLabel727,26921
-  private void iterateOverNodes(TimelineView.iterateOverNodes764,28558
-  class TimelineJGoView TimelineView.TimelineJGoView813,30577
-    public TimelineJGoView(TimelineView.TimelineJGoView.TimelineJGoView819,30694
-    public void doBackgroundClick(TimelineView.TimelineJGoView.doBackgroundClick831,31042
-  private void mouseRightPopupMenu(TimelineView.mouseRightPopupMenu842,31432
-  private void createEnableAutoSnapItem(TimelineView.createEnableAutoSnapItem900,33966
-  private void createDisableAutoSnapItem(TimelineView.createDisableAutoSnapItem908,34248
-  private void createNodeByKeyItem(TimelineView.createNodeByKeyItem916,34534
-  private void createActiveTokenItem(TimelineView.createActiveTokenItem944,35705
-  public void findAndSelectToken(TimelineView.findAndSelectToken963,36377
-  private void findAndSelectSlot(TimelineView.findAndSelectSlot1029,39391
-  public void findAndSelectTimeline(TimelineView.findAndSelectTimeline1068,41048
-  private void createOverviewWindowItem(TimelineView.createOverviewWindowItem1096,42371
+src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java,3446
+public class TimelineView TimelineView81,2831
+  public TimelineView(TimelineView.TimelineView110,3795
+  public TimelineView(TimelineView.TimelineView131,4483
+  public TimelineView(TimelineView.TimelineView154,5215
+  public TimelineView(TimelineView.TimelineView180,6065
+  private void timelineViewInit(TimelineView.timelineViewInit199,6678
+  public void setState(TimelineView.setState223,7596
+  public void init(TimelineView.init249,8465
+  public void redraw(TimelineView.redraw299,10170
+  class RedrawViewThread TimelineView.RedrawViewThread305,10309
+    public RedrawViewThread(TimelineView.RedrawViewThread.RedrawViewThread307,10352
+    public void run(TimelineView.RedrawViewThread.run310,10411
+  private boolean renderTimelineAndSlotNodes(TimelineView.renderTimelineAndSlotNodes340,11530
+  public JGoView getJGoView(TimelineView.getJGoView361,12144
+  public JGoDocument getJGoDocument(TimelineView.getJGoDocument370,12295
+  public List getTimelineNodeList(TimelineView.getTimelineNodeList379,12476
+  public List getFreeTokenNodeList(TimelineView.getFreeTokenNodeList388,12640
+  public JGoArea getMouseOverNode(TimelineView.getMouseOverNode397,12864
+  public void setMouseOverNode(TimelineView.setMouseOverNode406,13037
+  public boolean isAutoSnapEnabled(TimelineView.isAutoSnapEnabled415,13231
+  public Integer getFocusNodeId(TimelineView.getFocusNodeId424,13394
+  private boolean createTimelineAndSlotNodes(TimelineView.createTimelineAndSlotNodes428,13459
+  private boolean createFreeTokenNodes(TimelineView.createFreeTokenNodes499,16258
+  private boolean createSlotNodes(TimelineView.createSlotNodes536,17961
+  private boolean computeTimeIntervalLabelSize(TimelineView.computeTimeIntervalLabelSize600,21053
+  private boolean outputNonMonotonicError(TimelineView.outputNonMonotonicError656,23440
+  private int computeTimelineNodesWidth(TimelineView.computeTimelineNodesWidth698,25576
+  public String getSlotNodeLabel(TimelineView.getSlotNodeLabel728,26957
+  private void iterateOverNodes(TimelineView.iterateOverNodes765,28594
+  class TimelineJGoView TimelineView.TimelineJGoView815,30701
+    public TimelineJGoView(TimelineView.TimelineJGoView.TimelineJGoView821,30818
+    public void doBackgroundClick(TimelineView.TimelineJGoView.doBackgroundClick833,31166
+    public double getHorizontalScale(TimelineView.TimelineJGoView.getHorizontalScale842,31522
+    public void setHorizontalScale(TimelineView.TimelineJGoView.setHorizontalScale846,31597
+    public double getVerticalcale(TimelineView.TimelineJGoView.getVerticalcale855,31869
+    public void setVerticalScale(TimelineView.TimelineJGoView.setVerticalScale859,31940
+  private void mouseRightPopupMenu(TimelineView.mouseRightPopupMenu871,32243
+  private void createEnableAutoSnapItem(TimelineView.createEnableAutoSnapItem929,34777
+  private void createDisableAutoSnapItem(TimelineView.createDisableAutoSnapItem937,35059
+  private void createNodeByKeyItem(TimelineView.createNodeByKeyItem945,35345
+  private void createActiveTokenItem(TimelineView.createActiveTokenItem973,36516
+  public void findAndSelectToken(TimelineView.findAndSelectToken992,37188
+  private void findAndSelectSlot(TimelineView.findAndSelectSlot1058,40202
+  public void findAndSelectTimeline(TimelineView.findAndSelectTimeline1097,41859
+  private void createOverviewWindowItem(TimelineView.createOverviewWindowItem1125,43182
 
 src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java,1158
 public class TimelineViewTimelineNode TimelineViewTimelineNode60,1978
