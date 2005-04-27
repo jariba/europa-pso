@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.41 2004-09-21 01:07:05 taylor Exp $
+// $Id: VizView.java,v 1.42 2005-04-27 23:50:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -509,6 +509,11 @@ public class VizView extends JPanel {
     jGoView.getVerticalScrollBar().setValue( 0);
 
     jGoView.setScale( 1.0d / zoomFactor);
+    // for new Timeline View
+    // jGoView.setHorizontalScale( 1.0d / zoomFactor);
+    // jGoView.setVerticalScale( 1.0d / zoomFactor);
+    // jGoView.getHorizontalScale();
+    // jGoView.getVerticalScale();
   } // end zoomView
 
   protected void handleEvent(String eventName, Object [] params) {
