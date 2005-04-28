@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.14 2004-09-15 22:26:48 taylor Exp $
+// $Id: TimeScaleView.java,v 1.15 2005-04-28 01:44:02 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -85,6 +85,8 @@ public class TimeScaleView extends JGoView  {
     this.partialPlanView = partialPlanView;
     maxSlots = 0;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
+    this.timeScaleStart = DbConstants.PLUS_INFINITY_INT;
+    this.timeScaleEnd = DbConstants.MINUS_INFINITY_INT;
   } // end constructor
 
   /**
@@ -163,9 +165,12 @@ public class TimeScaleView extends JGoView  {
           PwSlot slot = (PwSlot) slotIterator.next();
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
-          slotCnt++;
-          collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
-          previousSlot = slot;
+          // System.err.println("slot " + slot + " token " + token);
+          if (token != null) { // skip empty slot
+            slotCnt++;
+            collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
+            previousSlot = slot;
+          }
         }
         if (slotCnt > maxSlots) {
           maxSlots = slotCnt;
@@ -192,7 +197,7 @@ public class TimeScaleView extends JGoView  {
     int leftMarginTime = 0;
 //     System.err.println( "\ntoken " + token.getId().toString());
     if (startTimeIntervalDomain != null) {
-//       System.err.println( "collectTimeScaleMetrics start earliest " +
+//        System.err.println( "collectTimeScaleMetrics start earliest " +
 //                           startTimeIntervalDomain.getLowerBound() + " start latest " +
 //                           startTimeIntervalDomain.getUpperBound());
       int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
@@ -228,7 +233,8 @@ public class TimeScaleView extends JGoView  {
         timeScaleEnd = earliestTime;
       }
     }
-//     System.err.println( "timeScaleStart " + timeScaleStart + " timeScaleEnd " + timeScaleEnd);
+//     System.err.println( "collectTimeScaleMetrics timeScaleStart " + timeScaleStart +
+//                         " timeScaleEnd " + timeScaleEnd);
   } // end collectTimeScaleMetrics
 
   private void collectFreeTokenMetrics() {
@@ -280,8 +286,8 @@ public class TimeScaleView extends JGoView  {
             timeScaleEnd = earliestTime;
           }
         }
-//         System.err.println( "timeScaleStart " + timeScaleStart + " timeScaleEnd " +
-//                             timeScaleEnd);
+//         System.err.println( "collectFreeTokenMetrics timeScaleStart " + timeScaleStart + 
+//                             " timeScaleEnd " + timeScaleEnd);
       }
     }
   } // end collectFreeTokenMetrics
@@ -329,17 +335,20 @@ public class TimeScaleView extends JGoView  {
     if ((scaleStart < 0) && ((scaleStart % timeDelta) == 0)) {
       scaleStart -= 1;
     }
-    while (scaleStart < tickTime) {
-      tickTime -= timeDelta;
-      xOrigin += (double) (timeScale * timeDelta);
-//       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
-//                           " xOrigin " + xOrigin);
-    }
-    while (scaleStart > tickTime) {
-      tickTime += timeDelta;
-      xOrigin -= (double) (timeScale * timeDelta);
-//       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
-//                           " xOrigin " + xOrigin);
+    if (scaleStart < tickTime) {
+      while (scaleStart < tickTime) {
+        tickTime -= timeDelta;
+        xOrigin += (double) (timeScale * timeDelta);
+//         System.err.println( "scaleStart < " + scaleStart + " tickTime " + tickTime +
+//                             " xOrigin " + xOrigin);
+      }
+    } else {
+      while (scaleStart > tickTime) {
+        tickTime += timeDelta;
+        xOrigin -= (double) (timeScale * timeDelta);
+//         System.err.println( "scaleStart > " + scaleStart + " tickTime " + tickTime +
+//                             " xOrigin " + xOrigin);
+      }
     }
     if (zoomFactor == 1) {
       xOriginNoZoom = (int) xOrigin;
