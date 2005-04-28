@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: build.xml,v 1.20 2005-01-20 21:00:52 meboyce Exp $ -->
+<project name="PlanWorks" default="compile" basedir=".">
+    <description>
+        Planworks Build Targets
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" value="src"/>
+  <property name="build" value="classes"/>
+  <property name="dist"  value="jars"/>
+  <!-- show line numbers in stack trace -->
+  <property name="debug"  value="true"/>
+  <!-- property name="deprecation"  value="off"/ -->
+  <property name="deprecation"  value="true"/>
+  <property environment="env"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <!-- echo message="init completed"/ -->
+  </target>
+
+  <target name="optCompile" depends="init">
+    <javac srcdir="${src}" destdir="${build}" debug="off" optimize="on">
+        <classpath>
+          <pathelement location="${jgo.home}/JGo.jar"/>
+          <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jgo.home}"/>
+          <pathelement location="${jfcunit.home}/junit.jar"/>
+          <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+          <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
+	  <pathelement location="${antlr.home}/antlr.jar"/>
+	  <pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
+       </classpath> 
+    </javac>
+    <echo message="optimized compile completed"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile 'src' tree into 'classes' tree" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" debug="${debug}" deprecation="${deprecation}">
+       <classpath>
+          <pathelement location="${jgo.home}/JGo.jar"/>
+          <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jgo.home}"/>
+          <pathelement location="${jfcunit.home}/junit.jar"/>
+          <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+          <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
+	  <pathelement location="${antlr.home}/antlr.jar"/>
+	  <pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
+       </classpath>
+    </javac>
+    <echo message="compile completed"/>
+  </target>
+
+  <target name="dist" depends="clean,compile"
+        description="NOT USED: generate a jar file in 'jars' directory" >
+    <!-- Put everything in ${build} into the planWorks.jar file -->
+    <jar jarfile="${dist}/planWorks.jar" basedir="${build}"/>
+  </target>
+
+  <target name="clean"
+        description="delete the 'classes' directory tree" >
+    <!-- Delete the ${build} directory trees -->
+    <delete dir="${build}"/>
+    <echo message="clean class files completed"/>
+  </target>
+
+  <target name="createJars"
+        description="create PlanWorksDB.jar and PlanWorksPlugin.jar" >
+    <jar destfile="${dist}/PlanWorksDB.jar" basedir="${build}"
+      includes="gov/nasa/arc/planworks/db/*.class 
+                gov/nasa/arc/planworks/db/impl/PwProjectImpl.class
+                gov/nasa/arc/planworks/db/util/ContentSpec.class
+                gov/nasa/arc/planworks/util/CreatePartialPlanException.class
+                gov/nasa/arc/planworks/util/ProgressMonitorException.class 
+                gov/nasa/arc/planworks/util/ResourceNotFoundException.class 
+                gov/nasa/arc/planworks/viz/viewMgr/ViewableObject.class"
+    />
+    <echo message=" PlanWorksDB.jar completed"/>
+
+    <jar destfile="${dist}/PlanWorksPlugin.jar" basedir="${build}"
+      includes="gov/nasa/arc/planworks/plugin/PwPluginEvent.class
+                gov/nasa/arc/planworks/plugin/PwPluginListener.class"
+    />
+    <echo message=" PlanWorksPlugin.jar completed"/>
+  </target>
+
+  <target name="createJNI" depends="compile"
+        description="create the JNI interface to Planners">
+    <delete file="${integration.home}/PlannerControlJNI.h"/>
+    <javah outputFile="${integration.home}/PlannerControlJNI.h"
+             classpath="${build}" class="gov.nasa.arc.planworks.PlannerControlJNI"/>
+
+    <echo message="Creating: ${integration.home}/PlannerControlJNI.h"/>
+
+    <exec dir="${integration.home}" executable="chmod">
+      <arg value="a+x"/>
+      <arg value="makeJNI.${os}"/>
+    </exec>
+    <exec dir="${integration.home}" executable="${integration.home}/makeJNI.${os}"/>
+       
+
+  </target>
+
+</project>
