@@ -1,0 +1,7 @@
+echo "Compiling PlannerControlJNI.cc..."
+g++ -c  -o PlannerControlJNI.o -fPIC -g3 -Wall \
+             -I${JAVA_HOME}/include -I${JAVA_HOME}/include/solaris  \
+             PlannerControlJNI.cc
+
+echo "Linking shared library libPlannerControlJNI.so..."
+g++ -shared -o libPlannerControlJNI.so PlannerControlJNI.o  -ldl
