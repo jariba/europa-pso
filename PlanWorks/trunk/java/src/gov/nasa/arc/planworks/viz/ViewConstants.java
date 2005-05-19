@@ -155,6 +155,12 @@ public abstract class ViewConstants {
    */
   public static final int EMPTY_SLOT_WIDTH = 10;
 
+  /**
+   * constant <code>TIMELINE_EXTEND_HORIZON_UNITS</code>
+   *
+   */
+  public static final int TIMELINE_EXTEND_HORIZON_UNITS = 2;
+
   // Temporal Extent View
 
   /**

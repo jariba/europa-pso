@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.63 2004-10-07 20:19:12 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.64 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -303,10 +303,11 @@ public class TemporalExtentView extends PartialPlanView  {
     this.computeFontMetrics( this);
 
     boolean doFreeTokens = true;
-    jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    boolean isTimelineView = false;
+    jGoRulerView.collectAndComputeTimeScaleMetrics( isTimelineView, doFreeTokens, this);
     // in case zoomFactor != 1
     if (zoomFactor > 1) {
-      jGoRulerView.computeTimeScaleMetrics( zoomFactor, this);
+      jGoRulerView.computeTimeScaleMetrics( isTimelineView, zoomFactor, this);
     }
     jGoRulerView.createTimeScale();
 
@@ -369,7 +370,8 @@ public class TemporalExtentView extends PartialPlanView  {
         try {
           ViewGenerics.setRedrawCursor( viewFrame);
           // redraw jGoRulerView, in case zoomFactor changed
-          jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
+          boolean isTimelineView = false;
+          jGoRulerView.computeTimeScaleMetrics( isTimelineView, TemporalExtentView.this.getZoomFactor(),
                                                 TemporalExtentView.this);
           jGoRulerView.createTimeScale();
 

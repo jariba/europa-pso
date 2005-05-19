@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineViewTimelineNode.java,v 1.7 2004-07-13 23:54:09 taylor Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.8 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks
 //
@@ -69,6 +69,7 @@ public class TimelineViewTimelineNode extends TextNode implements OverviewToolTi
   private String timelineName;
   private PwTimeline timeline;
   private PwObject object;
+  private int nodeWidth;
   private Color backgroundColor;
   private TimelineView timelineView;
 
@@ -91,33 +92,36 @@ public class TimelineViewTimelineNode extends TextNode implements OverviewToolTi
     this.timelineName = timelineName;
     this.timeline = timeline;
     this.object = object;
+    this.nodeWidth = 0;  //ignore forced nodeWidth
     this.backgroundColor = backgroundColor;
     this.timelineView = timelineView;
     // System.err.println( "TimelineNode: timelineName " + timelineName);
     this.slotNodeList = new ArrayList();
 
-    configure( timelineLocation, backgroundColor);
+    configure( timelineLocation, nodeWidth, backgroundColor);
 
   } // end constructor
 
 
   public TimelineViewTimelineNode(final String timelineName, final PwTimeline timeline, 
-                                  final Point timelineLocation, final Color backgroundColor, 
+                                  final Point timelineLocation, final int nodeWidth, 
+                                  final Color backgroundColor, 
                                   final TimelineView timelineView) {
     super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
     this.object = null;
+    this.nodeWidth = nodeWidth;
     this.backgroundColor = backgroundColor;
     this.timelineView = timelineView;
     // System.err.println( "TimelineNode: timelineName " + timelineName);
     this.slotNodeList = new ArrayList();
 
-    configure( timelineLocation, backgroundColor);
+    configure( timelineLocation, nodeWidth, backgroundColor);
 
   }
 
-  private final void configure( Point timelineLocation, Color backgroundColor) {
+  private final void configure( Point timelineLocation, int forcedNodeWidth, Color backgroundColor) {
     setBrush( JGoBrush.makeStockBrush( backgroundColor));
     getLabel().setEditable( false);
     getLabel().setBold( true);
@@ -129,8 +133,25 @@ public class TimelineViewTimelineNode extends TextNode implements OverviewToolTi
     getLeftPort().setVisible( false);
     getBottomPort().setVisible( false);
     getRightPort().setVisible( false);
-    setLocation( (int) timelineLocation.getX(), (int) timelineLocation.getY());
-    setInsets( NODE_INSETS);
+    if ( forcedNodeWidth <= 0) {
+      setLocation( (int) timelineLocation.getX(), (int) timelineLocation.getY());
+      setInsets( NODE_INSETS);
+    } else {
+      int newInset = forcedNodeWidth - 
+                   (int) (getSize().getWidth() - ViewConstants.TIMELINE_VIEW_INSET_SIZE);
+      newInset = (newInset / 2) + ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF;
+
+      setInsets( new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,   //top
+                             newInset,                                      //left
+                             ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,   //bottom
+                             newInset));                                    //right
+      setLocation( (int) timelineLocation.getX() - ViewConstants.TIMELINE_VIEW_INSET_SIZE + 2,
+                   (int) (timelineLocation.getY() - 3));
+    }
+//  System.err.println( "TimelineViewTimelineNode: configure: New node" + 
+//                      " width = " + this.getSize().getWidth());
+//  System.err.println( "TimelineViewTimeline: configure:  x = " + timelineLocation.getX() + 
+//                       "  y = " + timelineLocation.getY());
   } // end configure
 
   /**
