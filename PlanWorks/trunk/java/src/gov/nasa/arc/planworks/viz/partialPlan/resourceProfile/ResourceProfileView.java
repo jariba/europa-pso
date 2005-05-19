@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.31 2004-10-07 20:19:10 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.32 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -211,8 +211,9 @@ public class ResourceProfileView extends ResourceView  {
    */
   protected final void createTimeScaleView() {
     boolean doFreeTokens = false;
+    boolean isTimelineView = false;
     TimeScaleView timeScaleView = this.getJGoRulerView();
-    timeScaleView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    timeScaleView.collectAndComputeTimeScaleMetrics( isTimelineView, doFreeTokens, this);
     initialTimeScaleEnd = getTimeScaleEnd();
     if (unaryResource != null) {
 //       System.err.println( " createTimeScaleView: initialTimeScaleEnd " + initialTimeScaleEnd);
@@ -223,7 +224,7 @@ public class ResourceProfileView extends ResourceView  {
 //       System.err.println( " createTimeScaleView: setTimeScaleEnd " +
 //                           timeScaleView.getTimeScaleEnd());
        int zoomFactor = 1;
-      timeScaleView.computeTimeScaleMetrics( zoomFactor, this);
+      timeScaleView.computeTimeScaleMetrics( isTimelineView, zoomFactor, this);
     }
     timeScaleView.createTimeScale();
   } // end createTimeScaleView
@@ -680,7 +681,8 @@ public class ResourceProfileView extends ResourceView  {
             timeScaleView.setTimeScaleStart( minX.intValue());
             timeScaleView.setTimeScaleEnd( maxX.intValue());
             int zoomFactor = 1;
-            timeScaleView.computeTimeScaleMetrics( zoomFactor, profileView);
+            boolean isTimelineView = false;
+            timeScaleView.computeTimeScaleMetrics( isTimelineView, zoomFactor, profileView);
             timeScaleView.createTimeScale();
             profileScalingList = scalingList;
             profileView.redraw();

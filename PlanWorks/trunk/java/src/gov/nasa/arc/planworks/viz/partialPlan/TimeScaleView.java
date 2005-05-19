@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.15 2005-04-28 01:44:02 taylor Exp $
+// $Id: TimeScaleView.java,v 1.16 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -60,6 +60,7 @@ public class TimeScaleView extends JGoView  {
   private int timeScaleStart;
   private int timeScaleEnd;
   private int slotLabelMinLength;
+  private int slotNodeWidth;
   private int timeDelta;
   private int tickTime;
   private int xOriginNoZoom;
@@ -85,6 +86,7 @@ public class TimeScaleView extends JGoView  {
     this.partialPlanView = partialPlanView;
     maxSlots = 0;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
+    slotNodeWidth = ViewConstants.EMPTY_SLOT_WIDTH;
     this.timeScaleStart = DbConstants.PLUS_INFINITY_INT;
     this.timeScaleEnd = DbConstants.MINUS_INFINITY_INT;
   } // end constructor
@@ -135,6 +137,24 @@ public class TimeScaleView extends JGoView  {
   }
 
   /**
+   * <code>setStartXLoc</code>
+   *
+   * @param xLoc - <code>int</code> - 
+   */
+  public final void setStartXLoc( int xLoc) {
+    startXLoc = xLoc;
+  }
+
+  /**
+   * <code>setSlotNodeWidth</code>
+   *
+   * @param nodeWidth - <code>int</code> - 
+   */
+  public final void setSlotNodeWidth( int nodeWidth) {
+    slotNodeWidth = nodeWidth;
+  }
+
+  /**
    * <code>getTimeScaleWithZoom</code>
    *
    * @return - <code>double</code> - 
@@ -149,7 +169,8 @@ public class TimeScaleView extends JGoView  {
    * @param doFreeTokens - <code>boolean</code> - 
    * @param partPlanView - <code>PartialPlanView</code> - 
    */
-  public final void collectAndComputeTimeScaleMetrics( final boolean doFreeTokens,
+  public final void collectAndComputeTimeScaleMetrics( final boolean isTimelineView,
+                                                       final boolean doFreeTokens,
                                                        final PartialPlanView partPlanView) {
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
@@ -165,7 +186,7 @@ public class TimeScaleView extends JGoView  {
           PwSlot slot = (PwSlot) slotIterator.next();
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
-          // System.err.println("slot " + slot + " token " + token);
+//         System.err.println("slot " + slot + " token " + token); //FOR DEBUG
           if (token != null) { // skip empty slot
             slotCnt++;
             collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
@@ -187,7 +208,7 @@ public class TimeScaleView extends JGoView  {
     }
 
     int zoomFactor = 1;
-    computeTimeScaleMetrics( zoomFactor, partPlanView);
+    computeTimeScaleMetrics( isTimelineView, zoomFactor, partPlanView);
   } // end collectAndComputeTimeScaleMetrics
 
 
@@ -195,11 +216,11 @@ public class TimeScaleView extends JGoView  {
                                         final PwDomain endTimeIntervalDomain,
                                         final PwToken token) {
     int leftMarginTime = 0;
-//     System.err.println( "\ntoken " + token.getId().toString());
+//   System.err.println( "\ntoken " + token.getId().toString());
     if (startTimeIntervalDomain != null) {
-//        System.err.println( "collectTimeScaleMetrics start earliest " +
-//                           startTimeIntervalDomain.getLowerBound() + " start latest " +
-//                           startTimeIntervalDomain.getUpperBound());
+//      System.err.println( "collectTimeScaleMetrics start earliest " +
+//                         startTimeIntervalDomain.getLowerBound() + " start latest " +
+//                         startTimeIntervalDomain.getUpperBound());
       int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
       leftMarginTime = earliestTime;
       if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
@@ -217,9 +238,9 @@ public class TimeScaleView extends JGoView  {
       }
     }
     if (endTimeIntervalDomain != null) {
-//       System.err.println( "collectTimeScaleMetrics end earliest " +
-//                           endTimeIntervalDomain.getLowerBound() + " end latest " +
-//                           endTimeIntervalDomain.getUpperBound());
+//     System.err.println( "collectTimeScaleMetrics end earliest " +
+//                         endTimeIntervalDomain.getLowerBound() + " end latest " +
+//                         endTimeIntervalDomain.getUpperBound());
       int latestTime = endTimeIntervalDomain.getUpperBoundInt();
       if (latestTime != DbConstants.PLUS_INFINITY_INT) {
         if (latestTime > timeScaleEnd) {
@@ -233,8 +254,8 @@ public class TimeScaleView extends JGoView  {
         timeScaleEnd = earliestTime;
       }
     }
-//     System.err.println( "collectTimeScaleMetrics timeScaleStart " + timeScaleStart +
-//                         " timeScaleEnd " + timeScaleEnd);
+//   System.err.println( "collectTimeScaleMetrics timeScaleStart " + timeScaleStart +
+//                       " timeScaleEnd " + timeScaleEnd);
   } // end collectTimeScaleMetrics
 
   private void collectFreeTokenMetrics() {
@@ -243,15 +264,15 @@ public class TimeScaleView extends JGoView  {
     while (tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
       if (token.isFree()) {
-//         System.err.println( "\nfree token " + token.getId().toString());
+//       System.err.println( "\nfree token " + token.getId().toString());
         PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
         PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
 
         int leftMarginTime = 0;
         if (startTimeIntervalDomain != null) {
-//           System.err.println( "collectFreeTokenMetrics earliest " +
-//                               startTimeIntervalDomain.getLowerBound() + " latest " +
-//                               startTimeIntervalDomain.getUpperBound());
+//         System.err.println( "collectFreeTokenMetrics earliest " +
+//                             startTimeIntervalDomain.getLowerBound() + " latest " +
+//                             startTimeIntervalDomain.getUpperBound());
           int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
           leftMarginTime = earliestTime;
           if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
@@ -270,9 +291,9 @@ public class TimeScaleView extends JGoView  {
           }
         }
         if (endTimeIntervalDomain != null) {
-//           System.err.println( "collectFreeTokenMetrics latest " +
-//                               endTimeIntervalDomain.getUpperBound() + " earliest " +
-//                               endTimeIntervalDomain.getLowerBound());
+//        System.err.println( "collectFreeTokenMetrics latest " +
+//                             endTimeIntervalDomain.getUpperBound() + " earliest " +
+//                             endTimeIntervalDomain.getLowerBound());
           int latestTime = endTimeIntervalDomain.getUpperBoundInt();
           if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
               (latestTime != DbConstants.MINUS_INFINITY_INT) &&
@@ -286,8 +307,8 @@ public class TimeScaleView extends JGoView  {
             timeScaleEnd = earliestTime;
           }
         }
-//         System.err.println( "collectFreeTokenMetrics timeScaleStart " + timeScaleStart + 
-//                             " timeScaleEnd " + timeScaleEnd);
+//       System.err.println( "collectFreeTokenMetrics timeScaleStart " + timeScaleStart + 
+//                           " timeScaleEnd " + timeScaleEnd);
       }
     }
   } // end collectFreeTokenMetrics
@@ -298,35 +319,48 @@ public class TimeScaleView extends JGoView  {
    * @param zoomFactor - <code>int</code> - 
    * @param partPlanView - <code>PartialPlanView</code> - 
    */
-  public void computeTimeScaleMetrics( final int zoomFactor,
+  public void computeTimeScaleMetrics( final boolean isTimelineView,
+                                       final int zoomFactor,
                                        final PartialPlanView partPlanView) {
-    int endXLoc = Math.max( startXLoc +
-                            (maxSlots * slotLabelMinLength *
-                             partPlanView.getFontMetrics().charWidth( 'A')),
-                            ViewConstants.TEMPORAL_MIN_END_X_LOC);
-    double xLocRange =  ((double) (endXLoc - startXLoc)) / (double) zoomFactor;
-    double timeScale = xLocRange / ((double) (timeScaleEnd - timeScaleStart));
+    int endXLoc;
+    double xLocRange;
+    double timeScale;
+    if ( isTimelineView == true) {
+      endXLoc = Math.max( startXLoc + slotNodeWidth * (timeScaleEnd - timeScaleStart),
+                          ViewConstants.TEMPORAL_MIN_END_X_LOC);
+      xLocRange =  ((double) (endXLoc - startXLoc)) / (double) zoomFactor;
+      timeScale = xLocRange / ((double) (timeScaleEnd - timeScaleStart));
+    } else {
+      endXLoc = Math.max( startXLoc +
+                          (maxSlots * slotLabelMinLength *
+                           partPlanView.getFontMetrics().charWidth( 'A')),
+                          ViewConstants.TEMPORAL_MIN_END_X_LOC);
+      xLocRange =  ((double) (endXLoc - startXLoc)) / (double) zoomFactor;
+      timeScale = xLocRange / ((double) (timeScaleEnd - timeScaleStart));
+    }
     if (zoomFactor == 1) {
       timeScaleNoZoom = timeScale;
     }
     timeScaleWithZoom = timeScale;
-//     System.err.println( "zoomFactor " + zoomFactor + " timeScaleNoZoom " + timeScaleNoZoom +
-//                         " timeScaleWithZoom " + timeScaleWithZoom);
-//     System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
-//                        " endXLoc " + endXLoc);
-//     System.err.println( "TimeScaleView time scale: " + timeScaleStart + " " +
-//                         timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
+//    System.err.println( "zoomFactor " + zoomFactor + " timeScaleNoZoom " + timeScaleNoZoom +
+//                        " timeScaleWithZoom " + timeScaleWithZoom);
+//    System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
+//                       " endXLoc " + endXLoc);
+//    System.err.println( "TimeScaleView time scale: " + timeScaleStart + " " +
+//                        timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
     int timeScaleRange = timeScaleEnd - timeScaleStart;
     timeDelta = 1;
-    int maxIterationCnt = TIME_DELTA_INTERATION_CNT, iterationCnt = 0;
-    while ((timeDelta * maxSlots) < timeScaleRange) {
-      timeDelta *= 2 * zoomFactor;
+    if ( isTimelineView == false) {
+      int maxIterationCnt = TIME_DELTA_INTERATION_CNT, iterationCnt = 0;
+      while ((timeDelta * maxSlots) < timeScaleRange) {
+        timeDelta *= 2 * zoomFactor;
 //       System.err.println( "range " + timeScaleRange + " maxSlots " +
 //                           maxSlots + " timeDelta " + timeDelta);
-      iterationCnt++;
-      if (iterationCnt > maxIterationCnt) {
-        iterationCntError( timeScaleRange, partPlanView);
-        return;
+        iterationCnt++;
+        if (iterationCnt > maxIterationCnt) {
+          iterationCntError( timeScaleRange, partPlanView);
+          return;
+        }
       }
     }
     tickTime = 0;

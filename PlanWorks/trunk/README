@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.143 2005-05-18 18:57:16 pdaley Exp $
+# $Id: README,v 1.144 2005-05-19 19:21:08 pdaley Exp $
 #
 
 NOTE: Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -15,12 +15,16 @@ The current known-good MySQL versions are:
 4.1.1
 4.1.7
 
-SUMMARY (PW_M_20)
+SUMMARY (PW_M_21)
 =================
 
+o Added two new views to the Timeline View to show EARLIEST and
+  LATEST timelines. These views are accessed via the right mouse
+  click pop-up window. The default window is the show INTERVAL
+  timeline view which is unchanged from prior releases.
+
 o GNATS PRs and CRs completed:
-  #2904: removed Decision View from menu
-  #2924: check for null rule path 
+  #2884: ground timeline view with min and max values
 
 CVS CHECKOUT
 ============
@@ -28,7 +32,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary above)
-  > cvs co -r PW_M_20 PlanWorks
+  > cvs co -r PW_M_21 PlanWorks
 
 
 PLATFORM REQUIREMENTS
@@ -161,6 +165,12 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+18may2005: Milestone 20
+=================
+o GNATS PRs and CRs completed:
+  #2904: removed Decision View from menu
+  #2924: check for null rule path 
 
 08december2004: Milestone 19 
 =================

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.24 2004-06-16 22:09:16 taylor Exp $
+// $Id: SlotNode.java,v 1.25 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
@@ -68,10 +69,10 @@ public class SlotNode extends TextNode implements OverviewToolTip {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
-    new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE);
+    new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,  // top
+                ViewConstants.TIMELINE_VIEW_INSET_SIZE,       // left
+                ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,  // bottom
+                ViewConstants.TIMELINE_VIEW_INSET_SIZE);      // right
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -86,10 +87,30 @@ public class SlotNode extends TextNode implements OverviewToolTip {
   private SlotNode previousSlotNode;
   private boolean isFirstSlot;
   private boolean isLastSlot;
+  private int forcedSlotWidth;
+  private int timelineDisplayMode;
   private TimelineView timelineView;
 
   private PwDomain startTimeIntervalDomain;
   private PwDomain endTimeIntervalDomain;
+  private int earliestStartTime;
+  private int latestStartTime;
+  private int earliestEndTime;
+  private int latestEndTime;
+  private int earliestDurationTime;
+  private int latestDurationTime;
+  private int startDurationTime;
+  private int endDurationTime;
+  private int startTime;
+  private int endTime;
+  private int horizonMin;
+  private int horizonMax;
+  private boolean isEarliestStartMinusInf;
+  private boolean isEarliestStartPlusInf;
+  private boolean isLatestStartPlusInf;
+  private boolean isEarliestEndMinusInf;
+  private boolean isEarliestEndPlusInf;   
+  private boolean isLatestEndPlusInf;
   private JGoText startTimeIntervalObject;
   private JGoText endTimeIntervalObject;
   private boolean isTimeLabelYLocLevel1;
@@ -108,11 +129,17 @@ public class SlotNode extends TextNode implements OverviewToolTip {
    * @param isFirstSlot - <code>boolean</code> - 
    * @param isLastSlot - <code>boolean</code> - 
    * @param backgroundColor - <code>Color</code> - 
+   * @param forcedSlotWidth - <code>int</code> - 
+   * @param horizonMin - <code>int</code> - 
+   * @param horizonMax - <code>int</code> - 
+   * @param timelineDisplayMode - <code>int</code> - 
    * @param timelineView - <code>TimelineView</code> - 
    */
   public SlotNode( String nodeLabel, PwSlot slot, PwTimeline timeline, Point slotLocation,
                    SlotNode previousSlotNode, boolean isFirstSlot, boolean isLastSlot,
-                   Color backgroundColor, TimelineView timelineView) {
+                   Color backgroundColor, int forcedSlotWidth, int horizonMin,
+                   int horizonMax, int timelineDisplayMode,
+                   TimelineView timelineView) {
     super( nodeLabel);
     // node label now contains \nkey=nnn
     token = slot.getBaseToken();
@@ -127,13 +154,22 @@ public class SlotNode extends TextNode implements OverviewToolTip {
     this.isFirstSlot = isFirstSlot;
     this.isLastSlot = isLastSlot;
     this.timelineView = timelineView;
+    this.forcedSlotWidth = forcedSlotWidth;
+    this.horizonMin = horizonMin;
+    this.horizonMax = horizonMax;
     this.startTimeIntervalObject = null;
     this.endTimeIntervalObject = null;
     this.viewListener = null;
+    this.timelineDisplayMode = timelineDisplayMode;
     // System.err.println( "SlotNode: predicateName " + predicateName);
-    configure( nodeLabel, slotLocation, backgroundColor);
 
-    renderTimeIntervals();
+    if (timelineDisplayMode == TimelineView.SHOW_INTERVALS) {
+      configure( nodeLabel, slotLocation, backgroundColor);
+      renderTimeIntervals();
+    } else {
+      renderGroundedSlotNode();
+      configure( nodeLabel, slotLocation, backgroundColor);
+    }
   } // end constructor
 
 
@@ -171,9 +207,37 @@ public class SlotNode extends TextNode implements OverviewToolTip {
     getLeftPort().setVisible( false);
     getBottomPort().setVisible( false);
     getRightPort().setVisible( false);
-    setLocation( (int) slotLocation.getX(), (int) slotLocation.getY());
-    setInsets( NODE_INSETS);
+    if (timelineDisplayMode == TimelineView.SHOW_INTERVALS) {
+      setLocation( (int) slotLocation.getX(), (int) slotLocation.getY());
+      setInsets( NODE_INSETS);
+    } else {
+      // setWidth() screws up the location, so use setInsets() to change 
+      // the size of the slot nodes. The label text is always shown even
+      // if the node should be smaller than the label. May need to pre-
+      // compute the length of the label and truncate it so that the
+      // size of the node is not affected.
+      int newInset = forcedSlotWidth * startDurationTime - 
+                     (int) this.getSize().getWidth() +  
+                     ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF;
+      newInset /= 2;
+      setInsets( new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,   //top
+                             newInset,                                      //left
+                             ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,   //bottom
+                             newInset));                                    //right
+      int augmentX = (startTime - horizonMin) * forcedSlotWidth;
+     
+      setLocation( (int) slotLocation.getX() + augmentX  - 
+                    ViewConstants.TIMELINE_VIEW_INSET_SIZE + 2, 
+                    (int) (slotLocation.getY() - 3));
+//    System.err.println( "SlotNode: configure:  augmented x = " + 
+//                        (int) (slotLocation.getX() + augmentX));
+
+    }
     setSelectable( true);
+//  System.err.println( "SlotNode: configure: " + nodeLabel + "    width = " + 
+//                      this.getSize().getWidth());
+//  System.err.println( "SlotNode: configure:  start x = " + slotLocation.getX() + 
+//                      "  y = " + slotLocation.getY());
   } // end configure
 
   /**
@@ -319,6 +383,105 @@ public class SlotNode extends TextNode implements OverviewToolTip {
     }
   } // end getXOffset
 
+
+  private void renderGroundedSlotNode() {
+
+    int yLoc;
+    startTimeIntervalDomain = slot.getStartTime();
+    endTimeIntervalDomain = slot.getEndTime();
+    boolean isFreeToken = false;
+
+    if ((startTimeIntervalDomain != null) && (endTimeIntervalDomain != null)) {
+      String earliestDurationString =
+        NodeGenerics.getShortestDuration( isFreeToken, token, startTimeIntervalDomain,
+                                          endTimeIntervalDomain);
+      String latestDurationString =
+        NodeGenerics.getLongestDuration( isFreeToken, token, startTimeIntervalDomain,
+                                         endTimeIntervalDomain);
+      earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
+      latestStartTime = startTimeIntervalDomain.getUpperBoundInt();
+      earliestEndTime = endTimeIntervalDomain.getLowerBoundInt();
+      latestEndTime = endTimeIntervalDomain.getUpperBoundInt();
+      checkIntervalDomains();
+      if (earliestDurationString.equals( DbConstants.MINUS_INFINITY)) {
+        earliestDurationTime = DbConstants.MINUS_INFINITY_INT;
+      } else if (earliestDurationString.equals( DbConstants.PLUS_INFINITY)) {      
+        earliestDurationTime = DbConstants.PLUS_INFINITY_INT;
+      } else {
+        earliestDurationTime = Integer.parseInt( earliestDurationString);
+      }
+      if (latestDurationString.equals( DbConstants.PLUS_INFINITY)) {
+        latestDurationTime = DbConstants.PLUS_INFINITY_INT;
+      } else if (latestDurationString.equals( DbConstants.MINUS_INFINITY)) {
+        latestDurationTime = DbConstants.MINUS_INFINITY_INT;
+      } else {
+        latestDurationTime = Integer.parseInt( latestDurationString);
+      }
+      startTime = earliestStartTime;
+      endTime = latestEndTime;
+      startDurationTime = earliestDurationTime;
+      endDurationTime = latestDurationTime;
+
+      if (timelineDisplayMode == TimelineView.SHOW_EARLIEST) {
+        endTime = earliestEndTime;
+        if (isEarliestStartMinusInf || isEarliestStartPlusInf || isEarliestEndMinusInf) {
+          //startDurationTime = DbConstants.PLUS_INFINITY_INT;
+          startDurationTime = horizonMax - earliestStartTime;
+        } else {
+          startDurationTime = earliestEndTime - earliestStartTime;
+        }
+        endDurationTime = startDurationTime;
+      } else if (timelineDisplayMode == TimelineView.SHOW_LATEST) {
+        startTime = latestStartTime;
+        if (isLatestStartPlusInf || isLatestEndPlusInf) {
+          //startDurationTime = DbConstants.PLUS_INFINITY_INT;
+          startDurationTime = horizonMax - latestStartTime;
+        } else {
+          startDurationTime = latestEndTime - latestStartTime;
+        }
+        endDurationTime = startDurationTime;
+      }
+//    System.err.println( "startTime " + startTime + " endTime " + endTime);
+//    System.err.println( "startDurationTime " + startDurationTime + " endDurationTime " +
+//                     endDurationTime);
+
+    }
+
+  }
+
+  private void checkIntervalDomains() {
+    isEarliestStartMinusInf = false;
+    isEarliestStartPlusInf = false;
+    if (earliestStartTime == DbConstants.MINUS_INFINITY_INT) {
+      isEarliestStartMinusInf = true;
+      //earliestStartTime = temporalExtentView.getTimeScaleStart();
+    } else if (earliestStartTime == DbConstants.PLUS_INFINITY_INT) {
+      isEarliestStartPlusInf = true;
+      //earliestStartTime = temporalExtentView.getTimeScaleEnd();
+    }
+                                                                           
+    isLatestStartPlusInf = false;
+    if (latestStartTime == DbConstants.PLUS_INFINITY_INT) {
+      isLatestStartPlusInf = true;
+      //latestStartTime = temporalExtentView.getTimeScaleEnd();
+    }
+                                                                           
+    isEarliestEndMinusInf = false;
+    isEarliestEndPlusInf = false;
+    if (earliestEndTime == DbConstants.MINUS_INFINITY_INT) {
+      isEarliestEndMinusInf = true;
+      //earliestEndTime = temporalExtentView.getTimeScaleStart();
+    } else if (earliestEndTime == DbConstants.PLUS_INFINITY_INT) {
+      isEarliestEndPlusInf = true;
+      //earliestEndTime = temporalExtentView.getTimeScaleEnd();
+    }
+                                                                           
+    isLatestEndPlusInf = false;
+    if (latestEndTime == DbConstants.PLUS_INFINITY_INT) {
+      isLatestEndPlusInf = true;
+      //latestEndTime = temporalExtentView.getTimeScaleEnd();
+    }
+  } // end checkIntervalDomains
 
   /**
    * <code>getToolTipText</code>

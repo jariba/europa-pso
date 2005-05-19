@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.70 2004-10-07 20:19:13 taylor Exp $
+// $Id: TimelineView.java,v 1.71 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -17,9 +17,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseAdapter;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
@@ -29,8 +32,10 @@ import java.util.ListIterator;
 import javax.swing.BoxLayout;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -38,6 +43,8 @@ import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoListPosition;
 import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
@@ -64,6 +71,7 @@ import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
+import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -81,22 +89,39 @@ public class TimelineView extends PartialPlanView {
 
   private static Object staticObject = new Object();
 
+  protected static final int SHOW_INTERVALS = 0;
+  protected static final int SHOW_EARLIEST = 1;
+  protected static final int SHOW_LATEST = 2;
+                                                                           
+  private static final String SHOW_INTERVALS_LABEL = "Show Intervals";
+  private static final String SHOW_EARLIEST_LABEL = "Show Earliest";
+  private static final String SHOW_LATEST_LABEL = "Show Latest";
+                                                                           
   private static final double LABEL_MIN_LEN_FIRST_SLOT_FACTOR = 1.25;
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private TimelineJGoView jGoView;
+  private TimeScaleView jGoRulerView;
+  private RulerPanel rulerPanel;
+  private int horizonStart;
+  private int horizonEnd;
+  private int startXLoc;
+  private int startYLoc;
   private JGoDocument jGoDocument;
   private List timelineNodeList; // element TimelineNode
   private List freeTokenNodeList; // element TokenNode
   private int slotLabelMinLength;
+  private int slotNodeMaxWidth;
+  private int timelineNodeMaxWidth;
   private JGoArea mouseOverNode;
   private boolean isAutoSnapEnabled;
   private boolean isStepButtonView;
   private Integer focusNodeId;
   private ProgressMonitorThread progressMonThread;
-
+  private int maxCellRow;
+  private int timelineDisplayMode;
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -198,6 +223,11 @@ public class TimelineView extends PartialPlanView {
   private void timelineViewInit(ViewableObject partialPlan, ViewSet viewSet) {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
+
+    startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
+    startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    horizonStart = 0;
+    horizonEnd = 0;
     ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
@@ -216,6 +246,21 @@ public class TimelineView extends PartialPlanView {
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
+
+    jGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
+    rulerPanel = new RulerPanel();
+    rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
+                                                                                  
+    int startY = 2;
+    jGoRulerView = new TimeScaleView( startXLoc, startY, (PwPartialPlan) partialPlan, this);
+    jGoRulerView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+    jGoRulerView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
+    jGoRulerView.validate();
+    jGoRulerView.setVisible( false );
+                                                                                
+    rulerPanel.add( jGoRulerView, BorderLayout.NORTH);
+    add( rulerPanel, BorderLayout.SOUTH);
+
     this.setVisible( true);
   }
 
@@ -255,12 +300,28 @@ public class TimelineView extends PartialPlanView {
 
     this.computeFontMetrics( this);
 
+                                                                          
     jGoDocument = jGoView.getDocument();
     jGoDocument.addDocumentListener( createDocListener());
 
     // create all nodes
     boolean isRedraw = false;
     boolean isValid = renderTimelineAndSlotNodes( isRedraw);
+    boolean doFreeTokens = false;
+    boolean isTimelineView = true;
+    jGoRulerView.collectAndComputeTimeScaleMetrics( isTimelineView, doFreeTokens, this);
+    horizonStart = jGoRulerView.getTimeScaleStart();
+    horizonEnd = jGoRulerView.getTimeScaleEnd();
+    //Extend the horizon beyond the start of the last node and adjust the ruler accordingly
+    horizonEnd += ViewConstants.TIMELINE_EXTEND_HORIZON_UNITS;
+    jGoRulerView.setTimeScaleEnd( horizonEnd );
+    
+    // in case zoomFactor != 1
+    if (zoomFactor > 1) {
+      jGoRulerView.computeTimeScaleMetrics( isTimelineView, zoomFactor, this);  
+    }
+    jGoRulerView.createTimeScale();
+
     if (isValid) {
       if (! isStepButtonView) {
         expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
@@ -315,6 +376,13 @@ public class TimelineView extends PartialPlanView {
         }
         try {
           ViewGenerics.setRedrawCursor( viewFrame);
+          // redraw jGoRulerView, in case zoomFactor changed
+          boolean isTimelineView = true;
+          jGoRulerView.computeTimeScaleMetrics( isTimelineView, TimelineView.this.getZoomFactor(),
+                                                TimelineView.this);
+          jGoRulerView.createTimeScale();
+          horizonStart = jGoRulerView.getTimeScaleStart();
+          horizonEnd = jGoRulerView.getTimeScaleEnd();
 
           boolean isRedraw = true;
           renderTimelineAndSlotNodes( isRedraw);
@@ -348,6 +416,10 @@ public class TimelineView extends PartialPlanView {
     if (isValid) {
       boolean showDialog = true;
       isContentSpecRendered( ViewConstants.TIMELINE_VIEW, showDialog);
+      if (timelineDisplayMode != SHOW_INTERVALS) {
+        // equalize view widths so scrollbars are equal
+        equalizeViewWidths( isRedraw);
+      }
     }
     return isValid;
   } // end renderTimelineAndSlotNodes
@@ -426,14 +498,57 @@ public class TimelineView extends PartialPlanView {
 
   private boolean createTimelineAndSlotNodes( boolean isRedraw) {
     int numTimelines = 0;
+    int maxTimelineNodeWidth = 0;
+    int maxSlotNodeWidth = 0;
+    //get width of longest timeline node
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       if (object.getObjectType() == DbConstants.O_TIMELINE) {
+        PwTimeline timeline = (PwTimeline) object;
+        String timelineName = timeline.getName();
+        String parentName = null;
+        if(timeline.getParent() != null) {
+          parentName = timeline.getParent().getName();
+        }
+        String timelineNodeName = parentName + " : " + timelineName;
+        String timelineKey = "timeline key=" + timeline.getId().toString();
+        int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.fontMetrics,
+                                                                     timelineNodeName),
+                                  SwingUtilities.computeStringWidth( this.fontMetrics,
+                                                                     timelineKey));
+        if (nodeWidth > maxTimelineNodeWidth) {
+          maxTimelineNodeWidth = nodeWidth;
+        }
+        //get width of longest slot node
+        List slotList = timeline.getSlotList();
+        Iterator slotIterator = slotList.iterator();
+        while (slotIterator.hasNext()) {
+          PwSlot slot = (PwSlot) slotIterator.next();
+          PwToken token = slot.getBaseToken();
+          if ( token != null) {
+            String slotNodeLabel = token.getPredicateName() + 
+                                   "(" + slot.getTokenList().size() + ")";
+            String keyValue = "\nslot key=" + slot.getId().toString();
+            nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.fontMetrics,
+                                                                     slotNodeLabel),
+                                  SwingUtilities.computeStringWidth( this.fontMetrics,
+                                                                     keyValue));
+            if (nodeWidth > maxSlotNodeWidth) {
+              maxSlotNodeWidth = nodeWidth;
+            }
+//          System.err.println( "createTimelineAndSlotNodes: maxSlotNodeWidth " + maxSlotNodeWidth);
+          }
+        }
         numTimelines++;
       }
     }
+//  System.err.println( "createTimelineAndSlotNodes: numTimelines " + numTimelines + 
+//                      "   maxTimelineNodeWidth " + maxTimelineNodeWidth);
+//  System.err.println( "createTimelineAndSlotNodes: maxSlotNodeWidth " + maxSlotNodeWidth);
+    slotNodeMaxWidth = maxSlotNodeWidth + ViewConstants.TIMELINE_VIEW_INSET_SIZE;
+    timelineNodeMaxWidth = maxTimelineNodeWidth + ViewConstants.TIMELINE_VIEW_INSET_SIZE;
     numTimelines++; // for free tokens
     String title = "Rendering";
     if (isRedraw) {
@@ -449,6 +564,10 @@ public class TimelineView extends PartialPlanView {
     boolean isValid = true;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    //time scale starts after timeline nodes
+    jGoRulerView.setStartXLoc(x + timelineNodeMaxWidth);
+    jGoRulerView.setSlotNodeWidth( slotNodeMaxWidth );
+
     objectIterator = objectList.iterator();
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
@@ -467,8 +586,8 @@ public class TimelineView extends PartialPlanView {
         timelineLabel += timelineName + "\ntimeline key=" + timeline.getId().toString();
         Color timelineColor = getTimelineColor(timeline.getId());
         TimelineViewTimelineNode timelineNode =
-          new TimelineViewTimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, 
-                                       this);
+          new TimelineViewTimelineNode(timelineLabel, timeline, new Point(x, y), maxTimelineNodeWidth,
+                                       timelineColor, this);
         timelineNodeList.add(timelineNode);
         jGoDocument.addObjectAtTail(timelineNode);
         x += timelineNode.getSize().getWidth();
@@ -562,9 +681,14 @@ public class TimelineView extends PartialPlanView {
       }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwToken token = slot.getBaseToken();
-//       System.err.println( "createSlotNodes: base token " + token.getId() + " " +
-//                           token.toString());
+//    if (token != null) {
+//      System.err.println( "createSlotNodes: base token " + token.getId() + " " +
+//                         token.toString());
+//    }
       if ((token == null) && (isFirstSlot || isLastSlot)) {
+//      if ( isFirstSlot) {
+//        System.err.println( "createSlotNodes: First Slot is empty " );
+//      }
         // discard leading and trailing empty slots (planworks/test/data/emptySlots)
       } else {
         // check for empty slots - always show them
@@ -573,17 +697,23 @@ public class TimelineView extends PartialPlanView {
           String slotNodeLabel = getSlotNodeLabel( token, slot, isFirstSlot);
           slotNode = new SlotNode( slotNodeLabel, slot, timeline, new Point( x, y),
                                    previousSlotNode, isFirstSlot, isLastSlot,
-                                   backgroundColor, this);
+                                   backgroundColor, slotNodeMaxWidth, horizonStart, horizonEnd,
+                                   timelineDisplayMode, this);
           timelineNode.addToSlotNodeList( slotNode);
-          // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
+//        System.err.println( "createSlotNodes: x " + x + " y " + y + " width " +
+//                         slotNode.getSize().getWidth());
           jGoDocument.addObjectAtTail( slotNode);
           previousSlotNode = slotNode;
           // x += slotNode.getSize().getWidth();
           // SlotNode code alters location due to Content Spec filtering
           // System.err.println( "old x " + (x + (int) slotNode.getSize().getWidth()));
-          x = (int) (slotNode.getLocation().getX() + slotNode.getSize().getWidth()) +
-            ViewConstants.TIMELINE_VIEW_INSET_SIZE - 2;
-          // System.err.println( "new x " + x);
+          if ( timelineDisplayMode == SHOW_INTERVALS ) {
+            //In show intervals mode compute the position of the next node.
+            //Otherwise, the position of the node will be computed by the slot node.
+            x = (int) (slotNode.getLocation().getX() + slotNode.getSize().getWidth()) +
+              ViewConstants.TIMELINE_VIEW_INSET_SIZE - 2;
+          }
+//        System.err.println( "createSlotNodes: new x = " + x + "\n");
           isFirstSlot = false;
         }
       }
@@ -693,25 +823,25 @@ public class TimelineView extends PartialPlanView {
     return continueRendering;
   } // end outputNonMonotonicError
 
-  // make all timeline nodes the same width
-  private int computeTimelineNodesWidth( List timelineList, String objectName) {
-    int maxNodeWidth = 0;
-    Iterator timelineIterator = timelineList.iterator();
-    while (timelineIterator.hasNext()) {
-      PwTimeline timeline = (PwTimeline) timelineIterator.next();
-      String timelineName = timeline.getName();
-      String timelineNodeName = objectName + " : " + timelineName;
-      String timelineKey = "timeline key=" + timeline.getId().toString();
-      int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.fontMetrics,
-                                                                   timelineNodeName),
-                                SwingUtilities.computeStringWidth( this.fontMetrics,
-                                                                   timelineKey));
-      if (nodeWidth > maxNodeWidth) {
-        maxNodeWidth = nodeWidth;
-      }
-    }
-    return maxNodeWidth + 2 *  ViewConstants.TIMELINE_VIEW_INSET_SIZE;
-  } // end computeTimelineNodesWidth
+// make all timeline nodes the same width
+//  private int computeTimelineNodesWidth( List timelineList, String objectName) {
+//    int maxNodeWidth = 0;
+//    Iterator timelineIterator = timelineList.iterator();
+//    while (timelineIterator.hasNext()) {
+//      PwTimeline timeline = (PwTimeline) timelineIterator.next();
+//      String timelineName = timeline.getName();
+//      String timelineNodeName = objectName + " : " + timelineName;
+//      String timelineKey = "timeline key=" + timeline.getId().toString();
+//      int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.fontMetrics,
+//                                                                   timelineNodeName),
+//                                SwingUtilities.computeStringWidth( this.fontMetrics,
+//                                                                   timelineKey));
+//      if (nodeWidth > maxNodeWidth) {
+//        maxNodeWidth = nodeWidth;
+//      }
+//    }
+//    return maxNodeWidth + 2 *  ViewConstants.TIMELINE_VIEW_INSET_SIZE;
+//  } // end computeTimelineNodesWidth
 
 
   /**
@@ -725,6 +855,8 @@ public class TimelineView extends PartialPlanView {
    * @return - <code>String</code> - 
    */
   public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isFirstSlot) {
+    PwDomain endTimeIntervalDomain = slot.getEndTime();
+    int endTime = endTimeIntervalDomain.getUpperBoundInt();
     StringBuffer label = null;
     String keyValue = "\nslot key=" + slot.getId().toString();
     if (token == null) { // empty slot
@@ -733,6 +865,10 @@ public class TimelineView extends PartialPlanView {
       label = new StringBuffer( token.getPredicateName());
       label.append( " (").append( String.valueOf( slot.getTokenList().size()));
       label.append( ")");
+    }
+    if ( timelineDisplayMode == SHOW_LATEST && endTime == DbConstants.PLUS_INFINITY_INT) {
+      label.append( "      ---> ");
+      label.append( DbConstants.PLUS_INFINITY_UNIC);
     }
     int labelMinLength = slotLabelMinLength;
     PwDomain startTimeIntervalDomain = slot.getStartTime();
@@ -806,11 +942,143 @@ public class TimelineView extends PartialPlanView {
   } // end iterateOverJGoDocument
 
 
+  // write a line at the max horizontal timeline in each view, and
+  // at max vertical timeline in jGoView
+  private void equalizeViewWidths( boolean isRedraw) {
+    Dimension timelineViewDocument = jGoView.getDocumentSize();
+    Dimension rulerViewDocument = jGoRulerView.getDocumentSize();
+//  System.err.println( "timelineViewDocumentWidth B" + timelineViewDocument.getWidth() +
+//                      " rulerViewDocumentWidth B" + rulerViewDocument.getWidth());
+    int xRulerMargin = ViewConstants.TIMELINE_VIEW_X_INIT;
+    int jGoDocBorderWidth = ViewConstants.JGO_DOC_BORDER_WIDTH;
+    if (isRedraw) {
+      xRulerMargin = 0;
+    }
+    int maxWidth = Math.max( (int) timelineViewDocument.getWidth() - jGoDocBorderWidth,
+                             (int) rulerViewDocument.getWidth() + xRulerMargin -
+                             jGoDocBorderWidth);
+//  System.err.println( "maxWidth " + maxWidth);
+    JGoStroke maxViewWidthPoint = new JGoStroke();
+    maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
+    maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
+    // make mark invisible
+    maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                          ViewConstants.VIEW_BACKGROUND_COLOR));
+    jGoView.getDocument().addObjectAtTail( maxViewWidthPoint);
+    // always put mark at max y location, so on redraw jGoRulerView does not expand
+    JGoStroke maxViewHeightPoint = new JGoStroke();
+    int maxYLoc = startYLoc + ((maxCellRow + 1) *
+                               ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
+    maxViewHeightPoint.addPoint( maxWidth, maxYLoc);
+    maxViewHeightPoint.addPoint( maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT,
+                                 maxYLoc);
+    // make mark invisible
+    maxViewHeightPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                           ViewConstants.VIEW_BACKGROUND_COLOR));
+    jGoView.getDocument().addObjectAtTail( maxViewHeightPoint);
+                                                                                             
+    if (! isRedraw ) {
+      maxViewWidthPoint = new JGoStroke();
+      maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
+      maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
+      // make mark invisible
+      maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                            ViewConstants.VIEW_BACKGROUND_COLOR));
+      jGoRulerView.getDocument().addObjectAtTail( maxViewWidthPoint);
+    }
+//     timelineViewDocument = jGoView.getDocumentSize();
+//     rulerViewDocument = jGoRulerView.getDocumentSize();
+//     System.err.println( "timelineViewDocumentWidth A" + timelineViewDocument.getWidth() +
+//                         " rulerViewDocumentWidth A" + rulerViewDocument.getWidth());
+  } // end equalizeViewWidths
+                                                                                             
+
+
+  /**
+   * <code>RulerPanel</code> - require ruler view panel to be of fixed height
+   *
+   */
+  class RulerPanel extends JPanel {
+                                                                                  
+    /**
+     * <code>RulerPanel</code> - constructor
+     *
+     */
+    public RulerPanel() {
+      super();
+    }
+                                                                                  
+    /**
+     * <code>getMinimumSize</code>
+     *
+     * @return - <code>Dimension</code> -
+     */
+    public Dimension getMinimumSize() {
+      return new Dimension( (int) TimelineView.this.getSize().getWidth(),
+                            (int) jGoRulerView.getDocumentSize().getHeight() +
+                            (int) jGoRulerView.getHorizontalScrollBar().getSize().getHeight());
+    }
+                                                                                  
+    /**
+     * <code>getMaximumSize</code>
+     *
+     * @return - <code>Dimension</code> -
+     */
+    public Dimension getMaximumSize() {
+      return new Dimension( (int) TimelineView.this.getSize().getWidth(),
+                            (int) jGoRulerView.getDocumentSize().getHeight() +
+                            (int) jGoRulerView.getHorizontalScrollBar().getSize().getHeight());
+    }
+                                                                                  
+  } // end class RulerPanel
+
+  /**
+   * <code>ScrollBarListener</code> - keep both jGoView & jGoRulerView aligned,
+   *                                  when user moves one scroll bar
+   *
+   */
+  class ScrollBarListener implements AdjustmentListener {
+                                                                                  
+    /**
+     * <code>adjustmentValueChanged</code> - keep both jGoView & jGoRulerView
+     *                                aligned, even when user moves one scroll bar     *
+     * @param event - <code>AdjustmentEvent</code> -
+     */
+    public void adjustmentValueChanged( AdjustmentEvent event) {
+      JScrollBar source = (JScrollBar) event.getSource();
+      // to get immediate incremental adjustment, rather than waiting for
+      // final position, comment out next check
+      // if (! source.getValueIsAdjusting()) {
+//         System.err.println( "adjustmentValueChanged " + source.getValue());
+//        System.err.println( "\njGoView " +
+//                             jGoView.getHorizontalScrollBar().getValue());
+//         System.err.println( "jGoRulerView " +
+//                             jGoRulerView.getHorizontalScrollBar().getValue());
+        int newPostion = source.getValue();
+//         System.err.println( "newPostion " + newPostion);
+        int timeScaleViewPosition = 0, timelineViewPosition = 0;
+        if (source.getParent() instanceof TimeScaleView) {
+          timeScaleViewPosition = newPostion;
+          timelineViewPosition = (int) ((double) zoomFactor * newPostion);
+        } else {
+          timeScaleViewPosition = (int) (newPostion / (double) zoomFactor);
+          timelineViewPosition = newPostion;
+        }
+        if (timelineViewPosition != jGoView.getHorizontalScrollBar().getValue()) {
+          jGoView.getHorizontalScrollBar().setValue( timelineViewPosition);
+        } else if (timeScaleViewPosition != jGoRulerView.getHorizontalScrollBar().getValue()) {
+          jGoRulerView.getHorizontalScrollBar().setValue( timeScaleViewPosition);
+        }
+        // }
+    } // end adjustmentValueChanged
+                                                                                  
+  } // end class ScrollBarListener
+                                                                                  
   /**
    * <code>TimelineJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
-  class TimelineJGoView extends JGoView {
+  public class TimelineJGoView extends JGoView {
 
     /**
      * <code>TimelineJGoView</code> - constructor 
@@ -858,6 +1126,10 @@ public class TimelineView extends PartialPlanView {
       mouseRightPopup.addSeparator();
     }
 
+    createTemporalDisplayItems( mouseRightPopup);
+                                                                           
+    mouseRightPopup.addSeparator();
+
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);
     mouseRightPopup.add( nodeByKeyItem);
@@ -903,7 +1175,7 @@ public class TimelineView extends PartialPlanView {
           isAutoSnapEnabled = true;
         }
       });
-  } // end createNodeByKeyItem
+  } // end createEnableAutoSnapItem
 
   private void createDisableAutoSnapItem( JMenuItem disableAutoSnapItem) {
     disableAutoSnapItem.addActionListener( new ActionListener() {
@@ -911,8 +1183,68 @@ public class TimelineView extends PartialPlanView {
           isAutoSnapEnabled = false;
         }
       });
-  } // end createNodeByKeyItem
+  } // end createDisableAutoSnapItem
 
+  private void createTemporalDisplayItems( JPopupMenu mouseRightPopup) {
+    JMenuItem showIntervalsItem = null;
+    JMenuItem showEarliestItem = null;
+    JMenuItem showLatestItem = null;
+    if (timelineDisplayMode == SHOW_INTERVALS) {
+      showEarliestItem = new JMenuItem( SHOW_EARLIEST_LABEL);
+      createShowEarliestItem( showEarliestItem);
+      mouseRightPopup.add( showEarliestItem);
+      showLatestItem = new JMenuItem( SHOW_LATEST_LABEL);
+      createShowLatestItem( showLatestItem);
+      mouseRightPopup.add( showLatestItem);
+    } else if (timelineDisplayMode == SHOW_EARLIEST) {
+      showIntervalsItem = new JMenuItem( SHOW_INTERVALS_LABEL);
+      createShowIntervalsItem( showIntervalsItem);
+      mouseRightPopup.add( showIntervalsItem);
+      showLatestItem = new JMenuItem( SHOW_LATEST_LABEL);
+      createShowLatestItem( showLatestItem);
+      mouseRightPopup.add( showLatestItem);
+    } else if (timelineDisplayMode == SHOW_LATEST) {
+      showEarliestItem = new JMenuItem( SHOW_EARLIEST_LABEL);
+      createShowEarliestItem( showEarliestItem);
+      mouseRightPopup.add( showEarliestItem);
+      showIntervalsItem = new JMenuItem( SHOW_INTERVALS_LABEL);
+      createShowIntervalsItem( showIntervalsItem);
+      mouseRightPopup.add( showIntervalsItem);
+    }
+  } // end createTemporalDisplayItems
+                                                                           
+  private void createShowIntervalsItem( JMenuItem showIntervalsItem) {
+    showIntervalsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          timelineDisplayMode = SHOW_INTERVALS;
+          jGoRulerView.setVisible( false );
+          TimelineView.this.redraw();
+        }
+      });
+  } // end createShowIntervalsItem
+                                                                           
+                                                                           
+  private void createShowEarliestItem( JMenuItem showEarliestItem) {
+    showEarliestItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          timelineDisplayMode = SHOW_EARLIEST;
+          jGoRulerView.setVisible( true );
+          TimelineView.this.redraw();
+        }
+      });
+  } // end createShowEarliestItem
+                                                                           
+                                                                           
+  private void createShowLatestItem( JMenuItem showLatestItem) {
+    showLatestItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          timelineDisplayMode = SHOW_LATEST;
+          jGoRulerView.setVisible( true );
+          TimelineView.this.redraw();
+        }
+      });
+  } // end createShowLatestItem
+                                                                           
   private void createNodeByKeyItem( JMenuItem nodeByKeyItem) {
     nodeByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {

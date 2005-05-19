@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.42 2005-04-27 23:50:45 taylor Exp $
+// $Id: VizView.java,v 1.43 2005-05-19 19:22:57 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
@@ -485,6 +486,8 @@ public class VizView extends JPanel {
       isRedraw = true;
     } else if (jGoView instanceof TemporalExtentView.ExtentView) {
        isRedraw = true;
+    } else if (jGoView instanceof TimelineView.TimelineJGoView) {
+       isRedraw = true;
     } else if (jGoView instanceof NavigatorView.NavigatorJGoView) {
       ((NavigatorView.NavigatorJGoView) jGoView).resetOpenNodes();
       ((NavigatorView) partialPlanView).setLayoutNeeded();
@@ -508,12 +511,16 @@ public class VizView extends JPanel {
     jGoView.getHorizontalScrollBar().setValue( 0);
     jGoView.getVerticalScrollBar().setValue( 0);
 
-    jGoView.setScale( 1.0d / zoomFactor);
-    // for new Timeline View
-    // jGoView.setHorizontalScale( 1.0d / zoomFactor);
-    // jGoView.setVerticalScale( 1.0d / zoomFactor);
-    // jGoView.getHorizontalScale();
-    // jGoView.getVerticalScale();
+    // In new Timeline View, dont zoom vertical scale
+    if (jGoView instanceof TimelineView.TimelineJGoView) {
+      //jGoView.setHorizontalScale( 1.0d / zoomFactor);
+      //jGoView.setVerticalScale( 1.0d / zoomFactor);
+      //jGoView.getHorizontalScale();
+      //jGoView.getVerticalScale();
+      jGoView.setScale( 1.0d / zoomFactor);
+    } else {
+      jGoView.setScale( 1.0d / zoomFactor);
+    }
   } // end zoomView
 
   protected void handleEvent(String eventName, Object [] params) {
