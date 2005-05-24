@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.10 2005-04-13 21:10:59 pdaley Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.11 2005-05-24 15:44:43 pjarvis Exp $
 //
 package gov.nasa.arc.planworks.util;
 
