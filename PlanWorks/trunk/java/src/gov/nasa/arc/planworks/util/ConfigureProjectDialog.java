@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.9 2005-04-13 21:10:42 pdaley Exp $
+// $Id: ConfigureProjectDialog.java,v 1.10 2005-05-26 17:23:23 pjarvis Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -81,13 +81,13 @@ public class ConfigureProjectDialog extends JDialog {
     workingDirField = new JTextField( PATH_FIELD_WIDTH);
     final JButton workingDirBrowseButton = new JButton( browseTitle);
     workingDirBrowseButton.addActionListener( new WorkingDirButtonListener());
-    final JLabel plannerPathLabel = new JLabel( "planner library path");
+    final JLabel plannerPathLabel = new JLabel( "planner library file (full path)");
     plannerPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton plannerPathBrowseButton = new JButton( browseTitle);
     plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
 //     final JLabel modelNameLabel = new JLabel( "model name");
 //     modelNameField = new JTextField( NAME_FIELD_WIDTH);
-    final JLabel modelPathLabel = new JLabel( "model library path");
+    final JLabel modelPathLabel = new JLabel( "model library file (full path)");
     modelPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelPathBrowseButton = new JButton( browseTitle);
     modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
@@ -95,7 +95,7 @@ public class ConfigureProjectDialog extends JDialog {
     modelOutputDestDirField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelOutputDestDirBrowseButton = new JButton( browseTitle);
      modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
-    final JLabel modelInitStatePathLabel =  new JLabel( "model initial state path");
+    final JLabel modelInitStatePathLabel =  new JLabel( "model initial state file (full path)");
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
