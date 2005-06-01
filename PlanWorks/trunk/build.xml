@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.64 2005-05-19 19:21:35 pdaley Exp $ -->
+<!-- $Id: build.xml,v 1.65 2005-06-01 17:08:10 pdaley Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
   </description>
 
   <property environment="env"/>
-  <property name="name.application" value="PlanWorks (PW_M_21): Plan Visualization"/>
+  <property name="name.application" value="PlanWorks (PW_M_22): Plan Visualization"/>
   <property name="boolean.isMaxScreen" value="false"/>
   <property name="planworks.root" value="${basedir}"/>
   <property name="planworks.config" value="${basedir}/planWorks.config"/>
