@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.43 2005-05-19 19:22:57 pdaley Exp $
+// $Id: VizView.java,v 1.44 2005-06-01 17:10:18 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -513,11 +513,11 @@ public class VizView extends JPanel {
 
     // In new Timeline View, dont zoom vertical scale
     if (jGoView instanceof TimelineView.TimelineJGoView) {
-      //jGoView.setHorizontalScale( 1.0d / zoomFactor);
+      jGoView.setHorizontalScale( 1.0d / zoomFactor);
       //jGoView.setVerticalScale( 1.0d / zoomFactor);
       //jGoView.getHorizontalScale();
       //jGoView.getVerticalScale();
-      jGoView.setScale( 1.0d / zoomFactor);
+      //jGoView.setScale( 1.0d / zoomFactor);
     } else {
       jGoView.setScale( 1.0d / zoomFactor);
     }
