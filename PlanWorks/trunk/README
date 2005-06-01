@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.144 2005-05-19 19:21:08 pdaley Exp $
+# $Id: README,v 1.145 2005-06-01 17:07:34 pdaley Exp $
 #
 
 NOTE: Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -15,15 +15,18 @@ The current known-good MySQL versions are:
 4.1.1
 4.1.7
 
-SUMMARY (PW_M_21)
+SUMMARY (PW_M_22)
 =================
 
-o Added two new views to the Timeline View to show EARLIEST and
-  LATEST timelines. These views are accessed via the right mouse
-  click pop-up window. The default window is the show INTERVAL
-  timeline view which is unchanged from prior releases.
+o Added Set Timescale Line for EARLIEST and LATEST timelines. 
+  These views are accessed via the right mouse click pop-up window. 
 
-o GNATS PRs and CRs completed:
+o Scale down the width of the token nodes for EARLIEST and LATEST
+  timelines.
+
+o Zoom only the horizontal scale for all timeline views.
+
+o GNATS PRs and CRs:
   #2884: ground timeline view with min and max values
 
 CVS CHECKOUT
@@ -32,7 +35,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary above)
-  > cvs co -r PW_M_21 PlanWorks
+  > cvs co -r PW_M_22 PlanWorks
 
 
 PLATFORM REQUIREMENTS
@@ -165,6 +168,16 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+19may2005: Milestone 21
+=================
+o Added two new views to the Timeline View to show EARLIEST and
+  LATEST timelines. These views are accessed via the right mouse
+  click pop-up window. The default window is the show INTERVAL
+  timeline view which is unchanged from prior releases.
+
+o GNATS PRs and CRs completed:
+  #2884: ground timeline view with min and max values
 
 18may2005: Milestone 20
 =================
