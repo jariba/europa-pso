@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.25 2005-05-19 19:22:57 pdaley Exp $
+// $Id: SlotNode.java,v 1.26 2005-06-01 17:16:18 pdaley Exp $
 //
 // PlanWorks
 //
@@ -88,6 +88,7 @@ public class SlotNode extends TextNode implements OverviewToolTip {
   private boolean isFirstSlot;
   private boolean isLastSlot;
   private int forcedSlotWidth;
+  private int scaleFactor;
   private int timelineDisplayMode;
   private TimelineView timelineView;
 
@@ -130,6 +131,7 @@ public class SlotNode extends TextNode implements OverviewToolTip {
    * @param isLastSlot - <code>boolean</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param forcedSlotWidth - <code>int</code> - 
+   * @param scaleFactor - <code>int</code> - 
    * @param horizonMin - <code>int</code> - 
    * @param horizonMax - <code>int</code> - 
    * @param timelineDisplayMode - <code>int</code> - 
@@ -137,8 +139,8 @@ public class SlotNode extends TextNode implements OverviewToolTip {
    */
   public SlotNode( String nodeLabel, PwSlot slot, PwTimeline timeline, Point slotLocation,
                    SlotNode previousSlotNode, boolean isFirstSlot, boolean isLastSlot,
-                   Color backgroundColor, int forcedSlotWidth, int horizonMin,
-                   int horizonMax, int timelineDisplayMode,
+                   Color backgroundColor, int forcedSlotWidth, int scaleFactor, 
+                   int horizonMin, int horizonMax, int timelineDisplayMode,
                    TimelineView timelineView) {
     super( nodeLabel);
     // node label now contains \nkey=nnn
@@ -155,6 +157,7 @@ public class SlotNode extends TextNode implements OverviewToolTip {
     this.isLastSlot = isLastSlot;
     this.timelineView = timelineView;
     this.forcedSlotWidth = forcedSlotWidth;
+    this.scaleFactor = scaleFactor;
     this.horizonMin = horizonMin;
     this.horizonMax = horizonMax;
     this.startTimeIntervalObject = null;
@@ -216,15 +219,15 @@ public class SlotNode extends TextNode implements OverviewToolTip {
       // if the node should be smaller than the label. May need to pre-
       // compute the length of the label and truncate it so that the
       // size of the node is not affected.
-      int newInset = forcedSlotWidth * startDurationTime - 
-                     (int) this.getSize().getWidth() +  
+      int  scaledWidth = forcedSlotWidth * startDurationTime / scaleFactor;
+      int newInset = scaledWidth - (int) this.getSize().getWidth() +  
                      ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF;
       newInset /= 2;
       setInsets( new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,   //top
                              newInset,                                      //left
                              ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,   //bottom
                              newInset));                                    //right
-      int augmentX = (startTime - horizonMin) * forcedSlotWidth;
+      int augmentX = ((startTime - horizonMin) * forcedSlotWidth) / scaleFactor;
      
       setLocation( (int) slotLocation.getX() + augmentX  - 
                     ViewConstants.TIMELINE_VIEW_INSET_SIZE + 2, 
