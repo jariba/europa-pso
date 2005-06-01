@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.32 2005-05-19 19:22:57 pdaley Exp $
+// $Id: ResourceProfileView.java,v 1.33 2005-06-01 17:18:11 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -226,7 +226,7 @@ public class ResourceProfileView extends ResourceView  {
        int zoomFactor = 1;
       timeScaleView.computeTimeScaleMetrics( isTimelineView, zoomFactor, this);
     }
-    timeScaleView.createTimeScale();
+    timeScaleView.createTimeScale( isTimelineView);
   } // end createTimeScaleView
 
   /**
@@ -683,7 +683,7 @@ public class ResourceProfileView extends ResourceView  {
             int zoomFactor = 1;
             boolean isTimelineView = false;
             timeScaleView.computeTimeScaleMetrics( isTimelineView, zoomFactor, profileView);
-            timeScaleView.createTimeScale();
+            timeScaleView.createTimeScale( isTimelineView);
             profileScalingList = scalingList;
             profileView.redraw();
           }

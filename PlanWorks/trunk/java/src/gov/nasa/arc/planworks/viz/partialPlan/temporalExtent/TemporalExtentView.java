@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.64 2005-05-19 19:22:57 pdaley Exp $
+// $Id: TemporalExtentView.java,v 1.65 2005-06-01 17:19:55 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -309,7 +309,7 @@ public class TemporalExtentView extends PartialPlanView  {
     if (zoomFactor > 1) {
       jGoRulerView.computeTimeScaleMetrics( isTimelineView, zoomFactor, this);
     }
-    jGoRulerView.createTimeScale();
+    jGoRulerView.createTimeScale( isTimelineView);
 
     boolean isRedraw = false;
     renderTemporalExtent( isRedraw);
@@ -373,7 +373,7 @@ public class TemporalExtentView extends PartialPlanView  {
           boolean isTimelineView = false;
           jGoRulerView.computeTimeScaleMetrics( isTimelineView, TemporalExtentView.this.getZoomFactor(),
                                                 TemporalExtentView.this);
-          jGoRulerView.createTimeScale();
+          jGoRulerView.createTimeScale( isTimelineView);
 
           boolean isRedraw = true;
           renderTemporalExtent( isRedraw);
@@ -678,8 +678,8 @@ public class TemporalExtentView extends PartialPlanView  {
   private void equalizeViewWidths( boolean isRedraw) {
     Dimension extentViewDocument = jGoExtentView.getDocumentSize();
     Dimension rulerViewDocument = jGoRulerView.getDocumentSize();
-//     System.err.println( "extentViewDocumentWidth B" + extentViewDocument.getWidth() +
-//                         " rulerViewDocumentWidth B" + rulerViewDocument.getWidth());
+//   System.err.println( "extentViewDocumentWidth B" + extentViewDocument.getWidth() +
+//                       " rulerViewDocumentWidth B" + rulerViewDocument.getWidth());
     int xRulerMargin = ViewConstants.TIMELINE_VIEW_X_INIT;
     int jGoDocBorderWidth = ViewConstants.JGO_DOC_BORDER_WIDTH;
     if (isRedraw) {
@@ -688,7 +688,7 @@ public class TemporalExtentView extends PartialPlanView  {
     int maxWidth = Math.max( (int) extentViewDocument.getWidth() - jGoDocBorderWidth,
                              (int) rulerViewDocument.getWidth() + xRulerMargin -
                              jGoDocBorderWidth);
-//     System.err.println( "maxWidth " + maxWidth);
+//   System.err.println( "maxWidth " + maxWidth);
     JGoStroke maxViewWidthPoint = new JGoStroke();
     maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
     maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
@@ -717,10 +717,10 @@ public class TemporalExtentView extends PartialPlanView  {
                                             ViewConstants.VIEW_BACKGROUND_COLOR));
       jGoRulerView.getDocument().addObjectAtTail( maxViewWidthPoint);
     }
-//     extentViewDocument = jGoExtentView.getDocumentSize();
-//     rulerViewDocument = jGoRulerView.getDocumentSize();
-//     System.err.println( "extentViewDocumentWidth A" + extentViewDocument.getWidth() +
-//                         " rulerViewDocumentWidth A" + rulerViewDocument.getWidth());
+     extentViewDocument = jGoExtentView.getDocumentSize();
+     rulerViewDocument = jGoRulerView.getDocumentSize();
+//   System.err.println( "extentViewDocumentWidth A" + extentViewDocument.getWidth() +
+//                       " rulerViewDocumentWidth A" + rulerViewDocument.getWidth());
   } // end equalizeViewWidths
 
 

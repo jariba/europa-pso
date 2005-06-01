@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.29 2005-05-19 19:22:57 pdaley Exp $
+// $Id: ResourceTransactionView.java,v 1.30 2005-06-01 17:19:11 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -160,7 +160,7 @@ public class ResourceTransactionView extends ResourceView  {
     boolean isTimelineView = false;
     this.getJGoRulerView().collectAndComputeTimeScaleMetrics( isTimelineView, doFreeTokens, this);
     initialTimeScaleEnd = getTimeScaleEnd();
-    this.getJGoRulerView().createTimeScale();
+    this.getJGoRulerView().createTimeScale( isTimelineView);
   } // end createTimeScaleView
 
   /**
