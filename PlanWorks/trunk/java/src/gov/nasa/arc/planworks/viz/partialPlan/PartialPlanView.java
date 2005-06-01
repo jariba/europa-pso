@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.56 2004-10-07 20:19:06 taylor Exp $
+// $Id: PartialPlanView.java,v 1.57 2005-06-01 17:12:30 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -60,6 +60,7 @@ import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 
 
 /**
@@ -77,6 +78,12 @@ public class PartialPlanView extends VizView {
   private static final String [] FORWARD_BUTTONS_LABELS =
   { ">", "> >\n> >", "> > > >\n> > > >\n> > > >\n> > > >",
     "> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >" };
+
+  private static final String [] HZ_ZOOM_BACKWARD_BUTTONS_LABELS =
+  { "<", "< <", "< < < <", "< < < < < < < <" };
+  private static final String [] HZ_ZOOM_FORWARD_BUTTONS_LABELS =
+  { ">", "> >", "> > > >", "> > > > > > > >" };
+
 
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
@@ -353,8 +360,17 @@ public class PartialPlanView extends VizView {
       removeStepButtons( view);
     }
     int zoomIndex = getZoomIndex( zoomFactor);
-    String backwardLabelText = BACKWARD_BUTTONS_LABELS[zoomIndex];
-    String forwardLabelText = FORWARD_BUTTONS_LABELS[zoomIndex];    
+    // timeline view zooms horizontal axis only, so step button padding is
+    // for that axis only
+    String backwardLabelText;
+    String forwardLabelText;    
+    if (PartialPlanView.this instanceof TimelineView) {
+      backwardLabelText = HZ_ZOOM_BACKWARD_BUTTONS_LABELS[zoomIndex];
+      forwardLabelText = HZ_ZOOM_FORWARD_BUTTONS_LABELS[zoomIndex];    
+    } else {
+      backwardLabelText = BACKWARD_BUTTONS_LABELS[zoomIndex];
+      forwardLabelText = FORWARD_BUTTONS_LABELS[zoomIndex];    
+    }
     Rectangle viewRect = view.getViewRect();
     Point backwardButtonPt = new Point((int)viewRect.getX(), 
                                        (int)(viewRect.getY() + viewRect.getHeight()));
