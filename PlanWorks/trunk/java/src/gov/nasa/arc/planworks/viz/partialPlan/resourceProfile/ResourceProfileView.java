@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.33 2005-06-01 17:18:11 pdaley Exp $
+// $Id: ResourceProfileView.java,v 1.34 2005-06-08 20:57:22 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -291,13 +291,11 @@ public class ResourceProfileView extends ResourceView  {
       closeView( this);
       return;
     }
-    // latestEndTime = resource.getHorizonEnd();
-    // latestEndTime may be PLUS_INFINITY in planner model
     int numResources = 0;
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
-      int horizonStart = resource.getHorizonStart();
+      int horizonStart = getTimeScaleStart();
       int horizonEnd = getTimeScaleEnd();
       double minMax[] = ResourceProfile.getResourceMinMax( resource);
       double levelMin = minMax[0]; double levelMax = minMax[1];
