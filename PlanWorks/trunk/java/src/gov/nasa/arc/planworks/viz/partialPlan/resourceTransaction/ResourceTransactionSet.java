@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.15 2004-07-29 01:36:40 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.16 2005-06-08 20:58:43 pdaley Exp $
 //
 // PlanWorks
 //
@@ -87,9 +87,7 @@ public class ResourceTransactionSet extends BasicNode {
                                  final ResourceTransactionView resourceTransactionView) {
     super();
     this.resource = resource;
-    earliestStartTime = resource.getHorizonStart();
-    // latestEndTime = resource.getHorizonEnd();
-    // latestEndTime may be PLUS_INFINITY in planner model
+    earliestStartTime = resourceTransactionView.getTimeScaleStart();
     latestEndTime = resourceHorizonEnd;
     resourceId = resource.getId().toString();
 //     System.err.println( "Resource Node: " + resourceId + " eS " +
