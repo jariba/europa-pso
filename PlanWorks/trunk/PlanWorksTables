@@ -379,8 +379,8 @@ CREATE TABLE ResourceInstants (
   ResourceId int(11) NOT NULL default '0',
   InstantId int(11) NOT NULL default '0',
   TimePoint int(11) NOT NULL default '0',
-  LevelMin double(11,30) NOT NULL default '0',
-  LevelMax double(11,30) NOT NULL default '0',
+  LevelMin decimal(15,5) NOT NULL default '0',
+  LevelMax decimal(15,5) NOT NULL default '0',
   Transactions blob default NULL,
   PRIMARY KEY (PartialPlanId, ResourceId, InstantId),
   INDEX (TimePoint)
