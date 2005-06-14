@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.145 2005-06-01 17:07:34 pdaley Exp $
+# $Id: README,v 1.146 2005-06-14 15:39:37 pdaley Exp $
 #
 
 NOTE: Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -15,19 +15,25 @@ The current known-good MySQL versions are:
 4.1.1
 4.1.7
 
-SUMMARY (PW_M_22)
+SUMMARY (PW_M_23)
 =================
 
-o Added Set Timescale Line for EARLIEST and LATEST timelines. 
-  These views are accessed via the right mouse click pop-up window. 
+WARNING: MySQL database change in this release. Execute:
+         'ant planWorksDbInstall' begore running PlanWorks.
 
-o Scale down the width of the token nodes for EARLIEST and LATEST
-  timelines.
+o Horizon start of minus infinity causing a graphics exception.
+  Now get horizon start and end from values TimeScaleView
+  computes instead of constant minus and plus infinity
+  that comes from the PPW generated tables.
 
-o Zoom only the horizontal scale for all timeline views.
+o Fixed data type for LevelMax and LevelMin in the
+  PlanWorks tables. Was doubel(11,30) which caused
+  a problem for at least one version of MySQL. Changed
+  to decimal(15,5) which is in line with range of 
+  possible values.
 
 o GNATS PRs and CRs:
-  #2884: ground timeline view with min and max values
+  #2961: sun.dc.pr.PRException in resource views 
 
 CVS CHECKOUT
 ============
@@ -35,7 +41,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary above)
-  > cvs co -r PW_M_22 PlanWorks
+  > cvs co -r PW_M_23 PlanWorks
 
 
 PLATFORM REQUIREMENTS
@@ -168,6 +174,20 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+1june2005: Milestone 22
+=================
+
+o Added Set Timescale Line for EARLIEST and LATEST timelines. 
+  These views are accessed via the right mouse click pop-up window. 
+
+o Scale down the width of the token nodes for EARLIEST and LATEST
+  timelines.
+
+o Zoom only the horizontal scale for all timeline views.
+
+o GNATS PRs and CRs:
+  #2884: ground timeline view with min and max values
 
 19may2005: Milestone 21
 =================
