@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.17 2005-04-13 21:10:09 pdaley Exp $
+// $Id: NewSequenceThread.java,v 1.18 2005-06-24 00:08:50 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -48,6 +48,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   private String modelPath;
   private String modelInitStatePath;
   private String modelOutputDestDir;
+  private String plannerConfigPath;
   private boolean areConfigParamsChanged;
 
 
@@ -129,7 +130,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     }
 
     if (PlannerControlJNI.initPlannerRun( plannerPath, modelPath, modelInitStatePath,
-                                          modelOutputDestDir) !=
+                                          modelOutputDestDir, plannerConfigPath) !=
         PlannerControlJNI.PLANNER_IN_PROGRESS) {
       JOptionPane.showMessageDialog
         (PlanWorks.getPlanWorks(), "PlannerControlJNI.initPlannerRun failed",
@@ -249,6 +250,10 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH, projectName);
     String modelOutputDestDirCurrent = ConfigureAndPlugins.getProjectConfigValue
       ( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR, projectName);
+    String plannerConfigPathCurrent = 
+      ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_PLANNER_CONFIG_PATH,
+                                                projectName);
+
 
     ConfigureNewSequenceDialog configureDialog =
       new ConfigureNewSequenceDialog( PlanWorks.getPlanWorks());
@@ -264,10 +269,12 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     modelPath = configureDialog.getModelPath();
     modelInitStatePath = configureDialog.getModelInitStatePath();
     modelOutputDestDir = configureDialog.getModelOutputDestDir();
+    plannerConfigPath = configureDialog.getPlannerConfigPath();
     if ((! plannerPath.equals(  plannerPathCurrent)) ||
         (! modelPath.equals( modelPathCurrent)) ||
         (! modelInitStatePath.equals( modelInitStatePathCurrent)) ||
-        (! modelOutputDestDir.equals( modelOutputDestDirCurrent))) {
+        (! modelOutputDestDir.equals( modelOutputDestDirCurrent)) ||
+        ! plannerConfigPath.equals(plannerConfigPathCurrent)) {
       areConfigParamsChanged = true;
     }
     return true;

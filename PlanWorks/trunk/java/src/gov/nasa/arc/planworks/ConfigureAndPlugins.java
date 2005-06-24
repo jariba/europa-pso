@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.11 2005-04-13 21:09:45 pdaley Exp $
+// $Id: ConfigureAndPlugins.java,v 1.12 2005-06-24 00:08:50 miatauro Exp $
 //
 // PlanWorks
 //
@@ -51,6 +51,7 @@ public class ConfigureAndPlugins {
   public static final String PROJECT_PLANNER_PATH = "projectPlannerPath";
   public static final String PROJECT_MODEL_NAME = "projectModelName";
   public static final String PROJECT_MODEL_PATH = "projectModelPath";
+  public static final String PROJECT_PLANNER_CONFIG_PATH = "projectPlannerConfigPath";
   public static final String PROJECT_MODEL_INIT_STATE_PATH = "projectModelInitStatePath";
   public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
   public static final String PROJECT_MODEL_RULE_DELIMITERS = "projectModelRuleDelimiters";
@@ -83,6 +84,7 @@ public class ConfigureAndPlugins {
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_INIT_STATE_PATH);
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_OUTPUT_DEST_DIR);
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_RULE_DELIMITERS);
+    PROJECT_CONFIG_PARAMS.add(PROJECT_PLANNER_CONFIG_PATH);
 
     PROJECT_PATH_DIR_CONFIG_PARAMS = new ArrayList( PROJECT_CONFIG_PARAMS);
     int indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_NAME);
@@ -494,6 +496,7 @@ public class ConfigureAndPlugins {
   public static List completeProjectConfigMap(List nameValueList) {
     String plannerPath = null, modelPath = null, modelOutputDestDir = null;
     String modelInitStatePath = null, ruleDelimiters = null;
+    String plannerConfigPath = null;
     if (nameValueList.indexOf(PROJECT_PLANNER_PATH) == -1) {
         nameValueList.add( PROJECT_PLANNER_PATH);
         plannerPath = getProjectConfigValue( PROJECT_PLANNER_PATH, DEFAULT_PROJECT_NAME);
@@ -522,6 +525,12 @@ public class ConfigureAndPlugins {
           ( PROJECT_MODEL_RULE_DELIMITERS,
             DEFAULT_PROJECT_NAME);
         nameValueList.add( ruleDelimiters);
+    }
+    if(nameValueList.indexOf(PROJECT_PLANNER_CONFIG_PATH) == -1) {
+      nameValueList.add(PROJECT_PLANNER_CONFIG_PATH);
+      plannerConfigPath = getProjectConfigValue(PROJECT_PLANNER_CONFIG_PATH,
+                                                DEFAULT_PROJECT_NAME);
+      nameValueList.add(plannerConfigPath);
     }
     return nameValueList;
   } // end completeProjectConfigMap
