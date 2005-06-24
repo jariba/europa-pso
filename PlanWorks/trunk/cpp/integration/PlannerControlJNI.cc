@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {
 
 JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlannerRun 
     (JNIEnv* env, jclass cl, jstring planner_path, jstring model_path, 
-                             jstring initial_state_path, jstring dest_path) {
+                             jstring initial_state_path, jstring dest_path, jstring planner_config) {
 
   jint retStatus;
   jclass clazz;
@@ -28,9 +28,10 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   const char* modelLibPath;
   const char* initialStatePath;
   const char* destPath;
+  const char* plannerConfig;
   void* libHandle;
   const char* error_msg;
-  int (*fcn_initModel)(const char*, const char*, const char*);
+  int (*fcn_initModel)(const char*, const char*, const char*, const char*);
 
   printf("In Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlannerRun\n");
 
@@ -41,8 +42,10 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   modelLibPath = env->GetStringUTFChars(model_path, NULL);
   initialStatePath = env->GetStringUTFChars(initial_state_path, NULL);
   destPath = env->GetStringUTFChars(dest_path, NULL);
+  plannerConfig = env->GetStringUTFChars(planner_config, NULL);
 
   printf("Requested planner library file is %s\n", plannerLibPath);
+  printf("Requested planner config is %s\n", plannerConfig);
   printf("Requested model library file is %s\n", modelLibPath);
   printf("Requested initial state file is %s\n", initialStatePath);
   printf("Requested destination is %s\n", destPath);
@@ -62,11 +65,11 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   accessPlannerLibHandle() = libHandle;
 
   //locate the 'initModel' function in the library and check for errors
-  fcn_initModel = (int (*)(const char*, const char*, const char*))dlsym(libHandle, "initModel");
+  fcn_initModel = (int (*)(const char*, const char*, const char*, const char*))dlsym(libHandle, "initModel");
   //printf("Returned from (int (*)(const char*, const char*, const char*))dlsym(libHandle, initModel)\n");
   if (!fcn_initModel) {
     error_msg = dlerror();
-    printf("dlsym: Error locating initModel:\n");
+    printf("dlsym: Error locating initModel in %s: %s\n", plannerLibPath, error_msg);
     clazz = env->FindClass("java/lang/Exception");
     env->ThrowNew(clazz, error_msg);
     return gov_nasa_arc_planworks_PlannerControlJNI_PLANNER_INITIALLY_INCONSISTANT;
@@ -74,7 +77,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
 
   // call the initModel function
   try {
-    retStatus  = (*fcn_initModel)(modelLibPath, initialStatePath, destPath);
+    retStatus  = (*fcn_initModel)(modelLibPath, initialStatePath, destPath, plannerConfig);
     printf("Returned from calling the initModel function\n");
     fflush(stdout);
   }
@@ -88,6 +91,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   env->ReleaseStringUTFChars(model_path, modelLibPath);
   env->ReleaseStringUTFChars(initial_state_path, initialStatePath);
   env->ReleaseStringUTFChars(dest_path, destPath);
+  env->ReleaseStringUTFChars(planner_config, plannerConfig);
   return retStatus;
 
 }
