@@ -3,8 +3,9 @@
 // PlanWorks JVM current directory = PlanWorks/java/src
 projectName default
 projectWorkingDir ../../../
-projectPlannerPath ../../../PLASMA/CBPlanner/component
+projectPlannerPath ../../../PLASMA/lib
 projectModelPath ../../../PLASMA/System/test
 projectModelInitStatePath ../../../PLASMA/System/test
 projectModelOutputDestDir ../../../PLASMA/System/test
+projectPlannerConfigPath ../../../PLASMA/System/test
 projectModelRuleDelimiters {}
