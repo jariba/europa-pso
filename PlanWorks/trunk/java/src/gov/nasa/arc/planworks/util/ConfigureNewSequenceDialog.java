@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.11 2005-05-24 15:44:43 pjarvis Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.12 2005-06-24 00:09:19 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -54,6 +54,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
   private JTextField modelOutputDestDirField;
   private String modelInitStatePath;
   private JTextField modelInitStatePathField;
+  private String plannerConfigPath;
+  private JTextField plannerConfigPathField;
 
   private String btnString1;
   private String btnString2;
@@ -91,6 +93,11 @@ public class ConfigureNewSequenceDialog extends JDialog {
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
 
+    final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+    plannerConfigPathField = new JTextField(PATH_FIELD_WIDTH);
+    final JButton plannerConfigPathBrowseButton = new JButton(browseTitle);
+    plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
+
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
@@ -108,6 +115,9 @@ public class ConfigureNewSequenceDialog extends JDialog {
       modelInitStatePath = new File( ConfigureAndPlugins.getProjectConfigValue
                                      ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH,
                                        currentProjectName)).getCanonicalPath();
+      plannerConfigPath = new File(ConfigureAndPlugins.getProjectConfigValue
+                                   (ConfigureAndPlugins.PROJECT_PLANNER_CONFIG_PATH,
+                                    currentProjectName)).getCanonicalPath();
     } catch (IOException ioExcep) {
     }
 
@@ -116,6 +126,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
     modelPathField.setText( modelPath);
     modelOutputDestDirField.setText( modelOutputDestDir);
     modelInitStatePathField.setText( modelInitStatePath);
+    plannerConfigPathField.setText(plannerConfigPath);
     btnString1 = "Start";
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
@@ -179,6 +190,17 @@ public class ConfigureNewSequenceDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
     dialogPanel.add( modelOutputDestDirBrowseButton);
+
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(plannerConfigPathLabel, c);
+    dialogPanel.add(plannerConfigPathLabel);
+    c.gridy++;
+    gridBag.setConstraints(plannerConfigPathField, c);
+    dialogPanel.add(plannerConfigPathField);
+    c.gridx++;
+    gridBag.setConstraints(plannerConfigPathBrowseButton, c);
+    dialogPanel.add(plannerConfigPathBrowseButton);
 
     optionPane = new JOptionPane
       ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
@@ -266,7 +288,16 @@ public class ConfigureNewSequenceDialog extends JDialog {
     }
   } // end class ModelOutputDestDirButtonListener
 
-
+  class PlannerConfigPathButtonListener implements ActionListener {
+    public PlannerConfigPathButtonListener() {}
+    public void actionPerformed(ActionEvent ae) {
+      FileChooser fileChooser = new FileChooser("Select File", new File(plannerConfigPath));
+      String currentSelectedFile = fileChooser.getValidSelectedFile();
+      if(currentSelectedFile == null)
+        return;
+      plannerConfigPathField.setText(currentSelectedFile);
+    }
+  }
 
   private void addInputListener() {
     optionPane.addPropertyChangeListener( new PropertyChangeListener() {
@@ -285,14 +316,14 @@ public class ConfigureNewSequenceDialog extends JDialog {
             // presses the same button next time, no
             // property change event will be fired.
             optionPane.setValue( JOptionPane.UNINITIALIZED_VALUE);
-
+            
             if (value.equals( btnString1)) {
               if (handleTextFieldValues()) {
                 return;
               }
               // we're done; dismiss the dialog
               setVisible( false);
-
+              
             } else { // user closed dialog or clicked cancel
               plannerPath = null;
               // modelName = null;
@@ -308,57 +339,63 @@ public class ConfigureNewSequenceDialog extends JDialog {
 
   private boolean handleTextFieldValues() {
     boolean haveSeenError = false;
-
+    
     String plannerPathTemp = plannerPathField.getText().trim();
     // if (! plannerPath.equals( plannerPathTemp)) {
-      String plannerLibExtension;
-      if (PlanWorks.isMacOSX()) {
-        plannerLibExtension = ConfigureAndPlugins.MACOSX_PLANNER_LIB_NAME_MATCH;
-      } else {
-        plannerLibExtension = ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH;
-      }
-      if (! doesPathExist( plannerPathTemp)) {
-        haveSeenError = true;
-      } else if (plannerPathTemp.indexOf( plannerLibExtension) == -1) {
-        JOptionPane.showMessageDialog
-          ( PlanWorks.getPlanWorks(),
-            "Library name does not match 'lib<planner-name>" +
-            plannerLibExtension + "'",
-            "Invalid Planner Library", JOptionPane.ERROR_MESSAGE);
-        haveSeenError = true;
-      } else {
-        plannerPath = plannerPathTemp;
-      }
-      // }
-
-//     modelName = modelNameField.getText().trim();
-
+    String plannerLibExtension;
+    if (PlanWorks.isMacOSX()) {
+      plannerLibExtension = ConfigureAndPlugins.MACOSX_PLANNER_LIB_NAME_MATCH;
+    } else {
+      plannerLibExtension = ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH;
+    }
+    if (! doesPathExist( plannerPathTemp)) {
+      haveSeenError = true;
+    } else if (plannerPathTemp.indexOf( plannerLibExtension) == -1) {
+      JOptionPane.showMessageDialog
+        ( PlanWorks.getPlanWorks(),
+          "Library name does not match 'lib<planner-name>" +
+          plannerLibExtension + "'",
+          "Invalid Planner Library", JOptionPane.ERROR_MESSAGE);
+      haveSeenError = true;
+    } else {
+      plannerPath = plannerPathTemp;
+    }
+    // }
+    
+    //     modelName = modelNameField.getText().trim();
+    
     String modelPathTemp = modelPathField.getText().trim();
     // if (! modelPath.equals( modelPathTemp)) {
-      if (! doesPathExist( modelPathTemp)) {
-        haveSeenError = true;
-      } else {
-        modelPath = modelPathTemp;
-      }
-      // }
-
+    if (! doesPathExist( modelPathTemp)) {
+      haveSeenError = true;
+    } else {
+      modelPath = modelPathTemp;
+    }
+    // }
+    
     String modelInitStatePathTemp = modelInitStatePathField.getText().trim();
     // if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
-      if (! doesPathExist( modelInitStatePathTemp)) {
-        haveSeenError = true;
-      } else {
-        modelInitStatePath = modelInitStatePathTemp;
-      }
-      // }
-
+    if (! doesPathExist( modelInitStatePathTemp)) {
+      haveSeenError = true;
+    } else {
+      modelInitStatePath = modelInitStatePathTemp;
+    }
+    // }
+    
     String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
     // if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
-      //if (! doesPathExist( modelOutputDestDirTemp)) {
-        //haveSeenError = true;
-      //} else {
-        modelOutputDestDir = modelOutputDestDirTemp;
-     // }
-      // }
+    //if (! doesPathExist( modelOutputDestDirTemp)) {
+    //haveSeenError = true;
+    //} else {
+    modelOutputDestDir = modelOutputDestDirTemp;
+    // }
+    // }
+    
+    String plannerConfigPathTemp = plannerConfigPathField.getText().trim();
+    if(!doesPathExist(plannerConfigPathTemp))
+      haveSeenError = true;
+    else
+      plannerConfigPath = plannerConfigPathTemp;
 
     return haveSeenError;
   } // end handleTextFieldValues
@@ -419,7 +456,9 @@ public class ConfigureNewSequenceDialog extends JDialog {
     return modelInitStatePath;
   }
 
-
+  public String getPlannerConfigPath() {
+    return plannerConfigPath;
+  }
 
 
 } // end class ConfigureNewSequenceDialog
