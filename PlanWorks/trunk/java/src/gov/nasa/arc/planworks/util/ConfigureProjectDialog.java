@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.10 2005-05-26 17:23:23 pjarvis Exp $
+// $Id: ConfigureProjectDialog.java,v 1.11 2005-06-24 00:09:19 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -60,6 +60,8 @@ public class ConfigureProjectDialog extends JDialog {
   private JTextField modelOutputDestDirField;
   private String modelRuleDelimiters;
   private JTextField modelRuleDelimitersField;
+  private String plannerConfigPath;
+  private JTextField plannerConfigPathField;
 
   private String btnString1;
   private String btnString2;
@@ -99,6 +101,12 @@ public class ConfigureProjectDialog extends JDialog {
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
+
+    final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+    plannerConfigPathField = new JTextField(PATH_FIELD_WIDTH);
+    final JButton plannerConfigPathBrowseButton = new JButton(browseTitle);
+    plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
+
     final JLabel modelRuleDelimitersLabel= new JLabel( "model rule delimiters");
     modelRuleDelimitersField = new JTextField( DELIMS_FIELD_WIDTH);
     // current values
@@ -124,6 +132,9 @@ public class ConfigureProjectDialog extends JDialog {
       modelInitStatePath = new File( ConfigureAndPlugins.getProjectConfigValue
                                      ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH,
                                        currentProjectName)).getCanonicalPath();
+      plannerConfigPath = (new File(ConfigureAndPlugins.getProjectConfigValue
+                                    (ConfigureAndPlugins.PROJECT_PLANNER_CONFIG_PATH,
+                                     currentProjectName))).getCanonicalPath();
       modelRuleDelimiters = ConfigureAndPlugins.getProjectConfigValue
         ( ConfigureAndPlugins.PROJECT_MODEL_RULE_DELIMITERS, currentProjectName);
     } catch (IOException ioExcep) {
@@ -134,6 +145,7 @@ public class ConfigureProjectDialog extends JDialog {
     modelPathField.setText( modelPath);
     modelOutputDestDirField.setText( modelOutputDestDir);
     modelInitStatePathField.setText( modelInitStatePath);
+    plannerConfigPathField.setText(plannerConfigPath);
     modelRuleDelimitersField.setText( modelRuleDelimiters);
     btnString1 = "Enter";
     btnString2 = "Cancel";
@@ -217,6 +229,17 @@ public class ConfigureProjectDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
     dialogPanel.add( modelOutputDestDirBrowseButton);
+
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(plannerConfigPathLabel, c);
+    dialogPanel.add(plannerConfigPathLabel);
+    c.gridy++;
+    gridBag.setConstraints(plannerConfigPathField, c);
+    dialogPanel.add(plannerConfigPathField);
+    c.gridx++;
+    gridBag.setConstraints(plannerConfigPathBrowseButton, c);
+    dialogPanel.add(plannerConfigPathBrowseButton);
 
     c.gridx = 0;  
     c.gridy++;
@@ -328,6 +351,17 @@ public class ConfigureProjectDialog extends JDialog {
   } // end class ModelOutputDestDirButtonListener
 
 
+  class PlannerConfigPathButtonListener implements ActionListener {
+    public PlannerConfigPathButtonListener() {}
+    public void actionPerformed(ActionEvent ae) {
+      FileChooser fileChooser = new FileChooser("Select File", new File(plannerConfigPath));
+      String currentSelectedFile = fileChooser.getValidSelectedFile();
+      if(currentSelectedFile == null)
+        return;
+      plannerConfigPathField.setText(currentSelectedFile);
+    }
+  }
+
   private void addInputListener() {
     optionPane.addPropertyChangeListener( new PropertyChangeListener() {
         public void propertyChange( PropertyChangeEvent e) {
@@ -437,6 +471,12 @@ public class ConfigureProjectDialog extends JDialog {
       }
       // }
 
+      String plannerConfigPathTemp = plannerConfigPathField.getText().trim();
+      if(!doesPathExist(plannerConfigPathTemp))
+        haveSeenError = true;
+      else
+        plannerConfigPath = plannerConfigPathTemp;
+
     return haveSeenError;
   } // end handleTextFieldValues
 
@@ -511,6 +551,10 @@ public class ConfigureProjectDialog extends JDialog {
 
   public String getModelRuleDelimiters() {
     return modelRuleDelimiters;
+  }
+
+  public String getPlannerConfigPath() {
+    return plannerConfigPath;
   }
 
 } // end class ConfigureProjectDialog
