@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.11 2005-06-24 00:09:19 miatauro Exp $
+// $Id: ConfigureProjectDialog.java,v 1.12 2005-11-02 23:36:43 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -62,6 +62,8 @@ public class ConfigureProjectDialog extends JDialog {
   private JTextField modelRuleDelimitersField;
   private String plannerConfigPath;
   private JTextField plannerConfigPathField;
+    private String heuristicsPath;
+    private JTextField heuristicsPathField;
 
   private String btnString1;
   private String btnString2;
@@ -107,6 +109,11 @@ public class ConfigureProjectDialog extends JDialog {
     final JButton plannerConfigPathBrowseButton = new JButton(browseTitle);
     plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
 
+    final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+    heuristicsPathField = new JTextField(PATH_FIELD_WIDTH);
+    final JButton heuristicsPathBrowseButton = new JButton(browseTitle);
+    heuristicsPathBrowseButton.addActionListener(new HeuristicsPathButtonListener());
+
     final JLabel modelRuleDelimitersLabel= new JLabel( "model rule delimiters");
     modelRuleDelimitersField = new JTextField( DELIMS_FIELD_WIDTH);
     // current values
@@ -135,6 +142,8 @@ public class ConfigureProjectDialog extends JDialog {
       plannerConfigPath = (new File(ConfigureAndPlugins.getProjectConfigValue
                                     (ConfigureAndPlugins.PROJECT_PLANNER_CONFIG_PATH,
                                      currentProjectName))).getCanonicalPath();
+      heuristicsPath = (new File(ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH,
+									   currentProjectName))).getCanonicalPath();
       modelRuleDelimiters = ConfigureAndPlugins.getProjectConfigValue
         ( ConfigureAndPlugins.PROJECT_MODEL_RULE_DELIMITERS, currentProjectName);
     } catch (IOException ioExcep) {
@@ -146,6 +155,7 @@ public class ConfigureProjectDialog extends JDialog {
     modelOutputDestDirField.setText( modelOutputDestDir);
     modelInitStatePathField.setText( modelInitStatePath);
     plannerConfigPathField.setText(plannerConfigPath);
+    heuristicsPathField.setText(heuristicsPath);
     modelRuleDelimitersField.setText( modelRuleDelimiters);
     btnString1 = "Enter";
     btnString2 = "Cancel";
@@ -240,6 +250,17 @@ public class ConfigureProjectDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints(plannerConfigPathBrowseButton, c);
     dialogPanel.add(plannerConfigPathBrowseButton);
+
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(heuristicsPathLabel, c);
+    dialogPanel.add(heuristicsPathLabel);
+    c.gridy++;
+    gridBag.setConstraints(heuristicsPathField, c);
+    dialogPanel.add(heuristicsPathField);
+    c.gridx++;
+    gridBag.setConstraints(heuristicsPathBrowseButton, c);
+    dialogPanel.add(heuristicsPathBrowseButton);
 
     c.gridx = 0;  
     c.gridy++;
@@ -362,6 +383,17 @@ public class ConfigureProjectDialog extends JDialog {
     }
   }
 
+    class HeuristicsPathButtonListener implements ActionListener {
+	public HeuristicsPathButtonListener(){}
+	public void actionPerformed(ActionEvent ae) {
+	    FileChooser fileChooser = new FileChooser("Select File", new File(heuristicsPath));
+	    String currentSelectedFile = fileChooser.getValidSelectedFile();
+	    if(currentSelectedFile == null)
+		return;
+	    heuristicsPathField.setText(currentSelectedFile);
+	}
+    }
+
   private void addInputListener() {
     optionPane.addPropertyChangeListener( new PropertyChangeListener() {
         public void propertyChange( PropertyChangeEvent e) {
@@ -391,6 +423,7 @@ public class ConfigureProjectDialog extends JDialog {
               plannerPath = null; // modelName = null;
               modelPath = null; modelOutputDestDir = null;
               modelInitStatePath = null; modelRuleDelimiters = null;
+	      heuristicsPath = null;
               setVisible( false);
             }
           }
@@ -477,6 +510,12 @@ public class ConfigureProjectDialog extends JDialog {
       else
         plannerConfigPath = plannerConfigPathTemp;
 
+      String heuristicsPathTemp = heuristicsPathField.getText().trim();
+      if(!doesPathExist(heuristicsPathTemp))
+	  haveSeenError = true;
+      else
+	  heuristicsPath = heuristicsPathTemp;
+
     return haveSeenError;
   } // end handleTextFieldValues
 
@@ -556,6 +595,10 @@ public class ConfigureProjectDialog extends JDialog {
   public String getPlannerConfigPath() {
     return plannerConfigPath;
   }
+
+    public String getHeuristicsPath() {
+	return heuristicsPath;
+    }
 
 } // end class ConfigureProjectDialog
 
