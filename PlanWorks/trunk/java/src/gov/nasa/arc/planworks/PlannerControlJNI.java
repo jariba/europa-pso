@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerControlJNI.java,v 1.4 2005-06-24 00:08:50 miatauro Exp $
+// $Id: PlannerControlJNI.java,v 1.5 2005-11-02 23:35:50 miatauro Exp $
 //
 // PlanWorks -- started 31aug04
 //
@@ -32,9 +32,10 @@ public class PlannerControlJNI {
    */
   public static native int initPlannerRun( final String plannerPath,
                                            final String modelPath,
-                                           final String nodelInitStatePath,
+                                           final String modelInitStatePath,
                                            final String modelOutputDestDir,
-                                           final String plannerConfigPath);
+                                           final String plannerConfigPath,
+					   final String debugPath);
 
   /**
    * <code>getPlannerStatus</code>
@@ -112,5 +113,7 @@ public class PlannerControlJNI {
    * @param transTypeStates - <code>int[]</code> - 
    */
   public static native void setTransactionTypeStates(  final int[] transTypeStates);
-
+    
+    public static native void enableDebugMsg(final String file, final String pattern);
+    public static native void disableDebugMsg(final String file, final String pattern);
 } // end PlannerControlJNI

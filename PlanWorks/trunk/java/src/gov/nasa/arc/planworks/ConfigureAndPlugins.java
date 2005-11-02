@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.12 2005-06-24 00:08:50 miatauro Exp $
+// $Id: ConfigureAndPlugins.java,v 1.13 2005-11-02 23:35:50 miatauro Exp $
 //
 // PlanWorks
 //
@@ -55,6 +55,8 @@ public class ConfigureAndPlugins {
   public static final String PROJECT_MODEL_INIT_STATE_PATH = "projectModelInitStatePath";
   public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
   public static final String PROJECT_MODEL_RULE_DELIMITERS = "projectModelRuleDelimiters";
+    public static final String PROJECT_HEURISTICS_PATH = "projectHeuristicsPath";
+
   public static final String PLANNER_LIB_NAME_MATCH = ".so"; 
   public static final String PLANNER_CONTROL_JNI_LIB = "libPlannerControlJNI.so"; 
   public static final String MACOSX_PLANNER_LIB_NAME_MATCH = ".dylib"; 
@@ -85,6 +87,7 @@ public class ConfigureAndPlugins {
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_OUTPUT_DEST_DIR);
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_RULE_DELIMITERS);
     PROJECT_CONFIG_PARAMS.add(PROJECT_PLANNER_CONFIG_PATH);
+    PROJECT_CONFIG_PARAMS.add(PROJECT_HEURISTICS_PATH);
 
     PROJECT_PATH_DIR_CONFIG_PARAMS = new ArrayList( PROJECT_CONFIG_PARAMS);
     int indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_NAME);
