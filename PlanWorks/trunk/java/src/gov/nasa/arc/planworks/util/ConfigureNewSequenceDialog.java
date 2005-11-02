@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.12 2005-06-24 00:09:19 miatauro Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.13 2005-11-02 23:36:43 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -56,7 +56,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
   private JTextField modelInitStatePathField;
   private String plannerConfigPath;
   private JTextField plannerConfigPathField;
-
+    private String heuristicsPath;
+    private JTextField heuristicsPathField;
   private String btnString1;
   private String btnString2;
 
@@ -98,6 +99,11 @@ public class ConfigureNewSequenceDialog extends JDialog {
     final JButton plannerConfigPathBrowseButton = new JButton(browseTitle);
     plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
 
+    final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+    heuristicsPathField = new JTextField(PATH_FIELD_WIDTH);
+    final JButton heuristicsPathBrowseButton = new JButton(browseTitle);
+    heuristicsPathBrowseButton.addActionListener(new HeuristicsPathButtonListener());
+
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
@@ -118,6 +124,9 @@ public class ConfigureNewSequenceDialog extends JDialog {
       plannerConfigPath = new File(ConfigureAndPlugins.getProjectConfigValue
                                    (ConfigureAndPlugins.PROJECT_PLANNER_CONFIG_PATH,
                                     currentProjectName)).getCanonicalPath();
+      heuristicsPath = (new File(ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH,
+									   currentProjectName))).getCanonicalPath();
+							   
     } catch (IOException ioExcep) {
     }
 
@@ -127,6 +136,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
     modelOutputDestDirField.setText( modelOutputDestDir);
     modelInitStatePathField.setText( modelInitStatePath);
     plannerConfigPathField.setText(plannerConfigPath);
+    heuristicsPathField.setText(heuristicsPath);
+
     btnString1 = "Start";
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
@@ -201,6 +212,17 @@ public class ConfigureNewSequenceDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints(plannerConfigPathBrowseButton, c);
     dialogPanel.add(plannerConfigPathBrowseButton);
+
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(heuristicsPathLabel, c);
+    dialogPanel.add(heuristicsPathLabel);
+    c.gridy++;
+    gridBag.setConstraints(heuristicsPathField, c);
+    dialogPanel.add(heuristicsPathField);
+    c.gridx++;
+    gridBag.setConstraints(heuristicsPathBrowseButton, c);
+    dialogPanel.add(heuristicsPathBrowseButton);
 
     optionPane = new JOptionPane
       ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
@@ -298,6 +320,17 @@ public class ConfigureNewSequenceDialog extends JDialog {
       plannerConfigPathField.setText(currentSelectedFile);
     }
   }
+
+    class HeuristicsPathButtonListener implements ActionListener {
+	public HeuristicsPathButtonListener() {}
+	public void actionPerformed(ActionEvent ae) {
+	    FileChooser fileChooser = new FileChooser("Select File", new File(heuristicsPath));
+	    String currentSelectedFile = fileChooser.getValidSelectedFile();
+	    if(currentSelectedFile == null)
+		return;
+	    plannerConfigPathField.setText(currentSelectedFile);
+	}
+    }
 
   private void addInputListener() {
     optionPane.addPropertyChangeListener( new PropertyChangeListener() {
@@ -397,6 +430,12 @@ public class ConfigureNewSequenceDialog extends JDialog {
     else
       plannerConfigPath = plannerConfigPathTemp;
 
+    String heuristicsPathTemp = heuristicsPathField.getText().trim();
+    if(!doesPathExist(heuristicsPathTemp))
+	haveSeenError = true;
+    else
+	heuristicsPath = heuristicsPathTemp;
+
     return haveSeenError;
   } // end handleTextFieldValues
 
@@ -460,6 +499,10 @@ public class ConfigureNewSequenceDialog extends JDialog {
     return plannerConfigPath;
   }
 
+
+    public String getHeuristicsPath() {
+	return heuristicsPath;
+    }
 
 } // end class ConfigureNewSequenceDialog
 
