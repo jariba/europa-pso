@@ -350,6 +350,8 @@ public abstract class ViewConstants {
 
   public static final String PLANNER_CONTROLLER_TITLE = "PlannerController";
 
+    public static final String DEBUG_CONSOLE_TITLE = "Debug Console";
+
   static {
 
     SEQUENCE_VIEW_LIST = new ArrayList();
