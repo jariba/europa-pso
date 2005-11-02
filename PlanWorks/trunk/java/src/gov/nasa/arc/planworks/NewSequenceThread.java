@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.18 2005-06-24 00:08:50 miatauro Exp $
+// $Id: NewSequenceThread.java,v 1.19 2005-11-02 23:35:50 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -20,6 +20,7 @@ import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ConfigureNewSequenceDialog;
+import gov.nasa.arc.planworks.util.DebugConsole;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.PlannerController;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -49,6 +50,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   private String modelInitStatePath;
   private String modelOutputDestDir;
   private String plannerConfigPath;
+    private String heuristicsPath;
   private boolean areConfigParamsChanged;
 
 
@@ -92,7 +94,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       JOptionPane.showMessageDialog
         ( PlanWorks.getPlanWorks(), "An exception occured while initializing the planner.",
           "Planner Exception", JOptionPane.INFORMATION_MESSAGE);
-
+      System.err.println(excp.getMessage());
+      excp.printStackTrace();
     } finally {
       PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
       PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
@@ -102,6 +105,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   } // end run
 
   private String getNewSequenceUrl() throws Exception {
+      System.err.println("Starting getNewSequenceUrl");
     String plannerControlJNIFile;
     if (PlanWorks.isMacOSX()) {
       plannerControlJNIFile = ConfigureAndPlugins.MACOSX_PLANNER_CONTROL_JNI_LIB;
@@ -128,9 +132,14 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     if (! getConfigureParameters()) {
       return null;
     }
+    
+    //ensure that the destination path exists
+    File outputDir = new File(modelOutputDestDir);
+    if(!outputDir.exists())
+	outputDir.mkdirs();
 
     if (PlannerControlJNI.initPlannerRun( plannerPath, modelPath, modelInitStatePath,
-                                          modelOutputDestDir, plannerConfigPath) !=
+                                          modelOutputDestDir, plannerConfigPath, modelOutputDestDir + System.getProperty("file.separator") + "DEBUG_FILE") !=
         PlannerControlJNI.PLANNER_IN_PROGRESS) {
       JOptionPane.showMessageDialog
         (PlanWorks.getPlanWorks(), "PlannerControlJNI.initPlannerRun failed",
@@ -141,6 +150,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     getTransactionTypeStates();
 
     String seqUrl = PlannerControlJNI.getDestinationPath();
+    System.err.println("from getNewSequenceUrl, returning '" + seqUrl + "'");
     return seqUrl;
   } // end getNewSequenceUrl
 
@@ -181,6 +191,17 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       plannerControllerFrame.pack();
       viewSet.getViews().put( ((SequenceViewSet) viewSet).getPlanControllerViewSetKey(),
                               plannerControllerFrame);
+
+      MDIInternalFrame debugConsoleFrame =
+	  PlanWorks.getPlanWorks().createFrame(ViewConstants.DEBUG_CONSOLE_TITLE + " for " +
+					       seqViewMenuItem.getSequenceName(),
+					       viewSet, true, true, false, false);
+      Container debugContentPane = debugConsoleFrame.getContentPane();
+      debugContentPane.add(new DebugConsole(modelOutputDestDir + System.getProperty("file.separator") + "DEBUG_FILE"));
+      debugConsoleFrame.pack();
+      viewSet.getViews().put(((SequenceViewSet)viewSet).getDebugConsoleViewSetKey(),
+			     debugConsoleFrame);
+
     } catch (DuplicateNameException dupExcep) {
       int index = dupExcep.getMessage().indexOf( ":");
       JOptionPane.showMessageDialog
@@ -253,6 +274,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     String plannerConfigPathCurrent = 
       ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_PLANNER_CONFIG_PATH,
                                                 projectName);
+    String heuristicsPathCurrent = ConfigureAndPlugins.getProjectConfigValue
+	(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH, projectName);
 
 
     ConfigureNewSequenceDialog configureDialog =
@@ -270,11 +293,13 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     modelInitStatePath = configureDialog.getModelInitStatePath();
     modelOutputDestDir = configureDialog.getModelOutputDestDir();
     plannerConfigPath = configureDialog.getPlannerConfigPath();
+    heuristicsPath = configureDialog.getHeuristicsPath();
     if ((! plannerPath.equals(  plannerPathCurrent)) ||
         (! modelPath.equals( modelPathCurrent)) ||
         (! modelInitStatePath.equals( modelInitStatePathCurrent)) ||
         (! modelOutputDestDir.equals( modelOutputDestDirCurrent)) ||
-        ! plannerConfigPath.equals(plannerConfigPathCurrent)) {
+        ! plannerConfigPath.equals(plannerConfigPathCurrent) ||
+	! heuristicsPath.equals(heuristicsPathCurrent)) {
       areConfigParamsChanged = true;
     }
     return true;
@@ -294,6 +319,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     nameValueList.add( modelInitStatePath);
     nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR);
     nameValueList.add( modelOutputDestDir);
+    nameValueList.add(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH);
+    nameValueList.add(heuristicsPath);
     ConfigureAndPlugins.updateProjectConfigMap( currentProject.getName(), nameValueList);
   } // end setConfigureParameters
 
