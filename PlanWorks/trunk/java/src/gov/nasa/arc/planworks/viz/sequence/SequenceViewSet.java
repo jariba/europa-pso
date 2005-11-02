@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.20 2004-09-03 00:35:41 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.21 2005-11-02 23:38:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQue
 public class SequenceViewSet extends ViewSet {
 
   private int planControllerFrameCnt;
+    private int debugConsoleFrameCnt;
 
   /**
    * <code>SequenceViewSet</code> - constructor 
@@ -76,6 +77,7 @@ public class SequenceViewSet extends ViewSet {
     this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);
     planControllerFrameCnt = 0;
+    debugConsoleFrameCnt = 0;
   } // end constructor
 
   /**
@@ -115,6 +117,12 @@ public class SequenceViewSet extends ViewSet {
     return new String( ViewConstants.PLANNER_CONTROLLER_TITLE.replaceAll( " ", "") + "-" +
                        planControllerFrameCnt);
   }
+
+    public String getDebugConsoleViewSetKey() {
+	debugConsoleFrameCnt++;
+	return new String(ViewConstants.DEBUG_CONSOLE_TITLE.replaceAll(" ", "") + "-" +
+			  debugConsoleFrameCnt);
+    }
 
   /**
    * <code>close</code>
