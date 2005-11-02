@@ -20,7 +20,8 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {
 
 JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlannerRun 
     (JNIEnv* env, jclass cl, jstring planner_path, jstring model_path, 
-                             jstring initial_state_path, jstring dest_path, jstring planner_config) {
+     jstring initial_state_path, jstring dest_path, 
+     jstring planner_config, jstring debug_path) {
 
   jint retStatus;
   jclass clazz;
@@ -29,6 +30,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   const char* initialStatePath;
   const char* destPath;
   const char* plannerConfig;
+  const char* debugPath;
   void* libHandle;
   const char* error_msg;
   int (*fcn_initModel)(const char*, const char*, const char*, const char*);
@@ -43,12 +45,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   initialStatePath = env->GetStringUTFChars(initial_state_path, NULL);
   destPath = env->GetStringUTFChars(dest_path, NULL);
   plannerConfig = env->GetStringUTFChars(planner_config, NULL);
+  debugPath = env->GetStringUTFChars(debug_path, NULL);
 
   printf("Requested planner library file is %s\n", plannerLibPath);
   printf("Requested planner config is %s\n", plannerConfig);
   printf("Requested model library file is %s\n", modelLibPath);
   printf("Requested initial state file is %s\n", initialStatePath);
   printf("Requested destination is %s\n", destPath);
+  printf("Requested debug destination is %s\n", debugPath);
   fflush(stdout);
 
   //load planner library using full path
@@ -92,6 +96,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   env->ReleaseStringUTFChars(initial_state_path, initialStatePath);
   env->ReleaseStringUTFChars(dest_path, destPath);
   env->ReleaseStringUTFChars(planner_config, plannerConfig);
+  env->ReleaseStringUTFChars(debug_path, debugPath);
   return retStatus;
 
 }
@@ -149,7 +154,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_writeStep (
     return -1;
   }
 
-  printf("PlannerControlJNI_writeStep %d\n", step_num);
+  printf("PlannerControlJNI_writeStep %d\n", (int) step_num);
   fflush(stdout);
 
   //locate the 'writeStep' function in the library 
@@ -193,7 +198,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_writeNext (
     return -1;
   }
 
-  printf("PlannerControlJNI_writeNext %d\n", num_steps);
+  printf("PlannerControlJNI_writeNext %d\n", (int)num_steps);
   fflush(stdout);
 
   //locate the 'writeNext' function in the library 
@@ -574,3 +579,104 @@ JNIEXPORT void JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_setTransact
   delete[] filterState;
 }
 
+/*
+ * Class:     gov_nasa_arc_planworks_PlannerControlJNI
+ * Method:    enableDebugMsg
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_enableDebugMsg(JNIEnv *env, jclass, jstring _file, jstring _pattern) {
+  const char* file;
+  const char* pattern;
+  const char* errMsg;
+  void (*fcn_enableDebugMsg)(const char*, const char*);
+
+  file = env->GetStringUTFChars(_file, NULL);
+  pattern = env->GetStringUTFChars(_pattern, NULL);
+
+  printf("Debug msg file: %s pattern: %s", file, pattern);
+
+  void* libHandle = accessPlannerLibHandle();
+  jclass clazz;
+  if(!libHandle) {
+    clazz = env->FindClass("java/lang/NullPointerException");
+    env->ThrowNew(clazz, "Planner library not loaded.");
+    return;
+  }
+
+  fcn_enableDebugMsg = (void(*)(const char*, const char*))dlsym(libHandle, "enableDebugMsg");
+  if(!fcn_enableDebugMsg) {
+    errMsg = dlerror();
+    printf("dlsym: Error locating enableDebugMsg:\n");
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, errMsg);
+    return;
+  }
+
+  try {
+    printf("Calling enableDebugMsg\n");
+    (*fcn_enableDebugMsg)(file, pattern);
+    printf("Returned from enableDebugMsg\n");
+  }
+  catch(...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in enableDebugMsg");
+    return;
+  }
+
+  env->ReleaseStringUTFChars(_file, file);
+  env->ReleaseStringUTFChars(_pattern, pattern);
+}
+
+/*
+ * Class:     gov_nasa_arc_planworks_PlannerControlJNI
+ * Method:    disableDebugMsg
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_disableDebugMsg(JNIEnv *env, jclass, jstring _file, jstring _pattern) {
+  printf("In JNI disableDebugMsg.\n");
+  fflush(stdout);
+  const char* file;
+  const char* pattern;
+  const char* errMsg;
+  void (*fcn_disableDebugMsg)(const char*, const char*);
+
+  file = env->GetStringUTFChars(_file, NULL);
+  pattern = env->GetStringUTFChars(_pattern, NULL);
+
+  printf("Debug msg file: %s pattern: %s", file, pattern);
+  fflush(stdout);
+
+  void* libHandle = accessPlannerLibHandle();
+  jclass clazz;
+  if(!libHandle) {
+    clazz = env->FindClass("java/lang/NullPointerException");
+    env->ThrowNew(clazz, "Planner library not loaded.");
+    return;
+  }
+
+  fcn_disableDebugMsg = (void (*)(const char*, const char*))dlsym(libHandle, "disableDebugMsg");
+  if(!fcn_disableDebugMsg) {
+    errMsg = dlerror();
+    printf("dlsym: Error locating disableDebugMsg:\n");
+    fflush(stdout);
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, errMsg);
+    return;
+  }
+
+  try {
+    printf("Calling disableDebugMsg\n");
+    fflush(stdout);
+    (*fcn_disableDebugMsg)(file, pattern);
+    printf("Returned from disableDebugMsg\n");
+    fflush(stdout);
+  }
+  catch(...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in disableDebugMsg");
+    return;
+  }
+
+  env->ReleaseStringUTFChars(_file, file);
+  env->ReleaseStringUTFChars(_pattern, pattern);
+}
