@@ -1,5 +1,6 @@
 package gov.nasa.arc.planworks.util;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -9,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -30,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameListener;
-import javax.swing.event.InternalFrameEvent;
+import javax.swing.ActionMap;
+import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
+import javax.swing.InputMap;
 import javax.swing.JInternalFrame;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -42,10 +44,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultCaret;
 
 import gov.nasa.arc.planworks.PlannerControlJNI;
 import gov.nasa.arc.planworks.PlanWorks;
@@ -59,20 +68,27 @@ public class DebugConsole extends JPanel {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 400;
     private static final int DEBUG_WIDTH = 30;
-    private static final int REFRESH_STEP = -1;
+    private static final int FORWARD = 1;
+    private static final int BACKWARD = -1;
 
     private int refreshSleep;
     private JTextField timedRefreshField;
     private DebugMatchPanel debugMatchPanel;
     private JTextField debugInputField;
+    private JScrollPane textPane;
     private JTextArea textArea;
     private JPanel allPanel;
-    private JPanel refreshPanel;
+    private RefreshPanel refreshPanel;
     private JPanel debugInputPanel;
     private JButton disableAll;
+    private SearchStringManager searchString;
+    private SearchStringListener searchUpdateListener;
+    private boolean wrapSearch;
 
     public DebugConsole(final String debugPath) {
 	refreshSleep = 300;
+	searchString = new SearchStringManager();
+	wrapSearch = false;
 
 	setBackground(ViewConstants.VIEW_BACKGROUND_COLOR);
 	GridBagLayout gridBag = new GridBagLayout();
@@ -83,14 +99,20 @@ public class DebugConsole extends JPanel {
 	c.gridx = 0;
 	c.gridy = 0;
 
-	refreshPanel = createRefreshPanel();
+	refreshPanel = new RefreshPanel();
 	gridBag.setConstraints(refreshPanel, c);
 	add(refreshPanel);
+	searchString.addListener(refreshPanel);
 
 	c.gridy++;
 	textArea = new JTextArea(30,50);
 	textArea.setEditable(false);
-	JScrollPane textPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+	Caret caret = textArea.getCaret();
+	caret.setVisible(true);
+	textArea.setCaretColor(Color.BLACK);
+	caret.setBlinkRate(0);
+	textArea.setCaretPosition(0);
+	textPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 					       JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 	gridBag.setConstraints(textPane, c);
 	add(textPane);
@@ -110,13 +132,6 @@ public class DebugConsole extends JPanel {
 	gridBag.setConstraints(disableAll, c);
 	add(disableAll);
 	
-//  	addComponentListener(new ComponentAdapter() {
-//  		public void componentResized(ComponentEvent ce) {
-//  		    textArea.setSize(getWidth() - (getInsets().left + getInsets().right),
-//  				     textArea.getHeight());
-//  		}
-//  	    });
-
 	disableAll.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    debugMatchPanel.disableAll();
@@ -133,45 +148,180 @@ public class DebugConsole extends JPanel {
 					  "IOException", JOptionPane.ERROR_MESSAGE);
 	}
 
+
+	
+
+	//add an input map for when we're focused
+	InputMap imap = new InputMap();
+	imap.setParent(getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
+	setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, imap);
+	ActionMap amap = new ActionMap();
+	amap.setParent(getActionMap());
+	setActionMap(amap);
+		      
+	//C-s search foward forwardSearch
+	String forwardSearch = "forwardSearch";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK, true), forwardSearch);
+	amap.put(forwardSearch, new EnterSearchModeAction(this, FORWARD));
+
+	//C-r search backward backwardSearch
+	String backwardSearch = "backwardSearch";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK, true), backwardSearch);
+	amap.put(backwardSearch, new EnterSearchModeAction(this, BACKWARD));
+
+	//C-v, pgdown next page nextPage
+	String nextPage = "nextPage";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true), nextPage);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, true), nextPage);
+	amap.put(nextPage, new JumpAction(this, 15));
+
+	//M-v, pgup previous page prevPage
+	String prevPage = "prevPage";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.META_MASK, true), prevPage);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, true), prevPage);
+	amap.put(prevPage, new JumpAction(this, -15));
+
+	//C-n, down next line nextLine
+	String nextLine = "nextLine";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, true), nextLine);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true), nextLine);
+	amap.put(nextLine, new JumpAction(this, 1));
+	
+	//C-p, up previous line prevLine
+	String prevLine = "prevLine";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK, true), prevLine);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true), prevLine);
+	amap.put(prevLine, new JumpAction(this, 1));
+
+	//M-,, home jump to beginning jumpBeginning
+	String jumpBeginning = "jumpBeginning";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, InputEvent.META_MASK, true), jumpBeginning);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0, true), jumpBeginning);
+	amap.put(jumpBeginning, new JumpAction(this, Integer.MIN_VALUE));
+
+	//M-., end jump to end jumpEnd
+	String jumpEnd = "jumpEnd";
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, InputEvent.META_MASK, true), jumpEnd);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0, true), jumpEnd);
+	amap.put(jumpEnd, new JumpAction(this, Integer.MAX_VALUE));
+	
     }
 
-    private JPanel createRefreshPanel() {
-	JPanel panel = new JPanel();
-	GridBagConstraints c = new GridBagConstraints();
-	GridBagLayout gridBag = new GridBagLayout();
-	panel.setLayout(gridBag);
-	c.gridx = 0;
-	c.gridy = 0;
-	c.weightx = 0.5;
-	c.weighty = 0.5;
+    class EnterSearchModeAction extends AbstractAction {
+	private int dir;
+	private DebugConsole console;
+	public EnterSearchModeAction(DebugConsole console, int dir) {
+	    this.console = console;
+	    this.dir = dir;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.enterSearchMode(dir);
+	}
+    }
 
-	JLabel refreshLabel = new JLabel("Refresh every ");
-	gridBag.setConstraints(refreshLabel, c);
-	panel.add(refreshLabel);
+    //doesn't work.  fix this.
+    class JumpAction extends AbstractAction {
+	private int amt;
+	private DebugConsole console;
+	public JumpAction(DebugConsole console, int amt) {
+	    this.amt = amt;
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    int scrollPosition = 0;
+	    if(amt == Integer.MIN_VALUE) { //set carat to 0, scroll all the way up
+		System.err.println("M-, was pressed");
+		textArea.setCaretPosition(0);
+		scrollPosition = textPane.getVerticalScrollBar().getMinimum();
+	    }
+	    else if(amt == Integer.MAX_VALUE) { //set carat as high as possible, scroll all the way down
+		System.err.println("M-. was pressed");
+		textArea.setCaretPosition(textArea.getText().length());
+		scrollPosition = textPane.getVerticalScrollBar().getMaximum();
+	    }
+	    else { //set carat position up by amt lines (can be negative), scroll so carat is centered
+	    }
+	    textPane.getVerticalScrollBar().setValue(scrollPosition);
+	}
+    }
 
-	c.gridx++;
-	timedRefreshField = new JTextField("300");
-	gridBag.setConstraints(timedRefreshField, c);
-	panel.add(timedRefreshField);
+    class RefreshPanel extends JPanel implements SearchStringListener {
+	private static final String forwardText = "I-search: ";
+	private static final String backwardText = "Backward I-search: ";
+	private static final String failingText = "Failing ";
+	private static final String wrappedText = "Wrapped ";
 
-	c.gridx++;
-	JLabel millis = new JLabel("ms");
-	gridBag.setConstraints(millis, c);
-	panel.add(millis);
+	private JLabel searchLabel;
+	String searchDir;
+	String matchFailed;
+	String wrapped;
+	public RefreshPanel() {
+	    searchDir = forwardText;
+	    matchFailed = "";
+	    wrapped = "";
+	    GridBagConstraints c = new GridBagConstraints();
+	    GridBagLayout gridBag = new GridBagLayout();
+	    setLayout(gridBag);
+	    c.gridx = 0;
+	    c.gridy = 0;
+	    c.weightx = 0;
+	    c.weighty = 0;
 
-	timedRefreshField.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    try {
-			refreshSleep = Integer.parseInt(timedRefreshField.getText());
-			System.err.println("Set refresh time to " + refreshSleep);
-		    }
-		    catch(NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), "Error: '" + timedRefreshField.getText() + "' is not an integer.",
+	    searchLabel = new JLabel(forwardText);
+	    searchLabel.setVisible(false);
+	    gridBag.setConstraints(searchLabel, c);
+	    add(searchLabel);
+
+	    c.weightx = 0.5;
+	    c.weighty = 0.5;
+
+	    c.gridx++;
+	    JLabel refreshLabel = new JLabel("Refresh every ");
+	    gridBag.setConstraints(refreshLabel, c);
+	    add(refreshLabel);
+
+	    c.gridx++;
+	    timedRefreshField = new JTextField("300");
+	    gridBag.setConstraints(timedRefreshField, c);
+	    add(timedRefreshField);
+
+	    c.gridx++;
+	    JLabel millis = new JLabel("ms");
+	    gridBag.setConstraints(millis, c);
+	    add(millis);
+
+	    timedRefreshField.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+			try {
+			    refreshSleep = Integer.parseInt(timedRefreshField.getText());
+			    System.err.println("Set refresh time to " + refreshSleep);
+			}
+			catch(NumberFormatException nfe) {
+			    JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), "Error: '" + timedRefreshField.getText() + "' is not an integer.",
 							  "Integer parse error.", JOptionPane.ERROR_MESSAGE);
-		    }
-		}});
+			}
+		    }});
 
-	return panel;
+
+	}
+	public void setSearchWrapped(boolean wrap) {
+	    wrapped = (wrap ? wrappedText : "");
+	}
+	public void setMatchFailed(boolean failed) {
+	    matchFailed = (failed ? failingText : "");
+	    setText();
+	}
+	public void setSearchDirection(int dir) {
+	    searchDir = (dir == FORWARD ? forwardText : backwardText);
+	    setText();
+	}
+	public void setSearchVisible(boolean b) {searchLabel.setVisible(b); revalidate();}
+
+	public void stringChanged(String s){setText();}
+
+	private void setText() {
+	    searchLabel.setText(matchFailed + wrapped + searchDir + searchString.str());
+	}
     }
 
     private JPanel createDebugInputPanel() {
@@ -233,18 +383,14 @@ public class DebugConsole extends JPanel {
 	    revalidate();
 	}
 	public void disableDebugString(String str) {
-	    System.err.println("disableDebugString: " + firstPart(str) + " " + secondPart(str));
 	    PlannerControlJNI.disableDebugMsg(firstPart(str), secondPart(str));
 	}
 	public void enableDebugString(String str) {
-	    System.err.println("enableDebugString: " + firstPart(str) + " " + secondPart(str));
 	    PlannerControlJNI.enableDebugMsg(firstPart(str), secondPart(str));
 	}
 	public void disableAll() {
-	    System.err.println("Disabling all existing messages...");
 	    for(Iterator it = matches.iterator(); it.hasNext();)
 		((DebugMatch)it.next()).disableMsg();
-	    System.err.println("Done with disableAll.");
 	}
 	private String firstPart(String str) {
 	    return str.substring(0, str.indexOf(':'));
@@ -342,6 +488,338 @@ public class DebugConsole extends JPanel {
 		    return;
 		}
 	    }
+	}
+    }
+
+    private void enterSearchMode(final int searchDirection) {
+	System.err.println("Entering search mode " + (searchDirection > 0 ? "forward" : "backward"));
+	refreshPanel.setSearchVisible(true);
+	refreshPanel.setSearchDirection(searchDirection);
+	refreshPanel.setSearchWrapped(false);
+
+	InputMap imap = new InputMap();
+	imap.setParent(getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
+	setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, imap);
+	ActionMap amap = new ActionMap();
+	amap.setParent(getActionMap());
+	setActionMap(amap);
+
+	searchUpdateListener = new SearchStringListener() {
+		public void stringChanged(String s) {
+		    search(searchDirection, -1 - s.length()); 
+		    //negative offset here will force it to skip in the correct direction so it appears
+		    //as though we're searching from the original caret position
+		}
+	    };
+	searchString.addListener(searchUpdateListener);
+	//esc, up, down, left, right exit search mode exitSearchMode
+	String exitSearch = "exitSearch";
+	amap.put(exitSearch, new ExitSearchModeAction(this));
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true), exitSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true), exitSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, true), exitSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, true), exitSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true), exitSearch);
+
+	//have to add all of these by hand because Java doesn't provide an convenient way of listening for all typable characters
+	String [] chars = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+			   "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+			   "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "[", "]", "\\", ";", "'", ",", ".", "/",
+			   "~", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "{", "}", "|", ":", "\"", "<", ">", "?"};
+			   //};
+
+	String addToSearch = "addToSearch";
+	amap.put(addToSearch, new AddToSearchAction(this));
+	for(int i = 0; i < chars.length; i++) {
+	    imap.put(KeyStroke.getKeyStroke(chars[i]), addToSearch);
+	    imap.put(KeyStroke.getKeyStroke("shift " + chars[i]), addToSearch);
+	}
+	
+	//for some reason, this doesn't cover - _ = + [ { ] } \ | ; : ' " , < . > / ?
+	//so we have to add those by hand.
+	//also have to add _ + { } : " < > in two different ways because Java sucks.
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UNDERSCORE, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BRACELEFT, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BRACERIGHT, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SEMICOLON, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SEMICOLON, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COLON, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_QUOTE, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_QUOTE, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_QUOTEDBL, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LESS, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, KeyEvent.SHIFT_MASK, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_GREATER, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, 0, true), addToSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, KeyEvent.SHIFT_MASK, true), addToSearch);
+
+	//C-s search forward from point
+	String continueSearchForward = "continueSearchForward";
+	amap.put(continueSearchForward, new SearchAction(this, FORWARD));
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK, true), continueSearchForward);
+
+	//C-r search backward from point
+	String continueSearchBackward = "continueSearchBackward";
+	amap.put(continueSearchBackward, new SearchAction(this, BACKWARD));
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_MASK, true), continueSearchBackward);
+
+	//C-w select word forward selectForward
+	String addWordForwardToSearch = "addWordForwardToSearch";
+	amap.put(addWordForwardToSearch, new AddWordAction(this));
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.CTRL_MASK, true), addWordForwardToSearch);
+
+	//C-f select character forward selectCharForward
+	String addCharForwardToSearch = "addCharForwardToSearch";
+	amap.put(addCharForwardToSearch, new AddCharAction(this));
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK, true), addCharForwardToSearch);
+
+	//C-b, delete, backspace select character back selectCharBackward
+	String removeLastCharFromSearch = "removeLastCharFromSearch";
+	amap.put(removeLastCharFromSearch, new RemoveCharAction(this));
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_B, KeyEvent.CTRL_MASK, true), removeLastCharFromSearch);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0, true), removeLastCharFromSearch);	
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true), removeLastCharFromSearch);
+    }
+
+    private void leaveSearchMode() {
+	System.err.println("Leaving search mode.");
+	searchString.removeListener(searchUpdateListener);
+	refreshPanel.setSearchVisible(false);
+	
+	InputMap imap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+	setInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, imap.getParent());
+	imap.clear();
+
+	ActionMap amap = getActionMap();
+	setActionMap(amap.getParent());
+	amap.clear();
+
+	searchString.save();
+	searchString.clear();
+	searchUpdateListener = null;
+	refreshPanel.setMatchFailed(false);
+	refreshPanel.setSearchWrapped(false);
+    }
+
+    private void search(int dir, int offset) {
+	if(dir == FORWARD)
+	    searchForward(offset);
+	else
+	    searchBackward(offset);
+    }
+
+    private void searchForward(int offset) {
+	refreshPanel.setSearchDirection(FORWARD);
+	String searchStr = searchString.str();
+	int currPos = textArea.getCaretPosition() + offset;
+	
+	//find index of search string from caret position + offset
+	int nextIndex = textArea.getText().indexOf(searchStr, currPos);
+
+	if(nextIndex == -1) {
+	    refreshPanel.setMatchFailed(true);
+	    wrapSearch = true;
+	    return;
+	}
+	wrapSearch = false;
+	//set caret at index
+	textArea.setCaretPosition(nextIndex);
+	//select to index + length
+	textArea.moveCaretPosition(nextIndex + searchStr.length());
+	refreshPanel.setMatchFailed(false);
+    }
+
+    private void searchBackward(int offset) {
+	refreshPanel.setSearchDirection(BACKWARD);
+	String searchStr = searchString.str();
+	int currPos = textArea.getCaretPosition() - offset;
+
+	int prevIndex = textArea.getText().lastIndexOf(searchStr, currPos);
+
+	if(prevIndex == -1) {
+	    refreshPanel.setMatchFailed(true);
+	    wrapSearch = true;
+	    return;
+	}
+
+	wrapSearch = false;
+	//set caret at index + length
+	textArea.setCaretPosition(prevIndex + searchStr.length());
+	//select to index
+	textArea.moveCaretPosition(prevIndex);
+	refreshPanel.setMatchFailed(false);
+    }
+
+    private void addToNextNonWord() {
+	refreshPanel.setSearchWrapped(false);
+	StringBuffer addToSearch = new StringBuffer();
+	int i = textArea.getCaretPosition();
+	while(!Character.isLetterOrDigit(textArea.getText().charAt(i))) {
+	    addToSearch.append(textArea.getText().charAt(i));
+	    ++i;
+	}
+	while(Character.isLetterOrDigit(textArea.getText().charAt(i))) {
+	    addToSearch.append(textArea.getText().charAt(i));
+	    ++i;
+	}
+	searchString.add(addToSearch.toString());
+    }
+
+    private void addNextChar() {
+	refreshPanel.setSearchWrapped(false);
+	searchString.add(textArea.getText().charAt(textArea.getCaretPosition()));
+    }
+
+    private void removeLastChar() {
+	refreshPanel.setSearchWrapped(false);
+	searchString.backUp();
+    }
+
+    class ExitSearchModeAction extends AbstractAction {
+	private DebugConsole console;
+	public ExitSearchModeAction(DebugConsole console) {
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.leaveSearchMode();
+	}
+    }
+
+    class AddToSearchAction extends AbstractAction {
+	DebugConsole console;
+	public AddToSearchAction(DebugConsole console) {
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.refreshPanel.setSearchWrapped(false);
+	    console.searchString.add(ae.getActionCommand());
+	}
+    }
+
+    class SearchStringManager {
+	private StringBuffer savedString;
+	private StringBuffer string;
+	private List listeners;
+	public SearchStringManager() {
+	    savedString = new StringBuffer();
+	    string = new StringBuffer();
+	    listeners = new LinkedList();
+	}
+	public void add(char c) {
+	    string.append(c);
+	    publishChanged();
+	}
+	public void add(String c) {
+	    string.append(c);
+	    publishChanged();
+	}
+	public void backUp() {
+	    if(string.length() == 0)
+		return;
+	    string.deleteCharAt(string.length()-1);
+	    publishChanged();
+	}
+
+	public void clear() {
+	    string.delete(0, string.length());
+	    publishChanged();
+	}
+
+	public String str(){return string.toString();}
+	
+	public void addListener(SearchStringListener l) {listeners.add(l);}
+	public void removeListener(SearchStringListener l) {listeners.remove(l);}
+	
+	public void save() {
+	    savedString.append(string);
+	}
+	
+	public void restore() {
+	    string.append(savedString);
+	    savedString.delete(0, savedString.length());
+	    publishChanged();
+	}
+
+	private void publishChanged() {
+	    String val = str();
+	    for(Iterator it = listeners.iterator(); it.hasNext();)
+		((SearchStringListener)it.next()).stringChanged(val);
+	}
+    }
+
+    interface SearchStringListener {
+	public void stringChanged(String c);
+    }
+
+    class SearchAction extends AbstractAction {
+	private DebugConsole console;
+	private int dir;
+	public SearchAction(DebugConsole console, int dir) {
+	    this.console = console;
+	    this.dir = dir;
+	}
+
+	public void actionPerformed(ActionEvent ae) {
+	    int offset = 1;
+	    if(searchString.str().equals("")) {
+		console.searchString.clear();
+		console.searchString.restore();
+		offset = 0;
+	    }
+	    if(console.wrapSearch) {
+		console.refreshPanel.setSearchWrapped(true);
+		if(dir == FORWARD)
+		    offset = 0 - console.textArea.getCaretPosition();
+		else
+		    offset = console.textArea.getCaretPosition() - console.textArea.getText().length();
+		console.wrapSearch = false;
+	    }
+	    console.search(dir, offset);
+	}
+    }
+
+    class AddWordAction extends AbstractAction {
+	private DebugConsole console;
+	public AddWordAction(DebugConsole console) {
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.addToNextNonWord();
+	}
+    }
+
+    //select forward to next character
+    class AddCharAction extends AbstractAction {
+	private DebugConsole console;
+	public AddCharAction(DebugConsole console) {
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.addNextChar();
+	}
+    }
+
+    class RemoveCharAction extends AbstractAction {
+	private DebugConsole console;
+	public RemoveCharAction(DebugConsole console) {
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.removeLastChar();
 	}
     }
 }
