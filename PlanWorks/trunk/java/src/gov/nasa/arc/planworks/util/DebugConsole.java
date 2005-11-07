@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DebugConsole.java,v 1.3 2005-11-07 17:51:55 miatauro Exp $
+// $Id: DebugConsole.java,v 1.4 2005-11-07 23:32:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,8 +16,6 @@ package gov.nasa.arc.planworks.util;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -47,6 +45,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.ActionMap;
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.InputMap;
 import javax.swing.JInternalFrame;
@@ -113,20 +112,12 @@ public class DebugConsole extends JPanel {
 	writeToTerminal = false;
 
 	setBackground(ViewConstants.VIEW_BACKGROUND_COLOR);
-	GridBagLayout gridBag = new GridBagLayout();
-	GridBagConstraints c = new GridBagConstraints();
-	setLayout(gridBag);
-	c.weightx = 0;
-	c.weighty = 0;
-	c.gridx = 0;
-	c.gridy = 0;
+	setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 	refreshPanel = new RefreshPanel();
-	gridBag.setConstraints(refreshPanel, c);
 	add(refreshPanel);
 	searchString.addListener(refreshPanel);
 
-	c.gridy++;
 	textArea = new JTextArea(30,50);
 	textArea.setEditable(false);
 	Caret caret = textArea.getCaret();
@@ -136,24 +127,18 @@ public class DebugConsole extends JPanel {
 	textArea.setCaretPosition(0);
 	textPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 					       JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	gridBag.setConstraints(textPane, c);
 	add(textPane);
 
-	c.gridy++;
 	debugInputPanel = createDebugInputPanel();
-	gridBag.setConstraints(debugInputPanel, c);
 	add(debugInputPanel);
 
-	c.gridy++;
 	debugMatchPanel = new DebugMatchPanel();
-	gridBag.setConstraints(debugMatchPanel, c);
 	add(debugMatchPanel);
 	
-	c.gridy++;
 	disableAll = new JButton("Disable All");
-	gridBag.setConstraints(disableAll, c);
 	add(disableAll);
-	
+	disableAll.setMaximumSize(disableAll.getPreferredSize());
+
 	disableAll.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 		    debugMatchPanel.disableAll();
@@ -207,23 +192,19 @@ public class DebugConsole extends JPanel {
 
     private JPanel createDebugInputPanel() {
 	JPanel panel = new JPanel();
-	GridBagConstraints c = new GridBagConstraints();
-	GridBagLayout gridBag = new GridBagLayout();
-	panel.setLayout(gridBag);
-	c.gridx = 0;
-	c.gridy = 0;
-	c.weightx = 0.5;
-	c.weighty = 0.5;
+	panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
+	panel.add(Box.createGlue());
 
 	debugInputField = new JTextField(DEBUG_WIDTH);
-	gridBag.setConstraints(debugInputField, c);
 	panel.add(debugInputField);
+	debugInputField.setMaximumSize(debugInputField.getPreferredSize());
 	
-	c.gridx++;
 	JButton button = new JButton("+"); //add listener that adds stuff to the debugMatchPanel
-	gridBag.setConstraints(button, c);
 	panel.add(button);
-
+	
+	panel.add(Box.createGlue());
+	
 	class AddActionListener implements ActionListener {
 	    public AddActionListener() {}
 	    public void actionPerformed(ActionEvent ae) {
@@ -231,7 +212,7 @@ public class DebugConsole extends JPanel {
 		    return;
 		debugMatchPanel.addDebugString(debugInputField.getText().trim());
 		debugInputField.setText("");
-		((JInternalFrame)getRootPane().getParent()).pack();
+		//((JInternalFrame)getRootPane().getParent()).pack();
 		revalidate();
 	    }
 	}
@@ -448,16 +429,16 @@ public class DebugConsole extends JPanel {
 	    DebugMatch foo = new DebugMatch(str, this);
 	    add(foo);
 	    matches.add(foo);
-	    ((JInternalFrame)getRootPane().getParent()).pack();
-	    revalidate();
+	    // ((JInternalFrame)getRootPane().getParent()).pack();
+ 	    revalidate();
 	}
 	public void removeDebugString(DebugMatch match) {
 	    if(match.isEnabled())
 		disableDebugString(match.toString());
 	    remove(match);
 	    matches.remove(match);
-	    ((JInternalFrame)getRootPane().getParent()).pack();
-	    revalidate();
+// 	    ((JInternalFrame)getRootPane().getParent()).pack();
+ 	    revalidate();
 	}
 	public void disableDebugString(String str) {
 	    PlannerControlJNI.disableDebugMsg(firstPart(str), secondPart(str));
@@ -488,17 +469,21 @@ public class DebugConsole extends JPanel {
 	    me = this;
 	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
+	    add(Box.createGlue());
+
 	    enableBox = new JCheckBox();
 	    add(enableBox);
 
 	    match = new JTextField(DEBUG_WIDTH);
 	    match.setText(str);
 	    match.setEditable(false);
+	    match.setMaximumSize(match.getPreferredSize());
 	    add(match);
 
 	    JButton removeButton = new JButton("-");
 	    add(removeButton);
 
+	    add(Box.createGlue());
 	    enableBox.addItemListener(new ItemListener() {
 		    public void itemStateChanged(ItemEvent ie) {
 			if(ie.getStateChange() == ItemEvent.SELECTED) {
@@ -607,41 +592,31 @@ public class DebugConsole extends JPanel {
 	    searchDir = forwardText;
 	    matchFailed = "";
 	    wrapped = "";
-	    GridBagConstraints c = new GridBagConstraints();
-	    GridBagLayout gridBag = new GridBagLayout();
-	    setLayout(gridBag);
-	    c.gridx = 0;
-	    c.gridy = 0;
-	    c.weightx = 1;
-	    c.weighty = 1;
+	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 	    searchLabel = new JLabel(forwardText);
 	    searchLabel.setVisible(false);
-	    gridBag.setConstraints(searchLabel, c);
 	    add(searchLabel);
 
-	    c.weightx = 0.5;
-	    c.weighty = 0.5;
+	    add(Box.createGlue());
 
-	    c.gridx++;
 	    JLabel refreshLabel = new JLabel("Refresh every ");
-	    gridBag.setConstraints(refreshLabel, c);
 	    add(refreshLabel);
+	    refreshLabel.setMaximumSize(refreshLabel.getPreferredSize());
 
-	    c.gridx++;
 	    timedRefreshField = new JTextField("300");
-	    gridBag.setConstraints(timedRefreshField, c);
 	    add(timedRefreshField);
-
-	    c.gridx++;
+	    timedRefreshField.setMaximumSize(timedRefreshField.getPreferredSize());
+	    
 	    JLabel millis = new JLabel("ms");
-	    gridBag.setConstraints(millis, c);
 	    add(millis);
+	    millis.setMaximumSize(millis.getPreferredSize());
 
-	    c.gridx++;
+	    add(Box.createGlue());
+
 	    JCheckBox writeToTerm = new JCheckBox("Copy output to terminal", false);
-	    gridBag.setConstraints(writeToTerm, c);
 	    add(writeToTerm);
+	    writeToTerm.setMaximumSize(writeToTerm.getPreferredSize());
 
 	    timedRefreshField.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
@@ -671,7 +646,10 @@ public class DebugConsole extends JPanel {
 	    searchDir = (dir == FORWARD ? forwardText : backwardText);
 	    setText();
 	}
-	public void setSearchVisible(boolean b) {searchLabel.setVisible(b); revalidate();}
+	public void setSearchVisible(boolean b) { 
+	    searchLabel.setVisible(b); 
+	    revalidate();
+	}
 
 	public void stringChanged(String s){setText();}
 
