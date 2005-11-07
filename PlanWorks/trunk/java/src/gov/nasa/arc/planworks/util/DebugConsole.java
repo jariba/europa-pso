@@ -1,3 +1,16 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: DebugConsole.java,v 1.3 2005-11-07 17:51:55 miatauro Exp $
+//
+// PlanWorks -- 
+//
+// Michael Iatauro -- started 5nov05
+//
+
 package gov.nasa.arc.planworks.util;
 
 import java.awt.Color;
@@ -64,6 +77,13 @@ import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 
+/**
+ * <code>DebugConsole</code> - Window to enable/disable and capture PLASMA debugging output
+ *
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * @version 0.1
+ */
+
 public class DebugConsole extends JPanel {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 400;
@@ -84,11 +104,13 @@ public class DebugConsole extends JPanel {
     private SearchStringManager searchString;
     private SearchStringListener searchUpdateListener;
     private boolean wrapSearch;
+    private boolean writeToTerminal;
 
     public DebugConsole(final String debugPath) {
 	refreshSleep = 300;
 	searchString = new SearchStringManager();
 	wrapSearch = false;
+	writeToTerminal = false;
 
 	setBackground(ViewConstants.VIEW_BACKGROUND_COLOR);
 	GridBagLayout gridBag = new GridBagLayout();
@@ -148,9 +170,10 @@ public class DebugConsole extends JPanel {
 					  "IOException", JOptionPane.ERROR_MESSAGE);
 	}
 
+	installBaseImap();	
+    }
 
-	
-
+    private void installBaseImap() {
 	//add an input map for when we're focused
 	InputMap imap = new InputMap();
 	imap.setParent(getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
@@ -169,159 +192,17 @@ public class DebugConsole extends JPanel {
 	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK, true), backwardSearch);
 	amap.put(backwardSearch, new EnterSearchModeAction(this, BACKWARD));
 
-	//C-v, pgdown next page nextPage
-	String nextPage = "nextPage";
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true), nextPage);
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0, true), nextPage);
-	amap.put(nextPage, new JumpAction(this, 15));
-
-	//M-v, pgup previous page prevPage
-	String prevPage = "prevPage";
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.META_MASK, true), prevPage);
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0, true), prevPage);
-	amap.put(prevPage, new JumpAction(this, -15));
-
-	//C-n, down next line nextLine
-	String nextLine = "nextLine";
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, true), nextLine);
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, true), nextLine);
-	amap.put(nextLine, new JumpAction(this, 1));
-	
-	//C-p, up previous line prevLine
-	String prevLine = "prevLine";
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK, true), prevLine);
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, true), prevLine);
-	amap.put(prevLine, new JumpAction(this, 1));
-
 	//M-,, home jump to beginning jumpBeginning
 	String jumpBeginning = "jumpBeginning";
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, InputEvent.META_MASK, true), jumpBeginning);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, InputEvent.META_MASK | InputEvent.SHIFT_MASK, true), jumpBeginning);
 	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0, true), jumpBeginning);
 	amap.put(jumpBeginning, new JumpAction(this, Integer.MIN_VALUE));
 
 	//M-., end jump to end jumpEnd
 	String jumpEnd = "jumpEnd";
-	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, InputEvent.META_MASK, true), jumpEnd);
+	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, InputEvent.META_MASK | InputEvent.SHIFT_MASK, true), jumpEnd);
 	imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0, true), jumpEnd);
 	amap.put(jumpEnd, new JumpAction(this, Integer.MAX_VALUE));
-	
-    }
-
-    class EnterSearchModeAction extends AbstractAction {
-	private int dir;
-	private DebugConsole console;
-	public EnterSearchModeAction(DebugConsole console, int dir) {
-	    this.console = console;
-	    this.dir = dir;
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    console.enterSearchMode(dir);
-	}
-    }
-
-    //doesn't work.  fix this.
-    class JumpAction extends AbstractAction {
-	private int amt;
-	private DebugConsole console;
-	public JumpAction(DebugConsole console, int amt) {
-	    this.amt = amt;
-	    this.console = console;
-	}
-	public void actionPerformed(ActionEvent ae) {
-	    int scrollPosition = 0;
-	    if(amt == Integer.MIN_VALUE) { //set carat to 0, scroll all the way up
-		System.err.println("M-, was pressed");
-		textArea.setCaretPosition(0);
-		scrollPosition = textPane.getVerticalScrollBar().getMinimum();
-	    }
-	    else if(amt == Integer.MAX_VALUE) { //set carat as high as possible, scroll all the way down
-		System.err.println("M-. was pressed");
-		textArea.setCaretPosition(textArea.getText().length());
-		scrollPosition = textPane.getVerticalScrollBar().getMaximum();
-	    }
-	    else { //set carat position up by amt lines (can be negative), scroll so carat is centered
-	    }
-	    textPane.getVerticalScrollBar().setValue(scrollPosition);
-	}
-    }
-
-    class RefreshPanel extends JPanel implements SearchStringListener {
-	private static final String forwardText = "I-search: ";
-	private static final String backwardText = "Backward I-search: ";
-	private static final String failingText = "Failing ";
-	private static final String wrappedText = "Wrapped ";
-
-	private JLabel searchLabel;
-	String searchDir;
-	String matchFailed;
-	String wrapped;
-	public RefreshPanel() {
-	    searchDir = forwardText;
-	    matchFailed = "";
-	    wrapped = "";
-	    GridBagConstraints c = new GridBagConstraints();
-	    GridBagLayout gridBag = new GridBagLayout();
-	    setLayout(gridBag);
-	    c.gridx = 0;
-	    c.gridy = 0;
-	    c.weightx = 0;
-	    c.weighty = 0;
-
-	    searchLabel = new JLabel(forwardText);
-	    searchLabel.setVisible(false);
-	    gridBag.setConstraints(searchLabel, c);
-	    add(searchLabel);
-
-	    c.weightx = 0.5;
-	    c.weighty = 0.5;
-
-	    c.gridx++;
-	    JLabel refreshLabel = new JLabel("Refresh every ");
-	    gridBag.setConstraints(refreshLabel, c);
-	    add(refreshLabel);
-
-	    c.gridx++;
-	    timedRefreshField = new JTextField("300");
-	    gridBag.setConstraints(timedRefreshField, c);
-	    add(timedRefreshField);
-
-	    c.gridx++;
-	    JLabel millis = new JLabel("ms");
-	    gridBag.setConstraints(millis, c);
-	    add(millis);
-
-	    timedRefreshField.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-			try {
-			    refreshSleep = Integer.parseInt(timedRefreshField.getText());
-			    System.err.println("Set refresh time to " + refreshSleep);
-			}
-			catch(NumberFormatException nfe) {
-			    JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), "Error: '" + timedRefreshField.getText() + "' is not an integer.",
-							  "Integer parse error.", JOptionPane.ERROR_MESSAGE);
-			}
-		    }});
-
-
-	}
-	public void setSearchWrapped(boolean wrap) {
-	    wrapped = (wrap ? wrappedText : "");
-	}
-	public void setMatchFailed(boolean failed) {
-	    matchFailed = (failed ? failingText : "");
-	    setText();
-	}
-	public void setSearchDirection(int dir) {
-	    searchDir = (dir == FORWARD ? forwardText : backwardText);
-	    setText();
-	}
-	public void setSearchVisible(boolean b) {searchLabel.setVisible(b); revalidate();}
-
-	public void stringChanged(String s){setText();}
-
-	private void setText() {
-	    searchLabel.setText(matchFailed + wrapped + searchDir + searchString.str());
-	}
     }
 
     private JPanel createDebugInputPanel() {
@@ -360,139 +241,7 @@ public class DebugConsole extends JPanel {
 	return panel;
     }
 
-    class DebugMatchPanel extends JPanel {
-	private List matches;
-
-	public DebugMatchPanel() {
-	    matches = new LinkedList();
-	    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-	}
-	public void addDebugString(String str) {
-	    DebugMatch foo = new DebugMatch(str, this);
-	    add(foo);
-	    matches.add(foo);
-	    ((JInternalFrame)getRootPane().getParent()).pack();
-	    revalidate();
-	}
-	public void removeDebugString(DebugMatch match) {
-	    if(match.isEnabled())
-		disableDebugString(match.toString());
-	    remove(match);
-	    matches.remove(match);
-	    ((JInternalFrame)getRootPane().getParent()).pack();
-	    revalidate();
-	}
-	public void disableDebugString(String str) {
-	    PlannerControlJNI.disableDebugMsg(firstPart(str), secondPart(str));
-	}
-	public void enableDebugString(String str) {
-	    PlannerControlJNI.enableDebugMsg(firstPart(str), secondPart(str));
-	}
-	public void disableAll() {
-	    for(Iterator it = matches.iterator(); it.hasNext();)
-		((DebugMatch)it.next()).disableMsg();
-	}
-	private String firstPart(String str) {
-	    return str.substring(0, str.indexOf(':'));
-	}
-	private String secondPart(String str) {
-	    return str.substring(str.indexOf(':')+1);
-	}
-    }
-
-    class DebugMatch extends JPanel {
-	private String str;
-	private DebugMatchPanel panel;
-	private JTextField match;
-	private DebugMatch me; //member variable so it can be used in anonymous class
-	private JCheckBox enableBox;
-	public DebugMatch(String _str, DebugMatchPanel _panel) {
-	    str = _str;  panel = _panel;
-	    me = this;
-	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-
-	    enableBox = new JCheckBox();
-	    add(enableBox);
-
-	    match = new JTextField(DEBUG_WIDTH);
-	    match.setText(str);
-	    match.setEditable(false);
-	    add(match);
-
-	    JButton removeButton = new JButton("-");
-	    add(removeButton);
-
-	    enableBox.addItemListener(new ItemListener() {
-		    public void itemStateChanged(ItemEvent ie) {
-			if(ie.getStateChange() == ItemEvent.SELECTED) {
-			    match.setFont(match.getFont().deriveFont(Font.BOLD));
-			    System.err.println("Enabling messages matching '" + str + "' because of enableBox state change...");
-			    panel.enableDebugString(str);
-			    revalidate();
-			}
-			else if(ie.getStateChange() == ItemEvent.DESELECTED) {
-			    match.setFont(match.getFont().deriveFont(Font.PLAIN));
-			    System.err.println("Disabling messages matching '" + str + "' because of enableBox state change...");
-			    panel.disableDebugString(str);
-			    revalidate();
-			}
-		    }
-		});
-
-	    removeButton.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent ae) {
-			    panel.removeDebugString(me);
-		    }
-		});
-	    enableBox.setSelected(true);
-	}
-	public String toString(){return str;}
-	
-	public boolean isEnabled(){return enableBox.isSelected();}
-
-	public void disableMsg() {
-	    if(enableBox.isSelected()) {
-		System.err.println("Disabling messages matching '" + str + "'");
-		enableBox.doClick();
-	    }
-	}
-    }
-
-    class DebugWatcherThread extends Thread {
-	private File file;
-	private BufferedReader debugFile;
-	private long size;
-	public DebugWatcherThread(String debugPath) throws FileNotFoundException {
-	    file = new File(debugPath);
-	    debugFile = new BufferedReader(new FileReader(file));
-	    size = file.length();
-	}
-	public void run() {
-	    while(true) {
-		try{Thread.sleep(refreshSleep);}catch(Exception e){System.err.println("Warning<<sleep interrupted>>: " + e.getMessage());}
-		try {
-		    if(debugFile.ready()) {
-			if(file.length() < size) //if there is a reduction in size, flush the current text
-			    textArea.setText("");
-			for(String line = debugFile.readLine(); line != null; line = debugFile.readLine()) {
-			    textArea.append(line + "\n");
-			    System.out.println(line);
-			}
-		    }
-		}
-		catch(IOException ioe) {
-		    JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(),
-						  "Debug I/O Error: " + ioe.getMessage() + "\n" +
-						  "The debug console will no longer refresh for this planner run.",
-						  "IOException", JOptionPane.ERROR_MESSAGE);
-		    return;
-		}
-	    }
-	}
-    }
-
     private void enterSearchMode(final int searchDirection) {
-	System.err.println("Entering search mode " + (searchDirection > 0 ? "forward" : "backward"));
 	refreshPanel.setSearchVisible(true);
 	refreshPanel.setSearchDirection(searchDirection);
 	refreshPanel.setSearchWrapped(false);
@@ -596,7 +345,6 @@ public class DebugConsole extends JPanel {
     }
 
     private void leaveSearchMode() {
-	System.err.println("Leaving search mode.");
 	searchString.removeListener(searchUpdateListener);
 	refreshPanel.setSearchVisible(false);
 	
@@ -687,6 +435,249 @@ public class DebugConsole extends JPanel {
     private void removeLastChar() {
 	refreshPanel.setSearchWrapped(false);
 	searchString.backUp();
+    }
+
+    class DebugMatchPanel extends JPanel {
+	private List matches;
+
+	public DebugMatchPanel() {
+	    matches = new LinkedList();
+	    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+	}
+	public void addDebugString(String str) {
+	    DebugMatch foo = new DebugMatch(str, this);
+	    add(foo);
+	    matches.add(foo);
+	    ((JInternalFrame)getRootPane().getParent()).pack();
+	    revalidate();
+	}
+	public void removeDebugString(DebugMatch match) {
+	    if(match.isEnabled())
+		disableDebugString(match.toString());
+	    remove(match);
+	    matches.remove(match);
+	    ((JInternalFrame)getRootPane().getParent()).pack();
+	    revalidate();
+	}
+	public void disableDebugString(String str) {
+	    PlannerControlJNI.disableDebugMsg(firstPart(str), secondPart(str));
+	}
+	public void enableDebugString(String str) {
+	    PlannerControlJNI.enableDebugMsg(firstPart(str), secondPart(str));
+	}
+	public void disableAll() {
+	    for(Iterator it = matches.iterator(); it.hasNext();)
+		((DebugMatch)it.next()).disableMsg();
+	}
+	private String firstPart(String str) {
+	    return str.substring(0, str.indexOf(':'));
+	}
+	private String secondPart(String str) {
+	    return str.substring(str.indexOf(':')+1);
+	}
+    }
+
+    class DebugMatch extends JPanel {
+	private String str;
+	private DebugMatchPanel panel;
+	private JTextField match;
+	private DebugMatch me; //member variable so it can be used in anonymous class
+	private JCheckBox enableBox;
+	public DebugMatch(String _str, DebugMatchPanel _panel) {
+	    str = _str;  panel = _panel;
+	    me = this;
+	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+	    enableBox = new JCheckBox();
+	    add(enableBox);
+
+	    match = new JTextField(DEBUG_WIDTH);
+	    match.setText(str);
+	    match.setEditable(false);
+	    add(match);
+
+	    JButton removeButton = new JButton("-");
+	    add(removeButton);
+
+	    enableBox.addItemListener(new ItemListener() {
+		    public void itemStateChanged(ItemEvent ie) {
+			if(ie.getStateChange() == ItemEvent.SELECTED) {
+			    match.setFont(match.getFont().deriveFont(Font.BOLD));
+			    panel.enableDebugString(str);
+			    revalidate();
+			}
+			else if(ie.getStateChange() == ItemEvent.DESELECTED) {
+			    match.setFont(match.getFont().deriveFont(Font.PLAIN));
+			    panel.disableDebugString(str);
+			    revalidate();
+			}
+		    }
+		});
+
+	    removeButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent ae) {
+			    panel.removeDebugString(me);
+		    }
+		});
+	    enableBox.setSelected(true);
+	}
+	public String toString(){return str;}
+	
+	public boolean isEnabled(){return enableBox.isSelected();}
+
+	public void disableMsg() {
+	    if(enableBox.isSelected()) {
+		enableBox.doClick();
+	    }
+	}
+    }
+
+    class DebugWatcherThread extends Thread {
+	private File file;
+	private BufferedReader debugFile;
+	private long size;
+	public DebugWatcherThread(String debugPath) throws FileNotFoundException {
+	    file = new File(debugPath);
+	    debugFile = new BufferedReader(new FileReader(file));
+	    size = file.length();
+	}
+	public void run() {
+	    while(true) {
+		try{Thread.sleep(refreshSleep);}catch(Exception e){System.err.println("Warning<<sleep interrupted>>: " + e.getMessage());}
+		try {
+		    if(debugFile.ready()) {
+			if(file.length() < size) //if there is a reduction in size, flush the current text
+			    textArea.setText("");
+			for(String line = debugFile.readLine(); line != null; line = debugFile.readLine()) {
+			    textArea.append(line + "\n");
+			    if(writeToTerminal)
+				System.out.println(line);
+			}
+		    }
+		}
+		catch(IOException ioe) {
+		    JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(),
+						  "Debug I/O Error: " + ioe.getMessage() + "\n" +
+						  "The debug console will no longer refresh for this planner run.",
+						  "IOException", JOptionPane.ERROR_MESSAGE);
+		    return;
+		}
+	    }
+	}
+    }
+
+    class EnterSearchModeAction extends AbstractAction {
+	private int dir;
+	private DebugConsole console;
+	public EnterSearchModeAction(DebugConsole console, int dir) {
+	    this.console = console;
+	    this.dir = dir;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    console.enterSearchMode(dir);
+	}
+    }
+
+    class JumpAction extends AbstractAction {
+	private int amt;
+	private DebugConsole console;
+	public JumpAction(DebugConsole console, int amt) {
+	    this.amt = amt;
+	    this.console = console;
+	}
+	public void actionPerformed(ActionEvent ae) {
+	    if(amt == Integer.MIN_VALUE)
+		textArea.setCaretPosition(0);
+	    else if(amt == Integer.MAX_VALUE)
+		textArea.setCaretPosition(textArea.getText().length());
+	}
+    }
+
+    class RefreshPanel extends JPanel implements SearchStringListener {
+	private static final String forwardText = "I-search: ";
+	private static final String backwardText = "Backward I-search: ";
+	private static final String failingText = "Failing ";
+	private static final String wrappedText = "Wrapped ";
+
+	private JLabel searchLabel;
+	String searchDir;
+	String matchFailed;
+	String wrapped;
+	public RefreshPanel() {
+	    searchDir = forwardText;
+	    matchFailed = "";
+	    wrapped = "";
+	    GridBagConstraints c = new GridBagConstraints();
+	    GridBagLayout gridBag = new GridBagLayout();
+	    setLayout(gridBag);
+	    c.gridx = 0;
+	    c.gridy = 0;
+	    c.weightx = 1;
+	    c.weighty = 1;
+
+	    searchLabel = new JLabel(forwardText);
+	    searchLabel.setVisible(false);
+	    gridBag.setConstraints(searchLabel, c);
+	    add(searchLabel);
+
+	    c.weightx = 0.5;
+	    c.weighty = 0.5;
+
+	    c.gridx++;
+	    JLabel refreshLabel = new JLabel("Refresh every ");
+	    gridBag.setConstraints(refreshLabel, c);
+	    add(refreshLabel);
+
+	    c.gridx++;
+	    timedRefreshField = new JTextField("300");
+	    gridBag.setConstraints(timedRefreshField, c);
+	    add(timedRefreshField);
+
+	    c.gridx++;
+	    JLabel millis = new JLabel("ms");
+	    gridBag.setConstraints(millis, c);
+	    add(millis);
+
+	    c.gridx++;
+	    JCheckBox writeToTerm = new JCheckBox("Copy output to terminal", false);
+	    gridBag.setConstraints(writeToTerm, c);
+	    add(writeToTerm);
+
+	    timedRefreshField.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e) {
+			try {
+			    refreshSleep = Integer.parseInt(timedRefreshField.getText());
+			}
+			catch(NumberFormatException nfe) {
+			    JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), "Error: '" + timedRefreshField.getText() + "' is not an integer.",
+							  "Integer parse error.", JOptionPane.ERROR_MESSAGE);
+			}
+		    }});
+	    writeToTerm.addItemListener(new ItemListener() {
+		    public void itemStateChanged(ItemEvent ie) {
+			writeToTerminal = ie.getStateChange() == ItemEvent.SELECTED;
+		    }
+		});
+
+	}
+	public void setSearchWrapped(boolean wrap) {
+	    wrapped = (wrap ? wrappedText : "");
+	}
+	public void setMatchFailed(boolean failed) {
+	    matchFailed = (failed ? failingText : "");
+	    setText();
+	}
+	public void setSearchDirection(int dir) {
+	    searchDir = (dir == FORWARD ? forwardText : backwardText);
+	    setText();
+	}
+	public void setSearchVisible(boolean b) {searchLabel.setVisible(b); revalidate();}
+
+	public void stringChanged(String s){setText();}
+
+	private void setText() {
+	    searchLabel.setText(matchFailed + wrapped + searchDir + searchString.str());
+	}
     }
 
     class ExitSearchModeAction extends AbstractAction {
