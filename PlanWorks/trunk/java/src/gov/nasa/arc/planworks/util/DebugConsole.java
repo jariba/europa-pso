@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DebugConsole.java,v 1.4 2005-11-07 23:32:43 miatauro Exp $
+// $Id: DebugConsole.java,v 1.5 2005-11-08 21:30:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -119,7 +119,8 @@ public class DebugConsole extends JPanel {
 	searchString.addListener(refreshPanel);
 
 	textArea = new JTextArea(30,50);
-	textArea.setEditable(false);
+	//textArea.setEditable(false);
+	textArea.setEditable(true);
 	Caret caret = textArea.getCaret();
 	caret.setVisible(true);
 	textArea.setCaretColor(Color.BLACK);
