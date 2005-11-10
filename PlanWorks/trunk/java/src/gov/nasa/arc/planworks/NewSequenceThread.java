@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.19 2005-11-02 23:35:50 miatauro Exp $
+// $Id: NewSequenceThread.java,v 1.20 2005-11-10 01:22:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -146,8 +146,6 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
          "Planner Initialization Exception", JOptionPane.ERROR_MESSAGE);
       return null;
     }
-
-    getTransactionTypeStates();
 
     String seqUrl = PlannerControlJNI.getDestinationPath();
     System.err.println("from getNewSequenceUrl, returning '" + seqUrl + "'");
@@ -323,51 +321,5 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     nameValueList.add(heuristicsPath);
     ConfigureAndPlugins.updateProjectConfigMap( currentProject.getName(), nameValueList);
   } // end setConfigureParameters
-
-  private void getTransactionTypeStates() {
-    String [] transactionTypes;
-    int[] transactionTypeStates; // i = enabled; 0 = disabled
-    try {
-      transactionTypes = PlannerControlJNI.getTransactionTypes();
-//     for (int i = 0, n = transactionTypes.length; i < n; i++) {
-//       String transType = (String) transactionTypes[i];
-//       System.err.println( "transType i=" + i + " " + transType);
-//     }
-      transactionTypeStates = PlannerControlJNI.getTransactionTypeStates();
-//     for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
-//       int transTypeState = (int) transactionTypeStates[i];
-//       System.err.println( "transTypeState i=" + i + " " + transTypeState);
-//     }
-    } catch (UnsatisfiedLinkError ule) {
-      JOptionPane.showMessageDialog
-        (PlanWorks.getPlanWorks(), "JNI method '" + ule.getMessage() + "' has not been loaded",
-         "Planner Loading Error", JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    if (transactionTypes.length != transactionTypeStates.length) {
-      System.err.println( "ConfigureNewSequenceDialog: num transactionTypes (" +
-                          transactionTypes.length + ") is != num transactionTypeStates (" +
-                          transactionTypeStates.length + ") from PlannerControlJNI");
-      System.exit( -1);
-    }
-    TransactionTypesDialog transactionTypesDialog =
-      new TransactionTypesDialog( PlanWorks.getPlanWorks(), transactionTypes,
-                                  transactionTypeStates);
-    int[] transStates = transactionTypesDialog.getTransactionTypeStates();
-    if ( transStates != null ) {
-      boolean areTransStatesChanged = false;
-      for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
-        if (transactionTypeStates[i] != transStates[i]) {
-          areTransStatesChanged = true;
-          break;
-        }
-      }
-      if (areTransStatesChanged == false) {
-        return;
-      } else {
-        PlannerControlJNI.setTransactionTypeStates( transStates);
-      }
-    }
-  } // end getTransactionTypeStates
 
 } // end class NewSequenceThread

@@ -8,7 +8,6 @@ DELETE FROM Sequence;
 DELETE FROM Token;
 DELETE FROM VConstraint;
 DELETE FROM Variable;
-DELETE FROM Transaction;
 DELETE FROM ResourceInstants;
 DELETE FROM Rules;
 DELETE FROM RuleInstance;

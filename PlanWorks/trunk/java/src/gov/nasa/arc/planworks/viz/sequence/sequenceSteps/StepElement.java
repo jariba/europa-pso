@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.16 2004-07-15 21:24:48 taylor Exp $
+// $Id: StepElement.java,v 1.17 2005-11-10 01:22:14 miatauro Exp $
 //
 // PlanWorks
 //
@@ -39,7 +39,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
+//import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.Extent;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerControlJNI.java,v 1.5 2005-11-02 23:35:50 miatauro Exp $
+// $Id: PlannerControlJNI.java,v 1.6 2005-11-10 01:22:07 miatauro Exp $
 //
 // PlanWorks -- started 31aug04
 //
@@ -92,28 +92,6 @@ public class PlannerControlJNI {
    */
   public static native int terminatePlannerRun();
 
-
-  /**
-   * <code>getTransactionTypes</code>
-   *
-   * @return - <code>String[]</code> - 
-   */
-  public static native String [] getTransactionTypes();
-
-  /**
-   * <code>getTransactionTypeStates</code>
-   *
-   * @return - <code>int[]</code> - 
-   */
-  public static native int[] getTransactionTypeStates();
-
-  /**
-   * <code>setTransactionTypeStates</code>
-   *
-   * @param transTypeStates - <code>int[]</code> - 
-   */
-  public static native void setTransactionTypeStates(  final int[] transTypeStates);
-    
     public static native void enableDebugMsg(final String file, final String pattern);
     public static native void disableDebugMsg(final String file, final String pattern);
 } // end PlannerControlJNI

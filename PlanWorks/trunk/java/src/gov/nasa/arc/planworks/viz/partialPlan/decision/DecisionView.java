@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.17 2004-10-07 20:19:10 taylor Exp $
+// $Id: DecisionView.java,v 1.18 2005-11-10 01:22:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -263,13 +263,9 @@ public class DecisionView extends PartialPlanView {
                                     ViewConstants.VIEW_FONT_BOLD_STYLE,
                                     ViewConstants.VIEW_FONT_SIZE);
 
-    Integer currentDecisionId = getCurrentDecisionIdFromTransactions();
+    Integer currentDecisionId = getCurrentDecisionIdFromDecisions();
 
     DefaultMutableTreeNode nodeTree = renderDecisions(); // assign decisionList
-
-    if (currentDecisionId == null) {
-      currentDecisionId = getCurrentDecisionIdFromDecisions();
-    }
 
     decisionTree = new DecisionTree( nodeTree, currentDecisionId);
 
@@ -320,24 +316,24 @@ public class DecisionView extends PartialPlanView {
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
-  private Integer getCurrentDecisionIdFromTransactions() {
-    Integer currentDecisionId = null;
-    if (planSequence.hasLoadedTransactionFile( partialPlan.getId()) ||
-	planSequence.isTransactionFileOnDisk()) {
-      try {
-	currentDecisionId =
-	  planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
-      } catch ( ResourceNotFoundException rnfExcep) {
-	int index = rnfExcep.getMessage().indexOf( ":");
-	JOptionPane.showMessageDialog
-	  (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
-	   "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-	System.err.println( rnfExcep);
-	rnfExcep.printStackTrace();
-      }
-    }
-    return currentDecisionId;
-      } // end getCurrentDecisionIdFromTransactions
+//   private Integer getCurrentDecisionIdFromTransactions() {
+//     Integer currentDecisionId = null;
+//     if (planSequence.hasLoadedTransactionFile( partialPlan.getId()) ||
+// 	planSequence.isTransactionFileOnDisk()) {
+//       try {
+// 	currentDecisionId =
+// 	  planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
+//       } catch ( ResourceNotFoundException rnfExcep) {
+// 	int index = rnfExcep.getMessage().indexOf( ":");
+// 	JOptionPane.showMessageDialog
+// 	  (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+// 	   "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+// 	System.err.println( rnfExcep);
+// 	rnfExcep.printStackTrace();
+//       }
+//     }
+//     return currentDecisionId;
+//       } // end getCurrentDecisionIdFromTransactions
 
   private Integer getCurrentDecisionIdFromDecisions() {
     Integer currentDecisionId = null;

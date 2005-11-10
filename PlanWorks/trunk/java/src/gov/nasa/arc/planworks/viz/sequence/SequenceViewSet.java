@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.21 2005-11-02 23:38:01 miatauro Exp $
+// $Id: SequenceViewSet.java,v 1.22 2005-11-10 01:22:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSetRemover;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
+//import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 
 /**
@@ -56,26 +56,26 @@ public class SequenceViewSet extends ViewSet {
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
 
-    this.contentSpecWindow = desktopFrame.createFrame( ViewConstants.SEQUENCE_QUERY_TITLE +
-                                                       " for " + viewable.getName(),
-                                                       this, true, false, false, true);
-    Container contentPane = this.contentSpecWindow.getContentPane();
+    // this.contentSpecWindow = desktopFrame.createFrame( ViewConstants.SEQUENCE_QUERY_TITLE +
+//                                                        " for " + viewable.getName(),
+//                                                        this, true, false, false, true);
+//     Container contentPane = this.contentSpecWindow.getContentPane();
 
-//     this.contentSpec = new SequenceContentSpec( viewable, this);
-//     ((PwPlanningSequence) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
-    contentPane.add( new SequenceQueryWindow( this.contentSpecWindow, desktopFrame,
-                                              viewable, this));
-    this.contentSpecWindow.pack();
+// //     this.contentSpec = new SequenceContentSpec( viewable, this);
+// //     ((PwPlanningSequence) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
+//     contentPane.add( new SequenceQueryWindow( this.contentSpecWindow, desktopFrame,
+//                                               viewable, this));
+//     this.contentSpecWindow.pack();
 
-    int delta = 0;
-    // do not use deltas -- causes windows to slip off screen
-//     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
-//                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-//                           (int) ((PlanWorks.getPlanWorks().getSize().getHeight() -
-//                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
+//     int delta = 0;
+//     // do not use deltas -- causes windows to slip off screen
+// //     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+// //                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+// //                           (int) ((PlanWorks.getPlanWorks().getSize().getHeight() -
+// //                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
 
-    this.contentSpecWindow.setLocation( delta, delta);
-    this.contentSpecWindow.setVisible(true);
+//     this.contentSpecWindow.setLocation( delta, delta);
+//     this.contentSpecWindow.setVisible(true);
     planControllerFrameCnt = 0;
     debugConsoleFrameCnt = 0;
   } // end constructor

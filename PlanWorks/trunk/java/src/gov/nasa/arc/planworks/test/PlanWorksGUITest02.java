@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest02.java,v 1.1 2004-10-01 20:04:31 taylor Exp $
+// $Id: PlanWorksGUITest02.java,v 1.2 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -20,7 +20,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+//import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 
 
@@ -45,8 +45,8 @@ public class PlanWorksGUITest02 {
                DbConstants.SEQ_PP_STATS)).delete();
     (new File( sequenceFileArray[0] + System.getProperty("file.separator") +
                DbConstants.SEQ_FILE)).delete();
-    (new File( sequenceFileArray[0] + System.getProperty("file.separator") +
-               DbConstants.SEQ_TRANSACTIONS)).delete();
+//     (new File( sequenceFileArray[0] + System.getProperty("file.separator") +
+//                DbConstants.SEQ_TRANSACTIONS)).delete();
     String [] fileNames = sequenceFileArray[0].list();
     boolean success = true;
     for (int i = 0, n = fileNames.length; i < n; i++) {
@@ -119,15 +119,15 @@ public class PlanWorksGUITest02 {
     guiTest.assertFalseVerbose( "DBTransaction View is not is only view available",
                                 isTimelineViewAvailable, "not ");
 
-    viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
-    PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListenerList,
-                                                helper, guiTest);
-   String viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
-     System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
-    DBTransactionView dbTransactionView =
-      ( DBTransactionView) PWTestHelper.getPartialPlanView
-      ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
+//     viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
+//     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
+//                                                 viewMenuItemName, viewListenerList,
+//                                                 helper, guiTest);
+//    String viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
+//      System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
+//     DBTransactionView dbTransactionView =
+//       ( DBTransactionView) PWTestHelper.getPartialPlanView
+//       ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
 
     // try{Thread.sleep(2000);}catch(Exception e){}
 

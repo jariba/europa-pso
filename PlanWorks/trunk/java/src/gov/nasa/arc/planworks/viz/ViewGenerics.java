@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.27 2004-10-07 20:19:06 taylor Exp $
+// $Id: ViewGenerics.java,v 1.28 2005-11-10 01:22:12 miatauro Exp $
 //
 // PlanWorks
 //
@@ -72,7 +72,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
+//import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
@@ -435,10 +435,10 @@ public class ViewGenerics {
       ( new TokenNetworkViewFinder(), frame.getContentPane().getComponents());
   }
 
-  class DBTransactionViewFinder implements BooleanFunctor {
-    public DBTransactionViewFinder(){}
-    public final boolean func(Object o){return (o instanceof DBTransactionView);}
-  }
+//   class DBTransactionViewFinder implements BooleanFunctor {
+//     public DBTransactionViewFinder(){}
+//     public final boolean func(Object o){return (o instanceof DBTransactionView);}
+//   }
 
   /**
    * <code>getDBTransactionView</code> - cannot be generalized (jdk1.4)
@@ -446,14 +446,14 @@ public class ViewGenerics {
    * @param frame - <code>MDIInternalFrame</code> - 
    * @return - <code>DBTransactionView</code> - 
    */
-  public static DBTransactionView getDBTransactionView( MDIInternalFrame frame) {
-    return generics._getDBTransactionView(frame);
-  } // end getDBTransactionView
+//   public static DBTransactionView getDBTransactionView( MDIInternalFrame frame) {
+//     return generics._getDBTransactionView(frame);
+//   } // end getDBTransactionView
 
-  private final DBTransactionView _getDBTransactionView(MDIInternalFrame frame) {
-    return (DBTransactionView) CollectionUtils.findFirst
-      ( new DBTransactionViewFinder(), frame.getContentPane().getComponents());
-  }
+//   private final DBTransactionView _getDBTransactionView(MDIInternalFrame frame) {
+//     return (DBTransactionView) CollectionUtils.findFirst
+//       ( new DBTransactionViewFinder(), frame.getContentPane().getComponents());
+//   }
 
   class ResourceProfileViewFinder implements BooleanFunctor {
     public ResourceProfileViewFinder(){}
@@ -564,35 +564,35 @@ public class ViewGenerics {
    *
    * @return - <code>String</code> - 
    */
-  public static String computeTransactionNameHeader() {
-    //List nameList = MySQLDB.queryConstraintTransactionNames();
-    //nameList.addAll( MySQLDB.queryTokenTransactionNames());
-    //nameList.addAll( MySQLDB.queryVariableTransactionNames());
-    List nameList = MySQLDB.queryTransactionNameList();
-    StringBuffer transactionNameHeader =
-      new StringBuffer( ViewConstants.DB_TRANSACTION_NAME_HEADER);
-    int minLength = ViewConstants.DB_TRANSACTION_NAME_HEADER.length();
-    int maxLength = 0;
-    Iterator nameItr = nameList.iterator();
-    while (nameItr.hasNext()) {
-      String name = (String) nameItr.next();
-      if (name.length() > maxLength) {
-        maxLength = name.length();
-      }
-    }
-    if (maxLength > minLength) { 
-      boolean prepend = true;
-      for (int i = 0, n = maxLength - minLength; i < n; i++) {
-        if (prepend) {
-          transactionNameHeader.insert( 0, " ");
-        } else {
-          transactionNameHeader.append( " ");
-        }
-        prepend = (! prepend);
-      }
-    }
-    return transactionNameHeader.toString();
-  } // end computeTransactionNameHeader
+//   public static String computeTransactionNameHeader() {
+//     //List nameList = MySQLDB.queryConstraintTransactionNames();
+//     //nameList.addAll( MySQLDB.queryTokenTransactionNames());
+//     //nameList.addAll( MySQLDB.queryVariableTransactionNames());
+//     List nameList = MySQLDB.queryTransactionNameList();
+//     StringBuffer transactionNameHeader =
+//       new StringBuffer( ViewConstants.DB_TRANSACTION_NAME_HEADER);
+//     int minLength = ViewConstants.DB_TRANSACTION_NAME_HEADER.length();
+//     int maxLength = 0;
+//     Iterator nameItr = nameList.iterator();
+//     while (nameItr.hasNext()) {
+//       String name = (String) nameItr.next();
+//       if (name.length() > maxLength) {
+//         maxLength = name.length();
+//       }
+//     }
+//     if (maxLength > minLength) { 
+//       boolean prepend = true;
+//       for (int i = 0, n = maxLength - minLength; i < n; i++) {
+//         if (prepend) {
+//           transactionNameHeader.insert( 0, " ");
+//         } else {
+//           transactionNameHeader.append( " ");
+//         }
+//         prepend = (! prepend);
+//       }
+//     }
+//     return transactionNameHeader.toString();
+//   } // end computeTransactionNameHeader
 
   /**
    * <code>displayableWait</code>

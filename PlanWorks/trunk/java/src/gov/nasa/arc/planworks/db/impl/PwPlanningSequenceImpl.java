@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.100 2004-09-27 19:18:59 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.101 2005-11-10 01:22:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,7 +35,7 @@ import javax.swing.JOptionPane;
 import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
+//import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwListenable;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -69,8 +69,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   private String projectName;
   private String url; //directory containing the partialplan directories
   private PwModel model;
-  private boolean hasLoadedTransactionFile;
-  private Map transactions;
+    //private boolean hasLoadedTransactionFile;
+    //private Map transactions;
   private String name;
   private List contentSpec;
   private Map partialPlans; // partialPlanName Map of PwPartialPlan
@@ -90,7 +90,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    */
   public PwPlanningSequenceImpl( final String url, final Long id, final String projectName)
     throws ResourceNotFoundException {
-		hasLoadedTransactionFile = false;
+      //hasLoadedTransactionFile = false;
     this.url = url;
     this.id = id;
     this.model = null;
@@ -118,14 +118,14 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     //loadTransactions();
-    transactions = null;
+    //transactions = null;
     instantiateRules( projectName);
   }
 
   //for testing only
   public PwPlanningSequenceImpl( final String url, final Long id, final boolean forTesting) 
   throws ResourceNotFoundException {
-		hasLoadedTransactionFile = false;
+      //hasLoadedTransactionFile = false;
     this.url = url;
     this.id = id;
     this.model = null;
@@ -141,7 +141,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    
     partialPlans = new HashMap();
     planNamesInFilesystem = new ArrayList();
-    transactions = new HashMap();
+    //transactions = new HashMap();
     fakeRules();
   }
 
@@ -154,7 +154,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    */ 
   public PwPlanningSequenceImpl( final String url, final PwProjectImpl project)
     throws ResourceNotFoundException {
-    hasLoadedTransactionFile = false;
+      //hasLoadedTransactionFile = false;
     this.url = url;
     this.model = null;
     partialPlans = new HashMap();
@@ -193,7 +193,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       loadRulesFile();
     MySQLDB.analyzeDatabase();
     //loadTransactions();
-    transactions = null;
+    //transactions = null;
     planNamesInFilesystem = new ArrayList();
     ListIterator ppNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
     while(ppNameIterator.hasNext()) {
@@ -219,33 +219,33 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     url = urls[choice];
   }
 
-  private void loadTransactionFile() {
-    if(hasLoadedTransactionFile()) {
-      return;
-    }
-    loadTransactionFileDoit();
-  }
+//   private void loadTransactionFile() {
+//     if(hasLoadedTransactionFile()) {
+//       return;
+//     }
+//     loadTransactionFileDoit();
+//   }
 
-  private void loadTransactionFile( final Long partialPlanId) {
-    if(hasLoadedTransactionFile( partialPlanId)) {
-      return;
-    }
-    loadTransactionFileDoit();
-  }
+//   private void loadTransactionFile( final Long partialPlanId) {
+//     if(hasLoadedTransactionFile( partialPlanId)) {
+//       return;
+//     }
+//     loadTransactionFileDoit();
+//   }
 
-  private void loadTransactionFileDoit() {
-    if (isTransactionFileOnDisk()) {
-      long t1 = System.currentTimeMillis();
-      MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_TRANSACTIONS,
-		       DbConstants.TBL_TRANSACTION);
-      System.err.println("Loading transaction file took " +
-			 (System.currentTimeMillis() - t1) + " msecs.");
-      hasLoadedTransactionFile = true;
-    } else {
-      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " + name,
-				     "No Transactions Available", JOptionPane.ERROR_MESSAGE);
-    }
-  } // end loadTransactionFileDoit
+//   private void loadTransactionFileDoit() {
+//     if (isTransactionFileOnDisk()) {
+//       long t1 = System.currentTimeMillis();
+//       MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_TRANSACTIONS,
+// 		       DbConstants.TBL_TRANSACTION);
+//       System.err.println("Loading transaction file took " +
+// 			 (System.currentTimeMillis() - t1) + " msecs.");
+//       hasLoadedTransactionFile = true;
+//     } else {
+//       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " + name,
+// 				     "No Transactions Available", JOptionPane.ERROR_MESSAGE);
+//     }
+//   } // end loadTransactionFileDoit
 
   private void loadStatsFile() {
     long t1 = System.currentTimeMillis();
@@ -322,25 +322,25 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean hasLoadedTransactionFile() {
-    if (isTransactionFileOnDisk()) {
-      return hasLoadedTransactionFile;
-    } else {
-      int maxStepNumber = getPlanDBSizeList().size() - 1;
-      int maxTransStepNumber = MySQLDB.maxStepForTransactionsInDb( id);
-      if (maxTransStepNumber == -1) {
-	// no transactions in db
-	return false;
-      } else if (maxTransStepNumber < maxStepNumber) {
-	JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " + name +
-				       ": step0 - step" + maxTransStepNumber + " (of " +
-				       maxStepNumber + ")",
-				       "Limited Transactions Available", 
-				       JOptionPane.ERROR_MESSAGE);
-      }
-      return true;
-    }
-  } // end hasLoadedTransactionFile()
+//   public boolean hasLoadedTransactionFile() {
+//     if (isTransactionFileOnDisk()) {
+//       return hasLoadedTransactionFile;
+//     } else {
+//       int maxStepNumber = getPlanDBSizeList().size() - 1;
+//       int maxTransStepNumber = MySQLDB.maxStepForTransactionsInDb( id);
+//       if (maxTransStepNumber == -1) {
+// 	// no transactions in db
+// 	return false;
+//       } else if (maxTransStepNumber < maxStepNumber) {
+// 	JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " + name +
+// 				       ": step0 - step" + maxTransStepNumber + " (of " +
+// 				       maxStepNumber + ")",
+// 				       "Limited Transactions Available", 
+// 				       JOptionPane.ERROR_MESSAGE);
+//       }
+//       return true;
+//     }
+//   } // end hasLoadedTransactionFile()
 
   /**
    * <code>hasLoadedTransactionFile</code>
@@ -348,12 +348,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @param partialPlanId - <code>Long</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean hasLoadedTransactionFile( final Long partialPlanId) {
+    //  public boolean hasLoadedTransactionFile( final Long partialPlanId) {
 //     System.err.println( "hasLoadedTransactionFile(partialPlanId): hasLoadedTransactionFile " +
 // 			hasLoadedTransactionFile + " transactionsInDatabaseForStep " +
 // 			MySQLDB.transactionsInDatabaseForStep( partialPlanId));
-    return hasLoadedTransactionFile || MySQLDB.transactionsInDatabaseForStep( partialPlanId);
-  }
+//    return hasLoadedTransactionFile || MySQLDB.transactionsInDatabaseForStep( partialPlanId);
+//  }
 
   /**
    * <code>hasLoadedTransactionFile</code>
@@ -361,24 +361,24 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @param partialPlanName - <code>String</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean hasLoadedTransactionFile( final String partialPlanName) {
+  //public boolean hasLoadedTransactionFile( final String partialPlanName) {
 //     System.err.println( "hasLoadedTransactionFile(partialPlanName): " + partialPlanName +
 // 			" partialPlanId " +
 // 			MySQLDB.getPartialPlanIdByStepNum
 // 			( id, Integer.parseInt( partialPlanName.substring( 4))));
-    return hasLoadedTransactionFile( MySQLDB.getPartialPlanIdByStepNum
-				     ( id, Integer.parseInt( partialPlanName.substring( 4))));
-  }
+    //return hasLoadedTransactionFile( MySQLDB.getPartialPlanIdByStepNum
+    //				     ( id, Integer.parseInt( partialPlanName.substring( 4))));
+//}
 
   /**
    * <code>isTransactionFileOnDisk</code>
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean isTransactionFileOnDisk() {
-    return new File( url + System.getProperty("file.separator") +
-		     DbConstants.SEQ_TRANSACTIONS).exists();
-  }
+  // public boolean isTransactionFileOnDisk() {
+//     return new File( url + System.getProperty("file.separator") +
+// 		     DbConstants.SEQ_TRANSACTIONS).exists();
+//   }
 
   /**
    * <code>getTransactionsList</code>
@@ -386,14 +386,14 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @param step - <code>int</code> - 
    * @return - <code>List</code> - of PwDBTransaction
    */
-  public List getTransactionsList( final Long partialPlanId) {
-    loadTransactionFile( partialPlanId);
-    return MySQLDB.queryTransactionsForStep(id, partialPlanId);
-  } // end listTransactions
+  // public List getTransactionsList( final Long partialPlanId) {
+//     loadTransactionFile( partialPlanId);
+//     return MySQLDB.queryTransactionsForStep(id, partialPlanId);
+//   } // end listTransactions
 
-  public List getTransactionsList(final int stepNum) throws IndexOutOfBoundsException {
-    return getTransactionsList(getPartialPlanId(stepNum));
-  }
+//   public List getTransactionsList(final int stepNum) throws IndexOutOfBoundsException {
+//     return getTransactionsList(getPartialPlanId(stepNum));
+//   }
 
   /**
    * <code>listPartialPlans</code>
@@ -652,106 +652,106 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
                                               getPartialPlan( stepNum));
   }
 
-  public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException {
-    loadPartialPlanFiles("step" + stepNum);
-    Long partialPlanId = MySQLDB.getPartialPlanIdByStepNum(id, stepNum);
-    loadTransactionFile( partialPlanId);
-    return MySQLDB.queryCurrentDecisionIdForStep( partialPlanId);
-  }
+//   public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException {
+//     loadPartialPlanFiles("step" + stepNum);
+//     Long partialPlanId = MySQLDB.getPartialPlanIdByStepNum(id, stepNum);
+//     //loadTransactionFile( partialPlanId);
+//     return MySQLDB.queryCurrentDecisionIdForStep( partialPlanId);
+//   }
 
-  public List getTransactionsForConstraint(final Integer id) {
-    loadTransactionFile();
-    return MySQLDB.queryTransactionsForConstraint(this.id, id);
-  }
+//   public List getTransactionsForConstraint(final Integer id) {
+//       //loadTransactionFile();
+//     return MySQLDB.queryTransactionsForConstraint(this.id, id);
+//   }
 
-  public List getTransactionsForToken(final Integer id) {
-    loadTransactionFile();
-    return MySQLDB.queryTransactionsForToken(this.id, id);
-  }
+//   public List getTransactionsForToken(final Integer id) {
+//       //loadTransactionFile();
+//     return MySQLDB.queryTransactionsForToken(this.id, id);
+//   }
  
-  public List getTransactionsForVariable(final Integer id) {
-    loadTransactionFile();
-    return MySQLDB.queryTransactionsForVariable(this.id, id);
-  }
+//   public List getTransactionsForVariable(final Integer id) {
+//       //loadTransactionFile();
+//     return MySQLDB.queryTransactionsForVariable(this.id, id);
+//   }
   
-  public List getTransactionsInRange(final int istart, final int iend) {
-    if(istart == iend) {
-      return getTransactionsList(istart);
-    }
-    int start, end;
-    if(istart >= iend) {
-      start = iend;
-      end = istart;
-    }
-    else {
-      start = istart;
-      end = iend;
-    }
-    List retval = new ArrayList();
-    for(int i = start; i <= end; i++) {
-      retval.addAll(getTransactionsList(i));
-    }
-    return retval;
-  }
+//   public List getTransactionsInRange(final int istart, final int iend) {
+//     if(istart == iend) {
+//       return getTransactionsList(istart);
+//     }
+//     int start, end;
+//     if(istart >= iend) {
+//       start = iend;
+//       end = istart;
+//     }
+//     else {
+//       start = istart;
+//       end = iend;
+//     }
+//     List retval = new ArrayList();
+//     for(int i = start; i <= end; i++) {
+//       retval.addAll(getTransactionsList(i));
+//     }
+//     return retval;
+//   }
 
-  public List getTransactionsInRange(final Integer start, final Integer end) {
-    return getTransactionsInRange(start.intValue(), end.intValue());
-  }
+//   public List getTransactionsInRange(final Integer start, final Integer end) {
+//     return getTransactionsInRange(start.intValue(), end.intValue());
+//   }
   
-  public List getStepsWhereTokenTransacted(final Integer id, final String type) 
-    throws IllegalArgumentException {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
-  }
+//   public List getStepsWhereTokenTransacted(final Integer id, final String type) 
+//     throws IllegalArgumentException {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
+//   }
 
-  public List getStepsWhereVariableTransacted(final Integer id, final String type) 
-    throws IllegalArgumentException  {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
-  }
+//   public List getStepsWhereVariableTransacted(final Integer id, final String type) 
+//     throws IllegalArgumentException  {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
+//   }
 
-  public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
-    throws IllegalArgumentException  {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
-  }
+//   public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
+//     throws IllegalArgumentException  {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
+//   }
 
-  public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithTokenTransaction(this.id, type);
-  }
+//   public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithTokenTransaction(this.id, type);
+//   }
 
-  public List getStepsWhereVariableTransacted(final String type) 
-    throws IllegalArgumentException  {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithVariableTransaction(this.id, type);
-  }
+//   public List getStepsWhereVariableTransacted(final String type) 
+//     throws IllegalArgumentException  {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithVariableTransaction(this.id, type);
+//   }
 
-  public List getStepsWhereConstraintTransacted(final String type) 
-    throws IllegalArgumentException  {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithConstraintTransaction(this.id, type);
-  }
+//   public List getStepsWhereConstraintTransacted(final String type) 
+//     throws IllegalArgumentException  {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithConstraintTransaction(this.id, type);
+//   }
 
-  public List getStepsWithRestrictions() {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithRestrictions(id);
-  }
+//   public List getStepsWithRestrictions() {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithRestrictions(id);
+//   }
 
-  public List getStepsWithRelaxations() {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithRelaxations(id);
-  }
+//   public List getStepsWithRelaxations() {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithRelaxations(id);
+//   }
 
-  public List getStepsWithUnitVariableBindingDecisions() {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithUnitDecisions(this);
-  }
+//   public List getStepsWithUnitVariableBindingDecisions() {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithUnitDecisions(this);
+//   }
 
-  public List getStepsWithNonUnitVariableBindingDecisions() {
-    loadTransactionFile();
-    return MySQLDB.queryStepsWithNonUnitDecisions(this);
-  }
+//   public List getStepsWithNonUnitVariableBindingDecisions() {
+//     loadTransactionFile();
+//     return MySQLDB.queryStepsWithNonUnitDecisions(this);
+//   }
 
   /**
    * <code>getFreeTokensAtStep</code>
@@ -857,7 +857,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       }
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
-    hasLoadedTransactionFile = false;
+    //hasLoadedTransactionFile = false;
     System.err.println("   ... Refreshing planning sequence elapsed time: " +
                        (System.currentTimeMillis() - t1) + " msecs.");
   }
@@ -887,9 +887,9 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return new ArrayList( ruleMap.values());
   }
 
-  public void addTransaction(PwDBTransactionImpl trans) {
-    transactions.put(id.toString() + trans.getId(), trans);
-  }
+//   public void addTransaction(PwDBTransactionImpl trans) {
+//     transactions.put(id.toString() + trans.getId(), trans);
+//   }
 
   //.partialPlanStats,.sequence,.transactions
   public String [] toOutputString() {
@@ -910,12 +910,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     seq.append("class Rover{\npredicate At{\n Locations m_location;\n eq(duration, 1);\n}}");
     seq.append((char) Integer.parseInt(DbConstants.SEQ_LINE_SEP, 16));
 
-    StringBuffer trans = new StringBuffer();
-    for(Iterator it = transactions.values().iterator(); it.hasNext();) {
-      PwDBTransaction t = (PwDBTransaction) it.next();
-      trans.append(t.toOutputString());
-    }
-    return new String [] {pps.toString(), seq.toString(), trans.toString()};
+    // StringBuffer trans = new StringBuffer();
+//     for(Iterator it = transactions.values().iterator(); it.hasNext();) {
+//       PwDBTransaction t = (PwDBTransaction) it.next();
+//       trans.append(t.toOutputString());
+//     }
+    return new String [] {pps.toString(), seq.toString()};//, trans.toString()};
   }
 
   private class PartialPlanNameComparator implements Comparator {

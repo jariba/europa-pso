@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.9 2004-08-25 18:41:04 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.10 2005-11-10 01:22:15 miatauro Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -36,7 +36,7 @@ import javax.swing.UIManager;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.FindEntityPathAdapter;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
+//import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /** A class to monitor the progress of some operation. If it looks
  * like the operation will take a while, a progress dialog will be popped up.
@@ -255,13 +255,13 @@ public class PWProgressMonitor extends Object
 			    VizView vizView = (VizView) view;
 			    vizView.closeView( vizView);
 			    System.err.println( vizView.getName() + "'");
-			  } else if (view instanceof SequenceQueryWindow) {
-			    System.err.println( "Sequence Query View'");
-			    SequenceQueryWindow seqQueryWindow =
-			      (SequenceQueryWindow) view;
-			    seqQueryWindow.getProgressMonitor().close();
-			    seqQueryWindow.setProgressMonitor( null);
-			  } else {
+			  } // else if (view instanceof SequenceQueryWindow) {
+// 			    System.err.println( "Sequence Query View'");
+// 			    SequenceQueryWindow seqQueryWindow =
+// 			      (SequenceQueryWindow) view;
+// 			    seqQueryWindow.getProgressMonitor().close();
+// 			    seqQueryWindow.setProgressMonitor( null);}
+			  else {
 			    System.err.println( "PWProgressMonitor: " +
 						view.getClass().getName() + " not handled");
                           }

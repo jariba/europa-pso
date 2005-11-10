@@ -264,7 +264,7 @@ public abstract class ViewConstants {
 
   public static final int STEP_VIEW_Y_MAX = 100;
 
-  public static final String DB_TRANSACTION_KEY_HEADER         = "TX_KEY   ";
+    //public static final String DB_TRANSACTION_KEY_HEADER         = "TX_KEY   ";
   // ViewGenerics.computeTransactionNameHeader pads this appropriately with blanks 
   public static final String DB_TRANSACTION_NAME_HEADER        = "TRANSACTION_NAME"; 
   public static final String DB_TRANSACTION_SOURCE_HEADER      = "  SOURCE  ";   
@@ -330,7 +330,7 @@ public abstract class ViewConstants {
   public static final String TEMPORAL_NETWORK_VIEW     = "Temporal Network View";
   public static final String TIMELINE_VIEW             = "Timeline View";
   public static final String TOKEN_NETWORK_VIEW        = "Token Network View";
-  public static final String DB_TRANSACTION_VIEW       = "DB Transaction View";
+  //public static final String DB_TRANSACTION_VIEW       = "DB Transaction View";
   public static final String NAVIGATOR_VIEW            = "Navigator View";
   public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
   public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
@@ -345,8 +345,8 @@ public abstract class ViewConstants {
 
   public static final String CONTENT_SPEC_TITLE = "ContentFilter";
   // the next two must be unique as far as String/indexOf()
-  public static final String SEQUENCE_QUERY_TITLE = "SequenceQuery";
-  public static final String SEQUENCE_QUERY_RESULTS_TITLE = "QueryResults";
+  //public static final String SEQUENCE_QUERY_TITLE = "SequenceQuery";
+  //public static final String SEQUENCE_QUERY_RESULTS_TITLE = "QueryResults";
 
   public static final String PLANNER_CONTROLLER_TITLE = "PlannerController";
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.11 2004-08-14 01:39:13 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.12 2005-11-10 01:22:12 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -100,13 +100,13 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
         PwPlanningSequence planSequence =
           PlanWorks.getPlanWorks().getCurrentProject().getPlanningSequence( seqUrl);
 	PwPartialPlan partialPlan = null;
-	if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW) &&
-	    (! planSequence.doesPartialPlanExist( partialPlanName))) {
-	  // create dummy partial plan for DBTransactionView
-	  partialPlan = new PwPartialPlanImpl( partialPlanName, planSequence);
-	} else {
+// 	if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW) &&
+// 	    (! planSequence.doesPartialPlanExist( partialPlanName))) {
+// 	  // create dummy partial plan for DBTransactionView
+// 	  partialPlan = new PwPartialPlanImpl( partialPlanName, planSequence);
+// 	} else {
 	  partialPlan = planSequence.getPartialPlan( partialPlanName);
-	}
+	  //}
 
         renderView( sequenceName + System.getProperty( "file.separator") + partialPlanName,
                     partialPlan, viewListener);
