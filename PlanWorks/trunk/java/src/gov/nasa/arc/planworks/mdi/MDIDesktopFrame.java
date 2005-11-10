@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.14 2004-05-04 01:27:14 taylor Exp $
+// $Id: MDIDesktopFrame.java,v 1.15 2005-11-10 01:22:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -185,8 +185,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int numNotIcon = 0;
     int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
-      if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) ||
-         (frames[i].getTitle().indexOf(ViewConstants.SEQUENCE_QUERY_TITLE) != -1)) {
+	if(frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) {
         ymin = Math.max( ymin, frames[i].getHeight());
         numContentSpecWindows++;
       }
@@ -198,12 +197,11 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
       int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
       int contentSpecX = 0;
       for(int i = 0; i < frames.length; i++) {
-        if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) ||
-           (frames[i].getTitle().indexOf(ViewConstants.SEQUENCE_QUERY_TITLE) != -1)) {
-          frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()),
-                            frames[i].getHeight());
-          frames[i].setLocation(contentSpecX, 0);
-          contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
+	  if(frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) {
+	      frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()),
+				frames[i].getHeight());
+	      frames[i].setLocation(contentSpecX, 0);
+	      contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
         }
       }
     }
@@ -222,8 +220,8 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
         int height = (desktopPane.getHeight() - ymin) / numRows;
         for(curRow = 0; curRow < numRows; curRow++, i++) {
           while(frames[i].isIcon() ||
-                (frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) ||
-                (frames[i].getTitle().indexOf(ViewConstants.SEQUENCE_QUERY_TITLE) != -1)) {
+                (frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1)) {
+          
             i++;
           }
           // System.err.println("Setting bounds.  (" + (curCol * frameWidth) + ", " +
@@ -243,10 +241,9 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int resetCnt = 0;
     int delta = 50;
     for(int i = 0; i < frames.length; i++) {
-      if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) ||
-         (frames[i].getTitle().indexOf(ViewConstants.SEQUENCE_QUERY_TITLE) != -1)) {
-        numContentSpecWindows++;
-        ymin = Math.max( ymin, frames[i].getHeight());
+	if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1)) {
+	    numContentSpecWindows++;
+	    ymin = Math.max( ymin, frames[i].getHeight());
       }
     }
     contentSpecHeight = ymin;
@@ -254,18 +251,16 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
       int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
       int contentSpecX = 0;
       for(int i = 0; i < frames.length; i++) {
-        if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) ||
-           (frames[i].getTitle().indexOf(ViewConstants.SEQUENCE_QUERY_TITLE) != -1)) {
+	  if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1)) {
+           
           frames[i].setLocation(contentSpecX, 0);
           contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
         }
       }
     }
     for(int i = 0; i < frames.length; i++) {
-      if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1) ||
-         (frames[i].getTitle().indexOf(ViewConstants.SEQUENCE_QUERY_TITLE) != -1)) {
+	if((frames[i].getTitle().indexOf(ViewConstants.CONTENT_SPEC_TITLE) != -1))
         continue;
-      }
       frames[i].setLocation(xmin, ymin);
       try{frames[i].setSelected(true);}catch(Exception e){}
       xmin += delta;

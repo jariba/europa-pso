@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.20 2005-01-21 22:45:10 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.21 2005-11-10 01:22:07 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -119,8 +119,8 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
       ProjectNameDialog projectNameDialog = new ProjectNameDialog( PlanWorks.getPlanWorks());
       String inputName = projectNameDialog.getProjectName();
       String workingDir = projectNameDialog.getWorkingDir();
-      // System.err.println( "createProject: inputName " + inputName);
-      // System.err.println( "createProject: workingDir " + workingDir);
+      System.err.println( "createProject: inputName " + inputName);
+      System.err.println( "createProject: workingDir " + workingDir);
       if ((inputName == null) || (inputName.equals( ""))) {
         return null;
       }
@@ -131,6 +131,7 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
         }
         ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
 
+	System.err.println("Looking for sequence directories...");
         List selectedAndInvalidUrls =
           PlanWorks.getPlanWorks().askSequenceDirectory( new File( workingDir));
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);

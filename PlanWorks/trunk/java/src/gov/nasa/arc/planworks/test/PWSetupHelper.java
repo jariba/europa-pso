@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.17 2004-10-07 20:19:03 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.18 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -24,7 +24,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
-import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
+//import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwDecisionImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
@@ -132,7 +132,7 @@ public abstract class PWSetupHelper {
     String [] planSequenceContent = planSequence.toOutputString();
     writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_PP_STATS, planSequenceContent[0]);
     writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_FILE, planSequenceContent[1]);
-    writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_TRANSACTIONS, planSequenceContent[2]);
+    //writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_TRANSACTIONS, planSequenceContent[2]);
 
     StringBuffer rulesBuffer = new StringBuffer();
     Iterator rulesItr = rulesForSequence.iterator();
@@ -342,10 +342,10 @@ public abstract class PWSetupHelper {
                  planSequence, stepNum, idSource);
     }
     Integer decisionId = new Integer( idSource.incEntityIdInt());
-    addTransaction( DbConstants.ASSIGN_NEXT_DECISION_SUCCEEDED,
-                    new Integer( idSource.incEntityIdInt()),
-                    DbConstants.SOURCE_USER, decisionId, new Integer( stepNum),
-                    partialPlan.getId(), null, planSequence);
+//     addTransaction( DbConstants.ASSIGN_NEXT_DECISION_SUCCEEDED,
+//                     new Integer( idSource.incEntityIdInt()),
+//                     DbConstants.SOURCE_USER, decisionId, new Integer( stepNum),
+//                     partialPlan.getId(), null, planSequence);
     boolean unit = false;
     addDecision( decisionId, DbConstants.D_TOKEN, decisionTokenId, unit, partialPlan);
   } // end createObjectTableEntries
@@ -626,9 +626,9 @@ public abstract class PWSetupHelper {
       addRuleInstance( ruleInstanceId, ruleId, previousTokenId, String.valueOf( id),
                        partialPlan, planSequence, stepNum, idSource);
     }
-    addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
-                    DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
-                    partialPlan.getId(), null, planSequence);
+//     addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
+//                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
+//                     partialPlan.getId(), null, planSequence);
   } // end addToken
 
   private static PwVariableImpl addVariable( final Integer id, final String type,
@@ -646,9 +646,9 @@ public abstract class PWSetupHelper {
     if (type.equals( DbConstants.PARAMETER_VAR)) {
       info[2] = (String) parameterNames.get( 0);
     }
-    addTransaction( DbConstants.VARIABLE_CREATED, new Integer( idSource.incEntityIdInt()),
-                    DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
-                    partialPlan.getId(), info, planSequence);
+//     addTransaction( DbConstants.VARIABLE_CREATED, new Integer( idSource.incEntityIdInt()),
+//                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
+//                     partialPlan.getId(), info, planSequence);
     return variable;
   } // end addVariable
 
@@ -688,25 +688,25 @@ public abstract class PWSetupHelper {
                                                         partialPlan);
     partialPlan.addConstraint( id, constraint);
     String [] info = new String [] { name };
-    addTransaction( DbConstants.CONSTRAINT_CREATED, new Integer( idSource.incEntityIdInt()),
-                    DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
-                    partialPlan.getId(), info, planSequence);
+//     addTransaction( DbConstants.CONSTRAINT_CREATED, new Integer( idSource.incEntityIdInt()),
+//                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
+//                     partialPlan.getId(), info, planSequence);
     return constraint;
   } // end addConstraint
 
-  private static void addTransaction( final String type, final Integer transactionId,
-                                      final String source, final Integer objectId,
-                                      final Integer stepNumber, final Long partialPlanId,
-                                      final String [] info,
-                                      final PwPlanningSequenceImpl planSequence) {
-    PwDBTransactionImpl transaction =
-      new PwDBTransactionImpl( type, transactionId, source, objectId, stepNumber,
-                               planSequence.getId(), partialPlanId);
-    planSequence.addTransaction( transaction);
-    if (info != null) {
-      transaction.setInfo( info);
-    }
-  } // end addTransaction
+//   private static void addTransaction( final String type, final Integer transactionId,
+//                                       final String source, final Integer objectId,
+//                                       final Integer stepNumber, final Long partialPlanId,
+//                                       final String [] info,
+//                                       final PwPlanningSequenceImpl planSequence) {
+//     PwDBTransactionImpl transaction =
+//       new PwDBTransactionImpl( type, transactionId, source, objectId, stepNumber,
+//                                planSequence.getId(), partialPlanId);
+//     planSequence.addTransaction( transaction);
+//     if (info != null) {
+//       transaction.setInfo( info);
+//     }
+//   } // end addTransaction
 
   private static void addResourceTransaction( final Integer id,
                                               final boolean isValueToken, 
@@ -731,9 +731,9 @@ public abstract class PWSetupHelper {
                                      objectVarId, parentId, ruleInstanceId,
                                      paramVarIds, transInfo, partialPlan);
     partialPlan.addResourceTransaction( id, resourceTransaction);
-    addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
-                    DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
-                    partialPlan.getId(), null, planSequence);
+//     addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
+//                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
+//                     partialPlan.getId(), null, planSequence);
   } // end addResourceTransaction
 
   private static void addResourceInstant( final Integer id,

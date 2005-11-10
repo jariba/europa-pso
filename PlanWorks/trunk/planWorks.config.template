@@ -13,8 +13,6 @@
 
 // "view name" hard-coded as ViewConstants.CONSTRAINT_NETWORK_VIEW
 mapViewClass "Constraint Network View" gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView
-// "view name" hard-coded as ViewConstants.DB_TRANSACTION_VIEW
-mapViewClass "DB Transaction View" gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView
 // "view name" hard-coded as ViewConstants.DECISION_VIEW
 // mapViewClass "Decision View" gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView
 // "view name" hard-coded as ViewConstants.RESOURCE_PROFILE_VIEW

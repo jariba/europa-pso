@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: BackendTest.java,v 1.17 2004-09-27 19:19:02 taylor Exp $
+// $Id: BackendTest.java,v 1.18 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -110,7 +110,7 @@ public class BackendTest extends TestCase implements IdSource {
     final TestSuite suite = new TestSuite();
     suite.addTest(new BackendTest("testPlanLoad"));
     suite.addTest(new BackendTest("testDataConsistency"));
-    suite.addTest(new BackendTest("testTransactionQueries"));
+    //suite.addTest(new BackendTest("testTransactionQueries"));
     return suite;
   }
 
@@ -447,99 +447,99 @@ public class BackendTest extends TestCase implements IdSource {
     }
   }
 
-  public void testTransactionQueries() {
-    try {
-      Map ids = MySQLDB.queryAllIdsForPartialPlan(plan.getId());
-      List tokenIdList = (List) ids.get(DbConstants.TBL_TOKEN);
-      List variableIdList = (List) ids.get(DbConstants.TBL_VARIABLE);
-      List constraintIdList = (List) ids.get(DbConstants.TBL_CONSTRAINT);
-      List planTransactions = sequence.getTransactionsList(plan.getId());
-      ListIterator planTransactionIterator = planTransactions.listIterator();
-      List planTransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
-                                                                         plan.getId());
-      while(planTransactionIterator.hasNext()) {
-        PwDBTransaction transaction = (PwDBTransaction) planTransactionIterator.next();
-        if(planTransactionIds.contains(transaction.getId())) {
-          planTransactionIds.remove(transaction.getId());
-          planTransactionIterator.remove();
-        }
-      }
-      assertTrue("Failed to instantiate all transactions in db", planTransactionIds.size() == 0);
-      assertTrue("Instantiated transactions not in db.", planTransactions.size() == 0);
+//   public void testTransactionQueries() {
+//     try {
+//       Map ids = MySQLDB.queryAllIdsForPartialPlan(plan.getId());
+//       List tokenIdList = (List) ids.get(DbConstants.TBL_TOKEN);
+//       List variableIdList = (List) ids.get(DbConstants.TBL_VARIABLE);
+//       List constraintIdList = (List) ids.get(DbConstants.TBL_CONSTRAINT);
+//       List planTransactions = sequence.getTransactionsList(plan.getId());
+//       ListIterator planTransactionIterator = planTransactions.listIterator();
+//       List planTransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
+//                                                                          plan.getId());
+//       while(planTransactionIterator.hasNext()) {
+//         PwDBTransaction transaction = (PwDBTransaction) planTransactionIterator.next();
+//         if(planTransactionIds.contains(transaction.getId())) {
+//           planTransactionIds.remove(transaction.getId());
+//           planTransactionIterator.remove();
+//         }
+//       }
+//       assertTrue("Failed to instantiate all transactions in db", planTransactionIds.size() == 0);
+//       assertTrue("Instantiated transactions not in db.", planTransactions.size() == 0);
 
-      testQueriesForConstraint(constraintIdList.size());
-      testQueriesForToken(tokenIdList.size());
-      testQueriesForVariable(variableIdList.size());
-      System.err.println("Done with testTransactionQueries");
+//       testQueriesForConstraint(constraintIdList.size());
+//       testQueriesForToken(tokenIdList.size());
+//       testQueriesForVariable(variableIdList.size());
+//       System.err.println("Done with testTransactionQueries");
 
-      incTestsRun();
+//       incTestsRun();
 
-    // catch assert errors and Exceptions here, since JUnit seems to not do it
-    } catch (AssertionFailedError err) {
-      err.printStackTrace();
-      System.exit( -1);
-    } catch (Exception excp) {
-      excp.printStackTrace();
-      System.exit( -1);
-    }
-  }
+//     // catch assert errors and Exceptions here, since JUnit seems to not do it
+//     } catch (AssertionFailedError err) {
+//       err.printStackTrace();
+//       System.exit( -1);
+//     } catch (Exception excp) {
+//       excp.printStackTrace();
+//       System.exit( -1);
+//     }
+//   }
 
-  private void testQueriesForConstraint(int numConstraints) {
-    System.err.println("Checking constraint transactions");
-    List transactions = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), "CONSTRAINT_CREATED");
-    //System.err.println("Found " + transactions.size() +" CONSTRAINT_CREATED transactions");
-    assertTrue("Wrong number of CONSTRAINT_CREATED transactions. Is " + transactions.size() + " should be " + 
-                numConstraints, transactions.size() == numConstraints);
+//   private void testQueriesForConstraint(int numConstraints) {
+//     System.err.println("Checking constraint transactions");
+//     List transactions = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), "CONSTRAINT_CREATED");
+//     //System.err.println("Found " + transactions.size() +" CONSTRAINT_CREATED transactions");
+//     assertTrue("Wrong number of CONSTRAINT_CREATED transactions. Is " + transactions.size() + " should be " + 
+//                 numConstraints, transactions.size() == numConstraints);
 
-    //get the constraint id for the first transaction in the list
-    PwDBTransactionImpl constraintTrans = (PwDBTransactionImpl) transactions.get(0);
-    Integer constraintId = constraintTrans.getEntityId();
-    //System.err.println("Constraint id for the first transaction is " + constraintId);
-    transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), constraintId);
-    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 1",
-               transactions.size() == 1);
-    transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(1));
-    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
-               transactions.size() == 0);
-  }
+//     //get the constraint id for the first transaction in the list
+//     PwDBTransactionImpl constraintTrans = (PwDBTransactionImpl) transactions.get(0);
+//     Integer constraintId = constraintTrans.getEntityId();
+//     //System.err.println("Constraint id for the first transaction is " + constraintId);
+//     transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), constraintId);
+//     assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 1",
+//                transactions.size() == 1);
+//     transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(1));
+//     assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
+//                transactions.size() == 0);
+//   }
 
-  private void testQueriesForToken(int numTokens) {
-    System.err.println("Checking token transactions");
-    List transactions = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), "TOKEN_CREATED");
-    //System.err.println("Found " + transactions.size() +" TOKEN_CREATED transactions");
-    assertTrue("Wrong number of TOKEN_CREATED transactions. Is " + transactions.size() + " should be " + 
-                numTokens, transactions.size() == numTokens);
+//   private void testQueriesForToken(int numTokens) {
+//     System.err.println("Checking token transactions");
+//     List transactions = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), "TOKEN_CREATED");
+//     //System.err.println("Found " + transactions.size() +" TOKEN_CREATED transactions");
+//     assertTrue("Wrong number of TOKEN_CREATED transactions. Is " + transactions.size() + " should be " + 
+//                 numTokens, transactions.size() == numTokens);
 
-    //get the token id for the first transaction in the list
-    PwDBTransactionImpl tokenTrans = (PwDBTransactionImpl) transactions.get(0);
-    Integer tokenId = tokenTrans.getEntityId();
-    //System.err.println("Token id for the first transaction is " + tokenId);
-    transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), tokenId);
-    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 1",
-               transactions.size() == 1);
-    transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(1));
-    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 0",
-               transactions.size() == 0);
-  }
+//     //get the token id for the first transaction in the list
+//     PwDBTransactionImpl tokenTrans = (PwDBTransactionImpl) transactions.get(0);
+//     Integer tokenId = tokenTrans.getEntityId();
+//     //System.err.println("Token id for the first transaction is " + tokenId);
+//     transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), tokenId);
+//     assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 1",
+//                transactions.size() == 1);
+//     transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(1));
+//     assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 0",
+//                transactions.size() == 0);
+//   }
 
-  private void testQueriesForVariable(int numVariables) {
-    System.err.println("Checking variable transactions");
-    List transactions = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), "VARIABLE_CREATED");
-    //System.err.println("Found " + transactions.size() +" VARIABLE_CREATED transactions");
-    assertTrue("Wrong number of VARIABLE_CREATED transactions. Is " + transactions.size() + " should be " + 
-                numVariables, transactions.size() == numVariables);
+//   private void testQueriesForVariable(int numVariables) {
+//     System.err.println("Checking variable transactions");
+//     List transactions = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), "VARIABLE_CREATED");
+//     //System.err.println("Found " + transactions.size() +" VARIABLE_CREATED transactions");
+//     assertTrue("Wrong number of VARIABLE_CREATED transactions. Is " + transactions.size() + " should be " + 
+//                 numVariables, transactions.size() == numVariables);
 
-    //get the variable id for the first transaction in the list
-    PwDBTransactionImpl variableTrans = (PwDBTransactionImpl) transactions.get(0);
-    Integer variableId = variableTrans.getEntityId();
-    //System.err.println("Variable id for the first transaction is " + variableId);
-    transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), variableId);
-    assertTrue("Wrong number of variable transactions.  Is " + transactions.size() + " should be 1",
-               transactions.size() == 1);
-    transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(1));
-    assertTrue("Wrong number of variable transactions.  Is " + transactions.size() + " should be 0",
-               transactions.size() == 0);
-  }
+//     //get the variable id for the first transaction in the list
+//     PwDBTransactionImpl variableTrans = (PwDBTransactionImpl) transactions.get(0);
+//     Integer variableId = variableTrans.getEntityId();
+//     //System.err.println("Variable id for the first transaction is " + variableId);
+//     transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), variableId);
+//     assertTrue("Wrong number of variable transactions.  Is " + transactions.size() + " should be 1",
+//                transactions.size() == 1);
+//     transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(1));
+//     assertTrue("Wrong number of variable transactions.  Is " + transactions.size() + " should be 0",
+//                transactions.size() == 0);
+//   }
 
 
   // implements IdSource

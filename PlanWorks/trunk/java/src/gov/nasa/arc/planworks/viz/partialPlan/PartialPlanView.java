@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.57 2005-06-01 17:12:30 pdaley Exp $
+// $Id: PartialPlanView.java,v 1.58 2005-11-10 01:22:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -446,11 +446,7 @@ public class PartialPlanView extends VizView {
 	  getPlanningSequence(getPartialPlan().getSequenceUrl());
 	int newStepNumber = (dir == 1) ? (currStepNumber + 1) : (currStepNumber - 1);
 	String newPlanName = "step" + newStepNumber;
-	if (((! pView.getViewName().equals( ViewConstants.DB_TRANSACTION_VIEW)) &&
-	     planSequence.doesPartialPlanExist( newPlanName)) ||
-	    (pView.getViewName().equals( ViewConstants.DB_TRANSACTION_VIEW) &&
-	     (planSequence.hasLoadedTransactionFile( newPlanName) ||
-	      planSequence.isTransactionFileOnDisk()))) {
+	if(planSequence.doesPartialPlanExist(newPlanName)) {
 	  // ok
 	} else {
 	  String viewTitle = pView.getName();

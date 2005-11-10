@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.17 2004-09-03 00:35:35 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.18 2005-11-10 01:22:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -355,7 +355,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       for (int i = currentIndx; i < numSeqWindows; i++) {
         MDIInternalFrame frame = (MDIInternalFrame) windowsForSeq.get( i);
         String frameTitle = frame.getTitle();
-        String stepStr = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE;
+        //String stepStr = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE;
+	String stepStr = "";
         int indx1 = frameTitle.indexOf( "step");
         if (indx1 > 0) {
           stepStr = frameTitle.substring( indx1 + 4);

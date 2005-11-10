@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest10.java,v 1.1 2004-10-01 20:04:33 taylor Exp $
+// $Id: PlanWorksGUITest10.java,v 1.2 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -28,7 +28,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.ThreadListener;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
+//import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwDecision;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -56,7 +56,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+//import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeDurationBridge;
@@ -68,7 +68,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
-import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
+//import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -142,15 +142,15 @@ public class PlanWorksGUITest10 {
       ( ViewConstants.TOKEN_NETWORK_VIEW, viewNameSuffix, guiTest);
     viewList.add( tokenNetworkView);
 
-    viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
-    PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
-                                                viewMenuItemName, viewListenerList,
-                                                helper, guiTest);
-    guiTest.viewListenerListWait( PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX, viewListenerList);
-     DBTransactionView dbTransactionView =
-       (DBTransactionView) PWTestHelper.getPartialPlanView
-       ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
-    viewList.add( dbTransactionView);
+    // viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
+//     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
+//                                                 viewMenuItemName, viewListenerList,
+//                                                 helper, guiTest);
+//     guiTest.viewListenerListWait( PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+//      DBTransactionView dbTransactionView =
+//        (DBTransactionView) PWTestHelper.getPartialPlanView
+//        ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
+//     viewList.add( dbTransactionView);
 
     PwPlanningSequence planSeq =
       planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
@@ -168,8 +168,8 @@ public class PlanWorksGUITest10 {
     planViz10TokNet( tokenNetworkView, stepNumber, planSeq, partialPlan, planWorks,
                      helper, guiTest);
 
-    planViz10DBTrans( dbTransactionView, stepNumber, planSeq, partialPlan, planWorks,
-                      helper, guiTest);
+//     planViz10DBTrans( dbTransactionView, stepNumber, planSeq, partialPlan, planWorks,
+//                       helper, guiTest);
 
     // no need to wait on these calls, since all the views currently exist
     viewMenuItemName = "Hide All Views";
@@ -1211,159 +1211,159 @@ public class PlanWorksGUITest10 {
                        (labelText.indexOf( keyString) >= 0), "not ");
   } // end planViz10TokNet
 
-  private static void planViz10DBTrans( DBTransactionView dbTransactionView, int stepNumber,
-                                        PwPlanningSequence planSeq,  PwPartialPlan partialPlan,
-                                        PlanWorks planWorks, JFCTestHelper helper,
-                                        PlanWorksGUITest guiTest)
-    throws Exception {
-    ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
+//   private static void planViz10DBTrans( DBTransactionView dbTransactionView, int stepNumber,
+//                                         PwPlanningSequence planSeq,  PwPartialPlan partialPlan,
+//                                         PlanWorks planWorks, JFCTestHelper helper,
+//                                         PlanWorksGUITest guiTest)
+//     throws Exception {
+//     ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
 
-    // try{Thread.sleep(6000);}catch(Exception e){}
+//     // try{Thread.sleep(6000);}catch(Exception e){}
 
-    List transactionList = planSeq.getTransactionsList( partialPlan.getId());
-    int numTransactions = transactionList.size();
-    int numTransactionEntries = dbTransactionView.getDBTransactionList().size();
-    guiTest.assertTrueVerbose
-      ( "Number of partial plan step " + stepNumber + " db transactions (" + numTransactions +
-        ") not equal to number of DBTransactionView entries (" +
-        numTransactionEntries + ")", (numTransactions == numTransactionEntries), "not ");
-    List transactionNameList = MySQLDB.queryTransactionNameList();
-    TableModel tableModel = ((DBTransactionTable) dbTransactionView.getDBTransactionTable()).
-      getTableSorter().getTableModel();
-    String transName = null, fieldObjName = null;
-    String variableNamePrefix = DbConstants.VARIABLE_ALL_TYPES.substring
-      ( 0, DbConstants.VARIABLE_ALL_TYPES.length() - 1);
-    List decisionList = null;
-    try {
-      decisionList = planSeq.getOpenDecisionsForStep( stepNumber);
-    } catch ( ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
-    }
-    int columnCnt = tableModel.getColumnCount() - 1; // last column is empty
-    for (int rowIndx = 0; rowIndx < tableModel.getRowCount(); rowIndx++) {
-      for (int colIndx = 0; colIndx < columnCnt; colIndx++) {
-        String columnName = tableModel.getColumnName( colIndx);
-//         System.err.println( "rowIndx " + rowIndx + " colIndx " + colIndx + " columnName " +
-//                            columnName + " tableModel " + tableModel);
-        String transField =
-          ((String) tableModel.getValueAt( rowIndx, colIndx)).replaceAll( " ", "");
-        if (columnName.equals( ViewConstants.DB_TRANSACTION_KEY_HEADER)) {
-          Integer fieldTransId = new Integer( Integer.parseInt( transField));
-          PwDBTransaction ppTrans =
-            (PwDBTransaction) CollectionUtils.findFirst
-            ( new PlanWorksGUITest.PwDBTransactionFunctor( fieldTransId), transactionList);
-//           guiTest.assertNotNullVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                                 ViewConstants.DB_TRANSACTION_KEY_HEADER + "' " + fieldTransId +
-//                                 " not found", ppTrans, " not");
-          guiTest.assertNotNull( "Transaction entry " + (rowIndx + 1) + " '" +
-                         ViewConstants.DB_TRANSACTION_KEY_HEADER + "' " + fieldTransId +
-                         " not found", ppTrans);
-        } else if (columnName.replaceAll( " ", "").equals
-                   ( ViewConstants.DB_TRANSACTION_NAME_HEADER)) {
-          transName = transField;
-          boolean isValidName = transactionNameList.contains( transName);
-//           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                              ViewConstants.DB_TRANSACTION_NAME_HEADER + "' '" +
-//                              transName + "' not found", isValidName, " not");
-          guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                      ViewConstants.DB_TRANSACTION_NAME_HEADER + "' '" +
-                      transName + "' not found", isValidName);
-        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
-          boolean isValidSource =
-            DbConstants.SOURCE_USER.equals( transField) ||
-            DbConstants.SOURCE_SYSTEM.equals( transField) ||
-            DbConstants.SOURCE_UNKNOWN.equals( transField);
-//           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                              ViewConstants.DB_TRANSACTION_SOURCE_HEADER + "' '" +
-//                              transField + "' not found", isValidSource, " not");
-          guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                      ViewConstants.DB_TRANSACTION_SOURCE_HEADER + "' '" +
-                      transField + "' not found", isValidSource);
-        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER)) {
-          Integer objectId = new Integer( Integer.parseInt( transField));
-          PwToken tokenObject = partialPlan.getToken( objectId);
-          PwConstraint constraintObject = partialPlan.getConstraint( objectId);
-          PwVariable variableObject = partialPlan.getVariable( objectId);
-          PwDecision decisionObject = null;
-          Iterator decisionItr = decisionList.iterator();
-          while (decisionItr.hasNext()) {
-            PwDecision decision = (PwDecision) decisionItr.next();
-            if (decision.getId().equals( objectId)) {
-              decisionObject = decision;
-            }
-          }
-//           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                              ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
-//                              "' '" + objectId + "' not found",
-//                              ((tokenObject != null) || (constraintObject != null) ||
-//                               (variableObject != null) || (decisionObject != null)),
-//                              " not");
-          guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                      ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
-                      "' '" + objectId + "' not found",
-                      ((tokenObject != null) || (constraintObject != null) ||
-                       (variableObject != null) || (decisionObject != null)));
+//     List transactionList = planSeq.getTransactionsList( partialPlan.getId());
+//     int numTransactions = transactionList.size();
+//     int numTransactionEntries = dbTransactionView.getDBTransactionList().size();
+//     guiTest.assertTrueVerbose
+//       ( "Number of partial plan step " + stepNumber + " db transactions (" + numTransactions +
+//         ") not equal to number of DBTransactionView entries (" +
+//         numTransactionEntries + ")", (numTransactions == numTransactionEntries), "not ");
+//     List transactionNameList = MySQLDB.queryTransactionNameList();
+//     TableModel tableModel = ((DBTransactionTable) dbTransactionView.getDBTransactionTable()).
+//       getTableSorter().getTableModel();
+//     String transName = null, fieldObjName = null;
+//     String variableNamePrefix = DbConstants.VARIABLE_ALL_TYPES.substring
+//       ( 0, DbConstants.VARIABLE_ALL_TYPES.length() - 1);
+//     List decisionList = null;
+//     try {
+//       decisionList = planSeq.getOpenDecisionsForStep( stepNumber);
+//     } catch ( ResourceNotFoundException rnfExcep) {
+//       int index = rnfExcep.getMessage().indexOf( ":");
+//       JOptionPane.showMessageDialog
+//         (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+//          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+//       System.err.println( rnfExcep);
+//       rnfExcep.printStackTrace();
+//     }
+//     int columnCnt = tableModel.getColumnCount() - 1; // last column is empty
+//     for (int rowIndx = 0; rowIndx < tableModel.getRowCount(); rowIndx++) {
+//       for (int colIndx = 0; colIndx < columnCnt; colIndx++) {
+//         String columnName = tableModel.getColumnName( colIndx);
+// //         System.err.println( "rowIndx " + rowIndx + " colIndx " + colIndx + " columnName " +
+// //                            columnName + " tableModel " + tableModel);
+//         String transField =
+//           ((String) tableModel.getValueAt( rowIndx, colIndx)).replaceAll( " ", "");
+//         if (columnName.equals( ViewConstants.DB_TRANSACTION_KEY_HEADER)) {
+//           Integer fieldTransId = new Integer( Integer.parseInt( transField));
+//           PwDBTransaction ppTrans =
+//             (PwDBTransaction) CollectionUtils.findFirst
+//             ( new PlanWorksGUITest.PwDBTransactionFunctor( fieldTransId), transactionList);
+// //           guiTest.assertNotNullVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                                 ViewConstants.DB_TRANSACTION_KEY_HEADER + "' " + fieldTransId +
+// //                                 " not found", ppTrans, " not");
+//           guiTest.assertNotNull( "Transaction entry " + (rowIndx + 1) + " '" +
+//                          ViewConstants.DB_TRANSACTION_KEY_HEADER + "' " + fieldTransId +
+//                          " not found", ppTrans);
+//         } else if (columnName.replaceAll( " ", "").equals
+//                    ( ViewConstants.DB_TRANSACTION_NAME_HEADER)) {
+//           transName = transField;
+//           boolean isValidName = transactionNameList.contains( transName);
+// //           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                              ViewConstants.DB_TRANSACTION_NAME_HEADER + "' '" +
+// //                              transName + "' not found", isValidName, " not");
+//           guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                       ViewConstants.DB_TRANSACTION_NAME_HEADER + "' '" +
+//                       transName + "' not found", isValidName);
+//         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
+//           boolean isValidSource =
+//             DbConstants.SOURCE_USER.equals( transField) ||
+//             DbConstants.SOURCE_SYSTEM.equals( transField) ||
+//             DbConstants.SOURCE_UNKNOWN.equals( transField);
+// //           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                              ViewConstants.DB_TRANSACTION_SOURCE_HEADER + "' '" +
+// //                              transField + "' not found", isValidSource, " not");
+//           guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                       ViewConstants.DB_TRANSACTION_SOURCE_HEADER + "' '" +
+//                       transField + "' not found", isValidSource);
+//         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER)) {
+//           Integer objectId = new Integer( Integer.parseInt( transField));
+//           PwToken tokenObject = partialPlan.getToken( objectId);
+//           PwConstraint constraintObject = partialPlan.getConstraint( objectId);
+//           PwVariable variableObject = partialPlan.getVariable( objectId);
+//           PwDecision decisionObject = null;
+//           Iterator decisionItr = decisionList.iterator();
+//           while (decisionItr.hasNext()) {
+//             PwDecision decision = (PwDecision) decisionItr.next();
+//             if (decision.getId().equals( objectId)) {
+//               decisionObject = decision;
+//             }
+//           }
+// //           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                              ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
+// //                              "' '" + objectId + "' not found",
+// //                              ((tokenObject != null) || (constraintObject != null) ||
+// //                               (variableObject != null) || (decisionObject != null)),
+// //                              " not");
+//           guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                       ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
+//                       "' '" + objectId + "' not found",
+//                       ((tokenObject != null) || (constraintObject != null) ||
+//                        (variableObject != null) || (decisionObject != null)));
 
-        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
-          int fieldStepNumber = Integer.parseInt( transField);
+//         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
+//           int fieldStepNumber = Integer.parseInt( transField);
+// //           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                              ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER
+// //                              + "' '" + fieldStepNumber +
+// //                              "' not found", (fieldStepNumber == stepNumber), " not");
+//           guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                       ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER + "' '" + fieldStepNumber +
+//                       "' not found", (fieldStepNumber == stepNumber));
+//         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_PARENT_HEADER)) {
+//           if (transName.indexOf( variableNamePrefix) >= 0) {
+// //             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                                ViewConstants.DB_TRANSACTION_PARENT_HEADER +
+// //                                "' '" + transField +
+// //                                "' not non-empty", (! transField.equals( "")), " not");
+//             guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                         ViewConstants.DB_TRANSACTION_PARENT_HEADER + "' '" + transField +
+//                         "' not non-empty", (! transField.equals( "")));
+//           } else {
+// //             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                                ViewConstants.DB_TRANSACTION_PARENT_HEADER +
+// //                                "' '" + transField +
+// //                                "' not empty", transField.equals( ""), " not");
+//             guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                         ViewConstants.DB_TRANSACTION_PARENT_HEADER + "' '" + transField +
+//                         "' not empty", transField.equals( ""));
+//           }
+//         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_ENTITY_NAME_HEADER)) {
+//           fieldObjName = transField;
+//         } else if (columnName.equals( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER)) {
+//           String fieldParamName = transField;
+//           if ((transName.indexOf( variableNamePrefix) >= 0) &&
+//               fieldObjName.equals( DbConstants.PARAMETER_VAR)) {
+// //             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                                ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + 
+// //                                "' '" + fieldParamName +
+// //                                "' not non-empty", (! fieldParamName.equals( "")), " not");
+//             guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                         ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + "' '" +
+//                         fieldParamName + "' not non-empty", (! fieldParamName.equals( "")));
+//           } else {
+// //             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+// //                                ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + 
+// //                                "' '" + fieldParamName +
+// //                                "' not empty", fieldParamName.equals( ""), " not");
+//             guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+//                         ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + "' '" +
+//                         fieldParamName + "' not empty", fieldParamName.equals( ""));
+//           }
+//         } else {
 //           guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                              ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER
-//                              + "' '" + fieldStepNumber +
-//                              "' not found", (fieldStepNumber == stepNumber), " not");
-          guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                      ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER + "' '" + fieldStepNumber +
-                      "' not found", (fieldStepNumber == stepNumber));
-        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_PARENT_HEADER)) {
-          if (transName.indexOf( variableNamePrefix) >= 0) {
-//             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                                ViewConstants.DB_TRANSACTION_PARENT_HEADER +
-//                                "' '" + transField +
-//                                "' not non-empty", (! transField.equals( "")), " not");
-            guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                        ViewConstants.DB_TRANSACTION_PARENT_HEADER + "' '" + transField +
-                        "' not non-empty", (! transField.equals( "")));
-          } else {
-//             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                                ViewConstants.DB_TRANSACTION_PARENT_HEADER +
-//                                "' '" + transField +
-//                                "' not empty", transField.equals( ""), " not");
-            guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                        ViewConstants.DB_TRANSACTION_PARENT_HEADER + "' '" + transField +
-                        "' not empty", transField.equals( ""));
-          }
-        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_ENTITY_NAME_HEADER)) {
-          fieldObjName = transField;
-        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER)) {
-          String fieldParamName = transField;
-          if ((transName.indexOf( variableNamePrefix) >= 0) &&
-              fieldObjName.equals( DbConstants.PARAMETER_VAR)) {
-//             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                                ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + 
-//                                "' '" + fieldParamName +
-//                                "' not non-empty", (! fieldParamName.equals( "")), " not");
-            guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                        ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + "' '" +
-                        fieldParamName + "' not non-empty", (! fieldParamName.equals( "")));
-          } else {
-//             guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-//                                ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + 
-//                                "' '" + fieldParamName +
-//                                "' not empty", fieldParamName.equals( ""), " not");
-            guiTest.assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
-                        ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + "' '" +
-                        fieldParamName + "' not empty", fieldParamName.equals( ""));
-          }
-        } else {
-          guiTest.assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
-                             columnName + "' not handled", false, " not");
-        }
-      }
-    }
-  } // end planViz10DBTrans
+//                              columnName + "' not handled", false, " not");
+//         }
+//       }
+//     }
+//   } // end planViz10DBTrans
 
 } // end class PlanWorksGUITest10

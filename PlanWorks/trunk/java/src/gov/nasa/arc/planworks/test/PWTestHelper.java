@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.18 2004-10-13 23:49:17 taylor Exp $
+// $Id: PWTestHelper.java,v 1.19 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -70,7 +70,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+//import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
 import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
@@ -83,7 +83,7 @@ import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeysClasses;
 import gov.nasa.arc.planworks.viz.util.EntityKeysBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
+//import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -948,20 +948,20 @@ public abstract class PWTestHelper {
    * @return - <code>SequenceQueryWindow</code> - 
    * @exception Exception if an error occurs
    */
-  public static SequenceQueryWindow getSequenceQueryWindow( String sequenceName,
-                                                             JFCTestHelper helper,
-                                                             PlanWorksGUITest guiTest)
-    throws Exception {
-    String windowFindName = ViewConstants.SEQUENCE_QUERY_TITLE + " for " + sequenceName;
-    System.err.println( "getSequenceQueryWindow windowFindName '" + windowFindName + "'");
-    SequenceQueryWindow seqQueryWindow =
-      (SequenceQueryWindow)  PWTestHelper.findComponentByName( SequenceQueryWindow.class,
-                                                               windowFindName,
-                                                                Finder.OP_EQUALS);
-     Assert.assertNotNull( windowFindName + " not found:", seqQueryWindow);
-    System.err.println( "getSequenceQueryWindow found " + windowFindName);
-    return seqQueryWindow;
-  } // end getSequenceQueryWindow
+//   public static SequenceQueryWindow getSequenceQueryWindow( String sequenceName,
+//                                                              JFCTestHelper helper,
+//                                                              PlanWorksGUITest guiTest)
+//     throws Exception {
+//     String windowFindName = ViewConstants.SEQUENCE_QUERY_TITLE + " for " + sequenceName;
+//     System.err.println( "getSequenceQueryWindow windowFindName '" + windowFindName + "'");
+//     SequenceQueryWindow seqQueryWindow =
+//       (SequenceQueryWindow)  PWTestHelper.findComponentByName( SequenceQueryWindow.class,
+//                                                                windowFindName,
+//                                                                 Finder.OP_EQUALS);
+//      Assert.assertNotNull( windowFindName + " not found:", seqQueryWindow);
+//     System.err.println( "getSequenceQueryWindow found " + windowFindName);
+//     return seqQueryWindow;
+//   } // end getSequenceQueryWindow
 
   /**
    * <code>getQueryResultsWindow</code>
@@ -974,21 +974,21 @@ public abstract class PWTestHelper {
    * @return - <code>VizView</code> - 
    * @exception Exception if an error occurs
    */
-  public static VizView getQueryResultsWindow( Class windowClass, String sequenceName,
-                                               int resultsWindowCount,
-                                               JFCTestHelper helper,
-                                               PlanWorksGUITest guiTest)
-    throws Exception {
-    String windowFindName = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
-      sequenceName + " - " + String.valueOf( resultsWindowCount);
-    System.err.println( "getQueryResultsWindow windowFindName '" + windowFindName + "'");
-    VizView queryResultsWindow =
-      (VizView)  PWTestHelper.findComponentByName( windowClass, windowFindName,
-                                                   Finder.OP_EQUALS);
-    Assert.assertNotNull( windowFindName + " not found:", queryResultsWindow);
-    System.err.println( "getQueryResultsWindow found " + windowFindName);
-    return queryResultsWindow;
-  } // end getSequenceQueryWindow
+//   public static VizView getQueryResultsWindow( Class windowClass, String sequenceName,
+//                                                int resultsWindowCount,
+//                                                JFCTestHelper helper,
+//                                                PlanWorksGUITest guiTest)
+//     throws Exception {
+//     String windowFindName = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+//       sequenceName + " - " + String.valueOf( resultsWindowCount);
+//     System.err.println( "getQueryResultsWindow windowFindName '" + windowFindName + "'");
+//     VizView queryResultsWindow =
+//       (VizView)  PWTestHelper.findComponentByName( windowClass, windowFindName,
+//                                                    Finder.OP_EQUALS);
+//     Assert.assertNotNull( windowFindName + " not found:", queryResultsWindow);
+//     System.err.println( "getQueryResultsWindow found " + windowFindName);
+//     return queryResultsWindow;
+//   } // end getSequenceQueryWindow
 
   /**
    * <code>selectComboBoxItem</code>
@@ -999,33 +999,33 @@ public abstract class PWTestHelper {
    * @param helper - <code>JFCTestHelper</code> - 
    * @param guiTest - <code>PlanWorksGUITest</code> - 
    */
-  public static void selectComboBoxItem( SequenceQueryWindow seqQueryWindow,
-                                         Class comboBoxClass, String comboBoxItem,
-                                         JFCTestHelper helper, PlanWorksGUITest guiTest)
-    throws Exception {
-    ComponentFinder finder = new ComponentFinder( comboBoxClass);
-    JComboBox comboBox = (JComboBox) finder.find( seqQueryWindow, 0);
-    Assert.assertNotNull( seqQueryWindow.getName() + " combo box " +
-                          comboBoxClass.getName() + " not found", comboBox);
-    int comboItemIndex = -1;
-    for (int i = 0, n = comboBox.getItemCount(); i < n; i++) {
-      Object item = comboBox.getItemAt( i);
-      if ((item instanceof String) && (((String) item).equals( comboBoxItem))) {
-        comboItemIndex = i;
-        break;
-      }
-    }
-    Assert.assertTrue( "Could not find " + comboBoxClass.getName() + " item " +
-                       comboBoxItem, (comboItemIndex >= 0));
-//     System.err.println( "getComboBoxItem comboBox " + comboBox + " comboItemIndex " +
-//                         comboItemIndex);
-    int numClicks = 1;
-    helper.enterClickAndLeave( new JComboBoxMouseEventData( guiTest, comboBox,
-                                                            comboItemIndex, numClicks));
-    System.err.println( "Selected '" + seqQueryWindow.getName() + "' comboBox '" +
-                        comboBoxItem + "'");
-    guiTest.flushAWT(); guiTest.awtSleep();
-  } // end selectComboBoxItem
+//   public static void selectComboBoxItem( SequenceQueryWindow seqQueryWindow,
+//                                          Class comboBoxClass, String comboBoxItem,
+//                                          JFCTestHelper helper, PlanWorksGUITest guiTest)
+//     throws Exception {
+//     ComponentFinder finder = new ComponentFinder( comboBoxClass);
+//     JComboBox comboBox = (JComboBox) finder.find( seqQueryWindow, 0);
+//     Assert.assertNotNull( seqQueryWindow.getName() + " combo box " +
+//                           comboBoxClass.getName() + " not found", comboBox);
+//     int comboItemIndex = -1;
+//     for (int i = 0, n = comboBox.getItemCount(); i < n; i++) {
+//       Object item = comboBox.getItemAt( i);
+//       if ((item instanceof String) && (((String) item).equals( comboBoxItem))) {
+//         comboItemIndex = i;
+//         break;
+//       }
+//     }
+//     Assert.assertTrue( "Could not find " + comboBoxClass.getName() + " item " +
+//                        comboBoxItem, (comboItemIndex >= 0));
+// //     System.err.println( "getComboBoxItem comboBox " + comboBox + " comboItemIndex " +
+// //                         comboItemIndex);
+//     int numClicks = 1;
+//     helper.enterClickAndLeave( new JComboBoxMouseEventData( guiTest, comboBox,
+//                                                             comboItemIndex, numClicks));
+//     System.err.println( "Selected '" + seqQueryWindow.getName() + "' comboBox '" +
+//                         comboBoxItem + "'");
+//     guiTest.flushAWT(); guiTest.awtSleep();
+//   } // end selectComboBoxItem
 
   /**
    * <code>applySequenceQuery</code>
@@ -1037,29 +1037,29 @@ public abstract class PWTestHelper {
    * @param guiTest - <code>PlanWorksGUITest</code> - 
    * @exception Exception if an error occurs
    */
-  public static void applySequenceQuery( SequenceQueryWindow seqQueryWindow,
-                                         ViewListener viewListener,
-                                         String buttonName, JFCTestHelper helper,
-                                         PlanWorksGUITest guiTest)
-    throws Exception {
-    ComponentFinder finder = new ComponentFinder( JButton.class);
-    JButton applyButton = null, button = null;
-    int index = 0;
-    while ((button = (JButton) finder.find( seqQueryWindow, index)) != null) {
-      // System.err.println( "button " + button);
-      if (button.getText().equals( buttonName)) {
-        applyButton = button;
-        break;
-      }
-      index++;
-    }
-    Assert.assertNotNull( "Could not find " + seqQueryWindow.getName() +
-                         " '" + buttonName + "' button", applyButton);
-    System.err.println( seqQueryWindow.getName() + " " + applyButton.getText());
-    seqQueryWindow.setViewListener( viewListener);
-    helper.enterClickAndLeave( new MouseEventData( guiTest, applyButton));
-    guiTest.flushAWT(); guiTest.awtSleep();
-  } // end applySequenceQuery
+//   public static void applySequenceQuery( SequenceQueryWindow seqQueryWindow,
+//                                          ViewListener viewListener,
+//                                          String buttonName, JFCTestHelper helper,
+//                                          PlanWorksGUITest guiTest)
+//     throws Exception {
+//     ComponentFinder finder = new ComponentFinder( JButton.class);
+//     JButton applyButton = null, button = null;
+//     int index = 0;
+//     while ((button = (JButton) finder.find( seqQueryWindow, index)) != null) {
+//       // System.err.println( "button " + button);
+//       if (button.getText().equals( buttonName)) {
+//         applyButton = button;
+//         break;
+//       }
+//       index++;
+//     }
+//     Assert.assertNotNull( "Could not find " + seqQueryWindow.getName() +
+//                          " '" + buttonName + "' button", applyButton);
+//     System.err.println( seqQueryWindow.getName() + " " + applyButton.getText());
+//     seqQueryWindow.setViewListener( viewListener);
+//     helper.enterClickAndLeave( new MouseEventData( guiTest, applyButton));
+//     guiTest.flushAWT(); guiTest.awtSleep();
+//   } // end applySequenceQuery
 
 
   /**
@@ -1072,32 +1072,32 @@ public abstract class PWTestHelper {
    * @param guiTest - <code>PlanWorksGUITest</code> - 
    * @exception Exception if an error occurs
    */
-  public static void setSequenceQueryField( SequenceQueryWindow seqQueryWindow,
-                                            String fieldName, String fieldValue,
-                                            JFCTestHelper helper,
-                                            PlanWorksGUITest guiTest)
-    throws Exception {
-    ComponentFinder finder = new ComponentFinder( JLabel.class);
-    JLabel label = null;
-    int index = 0;
-    while ((label = (JLabel) finder.find( seqQueryWindow, index)) != null) {
-      // System.err.println( "label " + label);
-      if (label.getText().equals( fieldName)) {
-        break;
-      }
-      index++;
-    }
-    finder = new ComponentFinder( JTextField.class);
-    JTextField field = (JTextField) finder.find( seqQueryWindow, index);
-    Assert.assertNotNull( "Could not find " + seqQueryWindow.getName() +
-                          " '" + fieldName + "' field", field);
-    System.err.println( seqQueryWindow.getName() + " " + label.getText() +
-                        " = " + fieldValue); 
-    field.setText( null);
-    helper.sendString( new StringEventData( guiTest, field, fieldValue));
-    helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
-    guiTest.flushAWT(); guiTest.awtSleep();
-  } // end setSequenceQueryField
+//   public static void setSequenceQueryField( SequenceQueryWindow seqQueryWindow,
+//                                             String fieldName, String fieldValue,
+//                                             JFCTestHelper helper,
+//                                             PlanWorksGUITest guiTest)
+//     throws Exception {
+//     ComponentFinder finder = new ComponentFinder( JLabel.class);
+//     JLabel label = null;
+//     int index = 0;
+//     while ((label = (JLabel) finder.find( seqQueryWindow, index)) != null) {
+//       // System.err.println( "label " + label);
+//       if (label.getText().equals( fieldName)) {
+//         break;
+//       }
+//       index++;
+//     }
+//     finder = new ComponentFinder( JTextField.class);
+//     JTextField field = (JTextField) finder.find( seqQueryWindow, index);
+//     Assert.assertNotNull( "Could not find " + seqQueryWindow.getName() +
+//                           " '" + fieldName + "' field", field);
+//     System.err.println( seqQueryWindow.getName() + " " + label.getText() +
+//                         " = " + fieldValue); 
+//     field.setText( null);
+//     helper.sendString( new StringEventData( guiTest, field, fieldValue));
+//     helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
+//     guiTest.flushAWT(); guiTest.awtSleep();
+//   } // end setSequenceQueryField
 
 
   /**
@@ -1119,16 +1119,16 @@ public abstract class PWTestHelper {
       guiTest.assertNotNullVerbose( constraintNetworkViewTitle + " not found",
                                     constraintNetworkView, "not ");
       return constraintNetworkView;
-    } else if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) {
-      String dbTransactionViewName =
-        ViewConstants.DB_TRANSACTION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
-      DBTransactionView dbTransactionView =
-        (DBTransactionView) PWTestHelper.findComponentByName
-        ( DBTransactionView.class, dbTransactionViewName, Finder.OP_EQUALS);
-      guiTest.assertNotNullVerbose( dbTransactionViewName + " not found",
-                                    dbTransactionView, "not ");
-      return dbTransactionView;
-    } else if (viewName.equals( ViewConstants.DECISION_VIEW)) {
+    }//  else if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) {
+//       String dbTransactionViewName =
+//         ViewConstants.DB_TRANSACTION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+//       DBTransactionView dbTransactionView =
+//         (DBTransactionView) PWTestHelper.findComponentByName
+//         ( DBTransactionView.class, dbTransactionViewName, Finder.OP_EQUALS);
+//       guiTest.assertNotNullVerbose( dbTransactionViewName + " not found",
+//                                     dbTransactionView, "not ");
+//       return dbTransactionView;}
+    else if (viewName.equals( ViewConstants.DECISION_VIEW)) {
       String decisionViewName =
         ViewConstants.DECISION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
       DecisionView decisionView =

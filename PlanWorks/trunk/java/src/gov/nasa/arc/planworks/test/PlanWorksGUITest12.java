@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest12.java,v 1.4 2004-10-13 23:49:20 taylor Exp $
+// $Id: PlanWorksGUITest12.java,v 1.5 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -39,7 +39,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+//import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
 import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
@@ -123,10 +123,10 @@ public class PlanWorksGUITest12 {
    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
 
    ViewSet viewSet = PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);
-   DBTransactionView dbTransactionView =
-     (DBTransactionView) PWTestHelper.getPartialPlanView
-     ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
-   dbTransactionView.getViewFrame().setClosed( true);
+//    DBTransactionView dbTransactionView =
+//      (DBTransactionView) PWTestHelper.getPartialPlanView
+//      ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
+//    dbTransactionView.getViewFrame().setClosed( true);
    DecisionView decisionView =
      (DecisionView) PWTestHelper.getPartialPlanView
      ( ViewConstants.DECISION_VIEW, viewNameSuffix, guiTest);

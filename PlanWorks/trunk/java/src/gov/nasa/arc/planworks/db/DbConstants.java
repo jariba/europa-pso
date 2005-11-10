@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.36 2004-08-05 00:24:22 taylor Exp $
+// $Id: DbConstants.java,v 1.37 2005-11-10 01:22:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -117,7 +117,7 @@ public interface DbConstants {
 
   public static final String SEQ_FILE = "sequence";
   
-  public static final String SEQ_TRANSACTIONS = "transactions";
+    //public static final String SEQ_TRANSACTIONS = "transactions";
 
   public static final String SEQ_RULES = "rules";
 
@@ -141,7 +141,7 @@ public interface DbConstants {
 
 
   public static final String [] SEQUENCE_FILES =  new String [] { SEQ_FILE, SEQ_PP_STATS,  
-                                                                  SEQ_TRANSACTIONS, SEQ_RULES};
+                                                                  /*SEQ_TRANSACTIONS,*/ SEQ_RULES};
 
   public static final int NUMBER_OF_SEQ_FILES = SEQUENCE_FILES.length;
     
@@ -396,7 +396,7 @@ public interface DbConstants {
   public static final String TBL_RULE_INSTANCE = "RuleInstance";
   public static final String TBL_RULE_INSTANCE_SLAVE_MAP = "RuleInstanceSlaveMap";
   public static final String TBL_VARIABLE = "Variable";
-  public static final String TBL_TRANSACTION = "Transaction";
+    //public static final String TBL_TRANSACTION = "Transaction";
   public static final String TBL_INSTANTS = "ResourceInstants";
   public static final String TBL_RULES = "Rules";
   public static final String TBL_PP_STATS = "PartialPlanStats";
@@ -406,7 +406,7 @@ public interface DbConstants {
     TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_RULE_INSTANCE, 
     TBL_RULE_INSTANCE_SLAVE_MAP,
     TBL_CONSTVARMAP, TBL_INSTANTS, TBL_DECISION, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, 
-    TBL_TRANSACTION, TBL_RULES};
+    /*TBL_TRANSACTION,*/ TBL_RULES};
 
   // number of numeric characters in a type long value
   public static final int LONG_INT_LENGTH = 13;

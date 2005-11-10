@@ -17,6 +17,7 @@ public class MySQLDBTest extends TestCase {
     try {
       MySQLDB.startDatabase();
       MySQLDB.registerDatabase();
+      MySQLDB.cleanDatabase();
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -25,6 +26,7 @@ public class MySQLDBTest extends TestCase {
     PlanWorksTest.TEST_RUNNING = 2;
   }
   protected void tearDown() {
+      MySQLDB.cleanDatabase();
     PlanWorksTest.TEST_RUNNING = 0;
   }
   public static TestSuite suite() {
@@ -45,7 +47,7 @@ public class MySQLDBTest extends TestCase {
       checkSequenceLoad(datadir);
       checkTokenLoad(datadir);
       checkVariableLoad(datadir);
-      checkTransactionLoad(datadir);
+      //checkTransactionLoad(datadir);
       checkPartialPlanStatsLoad(datadir);
       checkResourceInstantsLoad(datadir);
       checkRulesLoad(datadir);
@@ -157,6 +159,7 @@ public class MySQLDBTest extends TestCase {
     try {
       ResultSet c = MySQLDB.queryDatabase("SELECT * FROM ConstraintVarMap");
       c.last();
+      System.err.println("Got: " + c.getInt("ConstraintId") + " " + c.getInt("VariableId") + " " + c.getLong("PartialPlanId"));
       assertTrue(c.getInt("ConstraintId") == 1);
       assertTrue(c.getInt("VariableId") == 2);
       assertTrue(c.getLong("PartialPlanId") == 3L);
@@ -220,28 +223,28 @@ public class MySQLDBTest extends TestCase {
     }
     MySQLDB.updateDatabase("DELETE FROM Variable");
   }
-  private void checkTransactionLoad(String datadir) {
-    System.err.println("Checking Transaction table load");
-    MySQLDB.loadFile(datadir + "loadTATest", "Transaction");
-    try {
-      ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Transaction");
-      t.last();
-      assertTrue(t.getString("TransactionName").equals("VARIABLE_DOMAIN_RELAXED"));
-      assertTrue(t.getString("TransactionType").equals("RELAXATION"));
-      assertTrue(t.getInt("ObjectId") == 1);
-      assertTrue(t.getString("Source").equals("SYSTEM"));
-      assertTrue(t.getInt("TransactionId") == 1);
-      assertTrue(t.getInt("StepNumber") == 1);
-      assertTrue(t.getLong("PartialPlanId") == 1L);
-      assertTrue(t.getLong("SequenceId") == 1L);
-      assertTrue(t.getString("TransactionInfo").equals("1"));
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM Transaction");
-  }
+//   private void checkTransactionLoad(String datadir) {
+//     System.err.println("Checking Transaction table load");
+//     MySQLDB.loadFile(datadir + "loadTATest", "Transaction");
+//     try {
+//       ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Transaction");
+//       t.last();
+//       assertTrue(t.getString("TransactionName").equals("VARIABLE_DOMAIN_RELAXED"));
+//       assertTrue(t.getString("TransactionType").equals("RELAXATION"));
+//       assertTrue(t.getInt("ObjectId") == 1);
+//       assertTrue(t.getString("Source").equals("SYSTEM"));
+//       assertTrue(t.getInt("TransactionId") == 1);
+//       assertTrue(t.getInt("StepNumber") == 1);
+//       assertTrue(t.getLong("PartialPlanId") == 1L);
+//       assertTrue(t.getLong("SequenceId") == 1L);
+//       assertTrue(t.getString("TransactionInfo").equals("1"));
+//     }
+//     catch(SQLException sqle) {
+//       sqle.printStackTrace();
+//       System.exit(-1);
+//     }
+//     MySQLDB.updateDatabase("DELETE FROM Transaction");
+//   }
   private void checkPartialPlanStatsLoad(String datadir) {
     System.err.println("Checking PartialPlanStats table load");
     MySQLDB.loadFile(datadir + "loadPSTest", "PartialPlanStats");
@@ -254,7 +257,7 @@ public class MySQLDBTest extends TestCase {
       assertTrue(p.getInt("NumTokens") == 10);
       assertTrue(p.getInt("NumVariables") == 20);
       assertTrue(p.getInt("NumConstraints") == 30);
-      assertTrue(p.getInt("NumTransactions") == 40);
+      //assertTrue(p.getInt("NumTransactions") == 40);
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.121 2005-02-15 23:05:35 miatauro Exp $
+// $Id: MySQLDB.java,v 1.122 2005-11-10 01:22:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -38,7 +38,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDecisionImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
-import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
+//import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
@@ -154,6 +154,7 @@ public class MySQLDB {
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       StringBuffer connStr = new StringBuffer("jdbc:mysql://localhost:");
+      System.err.println("Running with port " + System.getProperty("mysql.port"));
       connStr.append(System.getProperty("mysql.port")).append("/PlanWorks?user=root&autoReconnect=true");
       for(int triedConnections = 0; triedConnections <= 10 && !dbIsConnected; triedConnections++) {
         try {
@@ -261,6 +262,11 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
+
+    synchronized public static void cleanDatabase() {
+	for(int i = 0; i < DbConstants.PW_DB_TABLES.length; i++)
+	    updateDatabase("DELETE FROM " + DbConstants.PW_DB_TABLES[i]);
+    }
 
   /**
    * Load a file into the database
@@ -803,51 +809,51 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized private static PwDBTransactionImpl instantiateTransaction(ResultSet s) {
-    PwDBTransactionImpl retval = null;
-    try {
-      String [] info = {"", "", ""};
-      retval = new PwDBTransactionImpl(s.getString("TransactionName"),
-                                       new Integer(s.getInt("TransactionId")),
-                                       s.getString("Source"),
-                                       new Integer(s.getInt("ObjectId")),
-                                       new Integer(s.getInt("StepNumber")),
-                                       new Long(s.getLong("SequenceId")),
-                                       new Long(s.getLong("PartialPlanId")));
-      Blob blob = s.getBlob("TransactionInfo");
-      String infoStr = new String(blob.getBytes(1, (int) blob.length()));
-      StringTokenizer strTok = new StringTokenizer(infoStr, ",");
-      for(int i = 0; i < 3; i++) {
-        if(strTok.hasMoreTokens()) {
-          info[i] = strTok.nextToken();
-        }
-        else {
-          break;
-        }
-        if(i == 2 && !info[0].equals(DbConstants.PARAMETER_VAR)) {
-          info[2] = "";
-        }
-      }
-      retval.setInfo(info);
-    }
-    catch(SQLException sqle){}
-    return retval;
-  }
+//   synchronized private static PwDBTransactionImpl instantiateTransaction(ResultSet s) {
+//     PwDBTransactionImpl retval = null;
+//     try {
+//       String [] info = {"", "", ""};
+//       retval = new PwDBTransactionImpl(s.getString("TransactionName"),
+//                                        new Integer(s.getInt("TransactionId")),
+//                                        s.getString("Source"),
+//                                        new Integer(s.getInt("ObjectId")),
+//                                        new Integer(s.getInt("StepNumber")),
+//                                        new Long(s.getLong("SequenceId")),
+//                                        new Long(s.getLong("PartialPlanId")));
+//       Blob blob = s.getBlob("TransactionInfo");
+//       String infoStr = new String(blob.getBytes(1, (int) blob.length()));
+//       StringTokenizer strTok = new StringTokenizer(infoStr, ",");
+//       for(int i = 0; i < 3; i++) {
+//         if(strTok.hasMoreTokens()) {
+//           info[i] = strTok.nextToken();
+//         }
+//         else {
+//           break;
+//         }
+//         if(i == 2 && !info[0].equals(DbConstants.PARAMETER_VAR)) {
+//           info[2] = "";
+//         }
+//       }
+//       retval.setInfo(info);
+//     }
+//     catch(SQLException sqle){}
+//     return retval;
+//   }
 
-  synchronized public static Map queryTransactions(final Long sequenceId) {
-    Map retval = new HashMap();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, TransactionId, StepNumber, PartialPlanId, TransactionInfo, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
-      while(transactions.next()) {
-        PwDBTransactionImpl transaction = instantiateTransaction(transactions);
-        retval.put(Long.toString(transactions.getLong("PartialPlanId"))
-                   + Integer.toString(transactions.getInt("TransactionId")), transaction);
-      }
-    }
-    catch(SQLException sqle) {}
-    return retval;
-  }
+//   synchronized public static Map queryTransactions(final Long sequenceId) {
+//     Map retval = new HashMap();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, TransactionId, StepNumber, PartialPlanId, TransactionInfo, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
+//       while(transactions.next()) {
+//         PwDBTransactionImpl transaction = instantiateTransaction(transactions);
+//         retval.put(Long.toString(transactions.getLong("PartialPlanId"))
+//                    + Integer.toString(transactions.getInt("TransactionId")), transaction);
+//       }
+//     }
+//     catch(SQLException sqle) {}
+//     return retval;
+//   }
 
   /**
    * Instantiate the Free Token/Timeline/Slot/Token structure from data in the database
@@ -1243,234 +1249,234 @@ public class MySQLDB {
     return retval;
   }
   
-  synchronized public static List queryTransactionsForStep(final Long seqId, final Long ppId) {
-    List retval = new ArrayList();
-    try {
-      ResultSet transactions = queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, TransactionId, StepNumber, TransactionInfo, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle){}
-    return retval;
-  }
+//   synchronized public static List queryTransactionsForStep(final Long seqId, final Long ppId) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet transactions = queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, TransactionId, StepNumber, TransactionInfo, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle){}
+//     return retval;
+//   }
 
-  synchronized public static List queryTransactionsForConstraint(final Long sequenceId, 
-                                                                 final Integer constraintId) {
-    List retval = new ArrayList();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionName LIKE 'CONSTRAINT_%'ORDER BY TransactionId"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    return retval;
-  }
+//   synchronized public static List queryTransactionsForConstraint(final Long sequenceId, 
+//                                                                  final Integer constraintId) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionName LIKE 'CONSTRAINT_%'ORDER BY TransactionId"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
 
-  synchronized public static List queryTransactionsForToken(final Long sequenceId, 
-                                                            final Integer tokenId) {
-    List retval = new ArrayList();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionName LIKE 'TOKEN_%' ORDER BY TransactionId"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    return retval;
-  }
+//   synchronized public static List queryTransactionsForToken(final Long sequenceId, 
+//                                                             final Integer tokenId) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionName LIKE 'TOKEN_%' ORDER BY TransactionId"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
 
-  synchronized public static List queryTransactionsForVariable(final Long sequenceId, 
-                                                               final Integer varId) {
-    List retval = new ArrayList();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionName LIKE 'VARIABLE_%' ORDER BY TransactionId"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    return retval;
-  }
+//   synchronized public static List queryTransactionsForVariable(final Long sequenceId, 
+//                                                                final Integer varId) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionName LIKE 'VARIABLE_%' ORDER BY TransactionId"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
 
-  synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
-                                                                 final Integer tokenId,
-                                                                 final String type) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
+//                                                                  final Integer tokenId,
+//                                                                  final String type) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
-                                                                    final Integer varId,
-                                                                    final String type) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
+//                                                                     final Integer varId,
+//                                                                     final String type) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
-                                                                      final Integer constraintId,
-                                                                      final String type) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
+//                                                                       final Integer constraintId,
+//                                                                       final String type) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
-                                                                 final String type) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
+//                                                                  final String type) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
-                                                                    final String type) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
+//                                                                     final String type) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
-                                                                      final String type) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions =
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
+//                                                                       final String type) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions =
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithRestrictions(final Long sequenceId) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions = queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.TT_RESTRICTION).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithRestrictions(final Long sequenceId) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions = queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.TT_RESTRICTION).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithRelaxations(final Long sequenceId) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet transactions = 
-        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.TT_RELAXATION).concat("'"));
-      while(transactions.next()) {
-        retval.add(instantiateTransaction(transactions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   synchronized public static List queryStepsWithRelaxations(final Long sequenceId) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet transactions = 
+//         queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.TT_RELAXATION).concat("'"));
+//       while(transactions.next()) {
+//         retval.add(instantiateTransaction(transactions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  //NOTE: these should be changed to just take sequence Ids ~MJI
-  synchronized public static List queryStepsWithUnitDecisions(final PwPlanningSequenceImpl seq) {
-    List retval = new UniqueSet();
-    try {
-      ResultSet currentDecisions = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
-      currentDecisions.last();
-      System.err.println("Got " + currentDecisions.getRow());
-      currentDecisions.beforeFirst();
-      while(currentDecisions.next()) {
-        ResultSet unitDec = queryDatabase("SELECT DecisionId FROM Decision WHERE PartialPlanId=".concat(Long.toString(currentDecisions.getLong("PartialPlanId"))).concat(" && IsUnit=1"));
-        if(unitDec.last())
-          retval.add(instantiateTransaction(currentDecisions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    // return retval;
-    // Collections.sort will not handle UniqueSet -- convert to ArrayList
-    return new ArrayList( retval);
-  }
+//   //NOTE: these should be changed to just take sequence Ids ~MJI
+//   synchronized public static List queryStepsWithUnitDecisions(final PwPlanningSequenceImpl seq) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet currentDecisions = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
+//       currentDecisions.last();
+//       System.err.println("Got " + currentDecisions.getRow());
+//       currentDecisions.beforeFirst();
+//       while(currentDecisions.next()) {
+//         ResultSet unitDec = queryDatabase("SELECT DecisionId FROM Decision WHERE PartialPlanId=".concat(Long.toString(currentDecisions.getLong("PartialPlanId"))).concat(" && IsUnit=1"));
+//         if(unitDec.last())
+//           retval.add(instantiateTransaction(currentDecisions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     // return retval;
+//     // Collections.sort will not handle UniqueSet -- convert to ArrayList
+//     return new ArrayList( retval);
+//   }
 
-  synchronized public static List queryStepsWithNonUnitDecisions(final PwPlanningSequenceImpl seq) {
-    List retval = new ArrayList();
-    try {
-      ResultSet currentDecisions = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
-      while(currentDecisions.next()) {
-        ResultSet unitDec = queryDatabase("SELECT DecisionId FROM Decision WHERE PartialPlanId=".concat(Long.toString(currentDecisions.getLong("PartialPlanId"))).concat(" && IsUnit=0"));
-        if(unitDec.last())
-          retval.add(instantiateTransaction(currentDecisions));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    return retval;
-  }
+//   synchronized public static List queryStepsWithNonUnitDecisions(final PwPlanningSequenceImpl seq) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet currentDecisions = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
+//       while(currentDecisions.next()) {
+//         ResultSet unitDec = queryDatabase("SELECT DecisionId FROM Decision WHERE PartialPlanId=".concat(Long.toString(currentDecisions.getLong("PartialPlanId"))).concat(" && IsUnit=0"));
+//         if(unitDec.last())
+//           retval.add(instantiateTransaction(currentDecisions));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
 
   
   synchronized public static List queryFreeTokensAtStep( final int stepNum, 
@@ -1963,19 +1969,19 @@ public class MySQLDB {
 } // end class MYSQLDB
 
 
-class EntityIdComparator implements Comparator {
-  public EntityIdComparator() {
-  }
-  public boolean equals(Object o) {
-    return false;
-  }
-  public int compare(Object o1, Object o2) {
-    PwDBTransactionImpl t1 = (PwDBTransactionImpl) o1;
-    PwDBTransactionImpl t2 = (PwDBTransactionImpl) o2;
-    int cmp1 = t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
-    if(cmp1 == 0) {
-      return t1.getEntityId().compareTo(t2.getEntityId());
-    }
-    return t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
-  }
-}
+// class EntityIdComparator implements Comparator {
+//   public EntityIdComparator() {
+//   }
+//   public boolean equals(Object o) {
+//     return false;
+//   }
+//   public int compare(Object o1, Object o2) {
+//     PwDBTransactionImpl t1 = (PwDBTransactionImpl) o1;
+//     PwDBTransactionImpl t2 = (PwDBTransactionImpl) o2;
+//     int cmp1 = t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
+//     if(cmp1 == 0) {
+//       return t1.getEntityId().compareTo(t2.getEntityId());
+//     }
+//     return t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
+//   }
+// }

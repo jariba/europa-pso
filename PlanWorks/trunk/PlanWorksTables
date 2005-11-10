@@ -333,19 +333,19 @@ CREATE TABLE Variable (
 -- TransactionInfo has format:
 --VariableType,PredicateName,ParameterName,DomainType,DerivedDomain,DomainType,SpecifiedDomain
 
-CREATE TABLE Transaction (
-  TransactionName varchar(255) NOT NULL, 
-  TransactionType varchar(255) NOT NULL,
-  ObjectId int(11) NOT NULL default '0',
-  Source enum('USER','SYSTEM','UNKNOWN') NOT NULL default 'UNKNOWN',
-  TransactionId int(11) NOT NULL default '0',
-  StepNumber int(11) NOT NULL default '0',
-  SequenceId bigint(20) NOT NULL default '0',
-  PartialPlanId bigint(20) NOT NULL default '0',
-  TransactionInfo blob NOT NULL,
-  PRIMARY KEY (PartialPlanId,TransactionId),
-  INDEX (SequenceId), INDEX (StepNumber), INDEX (TransactionName)
-) TYPE=MyISAM;
+-- CREATE TABLE Transaction (
+--  TransactionName varchar(255) NOT NULL, 
+--  TransactionType varchar(255) NOT NULL,
+--  ObjectId int(11) NOT NULL default '0',
+--  Source enum('USER','SYSTEM','UNKNOWN') NOT NULL default 'UNKNOWN',
+--  TransactionId int(11) NOT NULL default '0',
+--  StepNumber int(11) NOT NULL default '0',
+--  SequenceId bigint(20) NOT NULL default '0',
+--  PartialPlanId bigint(20) NOT NULL default '0',
+--  TransactionInfo blob NOT NULL,
+--  PRIMARY KEY (PartialPlanId,TransactionId),
+--  INDEX (SequenceId), INDEX (StepNumber), INDEX (TransactionName)
+-- ) TYPE=MyISAM;
 
 --
 -- Dumping data for table 'Transaction'
@@ -362,11 +362,11 @@ CREATE TABLE PartialPlanStats (
   NumTokens int(11) NOT NULL default '0',
   NumVariables int(11) NOT NULL default '0',
   NumConstraints int(11) NOT NULL default '0',
-  NumTransactions int(11) NOT NULL default '0',
+--  NumTransactions int(11) NOT NULL default '0',
   PRIMARY KEY (SequenceId, PartialPlanId),
   INDEX (StepNum), 
-  INDEX (NumTokens), INDEX (NumVariables), INDEX (NumConstraints),
-  INDEX ( NumTransactions)
+  INDEX (NumTokens), INDEX (NumVariables), INDEX (NumConstraints)
+--  INDEX ( NumTransactions)
 ) TYPE=MyISAM;
 
 --

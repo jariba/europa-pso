@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.39 2004-08-14 01:39:09 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.40 2005-11-10 01:22:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -62,47 +62,47 @@ public interface PwPlanningSequence extends ViewableObject {
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean hasLoadedTransactionFile();
+//   public boolean hasLoadedTransactionFile();
 
-  /**
-   * <code>hasLoadedTransactionFile</code>
-   *
-   * @param partialPlanId - <code>Long</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean hasLoadedTransactionFile( Long partialPlanId);
+//   /**
+//    * <code>hasLoadedTransactionFile</code>
+//    *
+//    * @param partialPlanId - <code>Long</code> - 
+//    * @return - <code>boolean</code> - 
+//    */
+//   public boolean hasLoadedTransactionFile( Long partialPlanId);
 
-  /**
-   * <code>hasLoadedTransactionFile</code>
-   *
-   * @param partialPlanName - <code>String</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean hasLoadedTransactionFile( String partialPlanName);
+//   /**
+//    * <code>hasLoadedTransactionFile</code>
+//    *
+//    * @param partialPlanName - <code>String</code> - 
+//    * @return - <code>boolean</code> - 
+//    */
+//   public boolean hasLoadedTransactionFile( String partialPlanName);
 
-  /**
-   * <code>isTransactionFileOnDisk</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  public boolean isTransactionFileOnDisk();
+//   /**
+//    * <code>isTransactionFileOnDisk</code>
+//    *
+//    * @return - <code>boolean</code> - 
+//    */
+//   public boolean isTransactionFileOnDisk();
 
-  /**
-   * <code>listTransactions</code>
-   *
-   * @param step - <code>int</code> - 
-   * @return - <code>List</code> - 
-   * @exception IndexOutOfBoundsException if an error occurs
-   */
-  public abstract List getTransactionsList( final int step) throws IndexOutOfBoundsException;
+//   /**
+//    * <code>listTransactions</code>
+//    *
+//    * @param step - <code>int</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IndexOutOfBoundsException if an error occurs
+//    */
+//   public abstract List getTransactionsList( final int step) throws IndexOutOfBoundsException;
 
-  /**
-   * <code>getTransactionsList</code>
-   *
-   * @param ppId - <code>Long</code> - 
-   * @return - <code>List</code> - 
-   */
-  public abstract List getTransactionsList(final Long ppId);
+//   /**
+//    * <code>getTransactionsList</code>
+//    *
+//    * @param ppId - <code>Long</code> - 
+//    * @return - <code>List</code> - 
+//    */
+//   public abstract List getTransactionsList(final Long ppId);
 
   /**
    * <code>listPartialPlans</code>
@@ -217,7 +217,7 @@ public interface PwPlanningSequence extends ViewableObject {
   public List getOpenDecisionsForStep(final int stepnum)
     throws ResourceNotFoundException, CreatePartialPlanException;
 
-  public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException;
+//   public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException;
 
     /**
    * <code>getTransactionsForConstraint</code>
@@ -225,129 +225,129 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>List</code> - 
    */
-  public List getTransactionsForConstraint(final Integer id);
+//   public List getTransactionsForConstraint(final Integer id);
 
-  /**
-   * <code>getTransactionsForToken</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @return - <code>List</code> - 
-   */
-  public List getTransactionsForToken(final Integer id);
+//   /**
+//    * <code>getTransactionsForToken</code>
+//    *
+//    * @param id - <code>Integer</code> - 
+//    * @return - <code>List</code> - 
+//    */
+//   public List getTransactionsForToken(final Integer id);
  
-  /**
-   * <code>getTransactionsForVariable</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @return - <code>List</code> - 
-   */
-  public List getTransactionsForVariable(final Integer id);
+//   /**
+//    * <code>getTransactionsForVariable</code>
+//    *
+//    * @param id - <code>Integer</code> - 
+//    * @return - <code>List</code> - 
+//    */
+//   public List getTransactionsForVariable(final Integer id);
   
-  /**
-   * <code>getTransactionsInRange</code>
-   *
-   * @param start - <code>int</code> - 
-   * @param end - <code>int</code> - 
-   * @return - <code>List</code> - 
-   */
-  public List getTransactionsInRange(final int istart, final int iend);
+//   /**
+//    * <code>getTransactionsInRange</code>
+//    *
+//    * @param start - <code>int</code> - 
+//    * @param end - <code>int</code> - 
+//    * @return - <code>List</code> - 
+//    */
+//   public List getTransactionsInRange(final int istart, final int iend);
 
-  /**
-   * <code>getTransactionsInRange</code>
-   *
-   * @param start - <code>Integer</code> - 
-   * @param end - <code>Integer</code> - 
-   * @return - <code>List</code> - 
-   */
-  public List getTransactionsInRange(final Integer start, final Integer end);
+//   /**
+//    * <code>getTransactionsInRange</code>
+//    *
+//    * @param start - <code>Integer</code> - 
+//    * @param end - <code>Integer</code> - 
+//    * @return - <code>List</code> - 
+//    */
+//   public List getTransactionsInRange(final Integer start, final Integer end);
   
-  /**
-   * <code>getStepsWhereTokenTransacted</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @param type - <code>String</code> - 
-   * @return - <code>List</code> - 
-   * @exception IllegalArgumentException if an error occurs
-   */
-  public List getStepsWhereTokenTransacted(final Integer id, final String type) 
-    throws IllegalArgumentException;
+//   /**
+//    * <code>getStepsWhereTokenTransacted</code>
+//    *
+//    * @param id - <code>Integer</code> - 
+//    * @param type - <code>String</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IllegalArgumentException if an error occurs
+//    */
+//   public List getStepsWhereTokenTransacted(final Integer id, final String type) 
+//     throws IllegalArgumentException;
 
-  /**
-   * <code>getStepsWhereVariableTransacted</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @param type - <code>String</code> - 
-   * @return - <code>List</code> - 
-   * @exception IllegalArgumentException if an error occurs
-   */
-  public List getStepsWhereVariableTransacted(final Integer id, final String type) 
-    throws IllegalArgumentException;
+//   /**
+//    * <code>getStepsWhereVariableTransacted</code>
+//    *
+//    * @param id - <code>Integer</code> - 
+//    * @param type - <code>String</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IllegalArgumentException if an error occurs
+//    */
+//   public List getStepsWhereVariableTransacted(final Integer id, final String type) 
+//     throws IllegalArgumentException;
 
-  /**
-   * <code>getStepsWhereConstraintTransacted</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @param type - <code>String</code> - 
-   * @return - <code>List</code> - 
-   * @exception IllegalArgumentException if an error occurs
-   */
-  public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
-    throws IllegalArgumentException;
+//   /**
+//    * <code>getStepsWhereConstraintTransacted</code>
+//    *
+//    * @param id - <code>Integer</code> - 
+//    * @param type - <code>String</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IllegalArgumentException if an error occurs
+//    */
+//   public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
+//     throws IllegalArgumentException;
 
-  /**
-   * <code>getStepsWhereTokenTransacted</code>
-   *
-   * @param type - <code>String</code> - 
-   * @return - <code>List</code> - 
-   * @exception IllegalArgumentException if an error occurs
-   */
-  public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException;
+//   /**
+//    * <code>getStepsWhereTokenTransacted</code>
+//    *
+//    * @param type - <code>String</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IllegalArgumentException if an error occurs
+//    */
+//   public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException;
 
-  /**
-   * <code>getStepsWhereVariableTransacted</code>
-   *
-   * @param type - <code>String</code> - 
-   * @return - <code>List</code> - 
-   * @exception IllegalArgumentException if an error occurs
-   */
-  public List getStepsWhereVariableTransacted(final String type) throws IllegalArgumentException;
+//   /**
+//    * <code>getStepsWhereVariableTransacted</code>
+//    *
+//    * @param type - <code>String</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IllegalArgumentException if an error occurs
+//    */
+//   public List getStepsWhereVariableTransacted(final String type) throws IllegalArgumentException;
 
-  /**
-   * <code>getStepsWhereConstraintTransacted</code>
-   *
-   * @param type - <code>String</code> - 
-   * @return - <code>List</code> - 
-   * @exception IllegalArgumentException if an error occurs
-   */
-  public List getStepsWhereConstraintTransacted(final String type) throws IllegalArgumentException;
+//   /**
+//    * <code>getStepsWhereConstraintTransacted</code>
+//    *
+//    * @param type - <code>String</code> - 
+//    * @return - <code>List</code> - 
+//    * @exception IllegalArgumentException if an error occurs
+//    */
+//   public List getStepsWhereConstraintTransacted(final String type) throws IllegalArgumentException;
 
-  /**
-   * <code>getStepsWithRestrictions</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getStepsWithRestrictions();
+//   /**
+//    * <code>getStepsWithRestrictions</code>
+//    *
+//    * @return - <code>List</code> - 
+//    */
+//   public List getStepsWithRestrictions();
 
-  /**
-   * <code>getStepsWithRelaxations</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getStepsWithRelaxations();
+//   /**
+//    * <code>getStepsWithRelaxations</code>
+//    *
+//    * @return - <code>List</code> - 
+//    */
+//   public List getStepsWithRelaxations();
 
-  /**
-   * <code>getStepsWithUnitVariableBindingDecisions</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getStepsWithUnitVariableBindingDecisions();
+//   /**
+//    * <code>getStepsWithUnitVariableBindingDecisions</code>
+//    *
+//    * @return - <code>List</code> - 
+//    */
+//   public List getStepsWithUnitVariableBindingDecisions();
 
-  /**
-   * <code>getStepsWithNonUnitVariableBindingDecisions</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getStepsWithNonUnitVariableBindingDecisions();
+//   /**
+//    * <code>getStepsWithNonUnitVariableBindingDecisions</code>
+//    *
+//    * @return - <code>List</code> - 
+//    */
+//   public List getStepsWithNonUnitVariableBindingDecisions();
 
   /**
    * <code>getFreeTokensAtStep</code>

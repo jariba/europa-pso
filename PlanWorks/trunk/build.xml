@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.66 2005-06-14 15:40:24 pdaley Exp $ -->
+<!-- $Id: build.xml,v 1.67 2005-11-10 01:20:42 miatauro Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -25,7 +25,7 @@
 
   <!-- Change the path below to the required MySQL bin path if you're using your own, then
        comment out the appropriate assignment in the chk_[linux|solaris]_2 targets -->
-  <property name="mysql.custom.bindir" location="${env.HOME}/workspace/mysql/mysql-max-4.1.1-alpha-pc-linux-i686/bin"/>
+  <property name="mysql.custom.bindir" location="${env.HOME}/workspace/mysql/bin"/>
 
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
   <property name="jgo.home"  value="${planworks.root}/java/lib/JGo"/>
@@ -36,15 +36,8 @@
   <property name="splash.image" value="${planworks.root}/lib/images"/>
   <property name="planworks.test.data.dir" value="${planworks.root}/java/src/gov/nasa/arc/planworks/test/data"/>
   <property name="europa.home" value="${env.EUROPA_HOME}"/>
-  <property name="testLang.home" value="${planworks.root}/java/lib/testLang"/>
   <property name="integration.home" value="${planworks.root}/cpp/integration"/>
   <!-- property name="model.rule.delimiter" value="{}"/ -->
-
-  <target name="testLangTest" depends="chk_ostype_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2,compile,cleanDb">
-    <ant dir="${planworks.root}/java/src/gov/nasa/arc/planworks/test"
-         antfile="planworks-test.xml" target="testLangTest"/>
-    <ant target="cleanDb"/>
-  </target>
 
   <target name="planWorksDbInstall" depends="chk_ostype_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- create all necessary databases and tables">
@@ -131,7 +124,7 @@
   <target name="chk_solaris_2" depends="chk_solaris_1" if="os.solaris">
     <property name="os" value="solaris"/>
 <!--Comment out the following line if you're on Solaris and set your own MySQL bindir-->
-    <property name="mysql.bindir" value="${mysql.solaris.bindir}"/>
+    <!--property name="mysql.bindir" value="${mysql.solaris.bindir}"/ -->
 <!--This works because properties are immutable, so this line is ignored.-->
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
@@ -150,7 +143,7 @@
   <target name="chk_linux_2" depends="chk_linux_1" if="os.linux">
     <property name="os" value="linux"/>
 <!--Comment out the following line if you're on Linux and set your own MySQL bindir-->
-    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+    <!--property name="mysql.bindir" value="${mysql.basedir}/bin"/ -->
 <!--This works because properties are immutable, so this line is ignored.-->
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
@@ -164,7 +157,7 @@
 
   <target name="chk_cygwin_2" depends="chk_cygwin_1" if="os.cygwin">
     <property name="os" value="cygwin"/>
-    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+    <!--property name="mysql.bindir" value="${mysql.basedir}/bin"/ -->
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
 
@@ -177,7 +170,8 @@
 
   <target name="chk_macosx_2" depends="chk_macosx_1" if="os.macosx">
     <property name="os" value="macosx"/>
-    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+    <!-- property name="mysql.bindir" value="${mysql.basedir}/bin"/ -->
+    <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
 
   <!-- JVM checking from Tarang Patel -->

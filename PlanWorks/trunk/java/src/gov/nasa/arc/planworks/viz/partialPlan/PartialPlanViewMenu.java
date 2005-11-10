@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.19 2004-09-21 22:19:16 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.20 2005-11-10 01:22:12 miatauro Exp $
 //
 // PlanWorks
 //
@@ -80,11 +80,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       ViewListener viewListener = (ViewListener) viewListenerItr.next();
-      if (((! viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) &&
-	  planSequence.doesPartialPlanExist( partialPlanName)) ||
-	  (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW) &&
-	   (planSequence.hasLoadedTransactionFile( partialPlanName) ||
-	    planSequence.isTransactionFileOnDisk()))) {
+      if (planSequence.doesPartialPlanExist( partialPlanName)){
 	PartialPlanViewMenuItem viewItem = createOpenViewItem( viewName, partialPlanName,
 							       planSequence, viewListener);
 	numItemsAdded++;

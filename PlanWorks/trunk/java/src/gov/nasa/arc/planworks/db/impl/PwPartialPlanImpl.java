@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.109 2004-10-01 20:04:30 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.110 2005-11-10 01:22:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -848,10 +848,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println("Checking plan internal consistency.");
     //for debug make sure they all run even if a prior one fails
     boolean retval = checkRuleInstances();
-    retval = checkConstraints();
-    retval = checkTokens();
-    retval = checkVariables();
-    retval = checkDecisions();
+    retval = checkConstraints() && retval;
+    retval = checkTokens() && retval;
+    retval = checkVariables() && retval;
+    //retval = checkDecisions();
     //boolean retval = checkRuleInstances() && checkConstraints() && checkTokens() && checkVariables();
     System.err.println("Done checking plan.");
     return retval;
@@ -965,51 +965,51 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    *                               for this step and that entityId maps to an existing entity
    *                               of type decisionType.
    */
-  private boolean checkDecisions() {
+//   private boolean checkDecisions() {
 
-    //System.err.println("In checkDecisions");
-    Integer currentDecisionId = MySQLDB.queryCurrentDecisionIdForStep(id);
-    boolean retval = true;
-    boolean foundCurrentDecision = false;
+//     //System.err.println("In checkDecisions");
+//     Integer currentDecisionId = MySQLDB.queryCurrentDecisionIdForStep(id);
+//     boolean retval = true;
+//     boolean foundCurrentDecision = false;
 
-    List openDecisionsList = MySQLDB.queryOpenDecisionsForStep(id, this);
-    Iterator openDecIterator = openDecisionsList.iterator();
-    while(openDecIterator.hasNext()) {
-      PwDecisionImpl decision = (PwDecisionImpl) openDecIterator.next();
-      if (decision.getId().equals(currentDecisionId)) {
-         foundCurrentDecision = true;
-      }
-      // check EntityId and DecisionType
-      int type = decision.getType();
-      Integer entityId = decision.getEntityId();
-      if (type == DbConstants.D_OBJECT) {
-        if (getToken(entityId) == null) {
-          System.err.println("Decision " + decision.getId() + " has nonexistant object " +
-                             "for EntityId " + entityId);
-          retval = false;
-        }
-      } else if (type == DbConstants.D_TOKEN) {
-        if (getToken(entityId) == null) {
-          System.err.println("Decision " + decision.getId() + " has nonexistant token " +
-                             "for EntityId " + entityId);
-          retval = false;
-        }
-      } else if (type == DbConstants.D_VARIABLE) {
-        if (getVariable(entityId) == null) {
-          System.err.println("Decision " + decision.getId() + " has nonexistant variable " +
-                             "for EntityId " + entityId);
-          retval = false;
-        }
-      }
-    }//end while
+//     List openDecisionsList = MySQLDB.queryOpenDecisionsForStep(id, this);
+//     Iterator openDecIterator = openDecisionsList.iterator();
+//     while(openDecIterator.hasNext()) {
+//       PwDecisionImpl decision = (PwDecisionImpl) openDecIterator.next();
+//       if (decision.getId().equals(currentDecisionId)) {
+//          foundCurrentDecision = true;
+//       }
+//       // check EntityId and DecisionType
+//       int type = decision.getType();
+//       Integer entityId = decision.getEntityId();
+//       if (type == DbConstants.D_OBJECT) {
+//         if (getToken(entityId) == null) {
+//           System.err.println("Decision " + decision.getId() + " has nonexistant object " +
+//                              "for EntityId " + entityId);
+//           retval = false;
+//         }
+//       } else if (type == DbConstants.D_TOKEN) {
+//         if (getToken(entityId) == null) {
+//           System.err.println("Decision " + decision.getId() + " has nonexistant token " +
+//                              "for EntityId " + entityId);
+//           retval = false;
+//         }
+//       } else if (type == DbConstants.D_VARIABLE) {
+//         if (getVariable(entityId) == null) {
+//           System.err.println("Decision " + decision.getId() + " has nonexistant variable " +
+//                              "for EntityId " + entityId);
+//           retval = false;
+//         }
+//       }
+//     }//end while
 
-    if (!foundCurrentDecision) {
-      System.err.println("Current Decision " + currentDecisionId + 
-                         " not found in open decision list for step " + id);
-      retval = false;
-    }
-    return retval;
-  }
+//     if (!foundCurrentDecision) {
+//       System.err.println("Current Decision " + currentDecisionId + 
+//                          " not found in open decision list for step " + id);
+//       retval = false;
+//     }
+//     return retval;
+//   }
 
   /**
    * <code>checkConstraints</code> - verify that all constrained variables exist

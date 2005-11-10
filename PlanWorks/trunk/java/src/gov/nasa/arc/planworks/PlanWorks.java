@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.121 2005-11-02 23:35:50 miatauro Exp $
+// $Id: PlanWorks.java,v 1.122 2005-11-10 01:22:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -42,8 +42,8 @@ import javax.swing.JTextField;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 
-import testLang.TestLangParseException;
-import testLang.TestLangRuntimeException;
+//import testLang.TestLangParseException;
+//import testLang.TestLangRuntimeException;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -51,7 +51,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
-import gov.nasa.arc.planworks.dbg.testLang.TestLangInterpreter;
+//import gov.nasa.arc.planworks.dbg.testLang.TestLangInterpreter;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
@@ -100,7 +100,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
   public static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
 
-  public static final String RUNTEST_MENU_ITEM = "Run Test ...";
+  //public static final String RUNTEST_MENU_ITEM = "Run Test ...";
 
   public static final String CREATE = "create";
   public static final String OPEN = "open";
@@ -607,7 +607,7 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
     JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
 
-    JMenuItem runTestItem = new JMenuItem(RUNTEST_MENU_ITEM);
+    //JMenuItem runTestItem = new JMenuItem(RUNTEST_MENU_ITEM);
 
     createProjectItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
@@ -659,12 +659,12 @@ public class PlanWorks extends MDIDesktopFrame {
     projectMenu.add(deleteSequenceItem);
 
     projectMenu.addSeparator();
-    runTestItem.addActionListener(new ActionListener() {
-        public final void actionPerformed(final ActionEvent e) {
-          PlanWorks.planWorks.runTestWindow();
-        }
-      });
-    projectMenu.add(runTestItem);
+//     runTestItem.addActionListener(new ActionListener() {
+//         public final void actionPerformed(final ActionEvent e) {
+//           PlanWorks.planWorks.runTestWindow();
+//         }
+//       });
+//     projectMenu.add(runTestItem);
 
 
     jMenuArray[0] = fileMenu;
@@ -994,86 +994,86 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end addPlanningSequences
 
   
-  private void runTestWindow() {
-    JFrame frame = new JFrame("Test Runner");
+//   private void runTestWindow() {
+//     JFrame frame = new JFrame("Test Runner");
 
-    GridBagLayout gridBag = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
+//     GridBagLayout gridBag = new GridBagLayout();
+//     GridBagConstraints c = new GridBagConstraints();
 
-    c.weightx = 0;
-    c.weighty = 0;
-    c.gridx = 0;
-    c.gridy = 0;
+//     c.weightx = 0;
+//     c.weighty = 0;
+//     c.gridx = 0;
+//     c.gridy = 0;
 
-    Container contentPane = frame.getContentPane();
-    contentPane.setLayout(gridBag);
+//     Container contentPane = frame.getContentPane();
+//     contentPane.setLayout(gridBag);
 
-    JLabel projectLabel = new JLabel("Project ");
-    gridBag.setConstraints(projectLabel, c);
-    contentPane.add(projectLabel);
+//     JLabel projectLabel = new JLabel("Project ");
+//     gridBag.setConstraints(projectLabel, c);
+//     contentPane.add(projectLabel);
 
-    JTextField projectField = new JTextField(10);
-    c.gridx++;
-    gridBag.setConstraints(projectField, c);
-    contentPane.add(projectField);
+//     JTextField projectField = new JTextField(10);
+//     c.gridx++;
+//     gridBag.setConstraints(projectField, c);
+//     contentPane.add(projectField);
 
-    projectField.setText("test");
+//     projectField.setText("test");
 
-    JLabel sequenceLabel = new JLabel("Sequence ");
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(sequenceLabel, c);
-    contentPane.add(sequenceLabel);
+//     JLabel sequenceLabel = new JLabel("Sequence ");
+//     c.gridx = 0;
+//     c.gridy++;
+//     gridBag.setConstraints(sequenceLabel, c);
+//     contentPane.add(sequenceLabel);
     
-    JTextField sequenceField = new JTextField(30);
-    c.gridx++;
-    gridBag.setConstraints(sequenceField, c);
-    contentPane.add(sequenceField);
+//     JTextField sequenceField = new JTextField(30);
+//     c.gridx++;
+//     gridBag.setConstraints(sequenceField, c);
+//     contentPane.add(sequenceField);
     
-    JButton sequenceBrowseButton = new JButton("Browse");
-    sequenceBrowseButton.addActionListener(new BrowseButtonListener(sequenceField));
-    c.gridx++;
-    gridBag.setConstraints(sequenceBrowseButton, c);
-    contentPane.add(sequenceBrowseButton);
+//     JButton sequenceBrowseButton = new JButton("Browse");
+//     sequenceBrowseButton.addActionListener(new BrowseButtonListener(sequenceField));
+//     c.gridx++;
+//     gridBag.setConstraints(sequenceBrowseButton, c);
+//     contentPane.add(sequenceBrowseButton);
 
-    JLabel testFileLabel = new JLabel("Test file ");
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(testFileLabel, c);
-    contentPane.add(testFileLabel);
+//     JLabel testFileLabel = new JLabel("Test file ");
+//     c.gridx = 0;
+//     c.gridy++;
+//     gridBag.setConstraints(testFileLabel, c);
+//     contentPane.add(testFileLabel);
     
-    JTextField testFileField = new JTextField(30);
-    c.gridx++;
-    gridBag.setConstraints(testFileField, c);
-    contentPane.add(testFileField);
+//     JTextField testFileField = new JTextField(30);
+//     c.gridx++;
+//     gridBag.setConstraints(testFileField, c);
+//     contentPane.add(testFileField);
     
-    JButton testFileBrowseButton = new JButton("Browse");
-    testFileBrowseButton.addActionListener(new BrowseButtonListener(testFileField));
-    c.gridx++;
-    gridBag.setConstraints(testFileBrowseButton, c);
-    contentPane.add(testFileBrowseButton);
+//     JButton testFileBrowseButton = new JButton("Browse");
+//     testFileBrowseButton.addActionListener(new BrowseButtonListener(testFileField));
+//     c.gridx++;
+//     gridBag.setConstraints(testFileBrowseButton, c);
+//     contentPane.add(testFileBrowseButton);
 
-    JLabel testNameLabel = new JLabel("Test name ");
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(testNameLabel, c);
-    contentPane.add(testNameLabel);
+//     JLabel testNameLabel = new JLabel("Test name ");
+//     c.gridx = 0;
+//     c.gridy++;
+//     gridBag.setConstraints(testNameLabel, c);
+//     contentPane.add(testNameLabel);
 
-    JTextField testNameField = new JTextField(10);
-    c.gridx++;
-    gridBag.setConstraints(testNameField, c);
-    contentPane.add(testNameField);
+//     JTextField testNameField = new JTextField(10);
+//     c.gridx++;
+//     gridBag.setConstraints(testNameField, c);
+//     contentPane.add(testNameField);
     
-    JButton runButton = new JButton("Run test");
-    runButton.addActionListener(new TestButtonListener(projectField, sequenceField, testFileField,
-                                                       testNameField));
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(runButton, c);
-    contentPane.add(runButton);
-    frame.pack();
-    frame.setVisible(true);
-  }
+//     JButton runButton = new JButton("Run test");
+//     runButton.addActionListener(new TestButtonListener(projectField, sequenceField, testFileField,
+//                                                        testNameField));
+//     c.gridx = 0;
+//     c.gridy++;
+//     gridBag.setConstraints(runButton, c);
+//     contentPane.add(runButton);
+//     frame.pack();
+//     frame.setVisible(true);
+//   }
 
   class BrowseButtonListener implements ActionListener {
     private JTextField field;
@@ -1090,40 +1090,40 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   }
 
-  class TestButtonListener implements ActionListener {
-    private JTextField projectName;
-    private JTextField sequenceUrl;
-    private JTextField testFile;
-    private JTextField testName;
-    public TestButtonListener(JTextField project, JTextField sequence, JTextField testFile,
-                              JTextField testName) {
-      this.projectName = project;
-      this.sequenceUrl = sequence;
-      this.testFile = testFile;
-      this.testName = testName;
-    }
-    public void actionPerformed(ActionEvent ae) {
-      try {
-        if(testName.getText().trim().equals("")) {
-          TestLangInterpreter.runTests(projectName.getText().trim(),
-                                  sequenceUrl.getText().trim(),
-                                  testFile.getText().trim());
-        }
-        else {
-          TestLangInterpreter.runTests(projectName.getText().trim(),
-                                       sequenceUrl.getText().trim(),
-                                       testFile.getText().trim(),
-                                       testName.getText().trim());
-        }
-      }
-      catch(TestLangParseException tlpe) {
-        tlpe.printStackTrace();
-      }
-      catch(TestLangRuntimeException tlre) {
-        tlre.printStackTrace();
-      }
-    }
-  }
+//   class TestButtonListener implements ActionListener {
+//     private JTextField projectName;
+//     private JTextField sequenceUrl;
+//     private JTextField testFile;
+//     private JTextField testName;
+//     public TestButtonListener(JTextField project, JTextField sequence, JTextField testFile,
+//                               JTextField testName) {
+//       this.projectName = project;
+//       this.sequenceUrl = sequence;
+//       this.testFile = testFile;
+//       this.testName = testName;
+//     }
+//     public void actionPerformed(ActionEvent ae) {
+//       try {
+//         if(testName.getText().trim().equals("")) {
+//           TestLangInterpreter.runTests(projectName.getText().trim(),
+//                                   sequenceUrl.getText().trim(),
+//                                   testFile.getText().trim());
+//         }
+//         else {
+//           TestLangInterpreter.runTests(projectName.getText().trim(),
+//                                        sequenceUrl.getText().trim(),
+//                                        testFile.getText().trim(),
+//                                        testName.getText().trim());
+//         }
+//       }
+//       catch(TestLangParseException tlpe) {
+//         tlpe.printStackTrace();
+//       }
+//       catch(TestLangRuntimeException tlre) {
+//         tlre.printStackTrace();
+//       }
+//     }
+//   }
 
   /**
    * <code>isMacOSX</code>

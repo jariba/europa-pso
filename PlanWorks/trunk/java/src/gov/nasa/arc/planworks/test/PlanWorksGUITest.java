@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.30 2004-10-13 23:49:17 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.31 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -23,7 +23,7 @@ import junit.framework.TestSuite;
 import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.ThreadListener;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
+//import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;    
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
@@ -186,8 +186,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 
       CONSTRAINT_NETWORK_VIEW_INDEX =
         PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
-      DB_TRANSACTION_VIEW_INDEX =
-        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
+      // DB_TRANSACTION_VIEW_INDEX =
+//         PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
       DECISION_VIEW_INDEX =
         PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DECISION_VIEW);
       RESOURCE_PROFILE_VIEW_INDEX =
@@ -253,7 +253,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       PlanWorksGUITest12.planViz12( sequenceUrls, planWorks, helper, this);
       // to do
       // PlanWorksGUITest13.planViz13 - Methods 8-15
-      PlanWorksGUITest13.planViz13( sequenceUrls, planWorks, helper, this);
+      //PlanWorksGUITest13.planViz13( sequenceUrls, planWorks, helper, this);
       // to do
       // PlanWorksGUITest14 - PlanWorksGUITest25
 
@@ -285,11 +285,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   } // end class FrameXAscending
 
 
-  public static class PwDBTransactionFunctor implements BooleanFunctor {
-    private Integer transId;
-    public PwDBTransactionFunctor(Integer transId){ this.transId = transId; }
-    public boolean func(Object o){return ((PwDBTransaction)o).getId().equals(transId) ;}
-  }
+//   public static class PwDBTransactionFunctor implements BooleanFunctor {
+//     private Integer transId;
+//     public PwDBTransactionFunctor(Integer transId){ this.transId = transId; }
+//     public boolean func(Object o){return ((PwDBTransaction)o).getId().equals(transId) ;}
+//   }
 
 
 
@@ -359,50 +359,50 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
-    } else if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) {
+    }//  else if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) {
+//       viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
+//       viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
+//       viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);
+//       viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
+//       viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
+//       viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);}
+    else if (viewName.equals( ViewConstants.DECISION_VIEW)) {
       viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
-    } else if (viewName.equals( ViewConstants.DECISION_VIEW)) {
-      viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+      //viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
     } else if (viewName.equals( ViewConstants.RESOURCE_PROFILE_VIEW)) {
       viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+      //viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( DECISION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
     } else if (viewName.equals( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
       viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+      //viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( DECISION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TIMELINE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
     } else if (viewName.equals( ViewConstants.TEMPORAL_EXTENT_VIEW)) {
       viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+      //viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( DECISION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TOKEN_NETWORK_VIEW_INDEX, viewListenerList);
     } else if (viewName.equals( ViewConstants.TIMELINE_VIEW)) {
       viewListenerListWait( CONSTRAINT_NETWORK_VIEW_INDEX, viewListenerList);
-      viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+      //viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( DECISION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( TEMPORAL_EXTENT_VIEW_INDEX, viewListenerList);
     } else if (viewName.equals( ViewConstants.TOKEN_NETWORK_VIEW)) {
-      viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
+	//viewListenerListWait( DB_TRANSACTION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( DECISION_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_PROFILE_VIEW_INDEX, viewListenerList);
       viewListenerListWait( RESOURCE_TRANSACTION_VIEW_INDEX, viewListenerList);

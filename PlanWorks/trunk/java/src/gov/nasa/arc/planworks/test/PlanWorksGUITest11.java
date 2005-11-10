@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest11.java,v 1.2 2004-10-07 20:19:04 taylor Exp $
+// $Id: PlanWorksGUITest11.java,v 1.3 2005-11-10 01:22:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -22,7 +22,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.ThreadListener;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
+//import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
@@ -42,7 +42,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+//import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
 import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
@@ -55,7 +55,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
-import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
+//import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
 import gov.nasa.arc.planworks.viz.util.TableSorter;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -95,8 +95,8 @@ public class PlanWorksGUITest11 {
                                                 helper, guiTest);
     guiTest.viewListenerListWait( PlanWorksGUITest.CONSTRAINT_NETWORK_VIEW_INDEX,
                                   viewListenerList);
-    guiTest.viewListenerListWait( PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
-                                  viewListenerList);
+//     guiTest.viewListenerListWait( PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
+//                                   viewListenerList);
     guiTest.viewListenerListWait( PlanWorksGUITest.DECISION_VIEW_INDEX, viewListenerList);
     guiTest.viewListenerListWait( PlanWorksGUITest.RESOURCE_PROFILE_VIEW_INDEX,
                                   viewListenerList);
@@ -400,41 +400,41 @@ public class PlanWorksGUITest11 {
                                              new Point( xLoc, yLoc), helper, guiTest); 
 
    System.err.println( "Method 9 -------------");
-   DBTransactionView dbTransactionView =
-     ( DBTransactionView) PWTestHelper.getPartialPlanView
-     ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
-   ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
-   PWTestHelper.viewBackgroundItemSelection( dbTransactionView,
-                                             "Find Transaction by Entity_Key", helper, guiTest);
-   int transIndx = dbTransactionView.getDBTransactionList().size() - 1;
-   PwDBTransaction dbTransaction =
-     (PwDBTransaction) dbTransactionView.getDBTransactionList().get( transIndx);
-   PWTestHelper.handleDialogValueEntry( "Find Transaction by Entity_Key",
-                                        dbTransaction.getEntityId().toString(),
-                                         helper, guiTest);
-   System.err.println( "Method 10 -------------");
-   DBTransactionTable dbTable = (DBTransactionTable) dbTransactionView.getDBTransactionTable();
-   TableSorter tableSorter = dbTable.getTableSorter();
-   for (int colIndx = 0, n = dbTable.getModel().getColumnCount() - 1; colIndx < n; colIndx++) {
-//      System.err.println( "sort colIndx " + colIndx + " status " +
-//                          tableSorter.getSortingStatus( colIndx));
-     String columnName = dbTable.getModel().getColumnName( colIndx);
-     guiTest.assertTrueVerbose( "column " + columnName + " sort status is not NOT_SORTED",
-                        (tableSorter.getSortingStatus( colIndx) ==
-                         TableSorter.NOT_SORTED), "not ");
-     helper.enterClickAndLeave( new JTableHeaderMouseEventData
-                                ( guiTest, dbTable.getTableHeader(), colIndx, 1));
-     guiTest.flushAWT(); guiTest.awtSleep();
-     guiTest.assertTrueVerbose( "column " + columnName + " sort status is not ASCENDING",
-                        (tableSorter.getSortingStatus( colIndx) ==
-                         TableSorter.ASCENDING), "not ");
-     helper.enterClickAndLeave( new JTableHeaderMouseEventData
-                                ( guiTest, dbTable.getTableHeader(), colIndx, 1));
-     guiTest.flushAWT(); guiTest.awtSleep();
-     guiTest.assertTrueVerbose( "column " + columnName + " sort status is not DESCENDING",
-                        (tableSorter.getSortingStatus( colIndx) ==
-                         TableSorter.DESCENDING), "not ");
-   }
+   // DBTransactionView dbTransactionView =
+//      ( DBTransactionView) PWTestHelper.getPartialPlanView
+//      ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
+//    ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
+//    PWTestHelper.viewBackgroundItemSelection( dbTransactionView,
+//                                              "Find Transaction by Entity_Key", helper, guiTest);
+//    int transIndx = dbTransactionView.getDBTransactionList().size() - 1;
+//    PwDBTransaction dbTransaction =
+//      (PwDBTransaction) dbTransactionView.getDBTransactionList().get( transIndx);
+//    PWTestHelper.handleDialogValueEntry( "Find Transaction by Entity_Key",
+//                                         dbTransaction.getEntityId().toString(),
+//                                          helper, guiTest);
+//    System.err.println( "Method 10 -------------");
+//    DBTransactionTable dbTable = (DBTransactionTable) dbTransactionView.getDBTransactionTable();
+//    TableSorter tableSorter = dbTable.getTableSorter();
+//    for (int colIndx = 0, n = dbTable.getModel().getColumnCount() - 1; colIndx < n; colIndx++) {
+// //      System.err.println( "sort colIndx " + colIndx + " status " +
+// //                          tableSorter.getSortingStatus( colIndx));
+//      String columnName = dbTable.getModel().getColumnName( colIndx);
+//      guiTest.assertTrueVerbose( "column " + columnName + " sort status is not NOT_SORTED",
+//                         (tableSorter.getSortingStatus( colIndx) ==
+//                          TableSorter.NOT_SORTED), "not ");
+//      helper.enterClickAndLeave( new JTableHeaderMouseEventData
+//                                 ( guiTest, dbTable.getTableHeader(), colIndx, 1));
+//      guiTest.flushAWT(); guiTest.awtSleep();
+//      guiTest.assertTrueVerbose( "column " + columnName + " sort status is not ASCENDING",
+//                         (tableSorter.getSortingStatus( colIndx) ==
+//                          TableSorter.ASCENDING), "not ");
+//      helper.enterClickAndLeave( new JTableHeaderMouseEventData
+//                                 ( guiTest, dbTable.getTableHeader(), colIndx, 1));
+//      guiTest.flushAWT(); guiTest.awtSleep();
+//      guiTest.assertTrueVerbose( "column " + columnName + " sort status is not DESCENDING",
+//                         (tableSorter.getSortingStatus( colIndx) ==
+//                          TableSorter.DESCENDING), "not ");
+//    }
 
    System.err.println( "Method 11 -------------");
    DecisionView decisionView =
@@ -451,9 +451,9 @@ public class PlanWorksGUITest11 {
    PartialPlanView currentView = constraintNetworkView;
    PWTestHelper.openAllExistingViews( currentViewName, currentView, helper, guiTest);
  
-   currentViewName = ViewConstants.DB_TRANSACTION_VIEW;
-   currentView = dbTransactionView;
-   PWTestHelper.openAllExistingViews( currentViewName, currentView, helper, guiTest);
+   // currentViewName = ViewConstants.DB_TRANSACTION_VIEW;
+//    currentView = dbTransactionView;
+//    PWTestHelper.openAllExistingViews( currentViewName, currentView, helper, guiTest);
  
    currentViewName = ViewConstants.DECISION_VIEW;
    currentView = decisionView;
@@ -543,19 +543,19 @@ public class PlanWorksGUITest11 {
    guiTest.assertNullVerbose( "planSeq step " + stepNumber + " does not have 0 views",
                               viewSet, "not ");
 
-   guiTest.invokeAllViewsSelections( ViewConstants.CONSTRAINT_NETWORK_VIEW,
-                                     PlanWorksGUITest.CONSTRAINT_NETWORK_VIEW_INDEX,
-                                     ViewConstants.DB_TRANSACTION_VIEW,
-                                     PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
-                                     viewNameSuffix, seqStepsView, partialPlan, viewMgr,
-                                     stepNumber);
+//    guiTest.invokeAllViewsSelections( ViewConstants.CONSTRAINT_NETWORK_VIEW,
+//                                      PlanWorksGUITest.CONSTRAINT_NETWORK_VIEW_INDEX,
+//                                      ViewConstants.DB_TRANSACTION_VIEW,
+//                                      PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
+//                                      viewNameSuffix, seqStepsView, partialPlan, viewMgr,
+//                                      stepNumber);
 
-   guiTest.invokeAllViewsSelections( ViewConstants.DB_TRANSACTION_VIEW,
-                                     PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
-                                     ViewConstants.DECISION_VIEW,
-                                     PlanWorksGUITest.DECISION_VIEW_INDEX,
-                                     viewNameSuffix, seqStepsView, partialPlan, viewMgr,
-                                     stepNumber);
+//    guiTest.invokeAllViewsSelections( ViewConstants.DB_TRANSACTION_VIEW,
+//                                      PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
+//                                      ViewConstants.DECISION_VIEW,
+//                                      PlanWorksGUITest.DECISION_VIEW_INDEX,
+//                                      viewNameSuffix, seqStepsView, partialPlan, viewMgr,
+//                                      stepNumber);
 
    guiTest.invokeAllViewsSelections( ViewConstants.DECISION_VIEW,
                                      PlanWorksGUITest.DECISION_VIEW_INDEX,
@@ -606,8 +606,8 @@ public class PlanWorksGUITest11 {
      ( seqStepsView, stepNumber, viewMenuItemName, viewListenerList, helper, guiTest);
    guiTest.viewListenerListWait( PlanWorksGUITest.CONSTRAINT_NETWORK_VIEW_INDEX,
                                  viewListenerList);
-   guiTest.viewListenerListWait( PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
-                                 viewListenerList);
+//    guiTest.viewListenerListWait( PlanWorksGUITest.DB_TRANSACTION_VIEW_INDEX,
+//                                  viewListenerList);
    guiTest.viewListenerListWait( PlanWorksGUITest.DECISION_VIEW_INDEX,
                                  viewListenerList);
    guiTest.viewListenerListWait( PlanWorksGUITest.RESOURCE_PROFILE_VIEW_INDEX,
@@ -930,19 +930,19 @@ public class PlanWorksGUITest11 {
    stepNumber = 1;
    viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
       System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
-   dbTransactionView = (DBTransactionView) PWTestHelper.getPartialPlanView
-     ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
-   ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
-   stepAllViews( dbTransactionView, "Step Backward All Views", (stepNumber - 1),
-                 helper, guiTest);
-   stepNumber = 0;
-   viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
-      System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
-   dbTransactionView = (DBTransactionView) PWTestHelper.getPartialPlanView
-     ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
-   ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
-   stepAllViews( dbTransactionView, "Step Forward All Views", (stepNumber + 1),
-                 helper, guiTest);
+//    dbTransactionView = (DBTransactionView) PWTestHelper.getPartialPlanView
+//      ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
+//    ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
+//    stepAllViews( dbTransactionView, "Step Backward All Views", (stepNumber - 1),
+//                  helper, guiTest);
+//    stepNumber = 0;
+//    viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
+//       System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
+//    dbTransactionView = (DBTransactionView) PWTestHelper.getPartialPlanView
+//      ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, guiTest);
+//    ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
+//    stepAllViews( dbTransactionView, "Step Forward All Views", (stepNumber + 1),
+//                  helper, guiTest);
 
    stepNumber = 1;
    viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
