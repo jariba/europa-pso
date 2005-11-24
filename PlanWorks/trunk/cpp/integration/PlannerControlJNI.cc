@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved) {
 JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlannerRun 
     (JNIEnv* env, jclass cl, jstring planner_path, jstring model_path, 
      jstring initial_state_path, jstring dest_path, 
-     jstring planner_config, jstring debug_path) {
+     jstring planner_config, jstring debug_path, jobjectArray source_paths) {
 
   jint retStatus;
   jclass clazz;
@@ -33,7 +33,9 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   const char* debugPath;
   void* libHandle;
   const char* error_msg;
-  int (*fcn_initModel)(const char*, const char*, const char*, const char*);
+  jsize numPaths;
+  const char** paths;
+  int (*fcn_initModel)(const char*, const char*, const char*, const char*, const char**, const int);
 
   printf("In Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlannerRun\n");
 
@@ -46,6 +48,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   destPath = env->GetStringUTFChars(dest_path, NULL);
   plannerConfig = env->GetStringUTFChars(planner_config, NULL);
   debugPath = env->GetStringUTFChars(debug_path, NULL);
+
+  numPaths = env->GetArrayLength(source_paths);
+  paths = new const char*[numPaths];
+
+  for(int i = 0; i < numPaths; i++) {
+    jstring path = (jstring)env->GetObjectArrayElement(source_paths, i);
+    paths[i] = env->GetStringUTFChars(path, NULL);
+  }
 
   printf("Requested planner library file is %s\n", plannerLibPath);
   printf("Requested planner config is %s\n", plannerConfig);
@@ -69,7 +79,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   accessPlannerLibHandle() = libHandle;
 
   //locate the 'initModel' function in the library and check for errors
-  fcn_initModel = (int (*)(const char*, const char*, const char*, const char*))dlsym(libHandle, "initModel");
+  fcn_initModel = (int (*)(const char*, const char*, const char*, const char*, const char**, const int))dlsym(libHandle, "initModel");
   //printf("Returned from (int (*)(const char*, const char*, const char*))dlsym(libHandle, initModel)\n");
   if (!fcn_initModel) {
     error_msg = dlerror();
@@ -81,7 +91,7 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
 
   // call the initModel function
   try {
-    retStatus  = (*fcn_initModel)(modelLibPath, initialStatePath, destPath, plannerConfig);
+    retStatus  = (*fcn_initModel)(modelLibPath, initialStatePath, destPath, plannerConfig, paths, (const int) numPaths);
     printf("Returned from calling the initModel function\n");
     fflush(stdout);
   }
@@ -97,6 +107,11 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   env->ReleaseStringUTFChars(dest_path, destPath);
   env->ReleaseStringUTFChars(planner_config, plannerConfig);
   env->ReleaseStringUTFChars(debug_path, debugPath);
+
+  for(int i = 0; i < numPaths; i++) {
+    env->ReleaseStringUTFChars((jstring)env->GetObjectArrayElement(source_paths, i), paths[i]);
+  }
+  delete [] paths;
   return retStatus;
 
 }
