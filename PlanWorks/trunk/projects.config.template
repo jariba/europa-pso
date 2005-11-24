@@ -9,4 +9,5 @@ projectModelInitStatePath ../../../PLASMA/System/test
 projectModelOutputDestDir ../../../PLASMA/System/test
 projectPlannerConfigPath ../../../PLASMA/System/test
 projectHeuristicsPath ../../../PLASMA/System/test
+projectSourcePaths :../../../PLASMA/System/test:
 projectModelRuleDelimiters {}
