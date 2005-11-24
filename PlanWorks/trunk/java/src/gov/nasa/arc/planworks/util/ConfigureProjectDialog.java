@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.12 2005-11-02 23:36:43 miatauro Exp $
+// $Id: ConfigureProjectDialog.java,v 1.13 2005-11-24 00:50:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -18,12 +18,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
@@ -42,6 +48,8 @@ public class ConfigureProjectDialog extends JDialog {
   private static final int DELIMS_FIELD_WIDTH = 2;
   private static final int NAME_FIELD_WIDTH = 15;
   private static final int PATH_FIELD_WIDTH = 30;
+
+    private static final String BROWSE = "browse ...";
 
   private JOptionPane optionPane;
   private String projectName;
@@ -64,6 +72,8 @@ public class ConfigureProjectDialog extends JDialog {
   private JTextField plannerConfigPathField;
     private String heuristicsPath;
     private JTextField heuristicsPathField;
+    private String sourcePaths;
+    private SourcePathPanel spp;
 
   private String btnString1;
   private String btnString2;
@@ -78,43 +88,33 @@ public class ConfigureProjectDialog extends JDialog {
     // modal dialog - blocks other activity
     super( planWorks, true);
     setTitle( "Configure Project");
-    String browseTitle = "browse ...";
-    final JLabel projectNameLabel = new JLabel( "name");
+
     projectNameField = new JTextField( NAME_FIELD_WIDTH);
-    final JLabel workingDirLabel =  new JLabel( "working directory");
+
     workingDirField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton workingDirBrowseButton = new JButton( browseTitle);
-    workingDirBrowseButton.addActionListener( new WorkingDirButtonListener());
-    final JLabel plannerPathLabel = new JLabel( "planner library file (full path)");
+
+
     plannerPathField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton plannerPathBrowseButton = new JButton( browseTitle);
-    plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
+
 //     final JLabel modelNameLabel = new JLabel( "model name");
 //     modelNameField = new JTextField( NAME_FIELD_WIDTH);
-    final JLabel modelPathLabel = new JLabel( "model library file (full path)");
+
     modelPathField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton modelPathBrowseButton = new JButton( browseTitle);
-    modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
-    final JLabel modelOutputDestDirLabel = new JLabel( "model output destination directory");
+
+
     modelOutputDestDirField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton modelOutputDestDirBrowseButton = new JButton( browseTitle);
-     modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
-    final JLabel modelInitStatePathLabel =  new JLabel( "model initial state file (full path)");
+
+
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
-    modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
 
-    final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+
+
     plannerConfigPathField = new JTextField(PATH_FIELD_WIDTH);
-    final JButton plannerConfigPathBrowseButton = new JButton(browseTitle);
-    plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
 
-    final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+
+
     heuristicsPathField = new JTextField(PATH_FIELD_WIDTH);
-    final JButton heuristicsPathBrowseButton = new JButton(browseTitle);
-    heuristicsPathBrowseButton.addActionListener(new HeuristicsPathButtonListener());
 
-    final JLabel modelRuleDelimitersLabel= new JLabel( "model rule delimiters");
     modelRuleDelimitersField = new JTextField( DELIMS_FIELD_WIDTH);
     // current values
     try {
@@ -146,6 +146,9 @@ public class ConfigureProjectDialog extends JDialog {
 									   currentProjectName))).getCanonicalPath();
       modelRuleDelimiters = ConfigureAndPlugins.getProjectConfigValue
         ( ConfigureAndPlugins.PROJECT_MODEL_RULE_DELIMITERS, currentProjectName);
+      
+      sourcePaths = ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_SOURCE_PATH, currentProjectName);
+      System.err.println("Project configured sourcePaths value: " + sourcePaths);
     } catch (IOException ioExcep) {
     }
     workingDirField.setText( workingDir);
@@ -161,117 +164,14 @@ public class ConfigureProjectDialog extends JDialog {
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
 
-    JPanel dialogPanel = new JPanel();
-    GridBagLayout gridBag = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    dialogPanel.setLayout( gridBag);
-    
-    c.weightx = 0;
-    c.weighty = 0;
-    c.gridx = 0;
-    c.gridy = 0;
+    //JPanel dialogPanel = new JPanel();
+    JTabbedPane dialogPanel = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
-    c.gridy++;
-    gridBag.setConstraints( projectNameLabel, c);
-    dialogPanel.add( projectNameLabel);
-    c.gridy++;
-    gridBag.setConstraints( projectNameField, c);
-    dialogPanel.add( projectNameField);
-
-    c.gridy++;
-    gridBag.setConstraints( workingDirLabel, c);
-    dialogPanel.add( workingDirLabel);
-    c.gridy++;
-    gridBag.setConstraints( workingDirField, c);
-    dialogPanel.add( workingDirField);
-    c.gridx++;
-    gridBag.setConstraints( workingDirBrowseButton, c);
-    dialogPanel.add( workingDirBrowseButton);
-
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints( plannerPathLabel, c);
-    dialogPanel.add( plannerPathLabel);
-    c.gridy++;
-    gridBag.setConstraints( plannerPathField, c);
-    dialogPanel.add( plannerPathField);
-    c.gridx++;
-    gridBag.setConstraints( plannerPathBrowseButton, c);
-    dialogPanel.add( plannerPathBrowseButton);
-
-//     c.gridx = 0;
-//     c.gridy++;
-//     gridBag.setConstraints( modelNameLabel, c);
-//     dialogPanel.add( modelNameLabel);
-//     c.gridy++;
-//     gridBag.setConstraints( modelNameField, c);
-//     dialogPanel.add( modelNameField);
-
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints( modelPathLabel, c);
-    dialogPanel.add( modelPathLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelPathField, c);
-    dialogPanel.add( modelPathField);
-    c.gridx++;
-    gridBag.setConstraints( modelPathBrowseButton, c);
-    dialogPanel.add( modelPathBrowseButton);
-
-    c.gridx = 0;   
-    c.gridy++;
-    gridBag.setConstraints( modelInitStatePathLabel, c);
-    dialogPanel.add( modelInitStatePathLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelInitStatePathField, c);
-    dialogPanel.add( modelInitStatePathField);
-    c.gridx++;
-    gridBag.setConstraints( modelInitStatePathBrowseButton, c);
-    dialogPanel.add( modelInitStatePathBrowseButton);
-
-    c.gridx = 0;  
-    c.gridy++;
-    gridBag.setConstraints( modelOutputDestDirLabel, c);
-    dialogPanel.add( modelOutputDestDirLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelOutputDestDirField, c);
-    dialogPanel.add( modelOutputDestDirField);
-    c.gridx++;
-    gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
-    dialogPanel.add( modelOutputDestDirBrowseButton);
-
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(plannerConfigPathLabel, c);
-    dialogPanel.add(plannerConfigPathLabel);
-    c.gridy++;
-    gridBag.setConstraints(plannerConfigPathField, c);
-    dialogPanel.add(plannerConfigPathField);
-    c.gridx++;
-    gridBag.setConstraints(plannerConfigPathBrowseButton, c);
-    dialogPanel.add(plannerConfigPathBrowseButton);
-
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(heuristicsPathLabel, c);
-    dialogPanel.add(heuristicsPathLabel);
-    c.gridy++;
-    gridBag.setConstraints(heuristicsPathField, c);
-    dialogPanel.add(heuristicsPathField);
-    c.gridx++;
-    gridBag.setConstraints(heuristicsPathBrowseButton, c);
-    dialogPanel.add(heuristicsPathBrowseButton);
-
-    c.gridx = 0;  
-    c.gridy++;
-    gridBag.setConstraints( modelRuleDelimitersLabel, c);
-    dialogPanel.add( modelRuleDelimitersLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelRuleDelimitersField, c);
-    dialogPanel.add( modelRuleDelimitersField);
+    dialogPanel.add("Project", createProjectConfigTab());
+    dialogPanel.add("Planner", createPlannerConfigTab());
 
     optionPane = new JOptionPane
-      ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
+      ( dialogPanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION,
         null, options, options[0]);
     setContentPane( optionPane);
     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE);
@@ -394,6 +294,147 @@ public class ConfigureProjectDialog extends JDialog {
 	}
     }
 
+    private JPanel createProjectConfigTab() {
+	JPanel projectPanel = new JPanel();
+	projectPanel.setLayout( new BoxLayout(projectPanel, BoxLayout.Y_AXIS));
+	
+
+	final JLabel projectNameLabel = new JLabel( "name");
+	projectNameLabel.setMaximumSize(projectNameLabel.getPreferredSize());
+	projectNameField.setMaximumSize(projectNameField.getPreferredSize());
+	projectPanel.add(Box.createHorizontalGlue());
+	projectPanel.add( projectNameLabel);
+	projectPanel.add(Box.createHorizontalGlue());
+	projectPanel.add( projectNameField);
+	projectPanel.add(Box.createHorizontalGlue());
+	
+	final JLabel workingDirLabel =  new JLabel( "working directory");
+	projectPanel.add( workingDirLabel);
+	
+	JPanel workingDirPanel = new JPanel();
+	workingDirPanel.setLayout(new BoxLayout(workingDirPanel, BoxLayout.X_AXIS));
+	workingDirPanel.add(workingDirField);
+	final JButton workingDirBrowseButton = new JButton( BROWSE);
+	workingDirBrowseButton.addActionListener( new WorkingDirButtonListener());
+	workingDirPanel.add(workingDirBrowseButton);
+	projectPanel.add( workingDirPanel);
+	
+	
+	final JLabel modelOutputDestDirLabel = new JLabel( "model output destination directory");
+	projectPanel.add( modelOutputDestDirLabel);
+	JPanel outputDestPanel = new JPanel();
+	outputDestPanel.setLayout(new BoxLayout(outputDestPanel, BoxLayout.X_AXIS));
+	outputDestPanel.add( modelOutputDestDirField);
+	final JButton modelOutputDestDirBrowseButton = new JButton( BROWSE);
+	modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
+	outputDestPanel.add(modelOutputDestDirBrowseButton);
+	projectPanel.add( outputDestPanel);
+	
+	final JLabel modelRuleDelimitersLabel= new JLabel( "model rule delimiters");
+	projectPanel.add( modelRuleDelimitersLabel);
+	projectPanel.add( modelRuleDelimitersField);
+
+	spp = new SourcePathPanel(Arrays.asList(sourcePaths.split(":")));
+	projectPanel.add(spp);
+	
+	
+	return projectPanel;
+    //end project config
+
+    }
+
+    private JPanel createPlannerConfigTab() {
+	JPanel plannerPanel = new JPanel();
+	GridBagLayout gridBag = new GridBagLayout();
+	GridBagConstraints c = new GridBagConstraints();
+	plannerPanel.setLayout(gridBag);
+
+	c.weightx = 0;
+	c.weighty = 0;
+	c.gridx = 0;
+	c.gridy = 0;
+
+	//begin planner config
+	final JLabel plannerPathLabel = new JLabel( "planner library file (full path)");
+	gridBag.setConstraints( plannerPathLabel, c);
+	plannerPanel.add( plannerPathLabel);
+	c.gridy++;
+	gridBag.setConstraints( plannerPathField, c);
+	plannerPanel.add( plannerPathField);
+	c.gridx++;
+	final JButton plannerPathBrowseButton = new JButton( BROWSE);
+	plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
+	gridBag.setConstraints( plannerPathBrowseButton, c);
+	plannerPanel.add( plannerPathBrowseButton);
+
+	//     c.gridx = 0;
+	//     c.gridy++;
+	//     gridBag.setConstraints( modelNameLabel, c);
+	//     plannerPanel.add( modelNameLabel);
+	//     c.gridy++;
+	//     gridBag.setConstraints( modelNameField, c);
+	//     plannerPanel.add( modelNameField);
+
+	c.gridx = 0;
+	c.gridy++;
+	final JLabel modelPathLabel = new JLabel( "model library file (full path)");
+	gridBag.setConstraints( modelPathLabel, c);
+	plannerPanel.add( modelPathLabel);
+	c.gridy++;
+	gridBag.setConstraints( modelPathField, c);
+	plannerPanel.add( modelPathField);
+	c.gridx++;
+	final JButton modelPathBrowseButton = new JButton( BROWSE);
+	modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
+	gridBag.setConstraints( modelPathBrowseButton, c);
+	plannerPanel.add( modelPathBrowseButton);
+
+	c.gridx = 0;   
+	c.gridy++;
+	final JLabel modelInitStatePathLabel =  new JLabel( "model initial state file (full path)");
+	gridBag.setConstraints( modelInitStatePathLabel, c);
+	plannerPanel.add( modelInitStatePathLabel);
+	c.gridy++;
+	gridBag.setConstraints( modelInitStatePathField, c);
+	plannerPanel.add( modelInitStatePathField);
+	c.gridx++;
+	final JButton modelInitStatePathBrowseButton = new JButton( BROWSE);
+	modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
+	gridBag.setConstraints( modelInitStatePathBrowseButton, c);
+	plannerPanel.add( modelInitStatePathBrowseButton);
+
+
+	c.gridx = 0;
+	c.gridy++;
+	final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+	gridBag.setConstraints(plannerConfigPathLabel, c);
+	plannerPanel.add(plannerConfigPathLabel);
+	c.gridy++;
+	gridBag.setConstraints(plannerConfigPathField, c);
+	plannerPanel.add(plannerConfigPathField);
+	c.gridx++;
+	final JButton plannerConfigPathBrowseButton = new JButton(BROWSE);
+	plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
+	gridBag.setConstraints(plannerConfigPathBrowseButton, c);
+	plannerPanel.add(plannerConfigPathBrowseButton);
+
+	c.gridx = 0;
+	c.gridy++;
+	final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+	gridBag.setConstraints(heuristicsPathLabel, c);
+	plannerPanel.add(heuristicsPathLabel);
+	c.gridy++;
+	gridBag.setConstraints(heuristicsPathField, c);
+	plannerPanel.add(heuristicsPathField);
+	c.gridx++;
+	final JButton heuristicsPathBrowseButton = new JButton(BROWSE);
+	heuristicsPathBrowseButton.addActionListener(new HeuristicsPathButtonListener());
+
+	gridBag.setConstraints(heuristicsPathBrowseButton, c);
+	plannerPanel.add(heuristicsPathBrowseButton);
+	return plannerPanel;
+    }
+
   private void addInputListener() {
     optionPane.addPropertyChangeListener( new PropertyChangeListener() {
         public void propertyChange( PropertyChangeEvent e) {
@@ -424,6 +465,8 @@ public class ConfigureProjectDialog extends JDialog {
               modelPath = null; modelOutputDestDir = null;
               modelInitStatePath = null; modelRuleDelimiters = null;
 	      heuristicsPath = null;
+	      sourcePaths = null;
+	      System.err.println("Setting sourcePaths = null");
               setVisible( false);
             }
           }
@@ -516,6 +559,14 @@ public class ConfigureProjectDialog extends JDialog {
       else
 	  heuristicsPath = heuristicsPathTemp;
 
+      List paths = spp.getPaths();
+      StringBuffer pathBuf = new StringBuffer(":");
+      for(Iterator it = paths.iterator(); it.hasNext();)
+	  pathBuf.append((String)it.next()).append(":");
+
+      sourcePaths = pathBuf.toString();
+      System.err.println("Set sourcePaths to " + sourcePaths);
+
     return haveSeenError;
   } // end handleTextFieldValues
 
@@ -598,6 +649,10 @@ public class ConfigureProjectDialog extends JDialog {
 
     public String getHeuristicsPath() {
 	return heuristicsPath;
+    }
+
+    public String getSourcePaths() {
+	return sourcePaths;
     }
 
 } // end class ConfigureProjectDialog

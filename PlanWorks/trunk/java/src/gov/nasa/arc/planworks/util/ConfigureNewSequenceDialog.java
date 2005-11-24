@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.13 2005-11-02 23:36:43 miatauro Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.14 2005-11-24 00:50:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -22,11 +22,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 
@@ -42,6 +47,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
 
   private static final int NAME_FIELD_WIDTH = 15;
   private static final int PATH_FIELD_WIDTH = 30;
+    private static final String BROWSE = "browse ...";
 
   private JOptionPane optionPane;
   private String plannerPath;
@@ -58,6 +64,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
   private JTextField plannerConfigPathField;
     private String heuristicsPath;
     private JTextField heuristicsPathField;
+    private String sourcePaths;
+    private SourcePathPanel spp;
   private String btnString1;
   private String btnString2;
 
@@ -71,38 +79,30 @@ public class ConfigureNewSequenceDialog extends JDialog {
     // modal dialog - blocks other activity
     super( planWorks, true);
     setTitle( "Create New Sequence");
-    String browseTitle = "browse ...";
-    final JLabel plannerPathLabel = new JLabel( "planner library path");
+
     plannerPathField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton plannerPathBrowseButton = new JButton( browseTitle);
-    plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
+
 //     final JLabel modelNameLabel = new JLabel( "model name");
 //     modelNameField = new JTextField( NAME_FIELD_WIDTH);
 
-    final JLabel modelPathLabel = new JLabel( "model library path");
+
     modelPathField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton modelPathBrowseButton = new JButton( browseTitle);
-    modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
 
-    final JLabel modelOutputDestDirLabel = new JLabel( "model output destination directory");
+
     modelOutputDestDirField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton modelOutputDestDirBrowseButton = new JButton( browseTitle);
-     modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
 
-    final JLabel modelInitStatePathLabel =  new JLabel( "model initial state path");
+
+
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
-    final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
-    modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
 
-    final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+
+
     plannerConfigPathField = new JTextField(PATH_FIELD_WIDTH);
-    final JButton plannerConfigPathBrowseButton = new JButton(browseTitle);
-    plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
 
-    final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+
+
     heuristicsPathField = new JTextField(PATH_FIELD_WIDTH);
-    final JButton heuristicsPathBrowseButton = new JButton(browseTitle);
-    heuristicsPathBrowseButton.addActionListener(new HeuristicsPathButtonListener());
+
 
     // current values
     try {
@@ -126,6 +126,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
                                     currentProjectName)).getCanonicalPath();
       heuristicsPath = (new File(ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH,
 									   currentProjectName))).getCanonicalPath();
+      sourcePaths = ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_SOURCE_PATH, currentProjectName);
 							   
     } catch (IOException ioExcep) {
     }
@@ -142,25 +143,12 @@ public class ConfigureNewSequenceDialog extends JDialog {
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
 
-    JPanel dialogPanel = new JPanel();
-    GridBagLayout gridBag = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    dialogPanel.setLayout( gridBag);
-    
-    c.weightx = 0;
-    c.weighty = 0;
-    c.gridx = 0;
-    c.gridy = 0;
+    //JPanel dialogPanel = new JPanel();
+    JTabbedPane dialogPanel = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
+    dialogPanel.add("Project", createProjectConfigTab());
+    dialogPanel.add("Planner", createPlannerConfigTab());
 
-    c.gridy++;
-    gridBag.setConstraints( plannerPathLabel, c);
-    dialogPanel.add( plannerPathLabel);
-    c.gridy++;
-    gridBag.setConstraints( plannerPathField, c);
-    dialogPanel.add( plannerPathField);
-    c.gridx++;
-    gridBag.setConstraints( plannerPathBrowseButton, c);
-    dialogPanel.add( plannerPathBrowseButton);
+
 
 //     c.gridy++;
 //     gridBag.setConstraints( modelNameLabel, c);
@@ -169,63 +157,9 @@ public class ConfigureNewSequenceDialog extends JDialog {
 //     gridBag.setConstraints( modelNameField, c);
 //     dialogPanel.add( modelNameField);
 
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints( modelPathLabel, c);
-    dialogPanel.add( modelPathLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelPathField, c);
-    dialogPanel.add( modelPathField);
-    c.gridx++;
-    gridBag.setConstraints( modelPathBrowseButton, c);
-    dialogPanel.add( modelPathBrowseButton);
-
-    c.gridx = 0;   
-    c.gridy++;
-    gridBag.setConstraints( modelInitStatePathLabel, c);
-    dialogPanel.add( modelInitStatePathLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelInitStatePathField, c);
-    dialogPanel.add( modelInitStatePathField);
-    c.gridx++;
-    gridBag.setConstraints( modelInitStatePathBrowseButton, c);
-    dialogPanel.add( modelInitStatePathBrowseButton);
-
-    c.gridx = 0;  
-    c.gridy++;
-    gridBag.setConstraints( modelOutputDestDirLabel, c);
-    dialogPanel.add( modelOutputDestDirLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelOutputDestDirField, c);
-    dialogPanel.add( modelOutputDestDirField);
-    c.gridx++;
-    gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
-    dialogPanel.add( modelOutputDestDirBrowseButton);
-
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(plannerConfigPathLabel, c);
-    dialogPanel.add(plannerConfigPathLabel);
-    c.gridy++;
-    gridBag.setConstraints(plannerConfigPathField, c);
-    dialogPanel.add(plannerConfigPathField);
-    c.gridx++;
-    gridBag.setConstraints(plannerConfigPathBrowseButton, c);
-    dialogPanel.add(plannerConfigPathBrowseButton);
-
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(heuristicsPathLabel, c);
-    dialogPanel.add(heuristicsPathLabel);
-    c.gridy++;
-    gridBag.setConstraints(heuristicsPathField, c);
-    dialogPanel.add(heuristicsPathField);
-    c.gridx++;
-    gridBag.setConstraints(heuristicsPathBrowseButton, c);
-    dialogPanel.add(heuristicsPathBrowseButton);
 
     optionPane = new JOptionPane
-      ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
+      ( dialogPanel, JOptionPane.PLAIN_MESSAGE, JOptionPane.YES_NO_OPTION,
         null, options, options[0]);
     setContentPane( optionPane);
     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE);
@@ -363,12 +297,113 @@ public class ConfigureNewSequenceDialog extends JDialog {
               modelPath = null;
               modelOutputDestDir = null;
               modelInitStatePath = null;
+	      sourcePaths = null;
               setVisible( false);
             }
           }
         }
       });
   } // end addInputListener
+
+    private JPanel createProjectConfigTab() {
+	JPanel projectPanel = new JPanel();
+	projectPanel.setLayout(new BoxLayout(projectPanel, BoxLayout.Y_AXIS));
+
+	final JLabel modelOutputDestDirLabel = new JLabel( "model output destination directory");
+	projectPanel.add( modelOutputDestDirLabel);
+	projectPanel.add( modelOutputDestDirField);
+	final JButton modelOutputDestDirBrowseButton = new JButton( BROWSE);
+	modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
+	projectPanel.add( modelOutputDestDirBrowseButton);
+
+	spp = new SourcePathPanel(Arrays.asList(sourcePaths.split(":")));
+	projectPanel.add(spp);
+
+	return projectPanel;
+    }
+
+    private JPanel createPlannerConfigTab() {
+	JPanel plannerPanel = new JPanel();
+	GridBagLayout gridBag = new GridBagLayout();
+	GridBagConstraints c = new GridBagConstraints();
+	plannerPanel.setLayout( gridBag);
+    
+	c.weightx = 0;
+	c.weighty = 0;
+	c.gridx = 0;
+	c.gridy = 0;
+
+	final JLabel plannerPathLabel = new JLabel( "planner library path");
+	gridBag.setConstraints( plannerPathLabel, c);
+	plannerPanel.add( plannerPathLabel);
+	c.gridy++;
+	gridBag.setConstraints( plannerPathField, c);
+	plannerPanel.add( plannerPathField);
+	c.gridx++;
+	final JButton plannerPathBrowseButton = new JButton( BROWSE);
+	plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
+	gridBag.setConstraints( plannerPathBrowseButton, c);
+	plannerPanel.add( plannerPathBrowseButton);
+
+	c.gridx = 0;
+	c.gridy++;
+	final JLabel modelPathLabel = new JLabel( "model library path");
+	gridBag.setConstraints( modelPathLabel, c);
+	plannerPanel.add( modelPathLabel);
+	c.gridy++;
+	gridBag.setConstraints( modelPathField, c);
+	plannerPanel.add( modelPathField);
+	c.gridx++;
+	final JButton modelPathBrowseButton = new JButton( BROWSE);
+	modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
+	gridBag.setConstraints( modelPathBrowseButton, c);
+	plannerPanel.add( modelPathBrowseButton);
+
+	c.gridx = 0;   
+	c.gridy++;
+	final JLabel modelInitStatePathLabel =  new JLabel( "model initial state path");
+	gridBag.setConstraints( modelInitStatePathLabel, c);
+	plannerPanel.add( modelInitStatePathLabel);
+	c.gridy++;
+	gridBag.setConstraints( modelInitStatePathField, c);
+	plannerPanel.add( modelInitStatePathField);
+	c.gridx++;
+	final JButton modelInitStatePathBrowseButton = new JButton( BROWSE);
+	modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
+	gridBag.setConstraints( modelInitStatePathBrowseButton, c);
+	plannerPanel.add( modelInitStatePathBrowseButton);
+
+
+	c.gridx = 0;
+	c.gridy++;
+	final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+	gridBag.setConstraints(plannerConfigPathLabel, c);
+	plannerPanel.add(plannerConfigPathLabel);
+	c.gridy++;
+	gridBag.setConstraints(plannerConfigPathField, c);
+	plannerPanel.add(plannerConfigPathField);
+	c.gridx++;
+	final JButton plannerConfigPathBrowseButton = new JButton(BROWSE);
+	plannerConfigPathBrowseButton.addActionListener(new PlannerConfigPathButtonListener());
+	gridBag.setConstraints(plannerConfigPathBrowseButton, c);
+	plannerPanel.add(plannerConfigPathBrowseButton);
+
+	c.gridx = 0;
+	c.gridy++;
+	final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+	gridBag.setConstraints(heuristicsPathLabel, c);
+	plannerPanel.add(heuristicsPathLabel);
+	c.gridy++;
+	gridBag.setConstraints(heuristicsPathField, c);
+	plannerPanel.add(heuristicsPathField);
+	c.gridx++;
+	final JButton heuristicsPathBrowseButton = new JButton(BROWSE);
+	heuristicsPathBrowseButton.addActionListener(new HeuristicsPathButtonListener());
+	gridBag.setConstraints(heuristicsPathBrowseButton, c);
+	plannerPanel.add(heuristicsPathBrowseButton);
+
+	return plannerPanel;
+    }
 
   private boolean handleTextFieldValues() {
     boolean haveSeenError = false;
@@ -436,6 +471,13 @@ public class ConfigureNewSequenceDialog extends JDialog {
     else
 	heuristicsPath = heuristicsPathTemp;
 
+    List paths = spp.getPaths();
+    StringBuffer pathBuf = new StringBuffer(":");
+    for(Iterator it = paths.iterator(); it.hasNext();)
+	pathBuf.append((String)it.next()).append(":");
+    
+    sourcePaths = pathBuf.toString();
+
     return haveSeenError;
   } // end handleTextFieldValues
 
@@ -502,6 +544,10 @@ public class ConfigureNewSequenceDialog extends JDialog {
 
     public String getHeuristicsPath() {
 	return heuristicsPath;
+    }
+
+    public String getSourcePaths() {
+	return sourcePaths;
     }
 
 } // end class ConfigureNewSequenceDialog

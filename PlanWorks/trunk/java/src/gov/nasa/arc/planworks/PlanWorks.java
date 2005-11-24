@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.122 2005-11-10 01:22:07 miatauro Exp $
+// $Id: PlanWorks.java,v 1.123 2005-11-24 00:50:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -731,7 +731,9 @@ public class PlanWorks extends MDIDesktopFrame {
     nameValueList.add(configureDialog.getHeuristicsPath());
     nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_RULE_DELIMITERS);
     nameValueList.add( configureDialog.getModelRuleDelimiters());
-
+    nameValueList.add(ConfigureAndPlugins.PROJECT_SOURCE_PATH);
+    System.err.println("Adding " + configureDialog.getSourcePaths() + " to nameValueList");
+    nameValueList.add(configureDialog.getSourcePaths());
 
     ConfigureAndPlugins.updateProjectConfigMap( projectName, nameValueList);
   } // end configureProject
