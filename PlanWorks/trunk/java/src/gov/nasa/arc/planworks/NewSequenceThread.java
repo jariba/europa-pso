@@ -4,14 +4,16 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.20 2005-11-10 01:22:07 miatauro Exp $
+// $Id: NewSequenceThread.java,v 1.21 2005-11-24 00:50:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
 import java.awt.Container;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
@@ -51,6 +53,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   private String modelOutputDestDir;
   private String plannerConfigPath;
     private String heuristicsPath;
+    private String sourcePaths;
   private boolean areConfigParamsChanged;
 
 
@@ -139,7 +142,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
 	outputDir.mkdirs();
 
     if (PlannerControlJNI.initPlannerRun( plannerPath, modelPath, modelInitStatePath,
-                                          modelOutputDestDir, plannerConfigPath, modelOutputDestDir + System.getProperty("file.separator") + "DEBUG_FILE") !=
+                                          modelOutputDestDir, plannerConfigPath, modelOutputDestDir + System.getProperty("file.separator") + "DEBUG_FILE",
+					  sourcePaths.split(":")) !=
         PlannerControlJNI.PLANNER_IN_PROGRESS) {
       JOptionPane.showMessageDialog
         (PlanWorks.getPlanWorks(), "PlannerControlJNI.initPlannerRun failed",
@@ -275,6 +279,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     String heuristicsPathCurrent = ConfigureAndPlugins.getProjectConfigValue
 	(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH, projectName);
 
+    String sourcePathsCurrent = 
+	ConfigureAndPlugins.getProjectConfigValue(ConfigureAndPlugins.PROJECT_SOURCE_PATH, projectName);
 
     ConfigureNewSequenceDialog configureDialog =
       new ConfigureNewSequenceDialog( PlanWorks.getPlanWorks());
@@ -292,12 +298,15 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     modelOutputDestDir = configureDialog.getModelOutputDestDir();
     plannerConfigPath = configureDialog.getPlannerConfigPath();
     heuristicsPath = configureDialog.getHeuristicsPath();
+    sourcePaths = configureDialog.getSourcePaths();
+
     if ((! plannerPath.equals(  plannerPathCurrent)) ||
         (! modelPath.equals( modelPathCurrent)) ||
         (! modelInitStatePath.equals( modelInitStatePathCurrent)) ||
         (! modelOutputDestDir.equals( modelOutputDestDirCurrent)) ||
         ! plannerConfigPath.equals(plannerConfigPathCurrent) ||
-	! heuristicsPath.equals(heuristicsPathCurrent)) {
+	! heuristicsPath.equals(heuristicsPathCurrent) ||
+	! sourcePaths.equals(sourcePathsCurrent)) {
       areConfigParamsChanged = true;
     }
     return true;
@@ -319,6 +328,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     nameValueList.add( modelOutputDestDir);
     nameValueList.add(ConfigureAndPlugins.PROJECT_HEURISTICS_PATH);
     nameValueList.add(heuristicsPath);
+    nameValueList.add(ConfigureAndPlugins.PROJECT_SOURCE_PATH);
+    nameValueList.add(sourcePaths);
     ConfigureAndPlugins.updateProjectConfigMap( currentProject.getName(), nameValueList);
   } // end setConfigureParameters
 

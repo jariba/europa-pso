@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.122 2005-11-10 01:22:08 miatauro Exp $
+// $Id: MySQLDB.java,v 1.123 2005-11-24 00:50:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -620,7 +620,6 @@ public class MySQLDB {
       }
       updateDatabase("DELETE FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()));
       updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
-      updateDatabase("DELETE FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()));
       analyzeDatabase();
     }
     catch(SQLException sqle){}

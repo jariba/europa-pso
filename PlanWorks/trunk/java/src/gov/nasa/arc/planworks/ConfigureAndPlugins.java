@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.13 2005-11-02 23:35:50 miatauro Exp $
+// $Id: ConfigureAndPlugins.java,v 1.14 2005-11-24 00:50:19 miatauro Exp $
 //
 // PlanWorks
 //
@@ -56,6 +56,7 @@ public class ConfigureAndPlugins {
   public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
   public static final String PROJECT_MODEL_RULE_DELIMITERS = "projectModelRuleDelimiters";
     public static final String PROJECT_HEURISTICS_PATH = "projectHeuristicsPath";
+    public static final String PROJECT_SOURCE_PATH = "projectSourcePaths";
 
   public static final String PLANNER_LIB_NAME_MATCH = ".so"; 
   public static final String PLANNER_CONTROL_JNI_LIB = "libPlannerControlJNI.so"; 
@@ -88,12 +89,15 @@ public class ConfigureAndPlugins {
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_RULE_DELIMITERS);
     PROJECT_CONFIG_PARAMS.add(PROJECT_PLANNER_CONFIG_PATH);
     PROJECT_CONFIG_PARAMS.add(PROJECT_HEURISTICS_PATH);
+    PROJECT_CONFIG_PARAMS.add(PROJECT_SOURCE_PATH);
 
     PROJECT_PATH_DIR_CONFIG_PARAMS = new ArrayList( PROJECT_CONFIG_PARAMS);
     int indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_NAME);
     PROJECT_PATH_DIR_CONFIG_PARAMS.remove( indx);
     indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_RULE_DELIMITERS);
     PROJECT_PATH_DIR_CONFIG_PARAMS.remove( indx);
+    indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf(PROJECT_SOURCE_PATH);
+    PROJECT_PATH_DIR_CONFIG_PARAMS.remove(indx);
 
     PLUG_IN_JAR_MAP = new HashMap();
     PLUG_IN_LOADER_MAP = new HashMap();
@@ -370,7 +374,7 @@ public class ConfigureAndPlugins {
         liveTokens = new ArrayList();
         for (int i = 0; i < tokens.length; i++) {
           String token = (String) tokens[i];
-          // System.err.println( "liveToken '" + token + "'");
+          //System.err.println( "liveToken '" + token + "'");
           liveTokens.add( token);
         }
         // process name arg pairs
@@ -593,13 +597,15 @@ public class ConfigureAndPlugins {
         while (nameValueItr.hasNext()) {
           String name = (String) nameValueItr.next();
           String value = (String) nameValueItr.next();
-          if (PROJECT_PATH_DIR_CONFIG_PARAMS.contains( name)) {
+          if (PROJECT_PATH_DIR_CONFIG_PARAMS.contains( name) && value.length() > 0) {
+	      //System.err.println("Getting canonical path for '" + value + "'");
             try {
               value = new File( value).getCanonicalPath();
             } catch (IOException ioExcep) {
             }
           }
           line = name + " " + value;
+	  //System.err.println("Writing '" + line + "'");
           out.write( line);
           out.newLine();
         }

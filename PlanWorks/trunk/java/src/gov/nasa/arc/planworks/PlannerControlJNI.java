@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerControlJNI.java,v 1.6 2005-11-10 01:22:07 miatauro Exp $
+// $Id: PlannerControlJNI.java,v 1.7 2005-11-24 00:50:20 miatauro Exp $
 //
 // PlanWorks -- started 31aug04
 //
@@ -35,7 +35,8 @@ public class PlannerControlJNI {
                                            final String modelInitStatePath,
                                            final String modelOutputDestDir,
                                            final String plannerConfigPath,
-					   final String debugPath);
+					   final String debugPath,
+					   final String[] sourcePaths);
 
   /**
    * <code>getPlannerStatus</code>
