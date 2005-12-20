@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.123 2005-11-24 00:50:20 miatauro Exp $
+// $Id: PlanWorks.java,v 1.124 2005-12-20 19:38:05 pjarvis Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -1133,7 +1133,7 @@ public class PlanWorks extends MDIDesktopFrame {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMacOSX() {
-    return (osType.equals( "darwin"));
+    return (osType.startsWith( "darwin"));
   }
 
   /**
