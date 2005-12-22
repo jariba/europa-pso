@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.13 2005-11-24 00:50:20 miatauro Exp $
+// $Id: ConfigureProjectDialog.java,v 1.14 2005-12-22 17:37:08 pjarvis Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -207,7 +207,7 @@ public class ConfigureProjectDialog extends JDialog {
     }
     public void actionPerformed(ActionEvent ae) {
       DirectoryChooser dirChooser =
-        PlanWorks.getPlanWorks().createDirectoryChooser( new File( workingDir));
+	  PlanWorks.getPlanWorks().createDirectoryChooser( new File( workingDirField.getText()));
       String currentSelectedDir = dirChooser.getValidSelectedDirectory();
       if (currentSelectedDir == null) {
         return;
@@ -221,7 +221,7 @@ public class ConfigureProjectDialog extends JDialog {
     public PlannerPathButtonListener() {
     }
     public void actionPerformed(ActionEvent ae) {
-      FileChooser fileChooser = new FileChooser( "Select File", new File( plannerPath));
+	FileChooser fileChooser = new FileChooser( "Select File", new File( plannerPathField.getText() ));
       String currentSelectedFile = fileChooser.getValidSelectedFile();
       if (currentSelectedFile == null) {
         return;
@@ -234,7 +234,7 @@ public class ConfigureProjectDialog extends JDialog {
     public ModelPathButtonListener() {
     }
     public void actionPerformed(ActionEvent ae) {
-      FileChooser fileChooser = new FileChooser( "Select File", new File( modelPath));
+	FileChooser fileChooser = new FileChooser( "Select File", new File( modelPathField.getText()));
       String currentSelectedFile = fileChooser.getValidSelectedFile();
       if (currentSelectedFile == null) {
         return;
@@ -247,7 +247,7 @@ public class ConfigureProjectDialog extends JDialog {
     public ModelInitStatePathButtonListener() {
     }
     public void actionPerformed(ActionEvent ae) {
-      FileChooser fileChooser = new FileChooser( "Select File", new File( modelInitStatePath));
+	FileChooser fileChooser = new FileChooser( "Select File", new File( modelInitStatePathField.getText() ));
       String currentSelectedFile = fileChooser.getValidSelectedFile();
       if (currentSelectedFile == null) {
         return;
@@ -262,7 +262,7 @@ public class ConfigureProjectDialog extends JDialog {
     }
     public void actionPerformed(ActionEvent ae) {
       DirectoryChooser dirChooser =
-        PlanWorks.getPlanWorks().createDirectoryChooser( new File( modelOutputDestDir));
+	  PlanWorks.getPlanWorks().createDirectoryChooser( new File( modelOutputDestDirField.getText() ));
       String currentSelectedDir = dirChooser.getValidSelectedDirectory();
       if (currentSelectedDir == null) {
         return;
@@ -275,7 +275,7 @@ public class ConfigureProjectDialog extends JDialog {
   class PlannerConfigPathButtonListener implements ActionListener {
     public PlannerConfigPathButtonListener() {}
     public void actionPerformed(ActionEvent ae) {
-      FileChooser fileChooser = new FileChooser("Select File", new File(plannerConfigPath));
+	FileChooser fileChooser = new FileChooser("Select File", new File(plannerConfigPathField.getText()));
       String currentSelectedFile = fileChooser.getValidSelectedFile();
       if(currentSelectedFile == null)
         return;
@@ -286,7 +286,7 @@ public class ConfigureProjectDialog extends JDialog {
     class HeuristicsPathButtonListener implements ActionListener {
 	public HeuristicsPathButtonListener(){}
 	public void actionPerformed(ActionEvent ae) {
-	    FileChooser fileChooser = new FileChooser("Select File", new File(heuristicsPath));
+	    FileChooser fileChooser = new FileChooser("Select File", new File(heuristicsPathField.getText()));
 	    String currentSelectedFile = fileChooser.getValidSelectedFile();
 	    if(currentSelectedFile == null)
 		return;
@@ -355,7 +355,7 @@ public class ConfigureProjectDialog extends JDialog {
 	c.gridy = 0;
 
 	//begin planner config
-	final JLabel plannerPathLabel = new JLabel( "planner library file (full path)");
+	final JLabel plannerPathLabel = new JLabel( "planner library file");
 	gridBag.setConstraints( plannerPathLabel, c);
 	plannerPanel.add( plannerPathLabel);
 	c.gridy++;
@@ -377,7 +377,7 @@ public class ConfigureProjectDialog extends JDialog {
 
 	c.gridx = 0;
 	c.gridy++;
-	final JLabel modelPathLabel = new JLabel( "model library file (full path)");
+	final JLabel modelPathLabel = new JLabel( "model library file");
 	gridBag.setConstraints( modelPathLabel, c);
 	plannerPanel.add( modelPathLabel);
 	c.gridy++;
@@ -391,7 +391,7 @@ public class ConfigureProjectDialog extends JDialog {
 
 	c.gridx = 0;   
 	c.gridy++;
-	final JLabel modelInitStatePathLabel =  new JLabel( "model initial state file (full path)");
+	final JLabel modelInitStatePathLabel =  new JLabel( "model initial state file");
 	gridBag.setConstraints( modelInitStatePathLabel, c);
 	plannerPanel.add( modelInitStatePathLabel);
 	c.gridy++;
@@ -406,7 +406,7 @@ public class ConfigureProjectDialog extends JDialog {
 
 	c.gridx = 0;
 	c.gridy++;
-	final JLabel plannerConfigPathLabel = new JLabel("planner config path");
+	final JLabel plannerConfigPathLabel = new JLabel("planner config file");
 	gridBag.setConstraints(plannerConfigPathLabel, c);
 	plannerPanel.add(plannerConfigPathLabel);
 	c.gridy++;
@@ -420,7 +420,7 @@ public class ConfigureProjectDialog extends JDialog {
 
 	c.gridx = 0;
 	c.gridy++;
-	final JLabel heuristicsPathLabel = new JLabel("heuristics path");
+	final JLabel heuristicsPathLabel = new JLabel("heuristics file");
 	gridBag.setConstraints(heuristicsPathLabel, c);
 	plannerPanel.add(heuristicsPathLabel);
 	c.gridy++;
