@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.15 2005-12-22 18:51:13 pjarvis Exp $
+// $Id: ConfigureProjectDialog.java,v 1.16 2005-12-22 19:06:46 pjarvis Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -164,6 +164,8 @@ public class ConfigureProjectDialog extends JDialog {
     plannerConfigPathField.setText(plannerConfigPath);
     heuristicsPathField.setText(heuristicsPath);
     modelRuleDelimitersField.setText( modelRuleDelimiters);
+    propogateWorkingDirectoryIntoDefaults();
+
     btnString1 = "Enter";
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
