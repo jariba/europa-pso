@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.14 2005-12-22 17:37:08 pjarvis Exp $
+// $Id: ConfigureProjectDialog.java,v 1.15 2005-12-22 18:51:13 pjarvis Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -75,9 +75,13 @@ public class ConfigureProjectDialog extends JDialog {
     private String sourcePaths;
     private SourcePathPanel spp;
 
-  private String btnString1;
-  private String btnString2;
+    private String btnString1;
+    private String btnString2;
 
+    // Used to control "default" settings on configure project dialog.
+    // When locked, defaults are not updated. Locking occurs when user has specified
+    // values in project configuration (press either <enter> or <browse>)
+    private boolean plannerConfigurationLocked = false;
 
   /**
    * <code>ConfigureProjectDialog</code> - constructor 
@@ -213,6 +217,7 @@ public class ConfigureProjectDialog extends JDialog {
         return;
       }
       workingDirField.setText( currentSelectedDir);
+      propogateWorkingDirectoryIntoDefaults();
     } // end actionPerformed
 
   } // end class WorkingDirButtonListener
@@ -227,6 +232,7 @@ public class ConfigureProjectDialog extends JDialog {
         return;
       }
       plannerPathField.setText( currentSelectedFile);
+      plannerConfigurationLocked = true;
     }
   } // end class PlannerPathButtonListener
 
@@ -240,6 +246,7 @@ public class ConfigureProjectDialog extends JDialog {
         return;
       }
       modelPathField.setText( currentSelectedFile);
+      plannerConfigurationLocked = true;
     }
   } // end class ModelPathButtonListener
 
@@ -253,6 +260,7 @@ public class ConfigureProjectDialog extends JDialog {
         return;
       }
       modelInitStatePathField.setText( currentSelectedFile);
+      plannerConfigurationLocked = true;
     }
   } // end class ModelInitStatePathButtonListener
 
@@ -267,7 +275,8 @@ public class ConfigureProjectDialog extends JDialog {
       if (currentSelectedDir == null) {
         return;
       }
-      modelOutputDestDirField.setText( currentSelectedDir);
+      modelOutputDestDirField.setText( currentSelectedDir );
+      plannerConfigurationLocked = true;
     }
   } // end class ModelOutputDestDirButtonListener
 
@@ -280,6 +289,7 @@ public class ConfigureProjectDialog extends JDialog {
       if(currentSelectedFile == null)
         return;
       plannerConfigPathField.setText(currentSelectedFile);
+      plannerConfigurationLocked = true;
     }
   }
 
@@ -291,6 +301,7 @@ public class ConfigureProjectDialog extends JDialog {
 	    if(currentSelectedFile == null)
 		return;
 	    heuristicsPathField.setText(currentSelectedFile);
+            plannerConfigurationLocked = true;
 	}
     }
 
@@ -473,6 +484,30 @@ public class ConfigureProjectDialog extends JDialog {
         }
       });
   } // end addInputListener
+
+    public void propogateWorkingDirectoryIntoDefaults() {
+	if (! plannerConfigurationLocked ) {
+	    System.err.println("Propergating working directory information to other project settings defaults");
+         
+            String workingDirWithoutPath;
+            if (workingDir.lastIndexOf("plans") != -1) {
+               workingDirWithoutPath = workingDir.substring(0, workingDir.lastIndexOf("plans"));
+            } else {
+		workingDirWithoutPath = workingDir;
+            }
+            plannerPath = workingDirWithoutPath;
+            plannerPathField.setText( plannerPath );
+            modelPath = workingDirWithoutPath;
+            modelPathField.setText( modelPath );
+	    modelInitStatePath = workingDirWithoutPath;
+            modelInitStatePathField.setText( modelInitStatePath );
+            plannerConfigPath = workingDirWithoutPath;
+            plannerConfigPathField.setText(plannerConfigPath);
+            heuristicsPath = workingDirWithoutPath;
+            heuristicsPathField.setText(heuristicsPath);
+
+        }
+    }
 
   private boolean handleTextFieldValues() {
     boolean haveSeenError = false;
