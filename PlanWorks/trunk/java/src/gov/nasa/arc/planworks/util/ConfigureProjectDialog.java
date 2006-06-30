@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.16 2005-12-22 19:06:46 pjarvis Exp $
+// $Id: ConfigureProjectDialog.java,v 1.17 2006-06-30 22:40:54 meboyce Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -204,7 +204,6 @@ public class ConfigureProjectDialog extends JDialog {
     pack();
     // place it in center of JFrame
     Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
-    setBackground( ColorMap.getColor( "gray60"));
     setVisible( true);
   } // end constructor
 

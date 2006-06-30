@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.14 2005-11-24 00:50:20 miatauro Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.15 2006-06-30 22:40:54 meboyce Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -186,7 +186,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
     pack();
     // place it in center of JFrame
     Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
-    setBackground( ColorMap.getColor( "gray60"));
     setVisible( true);
   } // end constructor
 

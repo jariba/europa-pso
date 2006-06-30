@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TransactionTypesDialog.java,v 1.2 2004-09-29 23:52:19 taylor Exp $
+// $Id: TransactionTypesDialog.java,v 1.3 2006-06-30 22:40:55 meboyce Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -104,7 +104,6 @@ public class TransactionTypesDialog extends JDialog {
     pack();
     // place it in center of JFrame
     Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
-    setBackground( ColorMap.getColor( "gray60"));
     setSize( DIALOG_WIDTH, DIALOG_HEIGHT);
     Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
     setVisible( true);

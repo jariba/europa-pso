@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ColorMap.java,v 1.4 2004-05-21 21:38:57 taylor Exp $
+// $Id: ColorMap.java,v 1.5 2006-06-30 22:40:54 meboyce Exp $
 //
 // PlanWorks
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.util;
 
+import java.awt.SystemColor;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +70,9 @@ public class ColorMap {
     x11Colors.put( "skyBlue", new Color( 135, 206, 235));
     x11Colors.put( "white", new Color( 255, 255, 255));
     x11Colors.put( "yellow", new Color( 255, 255, 0));
+    x11Colors.put( "System.background", SystemColor.window);
+    x11Colors.put( "System.text.background", SystemColor.text);
+    x11Colors.put( "System.text.foreground", SystemColor.textText);
   } // end fillColorMap 
 
 
