@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerCommandLineDialog.java,v 1.7 2004-09-24 22:39:59 taylor Exp $
+// $Id: PlannerCommandLineDialog.java,v 1.8 2006-06-30 22:40:54 meboyce Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -140,7 +140,6 @@ public class PlannerCommandLineDialog extends JDialog {
                       getPreferredSize().getWidth() / 2),
                 (int)(planWorksLocation.getY() + owner.getSize().getHeight() / 2 -
                       getPreferredSize().getHeight() / 2));
-    setBackground(ColorMap.getColor("gray60"));
   }
 
   public String getCommandLine() {

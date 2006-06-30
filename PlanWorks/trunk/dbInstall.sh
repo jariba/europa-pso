@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ $# != 8 ]; then
+	echo "Usage: $1 <bindir> <basedir> <datadir> <log> <log_err> <sock> <tmpdir> <port>"
+	exit
+fi
+
 if [ -z $PLANWORKS_HOME ]; then
 echo "Error: PLANWORKS_HOME not defined."
 fi

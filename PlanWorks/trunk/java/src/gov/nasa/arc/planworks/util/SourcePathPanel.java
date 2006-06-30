@@ -31,6 +31,7 @@ public class SourcePathPanel extends JPanel {
 	add(new JLabel("Source paths"));
 	paths = new LinkedList();
 	sourcePathPanel = new JPanel();
+	sourcePathPanel.setBackground(ColorMap.getColor("System.text.background"));
 	JScrollPane scrollPane = new JScrollPane(sourcePathPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 	sourcePathPanel.setLayout(new BoxLayout(sourcePathPanel, BoxLayout.Y_AXIS));
 	scrollPane.setPreferredSize(new java.awt.Dimension(300, 100));
@@ -90,8 +91,11 @@ public class SourcePathPanel extends JPanel {
 	    path = _path;
 	    self = this;
 	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			setBackground(ColorMap.getColor( "System.text.background"));
 
 	    JButton removeButton = new JButton("-");
+			// a bit of overkill, but I like a consistant look (Matthew E. Boyce)
+			if (PlanWorks.isMacOSX()) removeButton.setBackground(ColorMap.getColor( "System.text.background"));
 	    removeButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ae) {
 			removePath(path);
@@ -115,6 +119,8 @@ public class SourcePathPanel extends JPanel {
 	private JTextField input;
 	public SourceInputPanel() {
 	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+			setBackground(ColorMap.getColor( "System.text.background"));
+
 	    input = new JTextField(30);
 	    add(input);
 	    

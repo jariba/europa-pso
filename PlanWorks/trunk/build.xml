@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.68 2005-12-02 19:43:31 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.69 2006-06-30 22:40:54 meboyce Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -18,21 +18,20 @@
   <property name="mysql.log.err" value="${mysql.basedir}/log/mysql.error.log"/>
   <property name="mysql.sock" value="${mysql.basedir}/mysql.sock"/>
   <property name="mysql.tmpdir" value="${mysql.basedir}/tmp"/>
-  <property name="mysql.solaris.bindir" value="/home/cmcgann/bin/planworks/mysql/solaris8"/>
+  <!-- property name="mysql.solaris.bindir" value="/home/cmcgann/bin/planworks/mysql/solaris8" -->
   <!-- property name="mysql.linux.bindir" value="/home/cmcgann/bin/planworks/mysql/linux"/ -->
-  <!-- property name="mysql.bindir" value="${mysql.solaris.bindir}"/ -->
+  <property name="mysql.custom.bindir" location="/usr/local/mysql/bin"/>
+  <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
 
   <!-- Change the path below to the required MySQL bin path if you're using your own, then
        comment out the appropriate assignment in the chk_[linux|solaris]_2 targets -->
-  <property name="mysql.custom.bindir" location="${env.HOME}/workspace/mysql/bin"/>
 
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
   <property name="jgo.home"  value="${planworks.root}/java/lib/JGo"/>
   <property name="jgo.layout.home"  value="${planworks.root}/java/lib/JGo"/>
   <property name="antlr.home" value="${planworks.root}/java/lib/antlr"/>
   <property name="nanoxml.home" value="${planworks.root}/java/lib/nanoxml"/>
-  <!-- property name="jgo.layout.home"  value="/home/wtaylor/pub/JGo50"/ -->
   <property name="splash.image" value="${planworks.root}/lib/images"/>
   <property name="planworks.test.data.dir" value="${planworks.root}/java/src/gov/nasa/arc/planworks/test/data"/>
   <property name="europa.home" value="${env.EUROPA_HOME}"/>
@@ -55,38 +54,37 @@
 
   <target name="planWorks"  depends="chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- launch application (compile dependency)">
-    <ant dir="./" antfile="planWorks.xml"/>
+    <ant antfile="planWorks.xml"/>
   </target>
 
   <target name="planWorksProf" depends="chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- launch application with profiling info">
-    <ant dir="./" antfile="planWorks.xml" target="planWorksProf"/>
+    <ant antfile="planWorks.xml" target="planWorksProf"/>
   </target>
 
   <target name="planWorksOpt" depends="chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- launch application (compile_optimized dependency)">
-    <ant dir="./" antfile="planWorks.xml" target="planWorksOpt"/>
+    <ant antfile="planWorks.xml" target="planWorksOpt"/>
   </target>
 
   <target name="cleanCls" depends="chk_jvm_2"
       description="-- delete the 'java/classes' directory tree">
-    <ant dir="./java" antfile="build.xml" target="clean"/>
+    <ant dir="java" target="clean"/>
   </target>
 
   <target name="compile" depends="chk_jvm_2"
       description="-- compile 'java/src' tree into 'java/classes' tree">
-    <ant dir="./java" antfile="build.xml" target="compile"/>
+    <ant dir="java" target="compile"/>
   </target>
 
   <target name="createJNI" depends="chk_jvm_2,chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
       description="-- create the JNI interface to Planners">
-    <ant dir="./java" antfile="build.xml" target="createJNI"/>
+    <ant dir="java" target="createJNI"/>
   </target>
 
-  <!-- target name="createJars" depends="chk_jvm_2" -->
   <target name="createJars" depends="chk_jvm_2,cleanCls,compile"
       description="-- create PlanWorksDB.jar and PlanWorksPlugin.jar in ./java/jars">
-    <ant dir="./java" antfile="build.xml" target="createJars"/>
+    <ant dir="java" target="createJars"/>
   </target>
 
   <target name="cleanDb" depends="chk_ostype_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
@@ -123,10 +121,7 @@
 
   <target name="chk_solaris_2" depends="chk_solaris_1" if="os.solaris">
     <property name="os" value="solaris"/>
-<!--Comment out the following line if you're on Solaris and set your own MySQL bindir-->
-    <property name="mysql.bindir" value="${mysql.solaris.bindir}"/>
-<!--This works because properties are immutable, so this line is ignored.-->
-    <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
+    <property name="mysql.bindir" value="${mysql.bindir}"/>
   </target>
 
   <target name="chk_linux_1">
@@ -174,12 +169,15 @@
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
 
-  <!-- JVM checking from Tarang Patel -->
-
   <target name="chk_jvm_1">
-    <available property="jdk1.4+" classname="java.lang.CharSequence" />
     <condition property="correct.java">
-      <equals arg1="${jdk1.4+}" arg2="true"/>
+			<not>
+				<or>
+					<equals arg1="${ant.java.version}" arg2="1.1"/>
+					<equals arg1="${ant.java.version}" arg2="1.2"/>
+					<equals arg1="${ant.java.version}" arg2="1.3"/>
+				</or>
+			</not>
     </condition>
     <echo message="ant.java.version ${ant.java.version}"/>
     <!-- get the full version id -->
@@ -189,13 +187,13 @@
   </target>
 
   <target name="chk_jvm_2" depends="chk_jvm_1" unless="correct.java">
-    <fail message="Wrong JVM version: ${ant.java.version} => require jdk1.4.*"/>
+    <fail message="Wrong JVM version: ${ant.java.version} => require jdk1.4+"/>
   </target>
 
   <!-- do cleanDb before and after test -->
   <target name="test" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2,compile,cleanDb"
     description="-- All PlanWorks tests, including JFCUnit test (compile, cleandb dependencies)">
-          <ant dir="./java/src/gov/nasa/arc/planworks/test" antfile="planworks-test.xml"/>
+          <ant dir="java/src/gov/nasa/arc/planworks/test" antfile="planworks-test.xml"/>
           <ant target="cleanDb"/>
   </target>
 

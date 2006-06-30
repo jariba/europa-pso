@@ -12,6 +12,7 @@
 package gov.nasa.arc.planworks.viz;
 
 import java.awt.Color;
+import java.awt.SystemColor;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public abstract class ViewConstants {
    * constant <code>VIEW_BACKGROUND_COLOR - java.awt.Color</code> 
    *
    */
-  public static final Color VIEW_BACKGROUND_COLOR = ColorMap.getColor( "lightGray");
+  public static final Color VIEW_BACKGROUND_COLOR = ColorMap.getColor( "System.background");
 
   /**
    * constant <code>FREE_TOKEN_BG_COLOR</code>
