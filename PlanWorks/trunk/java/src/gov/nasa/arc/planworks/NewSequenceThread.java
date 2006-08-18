@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.21 2005-11-24 00:50:20 miatauro Exp $
+// $Id: NewSequenceThread.java,v 1.22 2006-08-18 20:42:27 javier Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -93,12 +93,12 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
        * or initializing planner 
        * In both cases, tell the planner to cleanup and unload model library if necessary  
        */
-      PlannerControlJNI.terminatePlannerRun();
       JOptionPane.showMessageDialog
         ( PlanWorks.getPlanWorks(), "An exception occured while initializing the planner.",
           "Planner Exception", JOptionPane.INFORMATION_MESSAGE);
       System.err.println(excp.getMessage());
       excp.printStackTrace();
+      PlannerControlJNI.terminatePlannerRun();
     } finally {
       PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
       PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
