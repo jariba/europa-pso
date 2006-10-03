@@ -1,0 +1,42 @@
+// Configuration File for PlanWorks
+// ================================
+
+// Plug-ins ------------------------------------
+
+// mapPlugIn <plugin-name> <plugin-jar-file-path>
+
+// mapPlugIn Pico /home/wtaylor/PlanWorksProject/PlanWorks/plugins/Pico.jar
+
+// Views ---------------------------------------
+
+// mapViewClass <"view name"> <view-class-name>
+
+// "view name" hard-coded as ViewConstants.CONSTRAINT_NETWORK_VIEW
+mapViewClass "Constraint Network View" gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView
+// "view name" hard-coded as ViewConstants.DECISION_VIEW
+// mapViewClass "Decision View" gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView
+// "view name" hard-coded as ViewConstants.RESOURCE_PROFILE_VIEW
+mapViewClass "Resource Profile View" gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView
+// "view name" hard-coded as ViewConstants.RESOURCE_TRANSACTION_VIEW
+mapViewClass "Resource Transaction View" gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView
+// "view name" hard-coded as ViewConstants.TEMPORAL_EXTENT_VIEW
+mapViewClass "Temporal Extent View" gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView
+// "view name" hard-coded as ViewConstants.TIMELINE_VIEW
+mapViewClass "Timeline View" gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView
+// "view name" hard-coded as ViewConstants.TOKEN_NETWORK_VIEW
+mapViewClass "Token Network View" gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView
+
+
+// Entities => Nodes -------------------------------
+
+// mapEntityToNodeForView <"view name"> <entity-class-name> <node-class-name>
+// mapEntityToNode <entity-class-name> <node-class-name>
+
+// Right-Clicks for Views -------------------------------
+
+// mapRightClickForView  <"view name"> <"item-name"> <item-class-name> <item-method-name>
+
+// Right-Clicks for Nodes -------------------------------
+
+// mapRightClickForNodeForView <"view name"> <"item-name"> <node-class-name> <item-method-name>
+// mapRightClickForNode <"item-name"> <node-class-name> <item-method-name>
