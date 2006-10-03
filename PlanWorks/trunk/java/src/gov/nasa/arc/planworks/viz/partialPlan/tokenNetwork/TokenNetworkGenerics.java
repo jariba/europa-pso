@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkGenerics.java,v 1.5 2004-09-28 20:45:08 taylor Exp $
+// $Id: TokenNetworkGenerics.java,v 1.6 2006-10-03 16:14:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -430,8 +430,8 @@ public final class TokenNetworkGenerics {
   public static Color getTokenColor( final PwToken token, final TokenNetworkView tokenNetworkView) {
     Color tokenColor = ColorMap.getColor( "black");
     PwPartialPlan partialPlan = tokenNetworkView.getPartialPlan();
-    // System.err.println( "getTokenColor getSlotId " + token.getSlotId());
-    // System.err.println( "getTokenColor getTimelineId() " + token.getTimelineId());
+    System.err.println( "getTokenColor getSlotId " + token.getSlotId());
+    System.err.println( "getTokenColor getTimelineId() " + token.getParentId());
     if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.NO_ID)) {
       PwSlot slot = partialPlan.getSlot( token.getSlotId());
       tokenColor = tokenNetworkView.getTimelineColor( slot.getTimelineId());

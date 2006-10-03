@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.32 2004-07-13 21:33:55 pdaley Exp $
+// $Id: PlanWorksTest.java,v 1.33 2006-10-03 16:14:17 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -27,6 +27,18 @@ public class PlanWorksTest extends JFCTestCase {
   public static void main(String [] args) {
     PlanWorksTest.args = args;
 
+    String dbClassName = System.getProperty("db.class");
+    if(dbClassName == null)
+      dbClassName = "gov.nasa.arc.planworks.db.util.MySQLDB";
+
+    try {
+      Class.forName(dbClassName).getConstructor(null).newInstance(null);
+    }
+    catch(Exception e) {
+      System.err.println(e.toString());
+      System.exit(-1);
+    }
+
     TestResult result = new TestResult();
 
     System.err.println("Backend test...");
@@ -34,10 +46,10 @@ public class PlanWorksTest extends JFCTestCase {
     printFailures(result);
     System.err.println("Backend done.");
 
-    System.err.println("MySQLDB test...");
-    MySQLDBTest.suite().run(result);
-    printFailures(result);
-    System.err.println("MySQLDB done.");
+//     System.err.println("MySQLDB test...");
+//     MySQLDBTest.suite().run(result);
+//     printFailures(result);
+//     System.err.println("MySQLDB done.");
 
     System.err.println("Utils test...");
     PlanWorksUtilsTest.suite().run(result);
@@ -53,7 +65,7 @@ public class PlanWorksTest extends JFCTestCase {
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
     suite.addTest(BackendTest.suite());
-    suite.addTest(MySQLDBTest.suite());
+    //suite.addTest(MySQLDBTest.suite());
     suite.addTest(PlanWorksUtilsTest.suite());
     suite.addTest(PlanWorksGUITest.suite());
     return suite;

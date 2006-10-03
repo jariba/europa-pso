@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.54 2005-01-21 22:45:10 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.55 2006-10-03 16:14:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,7 +31,7 @@ import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.SQLDB;
 
 /**
  * <code>PwProjectImpl</code> - Data base API for PlanWorks
@@ -55,7 +55,7 @@ public class PwProjectImpl extends PwProject {
     connectToDataBase();
 
     boolean isProjectInDb = true;
-    ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
+    ListIterator dbProjectNameIterator = SQLDB.getProjectNames().listIterator();
     while(dbProjectNameIterator.hasNext()) {
       String workingDir = null, plannerPath = null, modelName = null, modelPath = null;
       String modelOutputDestDir = null, modelInitStatePath = null, ruleDelimiters = null;
@@ -102,7 +102,7 @@ public class PwProjectImpl extends PwProject {
    */
 //   public static PwProject createProject( final String name, final String workingDir)
   public static PwProject createProject( final String name) throws DuplicateNameException {
-    if(MySQLDB.projectExists(name)) {
+    if(SQLDB.projectExists(name)) {
       throw new DuplicateNameException("A project named '" + name + "' already exists.");
     }
     PwProjectImpl retval = null;
@@ -110,8 +110,9 @@ public class PwProjectImpl extends PwProject {
     retval = new PwProjectImpl( name);
     projects.put(name, retval);
 
-    MySQLDB.addProject(name);
-    retval.setId(MySQLDB.latestProjectId());
+    SQLDB.addProject(name);
+    retval.setId(SQLDB.latestProjectId());
+    System.err.println("Created project " + retval.getName() + " with id " + retval.getId());
     return retval;
   }
 
@@ -121,14 +122,14 @@ public class PwProjectImpl extends PwProject {
    */
 
   private static void connectToDataBase() throws IOException {
-    System.err.println("Starting MySQL ...");
+    System.err.println("Starting database ...");
     long startTime = System.currentTimeMillis();
-    MySQLDB.startDatabase();
+    SQLDB.startDatabase();
     startTime = System.currentTimeMillis() - startTime;
     System.err.println("   ... elapsed time: " + startTime + "msecs.");
-    System.err.println("Connecting to MySQL ...");
+    System.err.println("Connecting to database ...");
     long connectTime = System.currentTimeMillis();
-    MySQLDB.registerDatabase();
+    SQLDB.registerDatabase();
     connectTime = System.currentTimeMillis() - connectTime;
     System.err.println("   ... elapsed time: " + connectTime + "msecs.");
   } // end connectToExistDataBase
@@ -229,13 +230,13 @@ public class PwProjectImpl extends PwProject {
 //     this.modelInitStatePath = modelInitStatePath;
     jniAdapterLoaded = false;
     
-    id = MySQLDB.getProjectIdByName(name);
+    id = SQLDB.getProjectIdByName(name);
     if(id == null) {
       throw new ResourceNotFoundException("Project " + name + " not found in database.");
     }
     planningSequences = new ArrayList();
-    //Map sequences = MySQLDB.getSequences(id);
-    sequenceIdUrlMap = MySQLDB.getSequences(id); //sequenceId->sequenceUrl
+    //Map sequences = SQLDB.getSequences(id);
+    sequenceIdUrlMap = SQLDB.getSequences(id); //sequenceId->sequenceUrl
     Iterator seqIdIterator = sequenceIdUrlMap.keySet().iterator();
     while(seqIdIterator.hasNext()) {
       Long sequenceId = (Long) seqIdIterator.next();
@@ -263,7 +264,7 @@ public class PwProjectImpl extends PwProject {
                                               JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
                                               null, null, null);
     if(choice == 0) {
-      MySQLDB.deletePlanningSequence(seqId);
+      SQLDB.deletePlanningSequence(seqId);
       it.remove();
     }
   }
@@ -405,7 +406,7 @@ public class PwProjectImpl extends PwProject {
   public PwPlanningSequence addPlanningSequence(final String url) 
     throws DuplicateNameException, ResourceNotFoundException {
     PwPlanningSequenceImpl retval = null;
-    if(MySQLDB.sequenceExists(url)) {
+    if(SQLDB.sequenceExists(url)) {
       throw new DuplicateNameException("Sequence at " + url + " already in database.");
     }
     planningSequences.add(retval = new PwPlanningSequenceImpl( url, this));
@@ -478,7 +479,7 @@ public class PwProjectImpl extends PwProject {
   public void delete() throws ResourceNotFoundException {
     long t1 = System.currentTimeMillis();
     projects.remove(name);
-    MySQLDB.deleteProject(id);
+    SQLDB.deleteProject(id);
     System.err.println("Deleting project took " + (System.currentTimeMillis() - t1) + "ms");
   } // end delete
 

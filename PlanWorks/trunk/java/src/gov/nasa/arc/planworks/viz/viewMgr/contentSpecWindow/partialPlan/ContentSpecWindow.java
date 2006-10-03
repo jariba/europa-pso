@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.17 2004-10-07 20:19:16 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.18 2006-10-03 16:14:18 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -100,11 +100,13 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     // for PWTestHelper.findComponentByName
     this.setName( window.getTitle());
 
+    System.err.println("Getting predicate names...");
     Map predicateNames = this.contentSpec.getPredicateNames();
+    System.err.println("Getting timeline names...");
     Map timelineNames = this.contentSpec.getTimelineNames();
 
-    //System.err.println("Pred: " + predicateNames);
-    //System.err.println("Time: " + timelineNames);
+    System.err.println("Pred: " + predicateNames);
+    System.err.println("Time: " + timelineNames);
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     setLayout(gridBag);

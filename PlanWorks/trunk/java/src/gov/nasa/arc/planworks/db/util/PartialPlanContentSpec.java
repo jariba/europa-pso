@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.21 2004-05-08 01:44:11 taylor Exp $
+// $Id: PartialPlanContentSpec.java,v 1.22 2006-10-03 16:14:17 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.SQLDB;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -42,27 +42,31 @@ public class PartialPlanContentSpec implements ContentSpec {
   private RedrawNotifier redrawNotifier;
 
   private static final String AND = "and";
-  private static final String AND_PPREDICATENAME = "&& (PredicateName";
-  private static final String AND_PREDICATENAME = "&& PredicateName";
-  private static final String AND_PTIMELINEID = "&& (ParentId";
-  private static final String AND_TIMELINEID = "&& ParentId";
+  private static final String AND_PPREDICATENAME = "AND (PredicateName";
+  private static final String AND_PREDICATENAME = "AND PredicateName";
+  private static final String AND_PTIMELINEID = "AND (ParentId";
+  private static final String AND_TIMELINEID = "AND ParentId";
   private static final String EQ = "=";
   private static final String NEG = "!";
   private static final String NOT = "not";
-  private static final String OBJECTNAME = "Object.ObjectName";
-  private static final String OBJECTID = "Object.ObjectId";
+  //private static final String OBJECTNAME = "Object.ObjectName";
+  private static final String OBJECTNAME = "ObjectName";
+  //private static final String OBJECTID = "Object.ObjectId";
+  private static final String OBJECTID = "ObjectId";
   private static final String OR = "or";
-  private static final String OR_TIMELINEID = "|| ParentId";
-  private static final String OR_PREDICATENAME = "|| PredicateName";
+  private static final String OR_TIMELINEID = "OR ParentId";
+  private static final String OR_PREDICATENAME = "OR PredicateName";
   private static final String PREDICATEID = "PredicateId";
   private static final String PREDICATENAME = "PredicateName";
   private static final String PREDICATENAME_QUERY =
     "SELECT DISTINCT PredicateName FROM Token WHERE PartialPlanId=";
-  private static final String TIMELINEID = "Token.ParentId";
-  private static final String TIMELINENAME = "Token.TimelineName";
+  //private static final String TIMELINEID = "Token.ParentId";
+  //private static final String TIMELINENAME = "Token.TimelineName";
   private static final String TIMELINENAME_QUERY =
-    "SELECT DISTINCT Object.ObjectName, Object.ObjectId FROM Object WHERE Object.ObjectType=" 
-    + DbConstants.O_TIMELINE + " && Object.PartialPlanId=";
+    //"SELECT DISTINCT Object.ObjectName, Object.ObjectId FROM Object WHERE Object.ObjectType=" 
+    "SELECT ObjectName, ObjectId FROM Object WHERE ObjectType=" 
+    + DbConstants.O_TIMELINE + " AND PartialPlanId=";
+    //+ DbConstants.O_TIMELINE + " AND Object.PartialPlanId=";
   private static final String TOKENID = "TokenId";
   private static final String TOKENID_QUERY = "SELECT TokenId FROM Token WHERE PartialPlanId=";
   public static final int FREE_ONLY = -1;
@@ -122,7 +126,7 @@ public class PartialPlanContentSpec implements ContentSpec {
    */
   private void queryValidTokens() {
     try {
-      ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));
+      ResultSet validTokens = SQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));
       while(validTokens.next()) {
         validTokenIds.add(new Integer(validTokens.getInt(TOKENID)));
       }
@@ -288,7 +292,7 @@ public class PartialPlanContentSpec implements ContentSpec {
       }
       tokenQuery.append(";");
       //System.err.println( "applySpec " + tokenQuery.toString());
-      ResultSet tokenIds = MySQLDB.queryDatabase(tokenQuery.toString());
+      ResultSet tokenIds = SQLDB.queryDatabase(tokenQuery.toString());
       validTokenIds.clear();
       while(tokenIds.next()) {
         validTokenIds.add(new Integer(tokenIds.getInt(TOKENID)));
@@ -418,7 +422,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     System.err.println("   ... Getting predicate names");
     try {
       ResultSet predicateNames = 
-        MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
+        SQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
       while(predicateNames.next()) {
         predicates.put(predicateNames.getString(PREDICATENAME),
                        predicateNames.getString(PREDICATENAME));
@@ -440,7 +444,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     System.err.println("   ... Getting timeline names");
     try {
       ResultSet timelineNames =
-        MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));
+        SQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));
       //String objName = null;
       while(timelineNames.next()) {
         timelines.put(timelineNames.getString(OBJECTNAME), 
@@ -448,7 +452,9 @@ public class PartialPlanContentSpec implements ContentSpec {
         //timelines.put("".concat(objName).concat(":").concat(timelineNames.getString(TIMELINENAME)), new Integer(timelineNames.getInt(TIMELINEID)));
       }
     }
-    catch(SQLException sqle) {}
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
     return timelines;
   }
   

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest10.java,v 1.2 2005-11-10 01:22:10 miatauro Exp $
+// $Id: PlanWorksGUITest10.java,v 1.3 2006-10-03 16:14:17 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -35,7 +35,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.SQLDB;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -1227,7 +1227,7 @@ public class PlanWorksGUITest10 {
 //       ( "Number of partial plan step " + stepNumber + " db transactions (" + numTransactions +
 //         ") not equal to number of DBTransactionView entries (" +
 //         numTransactionEntries + ")", (numTransactions == numTransactionEntries), "not ");
-//     List transactionNameList = MySQLDB.queryTransactionNameList();
+//     List transactionNameList = SQLDB.queryTransactionNameList();
 //     TableModel tableModel = ((DBTransactionTable) dbTransactionView.getDBTransactionTable()).
 //       getTableSorter().getTableModel();
 //     String transName = null, fieldObjName = null;

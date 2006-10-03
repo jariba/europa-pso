@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.28 2005-11-10 01:22:12 miatauro Exp $
+// $Id: ViewGenerics.java,v 1.29 2006-10-03 16:14:17 miatauro Exp $
 //
 // PlanWorks
 //
@@ -52,7 +52,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.SQLDB;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
@@ -565,10 +565,10 @@ public class ViewGenerics {
    * @return - <code>String</code> - 
    */
 //   public static String computeTransactionNameHeader() {
-//     //List nameList = MySQLDB.queryConstraintTransactionNames();
-//     //nameList.addAll( MySQLDB.queryTokenTransactionNames());
-//     //nameList.addAll( MySQLDB.queryVariableTransactionNames());
-//     List nameList = MySQLDB.queryTransactionNameList();
+//     //List nameList = SQLDB.queryConstraintTransactionNames();
+//     //nameList.addAll( SQLDB.queryTokenTransactionNames());
+//     //nameList.addAll( SQLDB.queryVariableTransactionNames());
+//     List nameList = SQLDB.queryTransactionNameList();
 //     StringBuffer transactionNameHeader =
 //       new StringBuffer( ViewConstants.DB_TRANSACTION_NAME_HEADER);
 //     int minLength = ViewConstants.DB_TRANSACTION_NAME_HEADER.length();

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import junit.framework.*;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.util.SQLDB;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 
 public class MySQLDBTest extends TestCase {
@@ -15,9 +16,10 @@ public class MySQLDBTest extends TestCase {
   }
   protected void setUp() {
     try {
-      MySQLDB.startDatabase();
-      MySQLDB.registerDatabase();
-      MySQLDB.cleanDatabase();
+      new MySQLDB();
+      SQLDB.startDatabase();
+      SQLDB.registerDatabase();
+      SQLDB.cleanDatabase();
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -26,7 +28,7 @@ public class MySQLDBTest extends TestCase {
     PlanWorksTest.TEST_RUNNING = 2;
   }
   protected void tearDown() {
-      MySQLDB.cleanDatabase();
+      SQLDB.cleanDatabase();
     PlanWorksTest.TEST_RUNNING = 0;
   }
   public static TestSuite suite() {
@@ -66,9 +68,9 @@ public class MySQLDBTest extends TestCase {
 
   private void checkConstraintLoad(String datadir) {
     System.err.println("Checking VConstraint table load");
-    MySQLDB.loadFile(datadir + "loadCTest", "VConstraint");
+    SQLDB.loadFile(datadir + "loadCTest", "VConstraint");
     try {
-      ResultSet c = MySQLDB.queryDatabase("SELECT * FROM VConstraint");
+      ResultSet c = SQLDB.queryDatabase("SELECT * FROM VConstraint");
       c.last();
       assertTrue(c.getInt("ConstraintId") == 1);
       assertTrue(c.getLong("PartialPlanId") == 1L);
@@ -79,13 +81,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM VConstraint");
+    SQLDB.updateDatabase("DELETE FROM VConstraint");
   }
   private void checkObjectLoad(String datadir) {
     System.err.println("Checking Object table load");
-    MySQLDB.loadFile(datadir + "loadOTest", "Object");
+    SQLDB.loadFile(datadir + "loadOTest", "Object");
     try {
-      ResultSet o = MySQLDB.queryDatabase("SELECT * FROM Object");
+      ResultSet o = SQLDB.queryDatabase("SELECT * FROM Object");
       o.last();
       assertTrue(o.getInt("ObjectId") == 1);
       assertTrue(o.getInt("ObjectType") == 2);
@@ -101,13 +103,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Object");
+    SQLDB.updateDatabase("DELETE FROM Object");
   }
   private void checkPartialPlanLoad(String datadir) {
     System.err.println("Checking PartialPlan table load");
-    MySQLDB.loadFile(datadir + "loadPPTest", "PartialPlan");
+    SQLDB.loadFile(datadir + "loadPPTest", "PartialPlan");
     try {
-      ResultSet p = MySQLDB.queryDatabase("SELECT * FROM PartialPlan");
+      ResultSet p = SQLDB.queryDatabase("SELECT * FROM PartialPlan");
       p.last();
       assertTrue(p.getString("PlanName").equals("planname"));
       assertTrue(p.getLong("PartialPlanId") == 1L);
@@ -118,13 +120,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM PartialPlan");
+    SQLDB.updateDatabase("DELETE FROM PartialPlan");
   }
   private void checkProjectLoad(String datadir) {
     System.err.println("Checking Project table load");
-    MySQLDB.loadFile(datadir + "loadPJTest", "Project");
+    SQLDB.loadFile(datadir + "loadPJTest", "Project");
     try {
-      ResultSet p = MySQLDB.queryDatabase("SELECT * FROM Project");
+      ResultSet p = SQLDB.queryDatabase("SELECT * FROM Project");
       p.last();
       assertTrue(p.getInt("ProjectId") == 1);
       assertTrue(p.getString("ProjectName").equals("projectname"));
@@ -133,13 +135,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Project"); 
+    SQLDB.updateDatabase("DELETE FROM Project"); 
   }
   private void checkSequenceLoad(String datadir) {
     System.err.println("Checking Sequence table load");
-    MySQLDB.loadFile(datadir + "loadSQTest", "Sequence");
+    SQLDB.loadFile(datadir + "loadSQTest", "Sequence");
     try {
-      ResultSet s = MySQLDB.queryDatabase("SELECT * FROM Sequence");
+      ResultSet s = SQLDB.queryDatabase("SELECT * FROM Sequence");
       s.last();
       assertTrue(s.getString("SequenceURL").equals("sequenceurl"));
       assertTrue(s.getLong("SequenceId") == 1L);
@@ -151,13 +153,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Sequence");
+    SQLDB.updateDatabase("DELETE FROM Sequence");
   }
   private void checkConstraintVarMapLoad(String datadir) {
     System.err.println("Checking ConstraintVarMap table load");
-    MySQLDB.loadFile(datadir + "loadCVMTest", "ConstraintVarMap");
+    SQLDB.loadFile(datadir + "loadCVMTest", "ConstraintVarMap");
     try {
-      ResultSet c = MySQLDB.queryDatabase("SELECT * FROM ConstraintVarMap");
+      ResultSet c = SQLDB.queryDatabase("SELECT * FROM ConstraintVarMap");
       c.last();
       System.err.println("Got: " + c.getInt("ConstraintId") + " " + c.getInt("VariableId") + " " + c.getLong("PartialPlanId"));
       assertTrue(c.getInt("ConstraintId") == 1);
@@ -168,13 +170,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM ConstraintVarMap");
+    SQLDB.updateDatabase("DELETE FROM ConstraintVarMap");
   }
   private void checkTokenLoad(String datadir) {
     System.err.println("Checking Token table load");
-    MySQLDB.loadFile(datadir + "loadTKTest", "Token");
+    SQLDB.loadFile(datadir + "loadTKTest", "Token");
     try {
-      ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Token");
+      ResultSet t = SQLDB.queryDatabase("SELECT * FROM Token");
       t.last();
       assertTrue(t.getInt("TokenId") == 1);
       assertTrue(t.getInt("TokenType") == 1);
@@ -198,13 +200,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Token");
+    SQLDB.updateDatabase("DELETE FROM Token");
   }
   private void checkVariableLoad(String datadir) {
     System.err.println("Checking Variable table load");
-    MySQLDB.loadFile(datadir + "loadVTest", "Variable");
+    SQLDB.loadFile(datadir + "loadVTest", "Variable");
     try {
-      ResultSet v = MySQLDB.queryDatabase("SELECT * FROM Variable");
+      ResultSet v = SQLDB.queryDatabase("SELECT * FROM Variable");
       v.last();
       assertTrue(v.getInt("VariableId") == 1);
       assertTrue(v.getLong("PartialPlanId") == 2L);
@@ -221,13 +223,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Variable");
+    SQLDB.updateDatabase("DELETE FROM Variable");
   }
 //   private void checkTransactionLoad(String datadir) {
 //     System.err.println("Checking Transaction table load");
-//     MySQLDB.loadFile(datadir + "loadTATest", "Transaction");
+//     SQLDB.loadFile(datadir + "loadTATest", "Transaction");
 //     try {
-//       ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Transaction");
+//       ResultSet t = SQLDB.queryDatabase("SELECT * FROM Transaction");
 //       t.last();
 //       assertTrue(t.getString("TransactionName").equals("VARIABLE_DOMAIN_RELAXED"));
 //       assertTrue(t.getString("TransactionType").equals("RELAXATION"));
@@ -243,13 +245,13 @@ public class MySQLDBTest extends TestCase {
 //       sqle.printStackTrace();
 //       System.exit(-1);
 //     }
-//     MySQLDB.updateDatabase("DELETE FROM Transaction");
+//     SQLDB.updateDatabase("DELETE FROM Transaction");
 //   }
   private void checkPartialPlanStatsLoad(String datadir) {
     System.err.println("Checking PartialPlanStats table load");
-    MySQLDB.loadFile(datadir + "loadPSTest", "PartialPlanStats");
+    SQLDB.loadFile(datadir + "loadPSTest", "PartialPlanStats");
     try {
-      ResultSet p = MySQLDB.queryDatabase("SELECT * FROM PartialPlanStats");
+      ResultSet p = SQLDB.queryDatabase("SELECT * FROM PartialPlanStats");
       p.last();
       assertTrue(p.getLong("SequenceId") == 1L);
       assertTrue(p.getLong("PartialPlanId") == 2L);
@@ -263,13 +265,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM PartialPlanStats");
+    SQLDB.updateDatabase("DELETE FROM PartialPlanStats");
   }
   private void checkResourceInstantsLoad(String datadir) {
     System.err.println("Checking ResourceInstants table load");
-    MySQLDB.loadFile(datadir + "loadINTest", "ResourceInstants");
+    SQLDB.loadFile(datadir + "loadINTest", "ResourceInstants");
     try {
-      ResultSet r = MySQLDB.queryDatabase("SELECT * FROM ResourceInstants");
+      ResultSet r = SQLDB.queryDatabase("SELECT * FROM ResourceInstants");
       r.last();
       assertTrue(r.getLong("PartialPlanId") == 1L);
       assertTrue(r.getInt("ResourceId") == 2);
@@ -283,13 +285,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM ResourceInstants");
+    SQLDB.updateDatabase("DELETE FROM ResourceInstants");
   }
   private void checkRulesLoad(String datadir) {
     System.err.println("Checking Rules table load");
-    MySQLDB.loadFile(datadir + "loadRUTest", "Rules");
+    SQLDB.loadFile(datadir + "loadRUTest", "Rules");
     try {
-      ResultSet r = MySQLDB.queryDatabase("SELECT * FROM Rules");
+      ResultSet r = SQLDB.queryDatabase("SELECT * FROM Rules");
       r.last();
       assertTrue(r.getLong("SequenceId") == 1L);
       assertTrue(r.getInt("RuleId") == 2);
@@ -299,13 +301,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Rules");
+    SQLDB.updateDatabase("DELETE FROM Rules");
   }
   private void checkRuleInstanceLoad(String datadir) {
     System.err.println("Checking RuleInstance table load");
-    MySQLDB.loadFile(datadir + "loadRITest", "RuleInstance");
+    SQLDB.loadFile(datadir + "loadRITest", "RuleInstance");
     try {
-      ResultSet r = MySQLDB.queryDatabase("SELECT * FROM RuleInstance");
+      ResultSet r = SQLDB.queryDatabase("SELECT * FROM RuleInstance");
       r.last();
       assertTrue(r.getInt("RuleInstanceId") == 1);
       assertTrue(r.getLong("PartialPlanId") == 2L);
@@ -319,13 +321,13 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM RuleInstance");
+    SQLDB.updateDatabase("DELETE FROM RuleInstance");
   }
   private void checkDecisionLoad(String datadir) {
     System.err.println("Checking Decision table load");
-    MySQLDB.loadFile(datadir + "loadDTest", "Decision");
+    SQLDB.loadFile(datadir + "loadDTest", "Decision");
     try {
-      ResultSet d = MySQLDB.queryDatabase("SELECT * FROM Decision");
+      ResultSet d = SQLDB.queryDatabase("SELECT * FROM Decision");
       d.last();
       assertTrue(d.getLong("PartialPlanId") == 1L);
       assertTrue(d.getInt("DecisionId") == 2);
@@ -338,7 +340,7 @@ public class MySQLDBTest extends TestCase {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Decision");
+    SQLDB.updateDatabase("DELETE FROM Decision");
   }
 }
 
