@@ -17,7 +17,8 @@
           <pathelement location="${antlr.home}/antlr.jar"/>
           <pathelement location="${nanoxml.home}/nanoxml.jar"/>
           <pathelement location="${testLang.home}/testLang.jar"/>
-          <pathelement path="/home/wtaylor/pub/apache-ant-1.6.1/lib"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
+          <!-- pathelement path="/home/wtaylor/pub/apache-ant-1.6.1/lib"/ -->
         </path>
 
         <java dir="${planworks.root}/java/src"
@@ -38,6 +39,8 @@
           <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
           <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
           <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
           <jvmarg value="-Dsplash.image=${splash.image}"/>
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
           <jvmarg value="-Dname.application=${name.application}"/>

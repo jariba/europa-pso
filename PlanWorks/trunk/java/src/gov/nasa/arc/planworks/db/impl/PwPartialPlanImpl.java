@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.110 2005-11-10 01:22:08 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.111 2006-10-03 16:14:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -47,7 +47,7 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.SQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
@@ -140,7 +140,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     this.name = planName;
     this.url = sequence.getUrl() + System.getProperty("file.separator") + planName;
     this.isDummyPartialPlan = true;
-    this.id = MySQLDB.getPartialPlanIdByStepNum( sequence.getId(),
+    this.id = SQLDB.getPartialPlanIdByStepNum( sequence.getId(),
 						 Integer.parseInt( planName.substring( 4)));
 //     System.err.println( "seqId " + sequence.getId() + " planName " + planName +
 // 			" partialPlan.getId() " + id);
@@ -203,7 +203,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
-    id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
+    id = SQLDB.getPartialPlanIdByName(sequence.getId(), name);
     long t1 = 0L, t2 = 0L, t3 = 0L, t4 = 0L, t5 = 0L;
     if (printTime) {
       t2 = System.currentTimeMillis();
@@ -225,7 +225,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
         progressMonitor.setNote( "Analyzing Database ...");
       }
-      MySQLDB.analyzeDatabase();
+      SQLDB.analyzeDatabase();
       if (printTime) {
         t2 = System.currentTimeMillis();
         System.err.println( "   ... analyzeDatabase elapsed time: " + (t2 - t1) + " msecs.");
@@ -234,26 +234,26 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         checkProgressMonitor(); numOperations++;
         progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
       }
-      id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
+      id = SQLDB.getPartialPlanIdByName(sequence.getId(), name);
     }
     numOperations = 2;
     if (doProgMonitor) {
       progressMonitor.setNote( "Creating Objects ...");
       progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    MySQLDB.createObjects(this);
+    SQLDB.createObjects(this);
     if (printTime) {
       t3 = System.currentTimeMillis();
       System.err.println( "   ... createObjects elapsed time: " + (t3 - t2) + " msecs.");
     }
-    model = MySQLDB.queryPartialPlanModelById(id);
+    model = SQLDB.queryPartialPlanModelById(id);
 
     if (doProgMonitor) {
       checkProgressMonitor(); numOperations++;
       progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
       progressMonitor.setNote( "Query DB & Create Slot/Token Nodes ...");
     }
-    MySQLDB.createSlotTokenNodesStructure(this, sequence.getId());
+    SQLDB.createSlotTokenNodesStructure(this, sequence.getId());
     if (printTime) {
       t4 = System.currentTimeMillis();
       System.err.println( "   ... createSlotTokenNodesStructure elapsed time: " +
@@ -281,7 +281,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       System.err.println( "   ... cleanConstraints elapsed time: " +
                           (t5 - stop2TimeMSecs) + " msecs.");
     }
-    // checkPlan();  //for checkPlan debug only -- normally runs from Backend Test
+    //checkPlan();  //for checkPlan debug only -- normally runs from Backend Test
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... Create PartialPlan elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
@@ -321,7 +321,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       if(tableName.equals("Instant")) {
         tableName = "ResourceInstants";
       }
-      MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).
+      SQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).
                        concat(fileNames[i]), tableName);
     }
   }
@@ -338,12 +338,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   private final void fillElementMaps() {
-    MySQLDB.queryConstraints( this);
+    SQLDB.queryConstraints( this);
 
-    MySQLDB.queryRuleInstances( this);
-    MySQLDB.queryVariables( this);
-    MySQLDB.queryResourceInstants(this);
-    tokenChildRuleInstIdMap = MySQLDB.queryAllChildRuleInstanceIds(this);
+    SQLDB.queryRuleInstances( this);
+    SQLDB.queryVariables( this);
+    SQLDB.queryResourceInstants(this);
+    tokenChildRuleInstIdMap = SQLDB.queryAllChildRuleInstanceIds(this);
     CollectionUtils.cInPlaceMap(new TimelineSlotCreator(), objectMap.values());
 
     System.err.println( "Partial Plan: " + url);
@@ -968,11 +968,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 //   private boolean checkDecisions() {
 
 //     //System.err.println("In checkDecisions");
-//     Integer currentDecisionId = MySQLDB.queryCurrentDecisionIdForStep(id);
+//     Integer currentDecisionId = SQLDB.queryCurrentDecisionIdForStep(id);
 //     boolean retval = true;
 //     boolean foundCurrentDecision = false;
 
-//     List openDecisionsList = MySQLDB.queryOpenDecisionsForStep(id, this);
+//     List openDecisionsList = SQLDB.queryOpenDecisionsForStep(id, this);
 //     Iterator openDecIterator = openDecisionsList.iterator();
 //     while(openDecIterator.hasNext()) {
 //       PwDecisionImpl decision = (PwDecisionImpl) openDecIterator.next();
