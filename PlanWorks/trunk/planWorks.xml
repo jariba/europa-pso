@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.39 2005-02-15 23:04:46 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.40 2006-10-03 16:13:34 miatauro Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -23,6 +23,7 @@
 		<pathelement location="${antlr.home}/antlr.jar"/>
 		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
     <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -44,6 +45,8 @@
 	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
 	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
       <jvmarg value="-Dmysql.port=${mysql.port}"/>
 	    <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
             <jvmarg value="-Dant.target.test=false"/>
@@ -73,6 +76,7 @@
 		<pathelement location="${antlr.home}/antlr.jar"/>
 		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
     <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -98,6 +102,8 @@
 	    <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
             <jvmarg value="-Dant.target.test=false"/>
             <jvmarg value="-Dintegration.home=${integration.home}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
             <arg value="${name.application}"/>
             <arg value="${boolean.isMaxScreen}"/>
 	</java>
@@ -123,6 +129,7 @@
 		<pathelement location="${antlr.home}/antlr.jar"/>
 		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
     <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -150,6 +157,8 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
       <jvmarg value="-Dmysql.port=${mysql.port}"/>
             <jvmarg value="-Dant.target.test=false"/>
             <jvmarg value="-Dintegration.home=${integration.home}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
             <arg value="${name.application}"/>
             <arg value="${boolean.isMaxScreen}"/>
 	</java>
