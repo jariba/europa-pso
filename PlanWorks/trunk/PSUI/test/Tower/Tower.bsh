@@ -1,0 +1,46 @@
+// CrewPlanning.bsh
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import javax.swing.JInternalFrame;
+import org.ops.ui.util.Util;
+import org.ops.ui.PSDesktop;
+import dsa.*;
+import org.ops.ui.mouse.*;
+import org.ops.ui.gantt.*;
+import org.ops.ui.chart.*;
+
+int month = GregorianCalendar.SEPTEMBER, day = 11; 
+GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
+GregorianCalendar end = new GregorianCalendar(2006,month,day,0,10);
+
+void setupDesktop()
+    throws Exception
+{
+    ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
+
+    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame(start,end);
+    ganttFrame.setLocation(0,0);
+    ganttFrame.setSize(700,300);
+    PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
+    gantt.addMouseListener(dp);
+    
+    resourceFrame = desktop.makeResourcesFrame(start);
+    resourceFrame.setLocation(0,180);
+    resourceFrame.setSize(500,300);    
+}
+
+horizonStart = 0;
+horizonEnd = 1000;
+maxSteps = 200;
+maxDepth = 100000;
+config = "../Tower/PlannerConfig.xml";
+SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
+desktop.makeSolverDialog();
+
+// setupDesktop();
+
+// Example of table using JoSQL query
+// desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
+
+ 
