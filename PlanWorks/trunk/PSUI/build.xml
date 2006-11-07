@@ -11,21 +11,20 @@
   <property name="build.dir"   value="classes"/>
   <property name="lib.dir"     value="lib"/>
   <property name="dist.dir"    value="dist"/>
-  <property name="workspace.dir" value=".."/>
+  <property name="workspace.dir" value="${env.HOME}/workspace"/>
 
   <property name="lib.version"    value="g"/>
-  <property name="test.dir"       value="test"/>
   <property name="project"        value="Crew1"/>
   <property name="project.dir"    value="${workspace.dir}/${project}"/>
   <property name="project.model"  value="lib${project}_${lib.version}.so"/>
   <property name="project.initial.state" value="${project}-initial-state.xml"/>
-  <property name="project.bsh.script" value="${project}/${project}.bsh"/>
+  <property name="project.bsh.script" value="${project}.bsh"/>
 	
   <property name="debug"  value="true"/>
   <property name="deprecation"  value="true"/>
 
   <path id="psui.class.path">
-	<pathelement location="../../PLASMA/lib/DSA.jar"/>
+	<pathelement location="${workspace.dir}/PLASMA/lib/DSA.jar"/>
 	<pathelement location="${lib.dir}/nanoxml/nanoxml.jar"/>
     <pathelement location="${lib.dir}/jfreechart/jcommon-1.0.5.jar"/>
     <pathelement location="${lib.dir}/jfreechart/jfreechart-1.0.2.jar"/>
@@ -57,7 +56,7 @@
   </target>
 	
   <target name="run" depends="compile" description="build and run">
-    <java classname="org.ops.ui.PSDesktop" dir="${test.dir}" fork="yes">
+    <java classname="org.ops.ui.PSDesktop" dir="${project.dir}" fork="yes">
       <jvmarg value="-Xms256m"/> 	
       <jvmarg value="-Xmx2048m"/> 	
       <arg value="${project.dir}"/>
