@@ -34,7 +34,7 @@ horizonStart = 0;
 horizonEnd = 1000;
 maxSteps = 200;
 maxDepth = 100000;
-config = "../Tower/PlannerConfig.xml";
+config = "../../../Tower/PlannerConfig.xml";
 SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
 desktop.makeSolverDialog();
 

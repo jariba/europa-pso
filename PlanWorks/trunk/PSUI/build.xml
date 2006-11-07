@@ -25,8 +25,8 @@
   <property name="deprecation"  value="true"/>
 
   <path id="psui.class.path">
-	<pathelement location="${lib.dir}/dsa/DSA.jar"/>
-	<pathelement location="${lib.dir}/dsa/nanoxml.jar"/>
+	<pathelement location="../../PLASMA/lib/DSA.jar"/>
+	<pathelement location="${lib.dir}/nanoxml/nanoxml.jar"/>
     <pathelement location="${lib.dir}/jfreechart/jcommon-1.0.5.jar"/>
     <pathelement location="${lib.dir}/jfreechart/jfreechart-1.0.2.jar"/>
     <pathelement location="${lib.dir}/egantt/egantt-core.jar"/>
