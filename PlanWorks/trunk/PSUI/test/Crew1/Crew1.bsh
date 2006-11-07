@@ -46,7 +46,7 @@ horizonStart = 0;
 horizonEnd = 5760;
 maxSteps = 500;
 maxDepth = 100000;
-config = "../Crew1/PlannerConfig.xml";
+config = "../../../Crew1/PlannerConfig.xml";
 SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
 desktop.makeSolverDialog();
 

@@ -38,7 +38,7 @@ horizonStart = 0;
 horizonEnd = 1000;
 maxSteps = 150;
 maxDepth = 100000;
-config = "../UBO/PlannerConfig.xml";
+config = "../../../UBO/PlannerConfig.xml";
 solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
 desktop.makeSolverDialog();
 
