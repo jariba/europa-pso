@@ -3,6 +3,7 @@ package org.ops.ui.mouse;
 
 import dsa.Action;
 import dsa.DSA;
+import dsa.Parameter;
 
 public class ActionDetailsPanel 
     extends MouseListenerPanel 
@@ -37,6 +38,13 @@ public class ActionDetailsPanel
            .append("Start  : ").append(act.getEarliestStart()).append("\n")
            .append("Finish : ").append(act.getEarliestEnd()).append("\n")
         ;
+        
+        if (act.getParameters().size() > 0) {
+            buf.append("Parameters:").append("\n");
+            for (Parameter p : act.getParameters()) {
+                buf.append(p.getName()).append(" : ").append(p.getValue()).append("\n");
+            }
+        }
            
 		return buf.toString();
 	}
