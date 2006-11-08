@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.Vector;
+import java.util.Comparator;
+import java.util.Collections;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -54,6 +56,28 @@ desktop.makeSolverDialog();
 // Example of table using JoSQL query
 // desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
 
+Object safeBound(int bound)
+{
+	int INF=1e6;
+    if (bound < -INF)
+    	return "-INF";
+    if (bound > INF)
+    	return "INF";
+    
+    return bound;
+}
+
+String getBounds(dsa.Action a)
+{
+    StringBuffer buf = new StringBuffer();
+    
+    buf.append("[").append(safeBound(a.getEarliestStart())).append(",").append(safeBound(a.getLatestStart())).append("]")
+       .append(" ")
+       .append("[").append(safeBound(a.getEarliestEnd())).append(",").append(safeBound(a.getLatestEnd())).append("]");
+    
+    return buf.toString();
+}
+
 class BlockWorld
 {
 	protected List towers_;
@@ -67,7 +91,7 @@ class BlockWorld
 	
 	public List getTowers() { return towers_; }
 	
-	public void addBlock(String name,String state,String bottomBlock)
+	public void addBlock(String name,String state,String bottomBlock, dsa.Action a)
 	{
 		//System.out.println("BlockWorld.add("+name+","+state+","+bottomBlock+")");
 
@@ -79,7 +103,10 @@ class BlockWorld
 		}
 
 		int idx = tower.indexOf(name);
-		String towerValue = name+"="+state+(bottomBlock != null ? "-"+bottomBlock : "");
+		StringBuffer buf = new StringBuffer();
+		buf.append(name).append("=").append(state).append(bottomBlock != null ? "-"+bottomBlock : "")
+		   .append("(").append(getBounds(a)).append(")");
+		String towerValue = buf.toString();
 		
 		if (state.equals("OnTable")) {
 			if (idx == -1) 
@@ -186,40 +213,38 @@ class TowerSolverListener
         return tok.nextToken();
     }
     
-    // unfortunately, actions are not ordered so we need to go through the list
     protected dsa.Action getLastAction(List actions)
     {
     	dsa.Action last = (dsa.Action)actions.get(actions.size()-1);
-    	int lastStart = last.getEarliestStart();
-    	
-    	for (Object o : actions) {
-    		dsa.Action a = (dsa.Action)o;
-    		if (a.getEarliestStart() > lastStart) {
-    			last = a;
-    			lastStart = a.getEarliestStart();
-    		}
-    	}
-    	
     	return last;
     }
+    
+    static class ActionComparator implements Comparator
+    {
+        public int compare(Object lhs, Object rhs) { return ((dsa.Action)lhs).getEarliestStart() - ((dsa.Action)rhs).getEarliestStart(); }
+    }
+    
+    ActionComparator actionComparator_ = new ActionComparator();
     
     protected String getHistory(dsa.Component c)
     {
     	StringBuffer buf = new StringBuffer();
     	
         List actions = c.getActions(); 
+        Collections.sort(actions,actionComparator_); 
     	for (Object o : actions) {
     		dsa.Action a = (dsa.Action)o;
     		buf.append("{").append(a.getName().substring(9,a.getName().length()))
-    		   .append("[").append(a.getEarliestStart()).append(",").append(a.getEarliestEnd()).append("]");
+    		   .append(getBounds(a))
+    		   .append("(");
     		List parameters = a.getParameters();
-    		for (Object o1 : parameters) {
-    		    dsa.Parameter p = (dsa.Parameter)o1;
-                buf.append(" ").append(p.getName().substring(10,p.getName().length()))
-                               .append("=")
-                               .append(p.getValue().substring(23,p.getValue().length()-6));   		    
+    		for (int i=0; i<parameters.size(); i++) {
+    		    dsa.Parameter p = (dsa.Parameter)parameters.get(i);
+    		    if (i>0) buf.append(",");
+                buf//.append(p.getName().substring(10,p.getName().length())).append("=")
+                   .append(p.getValue().substring(23,p.getValue().length()-6));   		    
     		}
-    		buf.append("}  ");
+    		buf.append("} ");
     	}    	
     	
     	return buf.toString();
@@ -235,6 +260,7 @@ class TowerSolverListener
     		if (c.getName().endsWith("Bottom")) {
     			String blockName = getBlockName(c.getName());
                 List actions = c.getActions(); 
+                Collections.sort(actions,actionComparator_); 
     			if (actions.size()==0)
     				continue;
 
@@ -254,12 +280,11 @@ class TowerSolverListener
     			}
     			
     			if (blockState != null)	
-    			    bw.addBlock(blockName,blockState,bottomBlock);
+    			    bw.addBlock(blockName,blockState,bottomBlock,a);
     		}	
     		
-    		if (c.getName().endsWith("operatorTL")) {
+    		if (c.getName().endsWith("operatorTL"))
     			operatorHistory = getHistory(c);
-    		}
     	}
     	
     	history_.add(s.getStepCount(), bw, operatorHistory);    
