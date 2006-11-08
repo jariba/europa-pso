@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PSUI" default="run" basedir=".">
+  <description>PSUI</description>
+
+  <property environment="env"/>
+
+  <!-- load overrides from ~/build.properties -->
+  <property file="${env.HOME}/.ant.psui.properties"/>
+	
+  <property name="src.dir"     value="src"/>
+  <property name="build.dir"   value="classes"/>
+  <property name="lib.dir"     value="lib"/>
+  <property name="dist.dir"    value="dist"/>
+  <property name="workspace.dir" value="${env.HOME}/workspace"/>
+
+  <property name="lib.version"    value="g"/>
+  <property name="project"        value="Crew1"/>
+  <property name="project.dir"    value="${workspace.dir}/${project}"/>
+  <property name="project.model"  value="lib${project}_${lib.version}.so"/>
+  <property name="project.initial.state" value="${project}-initial-state.xml"/>
+  <property name="project.bsh.script" value="${project}.bsh"/>
+	
+  <property name="debug"  value="true"/>
+  <property name="deprecation"  value="true"/>
+
+  <path id="psui.class.path">
+	<pathelement location="${workspace.dir}/PLASMA/lib/DSA.jar"/>
+	<pathelement location="${lib.dir}/nanoxml/nanoxml.jar"/>
+    <pathelement location="${lib.dir}/jfreechart/jcommon-1.0.5.jar"/>
+    <pathelement location="${lib.dir}/jfreechart/jfreechart-1.0.2.jar"/>
+    <pathelement location="${lib.dir}/egantt/egantt-core.jar"/>
+    <pathelement location="${lib.dir}/egantt/egantt-ext.jar"/>
+    <pathelement location="${lib.dir}/egantt/egantt-resources.jar"/>
+	<pathelement location="${lib.dir}/beanshell/bsh-2.0b4.jar"/>
+	<pathelement location="${lib.dir}/junit/junit-4.1.jar"/>
+	<pathelement location="${lib.dir}/josql/JoSQL-1.4.jar"/>
+	<pathelement location="${lib.dir}/josql/gentlyWEB-utils-1.1.jar"/>
+  </path>
+	
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build.dir}"/>
+  </target>
+
+  <target name="clean" description="delete the 'classes' directory tree" >
+	 <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile 'src' tree into 'classes' tree" >
+	<javac srcdir="${src.dir}" 
+		   destdir="${build.dir}" 
+		   debug="${debug}" 
+		   deprecation="${deprecation}">
+	  <classpath refid="psui.class.path"/>
+    </javac>
+  </target>
+	
+  <target name="run" depends="compile" description="build and run">
+    <java classname="org.ops.ui.PSDesktop" dir="${project.dir}" fork="yes">
+      <jvmarg value="-Xms256m"/> 	
+      <jvmarg value="-Xmx2048m"/> 	
+      <arg value="${project.dir}"/>
+      <arg value="${project.model}"/>
+      <arg value="${project.initial.state}"/>
+      <arg value="${project.bsh.script}"/>    	
+      <classpath>
+	    <path refid="psui.class.path"/>
+	    <pathelement location="${build.dir}"/>
+       </classpath>
+    </java>
+  </target>
+</project>
