@@ -16,6 +16,15 @@ int month = GregorianCalendar.SEPTEMBER, day = 11;
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
 GregorianCalendar end = new GregorianCalendar(2006,month,day,1,30);
 
+void initDSA()
+{
+	cwd = bsh.cwd;
+	print("cwd is:"+cwd+"\n");
+    dsa.loadModel(cwd+"/libUBO_g.so");
+    dsa.addPlan(cwd+"/UBO-initial-state.xml",false);		
+    //dsa.addPlan("psp2.46.xml",false);		
+}
+
 void setupDesktop()
     throws Exception
 {
@@ -33,19 +42,6 @@ void setupDesktop()
     resourceFrame.setLocation(0,180);
     resourceFrame.setSize(500,300);    
 }
-
-horizonStart = 0;
-horizonEnd = 1000;
-maxSteps = 150;
-maxDepth = 100000;
-config = "PlannerConfig.xml";
-solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
-desktop.makeSolverDialog();
-
-// setupDesktop();
-
-// Example of table using JoSQL query
-// desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
 
 class PlanHistoryEntry
 {
@@ -183,9 +179,6 @@ class UBOSolverListener
     }
 } 
 
-UBOSolverListener listener = new UBOSolverListener();
-solver.addListener(listener);
-
 void showHistory()
 {
     String[] fields1 = {"toString"};
@@ -193,4 +186,24 @@ void showHistory()
     String[] fields2 = {"StepNumber","RemainingTreeSize","CurrentTree","CurrentPlan"};
     desktop.makeTableFrame("Plan History",listener.getPlanHistory(),fields2);
 }
+
+// main()
+horizonStart = 0;
+horizonEnd = 1000;
+maxSteps = 150;
+maxDepth = 100000;
+config = "PlannerConfig.xml";
+
+initDSA();
+solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
+desktop.makeSolverDialog();
+
+UBOSolverListener listener = new UBOSolverListener();
+solver.addListener(listener);
+
+//setupDesktop();
+
+//Example of table using JoSQL query
+//desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
+
 
