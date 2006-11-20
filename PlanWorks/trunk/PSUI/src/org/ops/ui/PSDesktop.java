@@ -43,14 +43,8 @@ public class PSDesktop
 	
 	public static void main(String[] args) 
 	{
-		if (args.length < 3) {
-		    System.err.println("Must specify working dir, model library and initial state");
-		    return;
-		}
-		
-		initDSA(args[0],args[1],args[2]);
-		if (args.length > 3)
-			bshFile_ = args[3];
+		if (args.length > 0)
+			bshFile_ = args[0];
 		
 		PSDesktop desktop = new PSDesktop();
 		desktop.runUI();
@@ -60,14 +54,7 @@ public class PSDesktop
     {
         return DSAManager.getInstance();
     }
-    
-	static void initDSA(String workingDir,String modelLibrary, String initialState)
-	{
-	    DSA dsa = getDSA();
-	    dsa.loadModel(workingDir + "/"+modelLibrary);
-	    dsa.addPlan(workingDir + "/"+initialState);		
-	}
-	
+    	
     public void runUI()
     {
 	    SwingUtilities.invokeLater(new UICreator());
