@@ -31,6 +31,13 @@ int month = GregorianCalendar.SEPTEMBER, day = 11;
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
 GregorianCalendar end = new GregorianCalendar(2006,month,day,0,10);
 
+void initDSA()
+{
+	cwd = bsh.cwd;
+    dsa.loadModel(cwd+"/libTower_o.so");
+    dsa.addPlan(cwd+"/Tower-initial-state.xml",false);		
+}
+
 void setupDesktop()
     throws Exception
 {
@@ -42,19 +49,6 @@ void setupDesktop()
     PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
     gantt.addMouseListener(dp);    
 }
-
-horizonStart = 0;
-horizonEnd = 1000;
-maxSteps = 200;
-maxDepth = 100000;
-config = "PlannerConfig.xml";
-solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
-desktop.makeSolverDialog();
-
-// setupDesktop();
-
-// Example of table using JoSQL query
-// desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
 
 Object safeBound(int bound)
 {
@@ -406,6 +400,22 @@ class BlockWorldHistoryPanel
     }    	        
 }
 
+void showHistory()
+{
+    String[] fields1 = {"Index","StepNumber","Towers","OperatorHistory"};
+    desktop.makeTableFrame("Execution History",bwhp.getHistory(),fields1);
+}
+
+
+horizonStart = 0;
+horizonEnd = 1000;
+maxSteps = 200;
+maxDepth = 100000;
+config = "PlannerConfig.xml";
+
+initDSA();
+solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
+desktop.makeSolverDialog();
 
 BlockWorldHistoryPanel bwhp = new BlockWorldHistoryPanel();
 JInternalFrame hf = desktop.makeNewFrame("Block World History");
@@ -415,6 +425,11 @@ hf.getContentPane().add(bwhp);
 TowerSolverListener listener = new TowerSolverListener(bwhp);
 solver.addListener(listener);
 
+
+//setupDesktop();
+
+//Example of table using JoSQL query
+//desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
 
 //To inspect parameters
 /*
@@ -428,8 +443,4 @@ param.get(0).getName();
 param.get(0).getValue();
 */
  
-void showHistory()
-{
-    String[] fields1 = {"Index","StepNumber","Towers","OperatorHistory"};
-    desktop.makeTableFrame("Execution History",bwhp.getHistory(),fields1);
-}
+

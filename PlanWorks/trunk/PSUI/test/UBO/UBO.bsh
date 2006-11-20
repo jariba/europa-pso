@@ -19,8 +19,7 @@ GregorianCalendar end = new GregorianCalendar(2006,month,day,1,30);
 void initDSA()
 {
 	cwd = bsh.cwd;
-	print("cwd is:"+cwd+"\n");
-    dsa.loadModel(cwd+"/libUBO_g.so");
+    dsa.loadModel(cwd+"/libUBO_o.so");
     dsa.addPlan(cwd+"/UBO-initial-state.xml",false);		
     //dsa.addPlan("psp2.46.xml",false);		
 }
