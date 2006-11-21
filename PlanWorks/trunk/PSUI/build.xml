@@ -13,11 +13,8 @@
   <property name="dist.dir"    value="dist"/>
   <property name="workspace.dir" value="${env.HOME}/workspace"/>
 
-  <property name="lib.version"    value="g"/>
   <property name="project"        value="Crew1"/>
   <property name="project.dir"    value="${workspace.dir}/${project}"/>
-  <property name="project.model"  value="lib${project}_${lib.version}.so"/>
-  <property name="project.initial.state" value="${project}-initial-state.xml"/>
   <property name="project.bsh.script" value="${project}.bsh"/>
 	
   <property name="debug"  value="true"/>
@@ -59,9 +56,6 @@
     <java classname="org.ops.ui.PSDesktop" dir="${project.dir}" fork="yes">
       <jvmarg value="-Xms256m"/> 	
       <jvmarg value="-Xmx2048m"/> 	
-      <arg value="${project.dir}"/>
-      <arg value="${project.model}"/>
-      <arg value="${project.initial.state}"/>
       <arg value="${project.bsh.script}"/>    	
       <classpath>
 	    <path refid="psui.class.path"/>
