@@ -53,6 +53,7 @@
   </target>
 	
   <target name="run" depends="compile" description="build and run">
+  	<echo message="Running ${project} project"/>
     <java classname="org.ops.ui.PSDesktop" dir="${project.dir}" fork="yes">
       <jvmarg value="-Xms256m"/> 	
       <jvmarg value="-Xmx2048m"/> 	
