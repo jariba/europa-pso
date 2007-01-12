@@ -4,7 +4,7 @@
 
   <property environment="env"/>
 
-  <!-- load overrides from ~/build.properties -->
+  <!-- load overrides from ~/.ant.psui.properties -->
   <property file="${env.HOME}/.ant.psui.properties"/>
 	
   <property name="src.dir"     value="src"/>
