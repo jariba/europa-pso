@@ -22,6 +22,8 @@
 
   <path id="psui.class.path">
 	<pathelement location="${workspace.dir}/PLASMA/lib/DSA.jar"/>
+	<pathelement location="${workspace.dir}/PLASMA/lib/PSEngine.jar"/>
+	<pathelement location="${workspace.dir}/PLASMA/lib/nddl.jar"/>
 	<pathelement location="${lib.dir}/nanoxml/nanoxml.jar"/>
     <pathelement location="${lib.dir}/jfreechart/jcommon-1.0.5.jar"/>
     <pathelement location="${lib.dir}/jfreechart/jfreechart-1.0.2.jar"/>
