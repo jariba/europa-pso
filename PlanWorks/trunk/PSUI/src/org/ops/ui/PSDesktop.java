@@ -35,10 +35,14 @@ import org.ops.ui.mouse.ActionDetailsPanel;
 
 import org.josql.contrib.JoSQLSwingTableModel;
 
+import psengine.PSEngine;
+
 public class PSDesktop
 {
 	protected JDesktopPane desktop_;
 	protected int windowCnt_=0;
+	protected PSEngine psEngine_;
+	
 	protected static String bshFile_=null;
 	
 	public static void main(String[] args) 
@@ -123,6 +127,13 @@ public class PSDesktop
         new Thread(interp).start();   
         interp.set("desktop",this);
         interp.set("dsa",getDSA());
+        
+        // TODO: postfix mut be a parameter
+        System.loadLibrary("PSEngine_g");
+        psEngine_ = new PSEngine();
+        psEngine_.start();
+        interp.set("psengine",psEngine_);
+        
         if (bshFile_ != null)
         	interp.eval("source(\""+bshFile_+"\");");
         //consoleFrame.setIcon(true);

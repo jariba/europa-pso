@@ -9,10 +9,12 @@
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.5.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DSA"/>
-	<!--classpathentry kind="lib" path="lib/dsa/DSA.jar"/-->
 	<classpathentry kind="lib" path="lib/nanoxml/nanoxml.jar"/>
 	<classpathentry kind="lib" path="lib/josql/JoSQL-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/josql/gentlyWEB-utils-1.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<!--classpathentry kind="lib" path="/PLASMA/lib/DSA.jar"/-->
+	<classpathentry kind="lib" path="/PLASMA/lib/PSEngine.jar"/>
+	<classpathentry kind="lib" path="/PLASMA/lib/nddl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
