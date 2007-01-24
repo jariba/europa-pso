@@ -27,16 +27,11 @@ import org.ops.ui.mouse.*;
 import org.ops.ui.gantt.*;
 import org.ops.ui.chart.*;
 
+import psengine.PSSolver;
+
 int month = GregorianCalendar.SEPTEMBER, day = 11; 
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
-GregorianCalendar end = new GregorianCalendar(2006,month,day,0,50);
-
-void initDSA()
-{
-	cwd = bsh.cwd;
-    dsa.loadModel(cwd+"/libNDDLHelloWorld_g.so");
-    dsa.addPlan(cwd+"/NDDLHelloWorld-initial-state.xml",false);		
-}
+GregorianCalendar end = new GregorianCalendar(2006,month,day,0,200);
 
 void initPSEngine()
 {
@@ -49,12 +44,21 @@ void setupDesktop()
     throws Exception
 {
     ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
+    ActionViolationsPanel vp = (ActionViolationsPanel)desktop.makeViolationsFrame().getContentPane().getComponent(0);
 
-    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame(start,end);
+    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame("YourObject",start,end);
     ganttFrame.setLocation(0,0);
     ganttFrame.setSize(700,300);
     PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
     gantt.addMouseListener(dp);    
+    gantt.addMouseListener(vp);  
+    
+    /*
+    resourceFrame = desktop.makeResourcesFrame("Resource",start);
+    resourceFrame.setLocation(0,180);
+    resourceFrame.setSize(500,300);
+    */
+    desktop.showTokens(psengine.getObjectsByType("YourObject").get(0));
 }
 
 Object safeBound(int bound)
@@ -68,13 +72,13 @@ Object safeBound(int bound)
     return bound;
 }
 
-String getBounds(dsa.Action a)
+String getBounds(Token t)
 {
     StringBuffer buf = new StringBuffer();
     
-    buf.append("[").append(safeBound(a.getEarliestStart())).append(",").append(safeBound(a.getLatestStart())).append("]")
+    buf.append("[").append(t.getParameter("start")).append("]")
        .append(" ")
-       .append("[").append(safeBound(a.getEarliestEnd())).append(",").append(safeBound(a.getLatestEnd())).append("]");
+       .append("[").append(t.getParameter("end")).append("]");
     
     return buf.toString();
 }
@@ -86,7 +90,9 @@ maxDepth = 100000;
 config = "PlannerConfig.xml";
 
 initPSEngine();
-desktop.makeSolverDialog(config,horizonStart,horizonEnd);
+PSSolver solver = psengine.createSolver(config);
+solver.configure(horizonStart,horizonEnd);
+desktop.makeSolverDialog(solver);
 //setupDesktop();
 
 //Example of table using JoSQL query
