@@ -14,11 +14,26 @@ int month = GregorianCalendar.SEPTEMBER, day = 11;
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
 GregorianCalendar end = new GregorianCalendar(2006,month,day,0,200);
 
-void initPSEngine()
+void usingCodeGeneration()
 {
 	cwd = bsh.cwd;
     psengine.loadModel(cwd+"/libNDDLHelloWorld_g.so");
-    psengine.executeTxns(cwd+"/NDDLHelloWorld-initial-state.xml");		
+    boolean isFile = true;
+    boolean useInterpreter = false;
+    psengine.executeTxns(cwd+"/NDDLHelloWorld-initial-state.xml",isFile,useInterpreter);		
+}
+
+void usingInterpreter()
+{
+	cwd = bsh.cwd;
+    String nddlModel = cwd+"/NDDLHelloWorld-initial-state.nddl";
+    psengine.executeScript("nddl",nddlModel);
+}
+
+void initPSEngine()
+{
+	//usingCodeGeneration();
+	usingInterpreter();
 }
 
 void setupDesktop()
