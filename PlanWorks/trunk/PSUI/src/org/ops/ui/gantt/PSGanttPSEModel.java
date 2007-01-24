@@ -13,19 +13,21 @@ import org.ops.ui.gantt.PSGanttActivityImpl;
 import psengine.PSEngine;
 import psengine.PSToken;
 import psengine.PSTokenList;
+import psengine.PSObjectList;
 
 public class PSGanttPSEModel 
     implements PSGanttModel 
 {
-	PSEngine psengine_;
 	Calendar startHorizon_;
 	String objectsType_;
+	PSObjectList resources_;
 	
 	public PSGanttPSEModel(PSEngine pse, Calendar startHorizon, String objectsType)
 	{
-	    psengine_ = pse;	
 	    startHorizon_ = startHorizon;
 	    objectsType_ = objectsType;
+	    resources_ = pse.getObjectsByType(objectsType_);
+	    
 	}
 
 	public Iterator<PSGanttActivity> getActivities(int resource) 
@@ -35,7 +37,7 @@ public class PSGanttPSEModel
 		// TODO: cache activities?
 		List<PSGanttActivity> acts = new ArrayList<PSGanttActivity>();
 		
-		PSTokenList tokens = psengine_.getObjectByKey(resource).getTokens();
+		PSTokenList tokens = resources_.get(resource).getTokens();
 		for (int i=0;i<tokens.size();i++) {
 			PSToken token = tokens.get(i);
 			acts.add(new PSGanttActivityImpl(token.getKey(),
@@ -61,7 +63,7 @@ public class PSGanttPSEModel
 	public String getResourceColumn(int resource, int column) 
 	{
 		if (column == 0 && resource < getResourceCount())
-			return psengine_.getObjectByKey(resource).getName();
+			return resources_.get(resource).getName();
 		
 		return "";
 	}
@@ -74,7 +76,7 @@ public class PSGanttPSEModel
 
 	public int getResourceCount() 
 	{
-		return psengine_.getObjectsByType(objectsType_).size();
+		return resources_.size();
 	}
 
 	public void setActivityStart(Object key, Calendar start) 
