@@ -86,11 +86,7 @@ maxDepth = 100000;
 config = "PlannerConfig.xml";
 
 initPSEngine();
-/*
-initDSA();
-solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
-desktop.makeSolverDialog();
-*/
+desktop.makeSolverDialog(config,horizonStart,horizonEnd);
 //setupDesktop();
 
 //Example of table using JoSQL query
