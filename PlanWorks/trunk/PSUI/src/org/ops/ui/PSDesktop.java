@@ -15,19 +15,12 @@ import javax.swing.JScrollPane;
 import bsh.Interpreter;
 import bsh.util.JConsole;
 
-import dsa.DSA;
-import dsa.DSAManager;
-import dsa.Component;
-import dsa.Resource;
-import dsa.Solver;
-import dsa.SolverManager;
-
 import org.ops.ui.chart.PSJFreeResourceChart;
 import org.ops.ui.chart.PSResourceChart;
-import org.ops.ui.chart.PSResourceChartDSAModel;
+import org.ops.ui.chart.PSResourceChartPSEModel;
 import org.ops.ui.gantt.PSEGantt;
 import org.ops.ui.gantt.PSGantt;
-import org.ops.ui.gantt.PSGanttDSAModel;
+import org.ops.ui.gantt.PSGanttPSEModel;
 import org.ops.ui.solver.PSSolverDialog;
 import org.ops.ui.util.Util;
 import org.ops.ui.mouse.ActionViolationsPanel;
@@ -35,13 +28,13 @@ import org.ops.ui.mouse.ActionDetailsPanel;
 
 import org.josql.contrib.JoSQLSwingTableModel;
 
-import psengine.PSEngine;
+import psengine.*;
 
 public class PSDesktop
 {
 	protected JDesktopPane desktop_;
 	protected int windowCnt_=0;
-	protected PSEngine psEngine_;
+	protected PSEngine psEngine_=null;
 	
 	protected static String bshFile_=null;
 	
@@ -54,11 +47,6 @@ public class PSDesktop
 		desktop.runUI();
 	}
 
-    public static DSA getDSA()
-    {
-        return DSAManager.getInstance();
-    }
-    	
     public void runUI()
     {
 	    SwingUtilities.invokeLater(new UICreator());
@@ -125,18 +113,19 @@ public class PSDesktop
         consoleFrame.getContentPane().add(console);
         Interpreter interp = new Interpreter(console);
         new Thread(interp).start();   
-        interp.set("desktop",this);
-        interp.set("dsa",getDSA());
         
-        // TODO: postfix mut be a parameter
-        System.loadLibrary("PSEngine_g");
-        psEngine_ = new PSEngine();
-        psEngine_.start();
-        interp.set("psengine",psEngine_);
+        interp.set("desktop",this);        
+        registerPSEngine(interp);
         
         if (bshFile_ != null)
         	interp.eval("source(\""+bshFile_+"\");");
         //consoleFrame.setIcon(true);
+    }
+    
+    protected void registerPSEngine(Interpreter interp)
+        throws Exception
+    {
+        interp.set("psengine",getPSEngine());    	
     }
     
     public void makeTableFrame(String title,List l,String fields[])
@@ -176,19 +165,25 @@ public class PSDesktop
     		throw new RuntimeException(e);
     	}
     }
+   
+    public PSEngine getPSEngine()
+    {
+    	if (psEngine_ == null) {
+            // TODO: postfix mut be a parameter
+            System.loadLibrary("PSEngine_g");
+            psEngine_ = new PSEngine();
+            psEngine_.start();
+    	}
+    	
+    	return psEngine_;
+    }
+    	
     
-    public void makeSolverDialog()
+    public void makeSolverDialog(String config, int horizonStart,int horizonEnd)
     {
     	try {
-    		Solver solver;
-    		
-    		try {
-    			solver = SolverManager.instance();
-    		}
-    		catch (Exception e) {
-    		     solver = null;	
-    		}
-    		
+    		PSSolver solver = getPSEngine().createSolver(config);
+    		solver.configure(config,horizonStart,horizonEnd);
     		JInternalFrame frame = makeNewFrame("Solver");
     		frame.getContentPane().setLayout(new BorderLayout());
     		frame.getContentPane().add(new JScrollPane(new PSSolverDialog(this,solver)));
@@ -200,7 +195,7 @@ public class PSDesktop
     	}
     }
     
-    public void showActivities(Component c)
+    public void showTokens(PSObject o)
     {
         final String[] columns = {
                 "Key",
@@ -213,14 +208,15 @@ public class PSDesktop
                 "DurationMax",
          };
             
-         makeTableFrame("Activities for "+c.getName(),c.getActions(),columns);        	
+         //makeTableFrame("Activities for "+o.getName(),o.getTokens(),columns);        	
     }    
     
     public JInternalFrame makeResourceGanttFrame(
+    		String objectsType,
 	        Calendar start,
 	        Calendar end)
     {
-        PSGantt gantt = new PSEGantt(new PSGanttDSAModel(getDSA(),start),start,end);
+        PSGantt gantt = new PSEGantt(new PSGanttPSEModel(getPSEngine(),start,objectsType),start,end);
 
         JInternalFrame frame = makeNewFrame("Resource Schedule");
         frame.getContentPane().add(gantt);
@@ -229,18 +225,20 @@ public class PSDesktop
         return frame;    
     }    
     
-    public PSResourceChart makeResourceChart(Resource r,Calendar start)
+    public PSResourceChart makeResourceChart(PSResource r,Calendar start)
     {
     	return new PSJFreeResourceChart(
     			r.getName(),
-    			new PSResourceChartDSAModel(r),
+    			new PSResourceChartPSEModel(r),
     			start);
     }    
     
-    public JInternalFrame makeResourcesFrame(Calendar start)
+    public JInternalFrame makeResourcesFrame(String type,Calendar start)
     {
-        JTabbedPane resourceTabs = new JTabbedPane();       
-        for (Resource r : getDSA().getResources()) {
+        JTabbedPane resourceTabs = new JTabbedPane();
+        PSResourceList resources = getPSEngine().getResourcesByType(type); 
+        for (int i = 0; i < resources.size(); i++) {
+        	PSResource r = resources.get(i);
             resourceTabs.add(r.getName(),makeResourceChart(r,start));
         }
         
@@ -253,7 +251,7 @@ public class PSDesktop
     
     public JInternalFrame makeViolationsFrame()
     {
-        ActionViolationsPanel vp = new ActionViolationsPanel(getDSA());
+        ActionViolationsPanel vp = new ActionViolationsPanel(getPSEngine());
         JInternalFrame frame = makeNewFrame("Violations");
         frame.getContentPane().add(vp);
         frame.setLocation(500,180);
@@ -264,7 +262,7 @@ public class PSDesktop
 
     public JInternalFrame makeDetailsFrame()
     {
-        ActionDetailsPanel dp = new ActionDetailsPanel(getDSA());
+        ActionDetailsPanel dp = new ActionDetailsPanel(getPSEngine());
         JInternalFrame frame = makeNewFrame("Details");
         frame.getContentPane().add(dp);
         frame.setLocation(800,180);

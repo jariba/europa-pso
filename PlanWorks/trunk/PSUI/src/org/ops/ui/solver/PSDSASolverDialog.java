@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JInternalFrame;
@@ -37,11 +36,10 @@ import org.jfree.chart.plot.PlotOrientation;
 
 import org.ops.ui.PSDesktop;
 
-import psengine.PSEngine;
-import psengine.PSSolver;
-import psengine.PSStringList;
+import dsa.Solver;
+import dsa.SolverManager;
 
-public class PSSolverDialog 
+public class PSDSASolverDialog 
     extends JPanel
     implements ActionListener
 {
@@ -74,22 +72,20 @@ public class PSSolverDialog
 	protected JSplitPane topSplitPane_;
 	
 	protected PSDesktop desktop_;
-	protected PSSolver solver_;
-	protected Integer maxStepsValue_=100;
-	protected Integer maxDepthValue_=100;
+	protected Solver solver_;
 	
-    public PSSolverDialog(PSDesktop desktop,PSSolver solver)
+    public PSDSASolverDialog(PSDesktop desktop,Solver solver)
     {
     	desktop_ = desktop;
         solver_ = solver;
         
         if (solver != null) {
-    	    horizonStart_ = new JTextField(new Integer(solver_.getHorizonStart()));
-    	    horizonEnd_  = new JTextField(new Integer(solver_.getHorizonEnd()));
-    	    maxSteps_ = new JTextField(maxStepsValue_.toString(),8);
-    	    maxDepth_ = new JTextField(maxDepthValue_);
+    	    horizonStart_ = new JTextField(solver_.getHorizonStart().toString());
+    	    horizonEnd_  = new JTextField(solver_.getHorizonEnd().toString());
+    	    maxSteps_ = new JTextField(solver_.getMaxSteps().toString(),8);
+    	    maxDepth_ = new JTextField(solver_.getMaxDepth().toString());
     	    configFile_ = new JTextField(solver_.getConfigFilename());
-    	    incSteps_ = new JTextField(maxStepsValue_.toString(),8);
+    	    incSteps_ = new JTextField(solver_.getMaxSteps().toString(),8);
         }
         
     	totalTime_ = 0;
@@ -285,10 +281,10 @@ public class PSSolverDialog
 		int horizonStart = getInteger(horizonStart_.getText());
 		int horizonEnd = getInteger(horizonEnd_.getText());
 		int maxSteps = getInteger(maxSteps_.getText());
+		int maxDepth = getInteger(maxDepth_.getText());
 		String config = configFile_.getText();
-	    solver_ = desktop_.getPSEngine().createSolver(config);
-	    solver_.configure(config,horizonStart,horizonEnd);
-		lblMaxStepCnt_.setText(new Integer(maxSteps).toString());	    
+	    solver_ = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
+		lblMaxStepCnt_.setText(solver_.getMaxSteps().toString());	    
 	}
 	
 	protected int getInteger(String text)
@@ -321,14 +317,7 @@ public class PSSolverDialog
     			stepAvgTimeSeries_.add(stepCnt,totalTime_/stepCnt);
     			
     			if (solver_.isConstraintConsistent()) {
-    				List<String> openDecisions = new Vector<String>();
-    				// TODO: this is causeing trouble, fix it
-    				/*
-    				PSStringList l = solver_.getFlaws();
-    				for (int j=0;j<l.size();j++)
-    					openDecisions.add(l.get(j).toString());
-    				*/
-    				
+    				List<String> openDecisions = solver_.getOpenDecisions();
     				decisionCntSeries_.add(stepCnt,openDecisions.size());
     				openDecisions_.addEntry(stepCnt,openDecisions,solver_.getLastExecutedDecision());
     			}
@@ -358,8 +347,9 @@ public class PSSolverDialog
     public void runSolver()
     {
     	try {
+    		Solver solver = SolverManager.instance();
             setButtons(false);
-   			solver_.solve(maxStepsValue_,maxDepthValue_); 
+   			solver.solve(); 
             setButtons(true);
     	}
     	catch (Exception e) {
