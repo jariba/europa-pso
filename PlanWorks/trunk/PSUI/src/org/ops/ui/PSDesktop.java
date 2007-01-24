@@ -29,6 +29,7 @@ import org.ops.ui.mouse.ActionDetailsPanel;
 import org.josql.contrib.JoSQLSwingTableModel;
 
 import psengine.*;
+import nddl.Nddl;
 
 public class PSDesktop
 {
@@ -38,6 +39,27 @@ public class PSDesktop
 	
 	protected static String bshFile_=null;
 	
+    protected static class PSEngineWithNDDL
+        extends PSEngine
+    {
+    	public void executeScript(String language, String script) 
+    	{
+    		try {
+    		    if ("nddl".equals(language)) {
+    		        String xml = Nddl.nddlToXML(script);
+    		        boolean isFile = false;
+    		        boolean useInterpreter = true;
+    		        executeTxns(xml,isFile,useInterpreter);		      		
+    		    }
+    		    else 
+    		        super.executeScript(language, script);
+    		}
+    		catch (Exception e) {
+    			throw new RuntimeException(e);
+    		}
+        }        	
+    }
+    
 	public static void main(String[] args) 
 	{
 		if (args.length > 0)
@@ -171,7 +193,7 @@ public class PSDesktop
     	if (psEngine_ == null) {
             // TODO: postfix mut be a parameter
             System.loadLibrary("PSEngine_g");
-            psEngine_ = new PSEngine();
+            psEngine_ = new PSEngineWithNDDL();
             psEngine_.start();
     	}
     	
