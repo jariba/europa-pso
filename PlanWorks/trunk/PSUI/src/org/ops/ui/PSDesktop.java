@@ -179,11 +179,9 @@ public class PSDesktop
     }
     	
     
-    public void makeSolverDialog(String config, int horizonStart,int horizonEnd)
+    public void makeSolverDialog(PSSolver solver)
     {
     	try {
-    		PSSolver solver = getPSEngine().createSolver(config);
-    		solver.configure(config,horizonStart,horizonEnd);
     		JInternalFrame frame = makeNewFrame("Solver");
     		frame.getContentPane().setLayout(new BorderLayout());
     		frame.getContentPane().add(new JScrollPane(new PSSolverDialog(this,solver)));
@@ -200,15 +198,10 @@ public class PSDesktop
         final String[] columns = {
                 "Key",
                 "Name",
-                "EarliestStart",
-                "LatestStart",
-                "EarliestEnd",
-                "LatestEnd",
-                "DurationMin",
-                "DurationMax",
+                "Parameters",
          };
             
-         //makeTableFrame("Activities for "+o.getName(),o.getTokens(),columns);        	
+         makeTableFrame("Activities for "+o.getName(),Util.SWIGList(o.getTokens()),columns);        	
     }    
     
     public JInternalFrame makeResourceGanttFrame(

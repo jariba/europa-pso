@@ -84,10 +84,10 @@ public class PSSolverDialog
         solver_ = solver;
         
         if (solver != null) {
-    	    horizonStart_ = new JTextField(new Integer(solver_.getHorizonStart()));
-    	    horizonEnd_  = new JTextField(new Integer(solver_.getHorizonEnd()));
+    	    horizonStart_ = new JTextField(new Integer(solver_.getHorizonStart()).toString(),15);
+    	    horizonEnd_  = new JTextField(new Integer(solver_.getHorizonEnd()).toString(),15);
     	    maxSteps_ = new JTextField(maxStepsValue_.toString(),8);
-    	    maxDepth_ = new JTextField(maxDepthValue_);
+    	    maxDepth_ = new JTextField(maxDepthValue_.toString(),8);
     	    configFile_ = new JTextField(solver_.getConfigFilename());
     	    incSteps_ = new JTextField(maxStepsValue_.toString(),8);
         }
@@ -202,8 +202,10 @@ public class PSSolverDialog
         JPanel p2 = new JPanel(new FlowLayout());
         p2.add(totalsPanel);
         
+        JPanel p3 = new JPanel(new FlowLayout());
+        p3.add(chartsPanel_);
     	p.add(BorderLayout.NORTH,p1);
-    	p.add(BorderLayout.CENTER,chartsPanel_);
+    	p.add(BorderLayout.CENTER,p3);
     	p.add(BorderLayout.SOUTH,p2);
     	return p;
     }
@@ -284,11 +286,9 @@ public class PSSolverDialog
 	{
 		int horizonStart = getInteger(horizonStart_.getText());
 		int horizonEnd = getInteger(horizonEnd_.getText());
-		int maxSteps = getInteger(maxSteps_.getText());
 		String config = configFile_.getText();
 	    solver_ = desktop_.getPSEngine().createSolver(config);
-	    solver_.configure(config,horizonStart,horizonEnd);
-		lblMaxStepCnt_.setText(new Integer(maxSteps).toString());	    
+	    solver_.configure(horizonStart,horizonEnd);
 	}
 	
 	protected int getInteger(String text)
@@ -322,7 +322,7 @@ public class PSSolverDialog
     			
     			if (solver_.isConstraintConsistent()) {
     				List<String> openDecisions = new Vector<String>();
-    				// TODO: this is causeing trouble, fix it
+    				// TODO: this is causing trouble, fix it
     				/*
     				PSStringList l = solver_.getFlaws();
     				for (int j=0;j<l.size();j++)
