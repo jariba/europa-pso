@@ -37,6 +37,7 @@ public class PSDesktop
 	protected int windowCnt_=0;
 	protected PSEngine psEngine_=null;
 	
+	protected static String debugMode_="g";	
 	protected static String bshFile_=null;
 	
     protected static class PSEngineWithNDDL
@@ -62,8 +63,12 @@ public class PSDesktop
     
 	public static void main(String[] args) 
 	{
-		if (args.length > 0)
-			bshFile_ = args[0];
+		if (args.length < 1)
+			throw new RuntimeException("Please specify debug mode : g or o");
+		debugMode_ = args[0];
+		
+		if (args.length > 1)
+			bshFile_ = args[1];
 		
 		PSDesktop desktop = new PSDesktop();
 		desktop.runUI();
@@ -191,8 +196,7 @@ public class PSDesktop
     public PSEngine getPSEngine()
     {
     	if (psEngine_ == null) {
-            // TODO: postfix mut be a parameter
-            System.loadLibrary("PSEngine_g");
+            System.loadLibrary("PSEngine_"+debugMode_);
             psEngine_ = new PSEngineWithNDDL();
             psEngine_.start();
     	}
