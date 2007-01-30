@@ -322,12 +322,9 @@ public class PSSolverDialog
     			
     			if (solver_.isConstraintConsistent()) {
     				List<String> openDecisions = new Vector<String>();
-    				// TODO: this is causing trouble, fix it
-    				/*
     				PSStringList l = solver_.getFlaws();
     				for (int j=0;j<l.size();j++)
     					openDecisions.add(l.get(j).toString());
-    				*/
     				
     				decisionCntSeries_.add(stepCnt,openDecisions.size());
     				openDecisions_.addEntry(stepCnt,openDecisions,solver_.getLastExecutedDecision());
