@@ -118,6 +118,10 @@ public class PSJFreeResourceChart
     	Iterator<Integer> it = rp.getTimes();
     	while (it.hasNext()) {
     		Integer i = it.next();
+    		// Ignore initial MINUS_INFINITY entry
+    		if (i < 0)
+    			continue;
+    		
     		Calendar time = (Calendar)start_.clone();
     		// TODO: can't assume time unit is minutes, should ask DSA
     		time.add(Calendar.MINUTE, i);
