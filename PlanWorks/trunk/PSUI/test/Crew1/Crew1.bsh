@@ -8,26 +8,44 @@ import org.ops.ui.PSDesktop;
 import org.ops.ui.gantt.*;
 import org.ops.ui.chart.*;
 import org.ops.ui.mouse.*;
-import dsa.*;
+import psengine.*;
 
 int month = GregorianCalendar.SEPTEMBER, day = 11; 
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
 GregorianCalendar end = new GregorianCalendar(2006,month,day+4,12,0);
 
-void initDSA()
+void usingCodeGeneration()
 {
 	cwd = bsh.cwd;
-    dsa.loadModel(cwd+"/libCrew1_o.so");
-    dsa.addPlan(cwd+"/Crew1-initial-state.xml",false);		
+    psengine.loadModel(cwd+"/libCrew1_o.so");
+    boolean isFile = true;
+    boolean useInterpreter = false;
+    psengine.executeTxns(cwd+"/Crew1-initial-state.xml",isFile,useInterpreter);		
+}
+
+void usingInterpreter()
+{
+	cwd = bsh.cwd;
+    String nddlModel = cwd+"/Crew1-initial-state.nddl";
+    psengine.executeScript("nddl",nddlModel);
+}
+
+void initPSEngine()
+{
+	usingCodeGeneration();
+	//usingInterpreter();
 }
 
 void showCrewActivities()
 {
+	 // TODO: migrate this to PSEngine
+	 /*
      for (dsa.Component c : dsa.getComponents()) {
         if (c.getName().startsWith("crew") && !c.getName().contains("fw")) {
             desktop.showActivities(c);        	
         }
      }
+     */
 }
 
 void setupDesktop()
@@ -36,14 +54,14 @@ void setupDesktop()
     ActionViolationsPanel vp = (ActionViolationsPanel)desktop.makeViolationsFrame().getContentPane().getComponent(0);
     ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
 
-    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame(start,end);
+    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame("Crew",start,end);
     ganttFrame.setLocation(0,0);
     ganttFrame.setSize(1100,180);
     PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
     gantt.addMouseListener(vp);
     gantt.addMouseListener(dp);
     
-    resourceFrame = desktop.makeResourcesFrame(start);
+    resourceFrame = desktop.makeResourcesFrame("Reusable",start);
     resourceFrame.setLocation(0,180);
     resourceFrame.setSize(500,300);    
     showCrewActivities();
@@ -55,11 +73,10 @@ maxSteps = 500;
 maxDepth = 100000;
 config = "PlannerConfig.xml";
 
-initDSA();
-SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
-desktop.makeSolverDialog();
-
+initPSEngine();
+PSSolver solver = psengine.createSolver(config);
+solver.configure(horizonStart,horizonEnd);
+desktop.makeSolverDialog(solver);
 // setupDesktop(desktop);
-
 
  
