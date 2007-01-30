@@ -321,13 +321,16 @@ public class PSSolverDialog
     			stepAvgTimeSeries_.add(stepCnt,totalTime_/stepCnt);
     			
     			if (solver_.isConstraintConsistent()) {
-    				List<String> openDecisions = new Vector<String>();
-    				PSStringList l = solver_.getFlaws();
-    				for (int j=0;j<l.size();j++)
-    					openDecisions.add(l.get(j).toString());
-    				
-    				decisionCntSeries_.add(stepCnt,openDecisions.size());
-    				openDecisions_.addEntry(stepCnt,openDecisions,solver_.getLastExecutedDecision());
+    				// TODO: this is weird, it takes the solver one more iteration to set its internal m_noFlawsFound flag, fix it
+    				if (solver_.hasFlaws()) {
+    					List<String> openDecisions = new Vector<String>();
+    					PSStringList l = solver_.getFlaws();
+    					for (int j=0;j<l.size();j++)
+    						openDecisions.add(l.get(j).toString());
+
+    					decisionCntSeries_.add(stepCnt,openDecisions.size());
+    					openDecisions_.addEntry(stepCnt,openDecisions,solver_.getLastExecutedDecision());
+    				}
     			}
     			forceRepaint(chartsPanel_);
     			//System.out.println(stepCnt + "-" + solver.getDepth()+" - "+secs);
