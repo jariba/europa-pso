@@ -7,7 +7,6 @@ import dsa.ResourceProfile;
 import psengine.PSResource;
 import psengine.PSResourceProfile;
 import psengine.PSTimePointList;
-import psengine.SWIGTYPE_p_int;
 
 public class PSResourceChartPSEModel 
     implements PSResourceChartModel 
@@ -73,7 +72,7 @@ public class PSResourceChartPSEModel
 
 		public Integer next() 
 		{
-			Integer retval = SWIGintToInteger(list_.get(index_));
+			Integer retval = list_.get(index_); 
 			index_++;
 			return retval;
 		}
@@ -81,12 +80,6 @@ public class PSResourceChartPSEModel
 		public void remove() 
 		{
 			throw new RuntimeException("not supported");
-		}
-		
-		// TODO: this needs to be fixed
-		Integer SWIGintToInteger(SWIGTYPE_p_int i)
-		{
-			return Integer.getInteger(i.toString());
-		}
+		}		
 	}
 }
