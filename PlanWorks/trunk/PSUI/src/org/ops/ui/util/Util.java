@@ -115,6 +115,31 @@ public class Util
 		}
     }
     
+    static public class MatrixTableModel
+        extends AbstractTableModel
+    {
+		private static final long serialVersionUID = -8922640086581386437L;
+		
+		protected List data_;
+		protected List columnNames_;
+		
+		public MatrixTableModel(List data,List columnNames)
+		{
+		    data_ = data;
+		    columnNames_ = columnNames;
+		}
+
+		public int getColumnCount()  { return columnNames_.size(); }		
+		public String getColumnName(int columnIndex) { return columnNames_.get(columnIndex).toString(); } 
+
+		public int getRowCount() { return data_.size();	}
+
+		public Object getValueAt(int rowIndex, int columnIndex) 
+		{
+			return ((List)data_.get(rowIndex)).get(columnIndex);
+		}    	
+    }
+    
     /*
      * Transform SWIG generated lists into Java lists
      * parameter list must support size() and get(int idx)

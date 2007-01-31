@@ -1,4 +1,4 @@
-// CrewPlanning.bsh
+// NDDLHelloWorld.bsh
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -7,6 +7,7 @@ import org.ops.ui.PSDesktop;
 import org.ops.ui.mouse.*;
 import org.ops.ui.gantt.*;
 import org.ops.ui.chart.*;
+import org.ops.ui.util.Util;
 import psengine.PSSolver;
 import psengine.PSToken;
 
@@ -49,11 +50,6 @@ void setupDesktop()
     gantt.addMouseListener(dp);    
     gantt.addMouseListener(vp);  
     
-    /*
-    resourceFrame = desktop.makeResourcesFrame("Resource",start);
-    resourceFrame.setLocation(0,180);
-    resourceFrame.setSize(500,300);
-    */
     desktop.showTokens(psengine.getObjectsByType("YourObject").get(0));
 }
 
@@ -82,6 +78,7 @@ desktop.makeSolverDialog(solver);
 //setupDesktop();
 
 //Example of table using JoSQL query
-//desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
+// Show all objects in the database
+//desktop.makeTableFrame("Objects",Util.SWIGList(psengine.getObjectsByType("Object")),"SELECT key,name,type FROM psengine.PSObject");
 
 

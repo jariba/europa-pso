@@ -3,6 +3,7 @@ package org.ops.ui;
 import java.awt.BorderLayout;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JTabbedPane;
@@ -221,13 +222,35 @@ public class PSDesktop
     
     public void showTokens(PSObject o)
     {
-        final String[] columns = {
-                "Key",
-                "Name",
-                "Parameters",
-         };
-            
-         makeTableFrame("Activities for "+o.getName(),Util.SWIGList(o.getTokens()),columns);        	
+         List columnNames = new Vector();
+         List data = new Vector();
+         columnNames.add("Key");
+         columnNames.add("Name");
+         columnNames.add("Type");
+         
+         PSTokenList l = o.getTokens();
+         for (int i=0; i<l.size();i++) {
+        	 List row = new Vector();
+        	 PSToken t = l.get(i);
+        	 row.add(t.getKey());
+        	 row.add(t.getName());
+        	 row.add(t.getType());
+        	 PSVariableList vars = t.getParameters();
+        	 for (int j=0; j<vars.size();j++) {
+        		 PSVariable var = vars.get(j);
+        		 row.add(var.toString());
+        		 
+        		 // Only add cols for the first row
+        		 if (i==0)
+        			 columnNames.add(var.getName());
+        	 }
+        	 data.add(row);
+         }
+         
+     	JInternalFrame frame = makeNewFrame("Activities for "+o.getName());
+    	JTable table = new JTable(new Util.MatrixTableModel(data,columnNames));
+    	JScrollPane scrollpane = new JScrollPane(table);
+    	frame.getContentPane().add(scrollpane);
     }    
     
     public JInternalFrame makeResourceGanttFrame(
