@@ -38,14 +38,9 @@ void initPSEngine()
 
 void showCrewActivities()
 {
-	 // TODO: migrate this to PSEngine
-	 /*
-     for (dsa.Component c : dsa.getComponents()) {
-        if (c.getName().startsWith("crew") && !c.getName().contains("fw")) {
-            desktop.showActivities(c);        	
-        }
-     }
-     */
+    PSObjectList l = psengine.getObjectsByType("Crew");    	 
+    for (int i=0;i<l.size();i++) 
+    	desktop.showTokens(l.get(i));
 }
 
 void setupDesktop()
