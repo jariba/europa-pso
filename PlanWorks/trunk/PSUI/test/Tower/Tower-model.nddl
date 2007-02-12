@@ -6,439 +6,254 @@ enum Case1 {case11, case12, case13};
 class Block;
 class Goal;
 
-class Bottom extends Timeline{
+class Bottom extends Timeline
+{
+    Block wholeBlock;
 
-Block wholeBlock;
+    Bottom(Block b) 
+    { 
+        wholeBlock=b; 
+    }
 
-Bottom(Block b){
-wholeBlock=b;
-};
-
-predicate Holding{
-Block theBlock;};
-
-predicate OnTable{
-Block theBlock;};
-
-predicate On{
-Block blockUnder;
-Block theBlock;};
-
-predicate None_bottom{
-Block theBlock;};
-
+    predicate Holding      { Block theBlock;}
+    predicate OnTable      { Block theBlock;}
+    predicate On           { Block blockUnder; Block theBlock;}
+    predicate None_bottom  { Block theBlock;}
 }
 
-class Top extends Timeline{
+class Top extends Timeline
+{
+    Block wholeBlock;
 
-Block wholeBlock;
+    Top(Block b)
+    {
+        wholeBlock=b;
+    }
 
-Top(Block b){
-wholeBlock=b;
-};
-
-predicate Clear{
-Block theBlock;};
-
-predicate NotClear{
-Block theBlock;};
-
+    predicate Clear     { Block theBlock; }
+    predicate NotClear  { Block theBlock;}
 }
 
-class Arm extends Timeline{
-
-predicate ArmEmpty{};
-predicate ArmBusy{};
-
+class Arm extends Timeline
+{
+    predicate ArmEmpty {}
+    predicate ArmBusy  {}
 }
 
-class Operator extends Timeline{
-
-predicate PickUp{
-Block blockPickedUp;
-eq(duration, [1 1]);
-};
-
-predicate PutDown{
-Block blockPutDown;
-eq(duration, [1 1]);
-}
-predicate Stack{
-Block blockStackAbove;
-Block blockStackBelow;
-eq(duration, [1 1]);
+class Operator extends Timeline
+{
+    predicate PickUp  { Block blockPickedUp; eq(duration, [1 1]); }
+    predicate PutDown { Block blockPutDown; eq(duration, [1 1]); }
+    predicate Stack   { Block blockStackAbove; Block blockStackBelow; eq(duration, [1 1]); }
+    predicate Unstack { Block blockUnstackAbove; Block blockUnstackBelow; eq(duration, [1 1]); }
+    predicate Nop     {}
 }
 
-predicate Unstack{
-Block blockUnstackAbove;
-Block blockUnstackBelow;
-eq(duration, [1 1]);
+class Block
+{
+    Goal theGoal;
+    Top blockTop;
+    Bottom blockBottom;
+
+    Block(Goal g) 
+    {
+        theGoal=g;
+        blockBottom=new Bottom(this);
+        blockTop=new Top(this);
+    }
 }
 
-predicate Nop{
-};
+class Goal extends Timeline
+{
+    Block firstBlock;
+    Block secondBlock;
+    Block thirdBlock;
+    Operator operatorTL;
+    Arm armTL;
 
+    Goal()
+    {
+        firstBlock=new Block(this);
+        secondBlock=new Block(this);
+        thirdBlock=new Block(this);
+        operatorTL=new Operator();
+        armTL=new Arm();
+    }
+
+    predicate GoalAchieved { eq(duration, [1 1]); }
 }
 
-class Block{
+Operator::PickUp
+{
+    contained_by(Bottom.OnTable onTable);
+    eq(blockPickedUp, onTable.theBlock);
 
-Goal theGoal;
+    meets(Bottom.Holding holding);
+    eq(blockPickedUp, holding.theBlock);
 
-Top blockTop;
-Bottom blockBottom;
+    contained_by(Top.Clear clear);
+    eq(blockPickedUp, clear.theBlock);
 
-Block(Goal g){
-theGoal=g;
-blockBottom=new Bottom(this);
-blockTop=new Top(this);
-}
-}
+    meets(Top.NotClear noneTop);
+    eq(blockPickedUp, noneTop.theBlock);
 
-class Goal extends Timeline{
+    contained_by(Arm.ArmEmpty armEmpty);
 
-Block firstBlock;
-Block secondBlock;
-Block thirdBlock;
-Operator operatorTL;
-Arm armTL;
-
-Goal(){
-firstBlock=new Block(this);
-secondBlock=new Block(this);
-thirdBlock=new Block(this);
-operatorTL=new Operator();
-armTL=new Arm();
+    meets(Arm.ArmBusy arm);
 }
 
-predicate GoalAchieved{
-eq(duration, [1 1]);
-};
+Operator::PutDown
+{
+    contained_by(Bottom.Holding holding);
+    eq(blockPutDown, holding.theBlock);
 
+    meets(Bottom.OnTable onTable);
+    eq(blockPutDown, onTable.theBlock);
+
+    meets(Top.Clear clear);
+    eq(blockPutDown, clear.theBlock);
+    meets(Arm.ArmEmpty armEmpty);
 }
 
-Operator::PickUp{
+Operator::Stack
+{
+    contained_by(Bottom.Holding holding);
+    eq(blockStackAbove, holding.theBlock);
 
-contained_by(Bottom.OnTable onTable);
-eq(blockPickedUp, onTable.theBlock);
+    meets(Bottom.On on);
+    eq(blockStackAbove, on.theBlock);
+    eq(blockStackBelow, on.blockUnder);
 
-meets(Bottom.Holding holding);
-eq(blockPickedUp, holding.theBlock);
+    contained_by(Top.Clear clear);
+    eq(blockStackBelow, clear.theBlock);
 
-contained_by(Top.Clear clear);
-eq(blockPickedUp, clear.theBlock);
+    meets(Top.NotClear noneTop);
+    eq(blockStackBelow, noneTop.theBlock);
 
-meets(Top.NotClear noneTop);
-eq(blockPickedUp, noneTop.theBlock);
+    meets(Top.Clear clear1);
+    eq(blockStackAbove, clear1.theBlock);
 
-contained_by(Arm.ArmEmpty armEmpty);
-
-meets(Arm.ArmBusy arm);
-
+    meets(Arm.ArmEmpty armEmpty);
 }
 
-Operator::PutDown{
+Operator::Unstack
+{
+    contained_by(Top.Clear clear);
+    eq(blockUnstackAbove, clear.theBlock);
 
-contained_by(Bottom.Holding holding);
-eq(blockPutDown, holding.theBlock);
+    meets(Top.NotClear none);
+    eq(blockUnstackAbove, none.theBlock);
 
-meets(Bottom.OnTable onTable);
-eq(blockPutDown, onTable.theBlock);
+    contained_by(Arm.ArmEmpty armEmpty);
 
-// bool OR1;
+    meets(Arm.ArmBusy noneV3);
 
-// if (OR1==true){
-// ends_during(Top.Clear clear);
-// eq(blockPutDown, clear.theBlock);
-// precedes(end, clear.end);
-// }
+    contained_by(Bottom.On on);
+    eq(blockUnstackAbove, on.theBlock);
+    eq(blockUnstackBelow, on.blockUnder);
 
-// if (OR1==false){
-meets(Top.Clear clear);
-eq(blockPutDown, clear.theBlock);
-// }
+    meets(Bottom.Holding holding);
+    eq(blockUnstackAbove, holding.theBlock);
 
-// bool OR2;
-
-// if (OR2==true){
-// ends_during(Arm.ArmEmpty armEmpty);
-// precedes(end,armEmpty.end);
-// }
-
-// if (OR2==false){
-meets(Arm.ArmEmpty armEmpty);
-//}
-
-}
-
-Operator::Stack{
-
-contained_by(Bottom.Holding holding);
-eq(blockStackAbove, holding.theBlock);
-
-meets(Bottom.On on);
-eq(blockStackAbove, on.theBlock);
-eq(blockStackBelow, on.blockUnder);
-
-contained_by(Top.Clear clear);
-eq(blockStackBelow, clear.theBlock);
-
-meets(Top.NotClear noneTop);
-eq(blockStackBelow, noneTop.theBlock);
-
-// bool OR5;
-
-// if (OR5==true){
-// ends_during(Top.Clear clear);
-// eq(blockStackAbove, clear.theBlock);
-// precedes(end, clear.end);
-// }
-
-// if (OR5==false){
-meets(Top.Clear clear1);
-eq(blockStackAbove, clear1.theBlock);
-// }
-
-// bool OR6;
-
-// if (OR6==true){
-// ends_during(Arm.ArmEmpty armEmpty);
-// precedes(end, armEmpty.end);
-// }
-
-// if (OR6==false){
-meets(Arm.ArmEmpty armEmpty);
-// }
-
-}
-
-Operator::Unstack{
-
-contained_by(Top.Clear clear);
-eq(blockUnstackAbove, clear.theBlock);
-
-meets(Top.NotClear none);
-eq(blockUnstackAbove, none.theBlock);
-
-contained_by(Arm.ArmEmpty armEmpty);
-
-meets(Arm.ArmBusy noneV3);
-
-contained_by(Bottom.On on);
-eq(blockUnstackAbove, on.theBlock);
-eq(blockUnstackBelow, on.blockUnder);
-
-meets(Bottom.Holding holding);
-eq(blockUnstackAbove, holding.theBlock);
-
-
-// bool OR9;
-
-// if (OR9==true){
-// ends_during(Top.Clear clear);
-// eq(blockUnstackBelow, clear.theBlock);
-// precedes(end, clear.end);
-// }
-
-// if (OR9==false){
-meets(Top.Clear clear1);
-eq(blockUnstackBelow, clear1.theBlock);
-//}
-
+    meets(Top.Clear clear1);
+    eq(blockUnstackBelow, clear1.theBlock);
 }
 
 
-Bottom::Holding{
-eq(theBlock, object.wholeBlock);
+Bottom::Holding
+{
+    eq(theBlock, object.wholeBlock);
 
-// bool OR11;
+    ends(Operator.Stack stackExe);
+    eq(theBlock, stackExe.blockStackAbove);
 
-// if(OR11==true){
-// ends(Operator.PutDown putDownExe);
-// eq(theBlock, putDownExe.blockPutDown);
-// }
-
-// if(OR11==false){
-ends(Operator.Stack stackExe);
-eq(theBlock, stackExe.blockStackAbove);
-//}
-
-// bool OR12;
-
-// if(OR12==true){
-met_by(Operator.PickUp pickUp);
-eq(theBlock, pickUp.blockPickedUp);
-//}
-
-// if(OR12==false){
-// met_by(Operator.Unstack unstack);
-// eq(theBlock, unstack.blockUnstackAbove);
-// }
-
+    met_by(Operator.PickUp pickUp);
+    eq(theBlock, pickUp.blockPickedUp);
 }
 
-Bottom::OnTable{
-eq(theBlock, object.wholeBlock);
+Bottom::OnTable
+{
+    eq(theBlock, object.wholeBlock);
 
-ends(Operator.PickUp pickUp);
-eq(theBlock, pickUp.blockPickedUp);
-
-met_by(Operator.PutDown putDown);
-eq(theBlock, putDown.blockPutDown);
-
+    ends(Operator.PickUp pickUp);
+    eq(theBlock, pickUp.blockPickedUp);
+ 
+    met_by(Operator.PutDown putDown);
+    eq(theBlock, putDown.blockPutDown);
 }
 
-Bottom::On{
-eq(theBlock, object.wholeBlock);
+Bottom::On
+{
+    eq(theBlock, object.wholeBlock);
 
-ends(Operator.Unstack unstackExe);
-eq(theBlock, unstackExe.blockUnstackAbove);
-eq(blockUnder, unstackExe.blockUnstackBelow);
+    ends(Operator.Unstack unstackExe);
+    eq(theBlock, unstackExe.blockUnstackAbove);
+    eq(blockUnder, unstackExe.blockUnstackBelow);
 
-met_by(Operator.Stack stackExe);
-eq(theBlock, stackExe.blockStackAbove);
-eq(blockUnder, stackExe.blockStackBelow);
-
+    met_by(Operator.Stack stackExe);
+    eq(theBlock, stackExe.blockStackAbove);
+    eq(blockUnder, stackExe.blockStackBelow);
 }
 
-Top::Clear{
-eq(theBlock, object.wholeBlock);
+Top::Clear
+{
+    eq(theBlock, object.wholeBlock);
 
-// Case1 OR15;
-// Case1 OR16;
-bool OR15;
+    bool OR15;
 
-//if (OR15==case11){
-  if (OR15==true){
-ends(Operator.PickUp pickexe);
-eq(theBlock, pickexe.blockPickedUp);
-}
-  //if (OR15==case12){
-  if (OR15==false){
-ends(Operator.Stack stackexe);
-eq(theBlock, stackexe.blockStackBelow);
-}
-// if (OR15==case13){
-// ends(Operator.Unstack unstackexe);
-// eq(theBlock, unstackexe.blockUnstackAbove);
-// }
+    if (OR15==true) {
+        ends(Operator.PickUp pickexe);
+        eq(theBlock, pickexe.blockPickedUp);
+    }
+    if (OR15==false) {
+        ends(Operator.Stack stackexe);
+        eq(theBlock, stackexe.blockStackBelow);
+    }
 
-// if (OR16==case11){
-// met_by(Operator.PutDown putDownexe);
-// eq(theBlock, putDownexe.blockPutDown);
-// }
-// if (OR16==case12){
-met_by(Operator.Stack stackexe);
-eq(theBlock, stackexe.blockStackAbove);
-//}
-// if (OR16==case13){
-// met_by(Operator.Unstack unstackexe);
-// eq(theBlock, unstackexe.blockUnstackBelow);
-// }
+    met_by(Operator.Stack stackexe);
+    eq(theBlock, stackexe.blockStackAbove);
 }
 
-Top::NotClear{
-eq(theBlock, object.wholeBlock);
+Top::NotClear 
+{
+    eq(theBlock, object.wholeBlock);
 
-// Case1 OR17;
-// Case1 OR18;
-bool OR18;
+    bool OR18;
 
-// if (OR17==case11){
-// ends(Operator.PutDown putDownexe);
-// eq(theBlock, putDownexe.blockPutDown);
-// }
-// if (OR17==case12){
-ends(Operator.Stack stackexe);
-eq(theBlock, stackexe.blockStackAbove);
-// }
-// if (OR17==case13){
-// ends(Operator.Unstack unstackexe);
-// eq(theBlock, unstackexe.blockUnstackBelow);
-// }
+    ends(Operator.Stack stackexe);
+    eq(theBlock, stackexe.blockStackAbove);
 
-//if (OR18==case11){
-  if (OR18==true){
-met_by(Operator.PickUp pickexe);
-eq(theBlock, pickexe.blockPickedUp);
-}
-  //if (OR18==case12){
-  if (OR18==false){
-met_by(Operator.Stack stackexe);
-eq(theBlock, stackexe.blockStackBelow);
-}
-// if (OR18==case13){
-// met_by(Operator.Unstack unstackexe);
-// eq(theBlock, unstackexe.blockUnstackAbove);
-// }
+    if (OR18==true) {
+        met_by(Operator.PickUp pickexe);
+        eq(theBlock, pickexe.blockPickedUp);
+    }
 
+    if (OR18==false) {
+        met_by(Operator.Stack stackexe);
+        eq(theBlock, stackexe.blockStackBelow);
+    }
 }
 
-Arm::ArmEmpty{
-
-// bool OR19;
-// bool OR20;
-
-//if (OR19==true){
-ends(Operator.PickUp pickexe);
-//}
-// if (OR19==false){
-// ends(Operator.Unstack unstackexe);}
-
-// if (OR20==true){
-// met_by(Operator.PutDown putexe);}
-
-//if (OR20==false){
-met_by(Operator.Stack stackexe);
-//}
-
+Arm::ArmEmpty
+{
+    ends(Operator.PickUp pickexe);
+    met_by(Operator.Stack stackexe);
 }
 
-Arm::ArmBusy{
-
-// bool OR21;
-// bool OR22;
-
-//if (OR21==true){
-met_by(Operator.PickUp pickexe);
-// }
-
-// if (OR21==false){
-// met_by(Operator.Unstack unstackexe);}
-
-
-// if (OR22==true){
-//ends(Operator.PutDown putexe);
-//}
-
-//if (OR22==false){
-ends(Operator.Stack stackexe);
-//}
-
+Arm::ArmBusy
+{
+    met_by(Operator.PickUp pickexe);
+    ends(Operator.Stack stackexe);
 }
 
+Goal::GoalAchieved
+{
+    contained_by(Bottom.On onB1B2true);
+    eq(onB1B2true.theBlock, object.firstBlock);
+    eq(onB1B2true.blockUnder, object.secondBlock);
 
-Goal::GoalAchieved{
-
-// contained_by(Bottom.OnTable onTableB3True);
-// eq(onTableB3True.object.wholeBlock, object.thirdBlock);
-
-// contained_by(Top.NotClear clearB3false);
-// eq(clearB3false.object.wholeBlock, object.thirdBlock);
-
-// contained_by(Top.NotClear clearB2false);
-// eq(clearB2false.object.wholeBlock, object.secondBlock);
-
-// contained_by(Top.Clear clearB1true);
-// eq(clearB1true.object.wholeBlock, object.firstBlock);
-
-contained_by(Bottom.On onB1B2true);
-eq(onB1B2true.theBlock, object.firstBlock);
-eq(onB1B2true.blockUnder, object.secondBlock);
-
-contained_by(Bottom.On onB2B3true);
-eq(onB2B3true.theBlock, object.secondBlock);
-eq(onB2B3true.blockUnder, object.thirdBlock);
-
-//contained_by(Arm.ArmEmpty armEmptyTrue);
+    contained_by(Bottom.On onB2B3true);
+    eq(onB2B3true.theBlock, object.secondBlock);
+    eq(onB2B3true.blockUnder, object.thirdBlock);
 }
 
