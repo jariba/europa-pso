@@ -13,8 +13,10 @@
   <property name="dist.dir"    value="dist"/>
   <property name="workspace.dir" value="${env.HOME}/workspace"/>
 
-  <property name="project"        value="Crew1"/>
+  <property name="project"        value="NDDLHelloWorld"/>
   <property name="project.dir"    value="${workspace.dir}/${project}"/>
+  <!-- project.mode = o for optimized, g for debug --> 	
+  <property name="project.mode" value="o"/>
   <property name="project.bsh.script" value="${project}.bsh"/>
 	
   <property name="debug"  value="true"/>
@@ -59,6 +61,7 @@
     <java classname="org.ops.ui.PSDesktop" dir="${project.dir}" fork="yes">
       <jvmarg value="-Xms256m"/> 	
       <jvmarg value="-Xmx2048m"/> 	
+      <arg value="${project.mode}"/>    	
       <arg value="${project.bsh.script}"/>    	
       <classpath>
 	    <path refid="psui.class.path"/>
