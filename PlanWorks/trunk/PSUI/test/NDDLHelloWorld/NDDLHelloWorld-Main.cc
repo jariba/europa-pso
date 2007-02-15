@@ -8,10 +8,46 @@
 
 #include "Nddl.hh" /*!< Includes protypes required to load a model */
 #include "SolverAssembly.hh" /*!< For using a test EUROPA Assembly */
-#include "../PLASMA/DSA/base/DSA.hh"
+//#include "../PLASMA/DSA/base/DSA.hh"
+#include "PSEngine.hh" 
 
 using namespace EUROPA;
 
+
+void printFlaws(int it, PSList<std::string>& flaws)
+{
+	std::cout << "Iteration:" << it << " " << flaws.size() << " flaws" << std::endl;
+	
+	for (int i=0; i<flaws.size(); i++) {
+		std::cout << "    " << (i+1) << " - " << flaws.get(i) << std::endl;
+	}
+}
+
+bool runPSEngineTest(const char* plannerConfig, const char* txSource)
+{
+	PSEngine engine;
+	
+	engine.start();
+	engine.executeTxns(txSource,true,true);
+	
+	PSSolver* solver = engine.createSolver(plannerConfig);
+	solver->configure(0,100);
+	
+	for (int i = 0; i<50; i++) {
+		solver->step();
+		PSList<std::string> flaws = solver->getFlaws();
+		if (flaws.size() == 0)
+		    break;
+		printFlaws(i,flaws);
+	}
+	
+	delete solver;	
+	engine.shutdown();
+
+	return false;
+}
+
+/*
 bool runDSATest(const char* plannerConfig, const char* txSource)
 {
     DSA::DSA& dsa = DSA::DSA::instance();
@@ -22,6 +58,7 @@ bool runDSATest(const char* plannerConfig, const char* txSource)
     
 	return false;
 }
+*/
 
 /**
  * @brief Uses the planner to solve a planning problem
@@ -36,9 +73,13 @@ int main(int argc, const char ** argv){
 
   const char* plannerConfig = argv[2];
   
+  if (!runPSEngineTest(plannerConfig,txSource)) 
+      return 0;
+
+  /* 
   if (!runDSATest(plannerConfig,txSource))
       return 0;
- 
+  */ 
 
   // Initialize Library  
   SolverAssembly::initialize();
