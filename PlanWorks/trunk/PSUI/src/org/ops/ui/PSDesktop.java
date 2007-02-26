@@ -24,19 +24,22 @@ import org.ops.ui.gantt.PSGantt;
 import org.ops.ui.gantt.PSGanttPSEModel;
 import org.ops.ui.solver.PSSolverDialog;
 import org.ops.ui.util.Util;
+import org.ops.ui.util.LibraryLoader;
 import org.ops.ui.mouse.ActionViolationsPanel;
 import org.ops.ui.mouse.ActionDetailsPanel;
+import org.ops.ui.nddl.NddlInterpreter;
 
 import org.josql.contrib.JoSQLSwingTableModel;
 
 import psengine.*;
-import nddl.Nddl;
 
 public class PSDesktop
 {
+	public static PSDesktop desktop;
 	protected JDesktopPane desktop_;
 	protected int windowCnt_=0;
 	protected PSEngine psEngine_=null;
+	protected static NddlInterpreter nddlInterpreter = new NddlInterpreter();
 	
 	protected static String debugMode_="g";	
 	protected static String bshFile_=null;
@@ -48,10 +51,7 @@ public class PSDesktop
     	{
     		try {
     		    if ("nddl".equals(language)) {
-    		        String xml = Nddl.nddlToXML(script);
-    		        boolean isFile = false;
-    		        boolean useInterpreter = true;
-    		        executeTxns(xml,isFile,useInterpreter);		      		
+    		        nddlInterpreter.source(script);
     		    }
     		    else 
     		        super.executeScript(language, script);
@@ -71,7 +71,7 @@ public class PSDesktop
 		if (args.length > 1)
 			bshFile_ = args[1];
 		
-		PSDesktop desktop = new PSDesktop();
+		PSDesktop.desktop = new PSDesktop();
 		desktop.runUI();
 	}
 
@@ -133,6 +133,7 @@ public class PSDesktop
     private void createDesktop()
         throws Exception
     {
+			desktop = this;
     	desktop_ = new JDesktopPane();
     	
         // BeanShell scripting
@@ -142,18 +143,19 @@ public class PSDesktop
         Interpreter interp = new Interpreter(console);
         new Thread(interp).start();   
         
-        interp.set("desktop",this);        
-        registerPSEngine(interp);
+        registerVariables(interp);
         
         if (bshFile_ != null)
         	interp.eval("source(\""+bshFile_+"\");");
         //consoleFrame.setIcon(true);
     }
     
-    protected void registerPSEngine(Interpreter interp)
+    protected void registerVariables(Interpreter interp)
         throws Exception
     {
-        interp.set("psengine",getPSEngine());    	
+        interp.set("desktop",this);
+        interp.set("psengine",getPSEngine());
+				interp.set("nddlInterp", nddlInterpreter);
     }
     
     public void makeTableFrame(String title,List l,String fields[])
@@ -197,7 +199,7 @@ public class PSDesktop
     public PSEngine getPSEngine()
     {
     	if (psEngine_ == null) {
-            System.loadLibrary("PSEngine_"+debugMode_);
+            LibraryLoader.loadLibrary("PSEngine_"+debugMode_);
             psEngine_ = new PSEngineWithNDDL();
             psEngine_.start();
     	}
