@@ -2,6 +2,7 @@ package org.ops.ui.ash;
 
 import java.io.OutputStream;
 import java.io.IOException;
+import javax.swing.text.Element;
 import javax.swing.text.Document;
 import javax.swing.text.BadLocationException;
 
@@ -42,7 +43,8 @@ public class DocumentOutputStream extends OutputStream {
         int end = start+1;
         while(end < off+len) {
           if(cbuf[end] == '\n') {
-            doc.insertString(doc.getLength(), prefix, null);
+						if(prefixOff())
+            	doc.insertString(doc.getLength(), prefix, null);
             doc.insertString(doc.getLength(), new String(cbuf, start, end-start), null);
             start = end++;
           }
@@ -52,7 +54,8 @@ public class DocumentOutputStream extends OutputStream {
           doc.insertString(doc.getLength(), "\n", null);
         }
         else if(start < off+len) {
-          doc.insertString(doc.getLength(), prefix, null);
+					if(prefixOff())
+          	doc.insertString(doc.getLength(), prefix, null);
           doc.insertString(doc.getLength(), new String(cbuf, start, len-start-off), null);
         }
       }
@@ -61,4 +64,17 @@ public class DocumentOutputStream extends OutputStream {
       }
     }
   }
+
+	// return true if the current line in the doc doesn't contain the prefix
+	private boolean prefixOff() {
+		if(prefix != null) {
+			Element lineEl = doc.getDefaultRootElement().getElement(doc.getDefaultRootElement().getElementCount()-1);
+			try {
+				String line = doc.getText(lineEl.getStartOffset(), lineEl.getEndOffset()-lineEl.getStartOffset()-1);
+				return line.indexOf(prefix) == -1;
+			}
+			catch(BadLocationException ex) {}
+		}
+		return false;
+	}
 }
