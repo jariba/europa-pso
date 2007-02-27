@@ -23,8 +23,11 @@ import org.ops.ui.ash.AshConsole;
 import org.ops.ui.ash.AshInterpreter;
 import org.ops.ui.ash.DocumentOutputStream;
 
+import psengine.PSException;
+
 public class NddlInterpreter extends AshInterpreter {
   NddlParserState persistantState = null;
+	PrintStream consoleErr = null;
 
   public NddlInterpreter() {
     super("Nddl");
@@ -33,8 +36,8 @@ public class NddlInterpreter extends AshInterpreter {
   }
 
   public void setConsole(AshConsole console) {
-    PrintStream magic = new PrintStream(new BufferedOutputStream(new DocumentOutputStream(console.getDocument(), "!!")), true);
-    persistantState.setErrStream(magic);
+    consoleErr= new PrintStream(new BufferedOutputStream(new DocumentOutputStream(console.getDocument(), "!!")), true);
+    persistantState.setErrStream(consoleErr);
   }
 
   private boolean execute(NddlParser parser) {
@@ -60,8 +63,18 @@ public class NddlInterpreter extends AshInterpreter {
       return false;
     }
 
-    PSDesktop.desktop.getPSEngine().executeTxns(string.toString(), false, true);
-    persistantState = parser.getState();
+		try {
+    	PSDesktop.desktop.getPSEngine().executeTxns(string.toString(), false, true);
+    	persistantState = parser.getState();
+		}
+		catch(PSException ex) {
+			consoleErr.print(ex.getFile());
+			consoleErr.print(":");
+			consoleErr.print(ex.getLine());
+			consoleErr.print(": error: ");
+			consoleErr.println(ex.getMessage());
+			return false;
+		}
     return true;
   }
 
@@ -72,8 +85,8 @@ public class NddlInterpreter extends AshInterpreter {
       execute(parser);
     }
     catch(Exception ex) {
-      // later figure out how to send this to the "shell"
-      ex.printStackTrace();
+			consoleErr.print("error: ");
+			consoleErr.println(ex.getMessage());
     }
   }
 
@@ -87,8 +100,8 @@ public class NddlInterpreter extends AshInterpreter {
       return false;
     }
     catch(Exception ex) {
-      // later figure out how to send this to the "shell"
-      ex.printStackTrace();
+			consoleErr.print("error: ");
+			consoleErr.println(ex.getMessage());
     }
     return true;
   }

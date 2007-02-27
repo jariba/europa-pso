@@ -13,7 +13,7 @@ import org.ops.ui.ash.Token;
  * Nddl Shell token marker.
  *
  * @author Matthew E. Boyce
- * @version $Id: NddlTokenMarker.java,v 1.1 2007-02-26 20:29:00 meboyce Exp $
+ * @version $Id: NddlTokenMarker.java,v 1.2 2007-02-27 22:53:18 meboyce Exp $
  */
 public class NddlTokenMarker extends TokenMarker {
   public NddlTokenMarker() {
@@ -116,7 +116,9 @@ loop:
                   || (c == '.' && (length <= i || Character.isDigit(array[i1])))) {
                 doKeyword(line,i,c);
                 // check if we're on a word boundary!
-                if(i == 0 || Character.isWhitespace(array[i-1]) || array[i-1] == '-' || array[i-1] == '+') {
+                if(i == 0 || Character.isWhitespace(array[i-1])
+								  || array[i-1] == '-' || array[i-1] == '+'
+								  || array[i-1] == '=') {
                   addToken(i - lastOffset,token);
                   token = Token.LITERAL3;
                   lastOffset = lastKeyword = i;
