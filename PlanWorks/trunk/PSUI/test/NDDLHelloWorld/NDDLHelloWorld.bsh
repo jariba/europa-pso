@@ -65,17 +65,15 @@ String getBounds(PSToken t)
     return buf.toString();
 }
 
-PSSolver makeSolver(String config,int horizonStart,int horizonEnd)
-{
-	PSSolver solver = psengine.createSolver(config);
-	solver.configure(horizonStart,horizonEnd);
-	
-	return solver;
-}
 
 initPSEngine();
 desktop.makeNddlConsole();
-PSSolver solver = makeSolver("PlannerConfig.xml",0,100);
+solver = desktop.makeSolver(
+    "PlannerConfig.xml" // config
+	, 0                 // startHorizon
+	, 100               // endHorizon
+);
+
 desktop.makeSolverDialog(solver);
 //setupDesktop();
 
