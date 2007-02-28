@@ -81,4 +81,19 @@ desktop.makeSolverDialog(solver);
 // Show all objects in the database
 //desktop.makeTableFrame("Objects",Util.SWIGList(psengine.getObjectsByType("Object")),"SELECT key,name,type FROM psengine.PSObject");
 
+/*
+ * To run from an empty PSDesktop:
 
+From BeanShell console:
+desktop.makeNddlConsole();
+
+From Nddl console:
+#include "/home/javier/workspace/NDDLHelloWorld/NDDLHelloWorld-initial-state.nddl"
+
+From BeanShell console:
+solver = desktop.makeSolver("PlannerConfig.xml",0,100);
+desktop.makeSolverDialog(solver);
+
+then run solver, look at plan, etc.
+
+*/
