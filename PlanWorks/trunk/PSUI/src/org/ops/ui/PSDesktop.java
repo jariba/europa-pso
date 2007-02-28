@@ -28,6 +28,8 @@ import org.ops.ui.util.LibraryLoader;
 import org.ops.ui.mouse.ActionViolationsPanel;
 import org.ops.ui.mouse.ActionDetailsPanel;
 import org.ops.ui.nddl.NddlInterpreter;
+import org.ops.ui.nddl.NddlTokenMarker;
+import org.ops.ui.ash.AshConsole;
 
 import org.josql.contrib.JoSQLSwingTableModel;
 
@@ -314,5 +316,14 @@ public class PSDesktop
         
         return frame;
     }    
+    
+    public void makeNddlConsole()
+    {
+    	JInternalFrame nddlInterpFrame = desktop.makeNewFrame("Nddl Console");
+    	AshConsole console = new AshConsole(nddlInterpreter);
+    	nddlInterpreter.setConsole(console);
+    	console.setTokenMarker(new NddlTokenMarker());
+    	nddlInterpFrame.setContentPane(console);    
+    }
 }
 
