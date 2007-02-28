@@ -65,17 +65,18 @@ String getBounds(PSToken t)
     return buf.toString();
 }
 
-horizonStart = 0;
-horizonEnd = 100;
-maxSteps = 200;
-maxDepth = 100000;
-config = "PlannerConfig.xml";
+PSSolver makeSolver(String config,int horizonStart,int horizonEnd)
+{
+	PSSolver solver = psengine.createSolver(config);
+	solver.configure(horizonStart,horizonEnd);
+	
+	return solver;
+}
 
 initPSEngine();
-PSSolver solver = psengine.createSolver(config);
-solver.configure(horizonStart,horizonEnd);
-desktop.makeSolverDialog(solver);
 desktop.makeNddlConsole();
+PSSolver solver = makeSolver("PlannerConfig.xml",0,100);
+desktop.makeSolverDialog(solver);
 //setupDesktop();
 
 //Example of table using JoSQL query
