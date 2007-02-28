@@ -70,7 +70,6 @@ public class ConsoleDefaults
 			DEFAULTS.styles = SyntaxUtilities.getDefaultSyntaxStyles();
 			DEFAULTS.caretColor = Color.red;
 			DEFAULTS.selectionColor = new Color(0x000088);
-			DEFAULTS.lineHighlightColor = new Color(0x2f2f2f);
 			DEFAULTS.lineHighlight = true;
 			DEFAULTS.bracketHighlightColor = Color.white;
 			DEFAULTS.bracketHighlight = false;

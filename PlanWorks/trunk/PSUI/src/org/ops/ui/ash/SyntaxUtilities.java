@@ -17,7 +17,7 @@ import java.awt.*;
  * subsystem.
  *
  * @author Slava Pestov
- * @version $Id: SyntaxUtilities.java,v 1.1 2007-02-26 20:28:59 meboyce Exp $
+ * @version $Id: SyntaxUtilities.java,v 1.2 2007-02-28 00:36:31 meboyce Exp $
  */
 public class SyntaxUtilities {
   /**
@@ -82,20 +82,20 @@ public class SyntaxUtilities {
   public static SyntaxStyle[] getDefaultSyntaxStyles() {
     SyntaxStyle[] styles = new SyntaxStyle[Token.ID_COUNT];
 
-    styles[Token.PREPROC] = new SyntaxStyle(Color.magenta,false,false);
-    styles[Token.COMMENT1] = new SyntaxStyle(new Color(0x4A7FFF),true,false);
-    styles[Token.COMMENT2] = new SyntaxStyle(Color.magenta,true,false);
-    styles[Token.KEYWORD1] = new SyntaxStyle(Color.yellow,false,true);
-    styles[Token.KEYWORD2] = new SyntaxStyle(new Color(0x60C637),false,false);
-    styles[Token.KEYWORD3] = new SyntaxStyle(Color.cyan,false,false);
-    styles[Token.LITERAL1] = new SyntaxStyle(Color.red, false,false);
-    styles[Token.LITERAL2] = new SyntaxStyle(Color.cyan,false,true);
-    styles[Token.LITERAL3] = new SyntaxStyle(Color.red, false,false);
-    styles[Token.LABEL] = new SyntaxStyle(new Color(0x99AAAA),false,true);
-    styles[Token.OPERATOR] = new SyntaxStyle(Color.white,false,true);
-    styles[Token.INVALID] = new SyntaxStyle(Color.red,false,true);
-    styles[Token.ERROR] = new SyntaxStyle(Color.red,true,true);
-    styles[Token.WARNING] = new SyntaxStyle(Color.orange,true,false);
+    styles[Token.PREPROC] =  new SyntaxStyle(new Color(0x9900CC),false,false);
+    styles[Token.COMMENT1] = new SyntaxStyle(new Color(0x0000CC),true,false);
+    styles[Token.COMMENT2] = new SyntaxStyle(new Color(0x9900CC),true,false);
+    styles[Token.KEYWORD1] = new SyntaxStyle(new Color(0xCC9900),false,true);
+    styles[Token.KEYWORD2] = new SyntaxStyle(new Color(0x00AA00),false,false);
+    styles[Token.KEYWORD3] = new SyntaxStyle(new Color(0x009999),false,false);
+    styles[Token.LITERAL1] = new SyntaxStyle(new Color(0xCC0000), false,false);
+    styles[Token.LITERAL2] = new SyntaxStyle(new Color(0x009999),false,true);
+    styles[Token.LITERAL3] = new SyntaxStyle(new Color(0xCC0000), false,false);
+    styles[Token.LABEL] =    new SyntaxStyle(new Color(0x669999),false,true);
+    styles[Token.OPERATOR] = new SyntaxStyle(new Color(0x050505),false,true);
+    styles[Token.INVALID] =  new SyntaxStyle(new Color(0xFF0000),false,true);
+    styles[Token.ERROR] =    new SyntaxStyle(new Color(0xCC0000),true,true);
+    styles[Token.WARNING] =  new SyntaxStyle(new Color(0xCC5500),true,false);
 
     return styles;
   }

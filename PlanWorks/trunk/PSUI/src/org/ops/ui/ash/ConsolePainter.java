@@ -19,7 +19,7 @@ import java.awt.*;
  * The console repaint manager. It performs double buffering and paints
  * lines of text.
  * @author Slava Pestov
- * @version $Id: ConsolePainter.java,v 1.1 2007-02-26 20:28:59 meboyce Exp $
+ * @version $Id: ConsolePainter.java,v 1.2 2007-02-28 00:36:31 meboyce Exp $
  */
 public class ConsolePainter extends JComponent implements TabExpander {
   // package-private members
@@ -34,7 +34,6 @@ public class ConsolePainter extends JComponent implements TabExpander {
   protected SyntaxStyle[] styles;
   protected Color caretColor;
   protected Color selectionColor;
-  protected Color lineHighlightColor;
   protected Color bracketHighlightColor;
   protected Color eolMarkerColor;
 
@@ -77,7 +76,6 @@ public class ConsolePainter extends JComponent implements TabExpander {
     rows = defaults.rows;
     caretColor = defaults.caretColor;
     selectionColor = defaults.selectionColor;
-    lineHighlightColor = defaults.lineHighlightColor;
     lineHighlight = defaults.lineHighlight;
     bracketHighlightColor = defaults.bracketHighlightColor;
     bracketHighlight = defaults.bracketHighlight;
@@ -151,22 +149,6 @@ public class ConsolePainter extends JComponent implements TabExpander {
    */
   public final void setSelectionColor(Color selectionColor) {
     this.selectionColor = selectionColor;
-    invalidateSelectedLines();
-  }
-
-  /**
-   * Returns the line highlight color.
-   */
-  public final Color getLineHighlightColor() {
-    return lineHighlightColor;
-  }
-
-  /**
-   * Sets the line highlight color.
-   * @param lineHighlightColor The line highlight color
-   */
-  public final void setLineHighlightColor(Color lineHighlightColor) {
-    this.lineHighlightColor = lineHighlightColor;
     invalidateSelectedLines();
   }
 
@@ -530,7 +512,12 @@ public class ConsolePainter extends JComponent implements TabExpander {
 
     if(selectionStart == selectionEnd) {
       if(lineHighlight) {
-        gfx.setColor(lineHighlightColor);
+				Color bg = console.getBackground();
+				float[] hsb = Color.RGBtoHSB(bg.getRed(), bg.getGreen(), bg.getBlue(), null);
+				if(hsb[2] < .4)
+        	gfx.setColor(Color.getHSBColor(hsb[0], hsb[1], hsb[2]+.05f));
+				else
+        	gfx.setColor(Color.getHSBColor(hsb[0], hsb[1], hsb[2]-.05f));
         gfx.fillRect(0,y,getWidth(),height);
       }
     }

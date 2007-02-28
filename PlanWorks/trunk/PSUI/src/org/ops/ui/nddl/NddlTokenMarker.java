@@ -13,7 +13,7 @@ import org.ops.ui.ash.Token;
  * Nddl Shell token marker.
  *
  * @author Matthew E. Boyce
- * @version $Id: NddlTokenMarker.java,v 1.2 2007-02-27 22:53:18 meboyce Exp $
+ * @version $Id: NddlTokenMarker.java,v 1.3 2007-02-28 00:36:31 meboyce Exp $
  */
 public class NddlTokenMarker extends TokenMarker {
   public NddlTokenMarker() {
@@ -124,7 +124,7 @@ loop:
                   lastOffset = lastKeyword = i;
                 }
               }
-              else if(!Character.isLetterOrDigit(c) && c != '_') {
+              else if(!Character.isLetterOrDigit(c) && c != '_' && c != '#') {
                 doKeyword(line,i,c);
               }
               break;
