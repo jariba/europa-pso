@@ -68,7 +68,7 @@ public class PSDesktop
 			throw new RuntimeException("Please specify debug mode : g or o");
 		debugMode_ = args[0];
 		
-		if (args.length > 1)
+		if ((args.length > 1) && (args[1].length()>0))
 			bshFile_ = args[1];
 		
 		PSDesktop.desktop = new PSDesktop();
