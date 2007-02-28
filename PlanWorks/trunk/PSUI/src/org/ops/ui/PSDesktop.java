@@ -317,6 +317,14 @@ public class PSDesktop
         return frame;
     }    
     
+    public PSSolver makeSolver(String config,int horizonStart,int horizonEnd)
+    {
+    	PSSolver solver = getPSEngine().createSolver(config);
+    	solver.configure(horizonStart,horizonEnd);
+    	
+    	return solver;
+    }
+    
     public void makeNddlConsole()
     {
     	JInternalFrame nddlInterpFrame = desktop.makeNewFrame("Nddl Console");
