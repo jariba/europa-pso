@@ -48,7 +48,7 @@ import java.util.LinkedList;
  *     + "}");</pre>
  *
  * @author Slava Pestov
- * @version $Id: AshConsole.java,v 1.1 2007-02-26 20:28:59 meboyce Exp $
+ * @version $Id: AshConsole.java,v 1.2 2007-02-28 00:36:31 meboyce Exp $
  */
 public class AshConsole extends JComponent {
   /**
@@ -170,8 +170,8 @@ public class AshConsole extends JComponent {
 
     printBanner();
 
-    setForeground(Color.white);
-    setBackground(Color.black);
+    setForeground(Color.black);
+    setBackground(Color.white);
 
     // We don't seem to get the initial focus event?
     focusedComponent = this;
