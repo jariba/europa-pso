@@ -7,8 +7,6 @@ import org.ops.ui.PSDesktop;
 import org.ops.ui.mouse.*;
 import org.ops.ui.gantt.*;
 import org.ops.ui.chart.*;
-import org.ops.ui.ash.*;
-import org.ops.ui.nddl.*;
 import org.ops.ui.util.Util;
 import psengine.PSSolver;
 import psengine.PSToken;
@@ -77,13 +75,8 @@ initPSEngine();
 PSSolver solver = psengine.createSolver(config);
 solver.configure(horizonStart,horizonEnd);
 desktop.makeSolverDialog(solver);
+desktop.makeNddlConsole();
 //setupDesktop();
-
-JInternalFrame nddlInterpFrame = desktop.makeNewFrame("Nddl Console");
-AshConsole console = new AshConsole(nddlInterp);
-nddlInterp.setConsole(console);
-console.setTokenMarker(new NddlTokenMarker());
-nddlInterpFrame.setContentPane(console);
 
 //Example of table using JoSQL query
 // Show all objects in the database
