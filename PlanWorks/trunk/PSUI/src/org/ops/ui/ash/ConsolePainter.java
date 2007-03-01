@@ -19,7 +19,7 @@ import java.awt.*;
  * The console repaint manager. It performs double buffering and paints
  * lines of text.
  * @author Slava Pestov
- * @version $Id: ConsolePainter.java,v 1.3 2007-03-01 22:10:41 meboyce Exp $
+ * @version $Id: ConsolePainter.java,v 1.4 2007-03-01 22:42:02 meboyce Exp $
  */
 public class ConsolePainter extends JComponent implements TabExpander {
   // package-private members
@@ -506,7 +506,7 @@ public class ConsolePainter extends JComponent implements TabExpander {
 
     if(selectionStart == selectionEnd) {
       if(lineHighlight) {
-				Color bg = console.getBackground();
+				Color bg = getBackground();
 				float[] hsb = Color.RGBtoHSB(bg.getRed(), bg.getGreen(), bg.getBlue(), null);
 				if(hsb[2] < .4)
         	gfx.setColor(Color.getHSBColor(hsb[0], hsb[1], hsb[2]+.05f));
