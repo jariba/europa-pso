@@ -58,7 +58,6 @@ public class ConsoleDefaults
 
 			DEFAULTS.inputHandler = new DefaultInputHandler();
 			DEFAULTS.inputHandler.addDefaultKeyBindings();
-			DEFAULTS.document = new SyntaxDocument();
 			DEFAULTS.editable = true;
 
 			DEFAULTS.caretVisible = true;
@@ -77,6 +76,7 @@ public class ConsoleDefaults
 			DEFAULTS.eolMarkers = false;
 			DEFAULTS.paintInvalid = false;
 		}
+		DEFAULTS.document = new SyntaxDocument();
 
 		return DEFAULTS;
 	}

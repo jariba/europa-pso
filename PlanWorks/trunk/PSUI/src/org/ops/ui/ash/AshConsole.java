@@ -48,9 +48,9 @@ import java.util.LinkedList;
  *     + "}");</pre>
  *
  * @author Slava Pestov
- * @version $Id: AshConsole.java,v 1.2 2007-02-28 00:36:31 meboyce Exp $
+ * @version $Id: AshConsole.java,v 1.3 2007-03-01 22:10:41 meboyce Exp $
  */
-public class AshConsole extends JComponent {
+public class AshConsole extends JPanel {
   /**
    * Adding components with this name to the text area will place
    * them left of the horizontal scroll bar. In jEdit, the status
@@ -170,8 +170,7 @@ public class AshConsole extends JComponent {
 
     printBanner();
 
-    setForeground(Color.black);
-    setBackground(Color.white);
+		setOpaque(true);
 
     // We don't seem to get the initial focus event?
     focusedComponent = this;

@@ -29,6 +29,8 @@ import org.ops.ui.mouse.ActionViolationsPanel;
 import org.ops.ui.mouse.ActionDetailsPanel;
 import org.ops.ui.nddl.NddlInterpreter;
 import org.ops.ui.nddl.NddlTokenMarker;
+import org.ops.ui.anml.AnmlInterpreter;
+import org.ops.ui.anml.AnmlTokenMarker;
 import org.ops.ui.ash.AshConsole;
 
 import org.josql.contrib.JoSQLSwingTableModel;
@@ -42,37 +44,40 @@ public class PSDesktop
 	protected int windowCnt_=0;
 	protected PSEngine psEngine_=null;
 	protected static NddlInterpreter nddlInterpreter = new NddlInterpreter();
-	
-	protected static String debugMode_="g";	
+
+	protected static String debugMode_="g";
 	protected static String bshFile_=null;
-	
+
     protected static class PSEngineWithNDDL
         extends PSEngine
     {
-    	public void executeScript(String language, String script) 
-    	{
-    		try {
-    		    if ("nddl".equals(language)) {
-    		        nddlInterpreter.source(script);
-    		    }
-    		    else 
-    		        super.executeScript(language, script);
-    		}
-    		catch (Exception e) {
-    			throw new RuntimeException(e);
-    		}
-        }        	
+      public String executeScript(String language, String script) throws PSException
+      {
+        try {
+          if ("nddl".equals(language)) {
+            nddlInterpreter.source(script);
+          }
+          else
+            super.executeScript(language, script);
+        }
+				catch (PSException ps) {
+					throw ps;
+				}
+        catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+				return "";
+      }
     }
-    
-	public static void main(String[] args) 
+
+	public static void main(String[] args)
 	{
 		if (args.length < 1)
 			throw new RuntimeException("Please specify debug mode : g or o");
 		debugMode_ = args[0];
-		
 		if ((args.length > 1) && (args[1].length()>0))
 			bshFile_ = args[1];
-		
+
 		PSDesktop.desktop = new PSDesktop();
 		desktop.runUI();
 	}
@@ -80,8 +85,8 @@ public class PSDesktop
     public void runUI()
     {
 	    SwingUtilities.invokeLater(new UICreator());
-    }   
-    
+    }
+
     public JInternalFrame makeNewFrame(String name)
     {
         JInternalFrame frame = new JInternalFrame(name);
@@ -98,26 +103,26 @@ public class PSDesktop
         frame.setVisible(true);
         return frame;
     }
-    
+
     private class UICreator
         implements Runnable
     {
-	    public void run() 
-	    {	
-	    	createAndShowGUI(); 
-	    }    	
+	    public void run()
+	    {
+	    	createAndShowGUI();
+	    }
     }
 
-    private void createAndShowGUI() 
+    private void createAndShowGUI()
     {
     	try {
     		//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
     		JFrame.setDefaultLookAndFeelDecorated(true);
-    		
+
     		//Create and set up the window.
     		JFrame frame = new JFrame("Planning & Scheduling UI");
     		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    		frame.getContentPane().setLayout(new BorderLayout());    		
+    		frame.getContentPane().setLayout(new BorderLayout());
     		createDesktop();
     		frame.getContentPane().add(desktop_,BorderLayout.CENTER);
 
@@ -130,28 +135,28 @@ public class PSDesktop
     		e.printStackTrace();
     		System.exit(0);
     	}
-    }    
-    
+    }
+
     private void createDesktop()
         throws Exception
     {
 			desktop = this;
     	desktop_ = new JDesktopPane();
-    	
+
         // BeanShell scripting
         JConsole console = new JConsole();
         JInternalFrame consoleFrame = makeNewFrame("Console");
         consoleFrame.getContentPane().add(console);
         Interpreter interp = new Interpreter(console);
-        new Thread(interp).start();   
-        
+        new Thread(interp).start();
+
         registerVariables(interp);
-        
+
         if (bshFile_ != null)
         	interp.eval("source(\""+bshFile_+"\");");
         //consoleFrame.setIcon(true);
     }
-    
+
     protected void registerVariables(Interpreter interp)
         throws Exception
     {
@@ -159,7 +164,7 @@ public class PSDesktop
         interp.set("psengine",getPSEngine());
 				interp.set("nddlInterp", nddlInterpreter);
     }
-    
+
     public void makeTableFrame(String title,List l,String fields[])
     {
     	JInternalFrame frame = this.makeNewFrame(title);
@@ -175,19 +180,19 @@ public class PSDesktop
     {
     	try {
     		JInternalFrame frame = this.makeNewFrame(title);
-    		
+
     		// TODO: JoSQLSwingTableModel doesn't preserve column names, it hsould be easy to add
     		JoSQLSwingTableModel model =  new JoSQLSwingTableModel();
     		model.parse(josqlQry);
     		model.execute(l);
-    		
+
     		/*
     		Query qry = new Query();
     		qry.parse(josqlQry);
     		List data = qry.execute(l).getResults();
     		TableModel model = Util.makeTableModel(data, new String[]{"toString"});
     		*/
-    		
+
     		JTable table = new JTable(model);
     		JScrollPane scrollpane = new JScrollPane(table);
     		frame.getContentPane().add(scrollpane);
@@ -197,7 +202,7 @@ public class PSDesktop
     		throw new RuntimeException(e);
     	}
     }
-   
+
     public PSEngine getPSEngine()
     {
     	if (psEngine_ == null) {
@@ -205,11 +210,11 @@ public class PSDesktop
             psEngine_ = new PSEngineWithNDDL();
             psEngine_.start();
     	}
-    	
+
     	return psEngine_;
     }
-    	
-    
+
+
     public void makeSolverDialog(PSSolver solver)
     {
     	try {
@@ -223,7 +228,7 @@ public class PSDesktop
     		throw new RuntimeException(e);
     	}
     }
-    
+
     public void showTokens(PSObject o)
     {
          List columnNames = new Vector();
@@ -231,7 +236,7 @@ public class PSDesktop
          columnNames.add("Key");
          columnNames.add("Name");
          columnNames.add("Type");
-         
+
          PSTokenList l = o.getTokens();
          for (int i=0; i<l.size();i++) {
         	 List row = new Vector();
@@ -243,20 +248,20 @@ public class PSDesktop
         	 for (int j=0; j<vars.size();j++) {
         		 PSVariable var = vars.get(j);
         		 row.add(var.toString());
-        		 
+
         		 // Only add cols for the first row
         		 if (i==0)
         			 columnNames.add(var.getName());
         	 }
         	 data.add(row);
          }
-         
+
      	JInternalFrame frame = makeNewFrame("Activities for "+o.getName());
     	JTable table = new JTable(new Util.MatrixTableModel(data,columnNames));
     	JScrollPane scrollpane = new JScrollPane(table);
     	frame.getContentPane().add(scrollpane);
-    }    
-    
+    }
+
     public JInternalFrame makeResourceGanttFrame(
     		String objectsType,
 	        Calendar start,
@@ -267,43 +272,43 @@ public class PSDesktop
         JInternalFrame frame = makeNewFrame("Resource Schedule");
         frame.getContentPane().add(gantt);
 		frame.setSize(frame.getSize()); // Force repaint
-        
-        return frame;    
-    }    
-    
+
+        return frame;
+    }
+
     public PSResourceChart makeResourceChart(PSResource r,Calendar start)
     {
     	return new PSJFreeResourceChart(
     			r.getName(),
     			new PSResourceChartPSEModel(r),
     			start);
-    }    
-    
+    }
+
     public JInternalFrame makeResourcesFrame(String type,Calendar start)
     {
         JTabbedPane resourceTabs = new JTabbedPane();
-        PSResourceList resources = getPSEngine().getResourcesByType(type); 
+        PSResourceList resources = getPSEngine().getResourcesByType(type);
         for (int i = 0; i < resources.size(); i++) {
         	PSResource r = resources.get(i);
             resourceTabs.add(r.getName(),makeResourceChart(r,start));
         }
-        
+
         JInternalFrame frame = makeNewFrame("Resources");
         frame.getContentPane().add(resourceTabs);
 		frame.setSize(frame.getSize()); // Force repaint
-        
+
         return frame;
-    }    
-    
+    }
+
     public JInternalFrame makeViolationsFrame()
     {
         ActionViolationsPanel vp = new ActionViolationsPanel(getPSEngine());
         JInternalFrame frame = makeNewFrame("Violations");
         frame.getContentPane().add(vp);
         frame.setLocation(500,180);
-        frame.setSize(300,300); 
-        
-        return frame;       
+        frame.setSize(300,300);
+
+        return frame;
     }
 
     public JInternalFrame makeDetailsFrame()
@@ -312,8 +317,8 @@ public class PSDesktop
         JInternalFrame frame = makeNewFrame("Details");
         frame.getContentPane().add(dp);
         frame.setLocation(800,180);
-        frame.setSize(300,200);        
-        
+        frame.setSize(300,200);
+
         return frame;
     }    
     
@@ -333,5 +338,14 @@ public class PSDesktop
     	console.setTokenMarker(new NddlTokenMarker());
     	nddlInterpFrame.setContentPane(console);    
     }
-}
 
+    public void makeAnmlConsole()
+    {
+      AnmlInterpreter anmlInterpreter = new AnmlInterpreter();
+      JInternalFrame anmlInterpFrame = desktop.makeNewFrame("Anml Console");
+      AshConsole console = new AshConsole(anmlInterpreter);
+      anmlInterpreter.setConsole(console);
+      console.setTokenMarker(new AnmlTokenMarker());
+      anmlInterpFrame.setContentPane(console);
+    }
+}
