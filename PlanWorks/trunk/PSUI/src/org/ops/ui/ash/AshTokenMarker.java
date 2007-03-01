@@ -13,7 +13,7 @@ import org.ops.ui.ash.Token;
  * Ash Shell token marker.
  *
  * @author Matthew E. Boyce
- * @version $Id: AshTokenMarker.java,v 1.1 2007-03-01 22:25:45 meboyce Exp $
+ * @version $Id: AshTokenMarker.java,v 1.2 2007-03-01 23:37:33 meboyce Exp $
  */
 public class AshTokenMarker extends TokenMarker {
 	protected String prompt;
@@ -115,19 +115,8 @@ loop:
               break;
             default:
               backslash = false;
-              if(Character.isDigit(c)
-                  || (c == '.' && (length <= i || Character.isDigit(array[i1])))) {
-                doKeyword(line,i,c);
-                // check if we're on a word boundary!
-                if(i == 0 || Character.isWhitespace(array[i-1])
-								  || array[i-1] == '-' || array[i-1] == '+'
-								  || array[i-1] == '=') {
-                  addToken(i - lastOffset,token);
-                  token = Token.LITERAL3;
-                  lastOffset = lastKeyword = i;
-                }
-              }
-              else if(!Character.isLetterOrDigit(c) && c != '_' && c != '#') {
+              if(!Character.isLetterOrDigit(c) && c != '_' && c != '#' &&
+							   c != '-' && c != '+' && c != '.' ) {
                 doKeyword(line,i,c);
               }
               break;
@@ -161,17 +150,6 @@ loop:
             addToken(i1 - lastOffset,Token.LITERAL1);
             token = Token.NULL;
             lastOffset = lastKeyword = i1;
-          }
-          break;
-        case Token.LITERAL3:
-          if(backslash)
-            backslash = false;
-          else {
-            if(!Character.isLetterOrDigit(c) && c != '.' && c != '-' && c != '+') {
-              addToken(i - lastOffset,Token.LITERAL1);
-              token = Token.NULL;
-              lastOffset = lastKeyword = i;
-            }
           }
           break;
         default:
