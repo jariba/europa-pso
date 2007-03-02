@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<!-- $Id: planWorks.xml,v 1.40 2006-10-03 16:13:34 miatauro Exp $ -->
+<project name="planWorks" default="launch" basedir=".">
+
+<property name="default_gcMax" value="200"/>
+
+<target name="planWorksOpt" depends="optBuild,chk_jvm_gcMax_1,chk_jvm_gcMax_2">
+         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<!-- property name="arg_gcMax" value="975"/ -->
+	<property environment="env"/>
+
+        <echo message="JVM arg_gcMax ${arg_gcMax}"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
+                <pathelement location="${jgo.home}"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+		<pathelement location="${antlr.home}/antlr.jar"/>
+		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+            <jvmarg value="-Dprojects.config=${projects.config}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
+      <jvmarg value="-Dmysql.port=${mysql.port}"/>
+	    <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
+            <jvmarg value="-Dant.target.test=false"/>
+            <jvmarg value="-Dintegration.home=${integration.home}"/>
+            <jvmarg value="-server"/>
+            <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
+	</java>
+</target>       
+
+<target name="launch" depends="totalbuild,chk_jvm_gcMax_1,chk_jvm_gcMax_2">
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<!-- property name="arg_gcMax" value="975"/ -->
+	<property environment="env"/>
+
+        <echo message="JVM arg_gcMax ${arg_gcMax}"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
+                <pathelement location="${jgo.home}"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+		<pathelement location="${antlr.home}/antlr.jar"/>
+		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+            <jvmarg value="-Dprojects.config=${projects.config}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+      <jvmarg value="-Dmysql.port=${mysql.port}"/>
+	    <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
+            <jvmarg value="-Dant.target.test=false"/>
+            <jvmarg value="-Dintegration.home=${integration.home}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
+            <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
+	</java>
+
+</target>
+
+<target name="planWorksProf" depends="totalbuild">
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<property name="arg_gcMax" value="975"/>
+	<property environment="env"/>
+	<property name="boolean.isMaxScreen" value="false"/>
+	<property environment="env"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
+                <pathelement location="${jgo.home}"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+		<pathelement location="${antlr.home}/antlr.jar"/>
+		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+<!--	    <jvmarg
+value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.txt,depth=0"/>
+-->
+	    <jvmarg value="-Xrunhprof:cpu=old,file=planWorksProf.txt"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+            <jvmarg value="-Dprojects.config=${projects.config}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+      <jvmarg value="-Dmysql.port=${mysql.port}"/>
+            <jvmarg value="-Dant.target.test=false"/>
+            <jvmarg value="-Dintegration.home=${integration.home}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
+            <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
+	</java>
+</target>
+
+<target name="totalbuild" description="conditionally build class files">
+	<ant dir="./java"/>
+</target>
+
+<target name="optBuild" depends="cleanCls" description="compile class files with optimizations">
+        <ant dir="./java" target="optCompile"/>
+</target>
+
+<target name="cleanCls">
+        <ant dir="./" target="cleanCls"/>
+</target>
+
+  <target name="chk_jvm_gcMax">
+    <!-- not able to check for arbitrary integer, so for now, require 975 
+         to be the only overrride value -->
+    <condition property="jvm.override_gcMax">
+        <equals arg1="${env.JVM_GC_MAX}" arg2="975"/>
+        <!--  this does not work because of self-evaluation, and the absence
+              of env var JVM_GC_MAX produces the value of ${env.JVM_GC_MAX} -->
+        <!-- equals arg1="${env.JVM_GC_MAX}" arg2="${env.JVM_GC_MAX}"/ -->
+    </condition>
+    <!-- echo message="env.JVM_GC_MAX ${env.JVM_GC_MAX}"/ -->
+  </target>
+
+  <target name="chk_jvm_gcMax_1" depends="chk_jvm_gcMax" if="jvm.override_gcMax">
+    <property name="arg_gcMax" value="${env.JVM_GC_MAX}"/>
+    <!-- echo message="jvm.override_gcMax ${jvm.override_gcMax}"/ -->
+  </target>
+
+  <target name="chk_jvm_gcMax_2" depends="chk_jvm_gcMax" unless="jvm.override_gcMax">
+    <property name="arg_gcMax" value="${default_gcMax}"/>
+    <!-- echo message="jvm.override_gcMax ${jvm.override_gcMax}"/ -->
+  </target>
+
+
+
+</project>
