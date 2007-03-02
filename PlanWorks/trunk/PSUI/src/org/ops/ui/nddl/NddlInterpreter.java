@@ -101,7 +101,7 @@ public class NddlInterpreter extends AshInterpreter {
     }
     catch(Exception ex) {
 			consoleErr.print("error: ");
-			consoleErr.println(ex.getMessage());
+			ex.printStackTrace(consoleErr);
     }
     return true;
   }
