@@ -11,6 +11,7 @@ package org.ops.ui.ash;
  */
 
 import javax.swing.text.Segment;
+import java.util.regex.Pattern;
 
 /**
  * A <code>KeywordMap</code> is similar to a hashtable in that it maps keys
@@ -20,9 +21,11 @@ import javax.swing.text.Segment;
  * This class is used by <code>CTokenMarker</code> to map keywords to ids.
  *
  * @author Slava Pestov, Mike Dillon
- * @version $Id: KeywordMap.java,v 1.2 2007-03-01 23:37:33 meboyce Exp $
+ * @version $Id: KeywordMap.java,v 1.3 2007-03-02 00:02:42 meboyce Exp $
  */
 public class KeywordMap {
+	public static final Pattern NUMBER_PATTERN = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?([FfDdLl])?");
+	public static final Pattern HEX_NUMBER_PATTERN = Pattern.compile("0x[0-9A-Fa-f]+");
   /**
    * Creates a new <code>KeywordMap</code>.
    * @param ignoreCase True if keys are case insensitive
@@ -64,13 +67,11 @@ public class KeywordMap {
         return k.id;
       k = k.next;
     }
-		try {
-			double d = Double.parseDouble(new String(text.array, offset, length));
+		String token = new String(text.array, offset, length);
+		if(NUMBER_PATTERN.matcher(token).matches() ||
+			 HEX_NUMBER_PATTERN.matcher(token).matches())
 			return Token.LITERAL3;
-		}
-		catch(NumberFormatException ex) {
-    	return Token.NULL;
-		}
+   	return Token.NULL;
   }
 
   /**
