@@ -32,8 +32,8 @@ void usingInterpreter()
 
 void initPSEngine()
 {
-	usingCodeGeneration();
-	//usingInterpreter();
+	//usingCodeGeneration();
+	usingInterpreter();
 }
 
 void showCrewActivities()
@@ -68,10 +68,12 @@ maxSteps = 500;
 maxDepth = 100000;
 config = "PlannerConfig.xml";
 
+
 initPSEngine();
 PSSolver solver = psengine.createSolver(config);
 solver.configure(horizonStart,horizonEnd);
 desktop.makeSolverDialog(solver);
+
 // setupDesktop(desktop);
 
  
