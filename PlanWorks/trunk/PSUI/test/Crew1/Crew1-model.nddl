@@ -5,6 +5,9 @@
 // avoiding warnings:
 constraint LessThan(a, b) { a <: numeric && b <: numeric }
 
+typedef int {1, 2, 3} intEnum;
+typedef int [1 10] intRange;
+
 /**
  * 
  */
@@ -26,7 +29,7 @@ class TDRS extends Reusable
         super(4.0,0.0);
     }
     
-    predicate uses {}
+    //predicate uses { float quantity; }
 }    
         
 // Max number of Physically Restraining activities 
@@ -38,7 +41,7 @@ class PRACapacity extends Reusable
         super(3.0,0.0);
     }
     
-    predicate uses {}
+    //predicate uses { float quantity; }
 }    
         
 class ExerciseEquipment extends Reusable
@@ -49,7 +52,7 @@ class ExerciseEquipment extends Reusable
         super(2.0,0.0);
     }
     
-    predicate uses {}
+    //predicate uses { float quantity; }
 }    
         
 // TDRS satellites 
@@ -61,7 +64,7 @@ class Power extends Reusable
         super(1300.0,0.0);
     }
     
-    predicate uses {}
+    //predicate uses { float quantity; }
 }    
         
 class Crew extends Timeline
@@ -184,10 +187,8 @@ Crew::payload_activity
     if (usesComms == 1) {
         equals(TDRS.uses comms);
         eq(comms.quantity, 1);                 
-    }
-    
-    // optional, require physical restraining of crew member
-    if (isPhysicallyRestraining == 1) {
+    }        
+    else if (isPhysicallyRestraining == 1) { // optional, require physical restraining of crew member
         equals(PRACapacity.uses pra);
         eq(pra.quantity, 1);         
     }    

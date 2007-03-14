@@ -4,7 +4,7 @@
 // Horizon Start, Horizon End, MaxPlannerSteps, MaxPlannerDepth
 PlannerConfig plannerConfiguration = new PlannerConfig(0, 5760, 1500, +inf);
 
-TDRS comms = new TDRS();
+TDRS tdrs = new TDRS();
 Power power = new Power();
 
 ExerciseEquipment exerciseEquip = new ExerciseEquipment();
@@ -107,7 +107,7 @@ leq(rpcm_act.end,5760);
 
 // State TDRS communication windows
 // Test by nuking most of the second day
-//goal(comms.uses tdrs1);
+//goal(tdrs.uses tdrs1);
 //tdrs1.start = 1636; tdrs1.end = 2880; tdrs1.quantity = 4.0;
 
 // The planner should take it from here!
