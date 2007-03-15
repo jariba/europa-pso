@@ -28,8 +28,6 @@ class TDRS extends Reusable
         // Capacity, Lower Limit
         super(4.0,0.0);
     }
-    
-    //predicate uses { float quantity; }
 }    
         
 // Max number of Physically Restraining activities 
@@ -40,8 +38,6 @@ class PRACapacity extends Reusable
         // Capacity, Lower Limit
         super(3.0,0.0);
     }
-    
-    //predicate uses { float quantity; }
 }    
         
 class ExerciseEquipment extends Reusable
@@ -51,8 +47,6 @@ class ExerciseEquipment extends Reusable
         // Capacity, Lower Limit
         super(2.0,0.0);
     }
-    
-    //predicate uses { float quantity; }
 }    
         
 // TDRS satellites 
@@ -63,8 +57,6 @@ class Power extends Reusable
         // Capacity, Lower Limit
         super(1300.0,0.0);
     }
-    
-    //predicate uses { float quantity; }
 }    
         
 class Crew extends Timeline
@@ -226,6 +218,7 @@ Crew::restraint_payload_activity
 
 Crew::change_filter
 {
+    //eq(duration,60);
     precedes(0,start);
 
     // Setup next filter change
@@ -243,7 +236,8 @@ Crew::change_filter
 
 Crew::medical_conference
 {
-    leq(0,start);
+    //eq(duration,60);
+    precedes(0,start);
     
     equals(TDRS.uses comms);
     eq(comms.quantity, 1); 
