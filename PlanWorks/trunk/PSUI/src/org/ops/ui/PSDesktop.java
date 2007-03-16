@@ -215,13 +215,16 @@ public class PSDesktop
     }
 
 
-    public void makeSolverDialog(PSSolver solver)
+    public PSSolverDialog makeSolverDialog(PSSolver solver)
     {
     	try {
     		JInternalFrame frame = makeNewFrame("Solver");
     		frame.getContentPane().setLayout(new BorderLayout());
-    		frame.getContentPane().add(new JScrollPane(new PSSolverDialog(this,solver)));
+    		PSSolverDialog d = new PSSolverDialog(this,solver);
+    		frame.getContentPane().add(new JScrollPane(d));
     		frame.setSize(675,375);
+    		
+    		return d;
     	}
     	catch (Exception e)
     	{
