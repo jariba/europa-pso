@@ -78,6 +78,8 @@ public class PSSolverDialog
 	protected Integer maxStepsValue_=100;
 	protected Integer maxDepthValue_=100;
 	
+	protected List<PSSolverDialogListener> listeners_ = new Vector<PSSolverDialogListener>();
+	
     public PSSolverDialog(PSDesktop desktop,PSSolver solver)
     {
     	desktop_ = desktop;
@@ -110,6 +112,9 @@ public class PSSolverDialog
         frame.setSize(400,400);
         frame.setLocation(700,20);
     }
+    
+    public void addListener(PSSolverDialogListener l) { listeners_.add(l); }
+    public void removeListener(PSSolverDialogListener l) { listeners_.remove(l); }
     
     protected JPanel makeConfigPanel()
     {
@@ -336,6 +341,9 @@ public class PSSolverDialog
     			//System.out.println(stepCnt + "-" + solver.getDepth()+" - "+secs);
     			lblRunTime_.setText(format(System.currentTimeMillis()-startTime_));
     			lblStepCnt_.setText(Integer.toString(solver_.getStepCount()));
+    			
+    			for (PSSolverDialogListener l : listeners_)
+    				l.stepCompleted(solver_);
     		}
     		
             setButtons(true);
