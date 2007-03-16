@@ -22,20 +22,37 @@ import javax.swing.table.AbstractTableModel;
 
 import org.ops.ui.util.Util;
 import org.ops.ui.PSDesktop;
-import dsa.*;
 import org.ops.ui.mouse.*;
 import org.ops.ui.gantt.*;
 import org.ops.ui.chart.*;
+import org.ops.ui.solver.*;
+import psengine.*;
 
 int month = GregorianCalendar.SEPTEMBER, day = 11; 
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
 GregorianCalendar end = new GregorianCalendar(2006,month,day,0,10);
 
-void initDSA()
+void usingCodeGeneration()
 {
 	cwd = bsh.cwd;
-    dsa.loadModel(cwd+"/libTower_o.so");
-    dsa.addPlan(cwd+"/Tower-initial-state.xml",false);		
+    psengine.loadModel(cwd+"/libTower_o.so");
+    boolean isFile = true;
+    boolean useInterpreter = false;
+    psengine.executeTxns(cwd+"/Tower-initial-state.xml",isFile,useInterpreter);	
+    System.out.println("Used code generation");
+}
+
+void usingInterpreter()
+{
+	cwd = bsh.cwd;
+    String nddlModel = cwd+"/Tower-initial-state.nddl";
+    psengine.executeScript("nddl",nddlModel);
+}
+
+void initPSEngine()
+{
+    //usingCodeGeneration();
+    usingInterpreter();
 }
 
 void setupDesktop()
@@ -61,13 +78,14 @@ Object safeBound(int bound)
     return bound;
 }
 
-String getBounds(dsa.Action a)
+String getBounds(PSToken t)
 {
     StringBuffer buf = new StringBuffer();
     
-    buf.append("[").append(safeBound(a.getEarliestStart())).append(",").append(safeBound(a.getLatestStart())).append("]")
-       .append(" ")
-       .append("[").append(safeBound(a.getEarliestEnd())).append(",").append(safeBound(a.getLatestEnd())).append("]");
+    buf.append(t.getParameter("start"))
+       .append("\n ")
+       .append(t.getParameter("end"))
+       .append("\n");
     
     return buf.toString();
 }
@@ -189,7 +207,7 @@ interface BlockWorldHistory
 }
 
 class TowerSolverListener
-    implements SolverListener
+    implements PSSolverDialogListener
 {
 	protected BlockWorldHistory history_;
 
@@ -207,36 +225,38 @@ class TowerSolverListener
         return tok.nextToken();
     }
     
-    protected dsa.Action getLastAction(List actions)
+    protected PSToken getLastAction(List actions)
     {
-    	dsa.Action last = (dsa.Action)actions.get(actions.size()-1);
+    	PSToken last = (PSToken)actions.get(actions.size()-1);
     	return last;
     }
     
     static class ActionComparator implements Comparator
     {
-        public int compare(Object lhs, Object rhs) { return ((dsa.Action)lhs).getEarliestStart() - ((dsa.Action)rhs).getEarliestStart(); }
+        public int compare(Object lhs, Object rhs) 
+        { 
+        	return ((PSToken)lhs).getParameter("start").getLowerBound() - ((PSToken)rhs).getParameter("start").getLowerBound(); }
     }
     
     ActionComparator actionComparator_ = new ActionComparator();
     
-    protected String getHistory(dsa.Component c)
+    protected String getHistory(PSObject c)
     {
     	StringBuffer buf = new StringBuffer();
     	
-        List actions = c.getActions(); 
+        List actions = Util.SWIGList(c.getTokens()); 
         Collections.sort(actions,actionComparator_); 
     	for (Object o : actions) {
-    		dsa.Action a = (dsa.Action)o;
+    		PSToken a = (PSToken)o;
     		buf.append("{").append(a.getName().substring(9,a.getName().length()))
     		   .append(getBounds(a))
     		   .append("(");
-    		List parameters = a.getParameters();
+    		PSVariableList parameters = a.getParameters();
     		for (int i=0; i<parameters.size(); i++) {
-    		    dsa.Parameter p = (dsa.Parameter)parameters.get(i);
+    		    PSVariable p = parameters.get(i);
     		    if (i>0) buf.append(",");
                 buf//.append(p.getName().substring(10,p.getName().length())).append("=")
-                   .append(p.getValue().substring(23,p.getValue().length()-6));   		    
+                   .append(p.getSingletonValue().substring(23,p.getValue().length()-6));   		    
     		}
     		buf.append("} ");
     	}    	
@@ -244,21 +264,22 @@ class TowerSolverListener
     	return buf.toString();
     }
     
-    public void stepCompleted(Solver s)
+    public void stepCompleted(PSSolver s)
     {
     	BlockWorld bw = new BlockWorld();
-    	List components = dsa.getComponents();
+    	PSObjectList components = psengine.getObjectsByType("Timeline");
     	String operatorHistory = null;
     	
-    	for (dsa.Component c : components) {
+    	for (int i=0;i<components.size(); i++) {
+    		PSObject c = components.get(i);
     		if (c.getName().endsWith("Bottom")) {
     			String blockName = getBlockName(c.getName());
-                List actions = c.getActions(); 
+                List actions = Utils.SWIGList(c.getTokens()); 
                 Collections.sort(actions,actionComparator_); 
     			if (actions.size()==0)
     				continue;
 
-    			dsa.Action a = getLastAction(actions);
+    			PSToken a = getLastAction(actions);
 
     			String blockState=null;
     			String bottomBlock=null;
@@ -268,7 +289,7 @@ class TowerSolverListener
     			}
     			else if (a.getName().endsWith("On")) {
     				blockState = "On";
-    				bottomBlock = a.getParameters().get(0).getValue();
+    				bottomBlock = a.getParameters().get(0).getSingletonValue();
     				int start = bottomBlock.lastIndexOf('.');
     				bottomBlock = bottomBlock.substring(start+1, bottomBlock.length()-1);
     			}
@@ -413,34 +434,23 @@ maxSteps = 200;
 maxDepth = 100000;
 config = "PlannerConfig.xml";
 
-initDSA();
-solver = SolverManager.createInstance(config,horizonStart,horizonEnd,maxSteps,maxDepth);
-desktop.makeSolverDialog();
+try {
+    initPSEngine();
+    PSSolver solver = psengine.createSolver(config);
+    solver.configure(horizonStart,horizonEnd);
+    solverDialog = desktop.makeSolverDialog(solver);
 
-BlockWorldHistoryPanel bwhp = new BlockWorldHistoryPanel();
-JInternalFrame hf = desktop.makeNewFrame("Block World History");
-hf.getContentPane().setLayout(new BorderLayout());
-hf.getContentPane().add(bwhp);
-
-TowerSolverListener listener = new TowerSolverListener(bwhp);
-solver.addListener(listener);
-
-
+    BlockWorldHistoryPanel bwhp = new BlockWorldHistoryPanel();
+    JInternalFrame hf = desktop.makeNewFrame("Block World History");
+    hf.getContentPane().setLayout(new BorderLayout());
+    hf.getContentPane().add(bwhp);
+  
+    //TowerSolverListener listener = new TowerSolverListener(bwhp);
+    //solverDialog.addListener(listener);
+}    
+catch (Exception e) {
+  	System.err.println("Failed Initializing : "+e.getMessage());
+}
+   
 //setupDesktop();
-
-//Example of table using JoSQL query
-//desktop.makeTableFrame("Components",dsa.getComponents(),"SELECT key,name FROM dsa.Component");
-
-//To inspect parameters
-/*
-show();
-dsa.getComponents().get(1).getName();
-c  = dsa.getComponents().get(1);
-c.getActions().get(1).getName();
-a = c.getActions().get(1);
-param = a.getParameters();
-param.get(0).getName();
-param.get(0).getValue();
-*/
- 
 
