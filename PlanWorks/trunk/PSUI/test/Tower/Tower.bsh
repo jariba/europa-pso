@@ -51,8 +51,8 @@ void usingInterpreter()
 
 void initPSEngine()
 {
-    //usingCodeGeneration();
-    usingInterpreter();
+    usingCodeGeneration();
+    //usingInterpreter();
 }
 
 void setupDesktop()
@@ -60,7 +60,7 @@ void setupDesktop()
 {
     ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
 
-    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame(start,end);
+    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame("Object",start,end);
     ganttFrame.setLocation(0,0);
     ganttFrame.setSize(700,300);
     PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
@@ -82,10 +82,11 @@ String getBounds(PSToken t)
 {
     StringBuffer buf = new StringBuffer();
     
-    buf.append(t.getParameter("start"))
-       .append("\n ")
-       .append(t.getParameter("end"))
-       .append("\n");
+    buf.append("[")
+       .append(t.getParameter("start").getSingletonValue().asInt())
+       .append(",")
+       .append(t.getParameter("end").getSingletonValue().asInt())
+       .append("]");
     
     return buf.toString();
 }
@@ -103,7 +104,7 @@ class BlockWorld
 	
 	public List getTowers() { return towers_; }
 	
-	public void addBlock(String name,String state,String bottomBlock, dsa.Action a)
+	public void addBlock(String name,String state,String bottomBlock, PSToken a)
 	{
 		//System.out.println("BlockWorld.add("+name+","+state+","+bottomBlock+")");
 
@@ -206,6 +207,24 @@ interface BlockWorldHistory
 	public void add(int stepCount,BlockWorld bw,String operatorHistory);
 }
 
+String varValueToString(PSVarValue v)
+{
+	String type = v.getType().toString();
+	
+	if ("STRING".equals(type))
+		return v.asString();
+	if ("INTEGER".equals(type))
+		return v.asInt().toString();	
+	if ("DOUBLE".equals(type))
+		return v.asDouble().toString();
+	if ("BOOLEAN".equals(type))
+		return v.asBoolean().toString();
+	if ("OBJECT".equals(type))
+		return v.asObject().getName();
+	
+	return "ERROR!!! UNKNOWN TYPE :" + type;
+}
+
 class TowerSolverListener
     implements PSSolverDialogListener
 {
@@ -235,7 +254,7 @@ class TowerSolverListener
     {
         public int compare(Object lhs, Object rhs) 
         { 
-        	return ((PSToken)lhs).getParameter("start").getLowerBound() - ((PSToken)rhs).getParameter("start").getLowerBound(); }
+        	return (int) (((PSToken)lhs).getParameter("start").getLowerBound() - ((PSToken)rhs).getParameter("start").getLowerBound()); }
     }
     
     ActionComparator actionComparator_ = new ActionComparator();
@@ -248,15 +267,17 @@ class TowerSolverListener
         Collections.sort(actions,actionComparator_); 
     	for (Object o : actions) {
     		PSToken a = (PSToken)o;
-    		buf.append("{").append(a.getName().substring(9,a.getName().length()))
+    		buf.append("{").append(a.getName()) //append(a.getName().substring(9,a.getName().length()))
     		   .append(getBounds(a))
     		   .append("(");
     		PSVariableList parameters = a.getParameters();
-    		for (int i=0; i<parameters.size(); i++) {
+    		for (int i=5; i<parameters.size(); i++) {
     		    PSVariable p = parameters.get(i);
-    		    if (i>0) buf.append(",");
+    		    if (i>5) buf.append(",");
+    		    String value = varValueToString(p.getSingletonValue());
                 buf//.append(p.getName().substring(10,p.getName().length())).append("=")
-                   .append(p.getSingletonValue().substring(23,p.getValue().length()-6));   		    
+                   //.append(p.getSingletonValue().asString().substring(23,p.getSingletonValue().asString().length()-6));
+                   .append(value.substring(10,value.length()));
     		}
     		buf.append("} ");
     	}    	
@@ -274,7 +295,8 @@ class TowerSolverListener
     		PSObject c = components.get(i);
     		if (c.getName().endsWith("Bottom")) {
     			String blockName = getBlockName(c.getName());
-                List actions = Utils.SWIGList(c.getTokens()); 
+    			blockName = blockName.substring(0,blockName.length()-5);
+                List actions = Util.SWIGList(c.getTokens()); 
                 Collections.sort(actions,actionComparator_); 
     			if (actions.size()==0)
     				continue;
@@ -289,9 +311,9 @@ class TowerSolverListener
     			}
     			else if (a.getName().endsWith("On")) {
     				blockState = "On";
-    				bottomBlock = a.getParameters().get(0).getSingletonValue();
+    				bottomBlock = varValueToString(a.getParameters().get(5).getSingletonValue());
     				int start = bottomBlock.lastIndexOf('.');
-    				bottomBlock = bottomBlock.substring(start+1, bottomBlock.length()-1);
+    				bottomBlock = bottomBlock.substring(start+1, bottomBlock.length()-5);
     			}
     			
     			if (blockState != null)	
@@ -434,19 +456,21 @@ maxSteps = 200;
 maxDepth = 100000;
 config = "PlannerConfig.xml";
 
+BlockWorldHistoryPanel bwhp;
+
 try {
     initPSEngine();
     PSSolver solver = psengine.createSolver(config);
     solver.configure(horizonStart,horizonEnd);
     solverDialog = desktop.makeSolverDialog(solver);
 
-    BlockWorldHistoryPanel bwhp = new BlockWorldHistoryPanel();
+    bwhp = new BlockWorldHistoryPanel();
     JInternalFrame hf = desktop.makeNewFrame("Block World History");
     hf.getContentPane().setLayout(new BorderLayout());
     hf.getContentPane().add(bwhp);
   
-    //TowerSolverListener listener = new TowerSolverListener(bwhp);
-    //solverDialog.addListener(listener);
+    TowerSolverListener listener = new TowerSolverListener(bwhp);
+    solverDialog.addListener(listener);
 }    
 catch (Exception e) {
   	System.err.println("Failed Initializing : "+e.getMessage());
