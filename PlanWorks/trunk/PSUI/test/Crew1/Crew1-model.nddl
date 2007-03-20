@@ -5,8 +5,9 @@
 // avoiding warnings:
 constraint LessThan(a, b) { a <: numeric && b <: numeric }
 
-typedef int {1, 2, 3} intEnum;
-typedef int [1 10] intRange;
+// typedef not supported yet
+//typedef int {1, 2, 3} intEnum;
+//typedef int [1 10] intRange;
 
 /**
  * 
