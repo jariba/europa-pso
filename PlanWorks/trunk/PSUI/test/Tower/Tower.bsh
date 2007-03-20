@@ -51,8 +51,8 @@ void usingInterpreter()
 
 void initPSEngine()
 {
-    usingCodeGeneration();
-    //usingInterpreter();
+    //usingCodeGeneration();
+    usingInterpreter();
 }
 
 void setupDesktop()
@@ -78,14 +78,58 @@ Object safeBound(int bound)
     return bound;
 }
 
+String valueToString(PSVarValue v)
+{
+	String type = v.getType().toString();
+	
+	if ("STRING".equals(type))
+		return v.asString();
+	if ("INTEGER".equals(type))
+		return v.asInt().toString();	
+	if ("DOUBLE".equals(type))
+		return v.asDouble().toString();
+	if ("BOOLEAN".equals(type))
+		return v.asBoolean().toString();
+	if ("OBJECT".equals(type))
+		return v.asObject().getName();
+	
+	return "ERROR!!! UNKNOWN TYPE :" + type;
+}
+
+String varValueToString(PSVariable var)
+{	
+	if (var.isSingleton()) 
+		return valueToString(var.getSingletonValue());	
+	else if (var.isInterval()) {
+	    StringBuffer buf = new StringBuffer();
+		buf.append("[").append(var.getLowerBound()).append(",")
+		               .append(var.getUpperBound()).append("]");
+		return buf.toString();
+	}
+	else if (var.isEnumerated()) {
+		PSValueList l = var.getValues();
+	    StringBuffer buf = new StringBuffer();
+	    buf.append("[");
+	    for (int i=0;i<l.size();i++) {
+	    	if (i>0)
+	    		buf.append(",");
+	    	buf.append(valueToString(l.get(i)));
+	    }
+	    buf.append("]");
+	    return buf.toString();
+	}
+	
+	throw RuntimeException("Unexpected ERROR: variable "+var.getName()+" is not one of {Singleton, Interval, Enumeration}");
+}
+
 String getBounds(PSToken t)
 {
     StringBuffer buf = new StringBuffer();
     
     buf.append("[")
-       .append(t.getParameter("start").getSingletonValue().asInt())
+       .append(varValueToString(t.getParameter("start")))
        .append(",")
-       .append(t.getParameter("end").getSingletonValue().asInt())
+       .append(varValueToString(t.getParameter("end")))
        .append("]");
     
     return buf.toString();
@@ -207,24 +251,6 @@ interface BlockWorldHistory
 	public void add(int stepCount,BlockWorld bw,String operatorHistory);
 }
 
-String varValueToString(PSVarValue v)
-{
-	String type = v.getType().toString();
-	
-	if ("STRING".equals(type))
-		return v.asString();
-	if ("INTEGER".equals(type))
-		return v.asInt().toString();	
-	if ("DOUBLE".equals(type))
-		return v.asDouble().toString();
-	if ("BOOLEAN".equals(type))
-		return v.asBoolean().toString();
-	if ("OBJECT".equals(type))
-		return v.asObject().getName();
-	
-	return "ERROR!!! UNKNOWN TYPE :" + type;
-}
-
 class TowerSolverListener
     implements PSSolverDialogListener
 {
@@ -274,7 +300,7 @@ class TowerSolverListener
     		for (int i=5; i<parameters.size(); i++) {
     		    PSVariable p = parameters.get(i);
     		    if (i>5) buf.append(",");
-    		    String value = varValueToString(p.getSingletonValue());
+    		    String value = varValueToString(p);
                 buf//.append(p.getName().substring(10,p.getName().length())).append("=")
                    //.append(p.getSingletonValue().asString().substring(23,p.getSingletonValue().asString().length()-6));
                    .append(value.substring(10,value.length()));
@@ -311,7 +337,7 @@ class TowerSolverListener
     			}
     			else if (a.getName().endsWith("On")) {
     				blockState = "On";
-    				bottomBlock = varValueToString(a.getParameters().get(5).getSingletonValue());
+    				bottomBlock = varValueToString(a.getParameters().get(5));
     				int start = bottomBlock.lastIndexOf('.');
     				bottomBlock = bottomBlock.substring(start+1, bottomBlock.length()-5);
     			}
@@ -453,7 +479,6 @@ void showHistory()
 horizonStart = 0;
 horizonEnd = 1000;
 maxSteps = 200;
-maxDepth = 100000;
 config = "PlannerConfig.xml";
 
 BlockWorldHistoryPanel bwhp;
