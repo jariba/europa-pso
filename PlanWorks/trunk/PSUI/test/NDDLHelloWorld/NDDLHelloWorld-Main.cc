@@ -8,11 +8,70 @@
 
 #include "Nddl.hh" /*!< Includes protypes required to load a model */
 #include "SolverAssembly.hh" /*!< For using a test EUROPA Assembly */
-//#include "../PLASMA/DSA/base/DSA.hh"
 #include "PSEngine.hh" 
+#include "Debug.hh"
 
 using namespace EUROPA;
 
+void executeWithAssembly(const char* plannerConfig, const char* txSource);
+bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int startHorizon, int endHorizon, int maxSteps);
+void printFlaws(int it, PSList<std::string>& flaws);
+
+int main(int argc, const char ** argv)
+{
+  if (argc != 3) {
+    std::cerr << "Must provide initial transactions file." << std::endl;
+    return -1;
+  }
+
+  const char* txSource = argv[1];
+  const char* plannerConfig = argv[2];
+  int startHorizon = 0;
+  int endHorizon   = 100;
+  int maxSteps     = 1000;
+
+  if (!executeWithPSEngine(plannerConfig,txSource,startHorizon,endHorizon,maxSteps)) 
+      return -1;
+
+  // executeWithAssembly(plannerConfig,txSource);
+   
+  return 0;
+}
+
+bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int startHorizon, int endHorizon, int maxSteps)
+{
+    try {
+	  PSEngine engine;
+	
+	  engine.start();
+	  engine.executeTxns(txSource,true,true);
+	
+	  PSSolver* solver = engine.createSolver(plannerConfig);
+	  solver->configure(startHorizon,endHorizon);
+	
+      for (int i = 0; i<maxSteps; i = solver->getStepCount()) {
+		  solver->step();
+		  PSList<std::string> flaws;
+		  if (solver->isConstraintConsistent()) {
+	          flaws = solver->getFlaws();
+        	  printFlaws(i,flaws);
+			  if (flaws.size() == 0)
+			      break;
+		  }
+		  else
+			debugMsg("XMLInterpreter","Iteration " << i << " Solver is not constraint consistent");
+	  }
+	
+	  delete solver;	
+	  engine.shutdown();
+
+	  return true;
+	}
+	catch (Error& e) {
+		std::cerr << "PSEngine failed:" << e.getMsg() << std::endl;
+		return false;
+	}	
+}
 
 void printFlaws(int it, PSList<std::string>& flaws)
 {
@@ -23,64 +82,8 @@ void printFlaws(int it, PSList<std::string>& flaws)
 	}
 }
 
-bool runPSEngineTest(const char* plannerConfig, const char* txSource)
+void executeWithAssembly(const char* plannerConfig, const char* txSource)
 {
-	PSEngine engine;
-	
-	engine.start();
-	engine.executeTxns(txSource,true,true);
-	
-	PSSolver* solver = engine.createSolver(plannerConfig);
-	solver->configure(0,100);
-	
-	for (int i = 0; i<50; i++) {
-		solver->step();
-		PSList<std::string> flaws = solver->getFlaws();
-		if (flaws.size() == 0)
-		    break;
-		printFlaws(i,flaws);
-	}
-	
-	delete solver;	
-	engine.shutdown();
-
-	return false;
-}
-
-/*
-bool runDSATest(const char* plannerConfig, const char* txSource)
-{
-    DSA::DSA& dsa = DSA::DSA::instance();
-    dsa.addPlan(txSource,true);
-    dsa.solverConfigure(plannerConfig,0,100);
-    dsa.solverSolve(500,500);
-    dsa.writePlan(std::cout);
-    
-	return false;
-}
-*/
-
-/**
- * @brief Uses the planner to solve a planning problem
- */
-int main(int argc, const char ** argv){
-  if (argc != 3) {
-    std::cerr << "Must provide initial transactions file." << std::endl;
-    return -1;
-  }
-
-  const char* txSource = argv[1];
-
-  const char* plannerConfig = argv[2];
-  
-  if (!runPSEngineTest(plannerConfig,txSource)) 
-      return 0;
-
-  /* 
-  if (!runDSATest(plannerConfig,txSource))
-      return 0;
-  */ 
-
   // Initialize Library  
   SolverAssembly::initialize();
 
@@ -105,3 +108,4 @@ int main(int argc, const char ** argv){
 
   std::cout << "Finished\n";
 }
+
