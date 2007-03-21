@@ -36,16 +36,16 @@ int main(int argc, const char ** argv)
   const char* txSource = argv[1];
   const char* plannerConfig = argv[2];
   
-  /*
+  /**/
   int startHorizon = 0;
   int endHorizon   = 100;
   int maxSteps     = 1000;
 
   if (!executeWithPSEngine(plannerConfig,txSource,startHorizon,endHorizon,maxSteps)) 
       return -1;
-  */
+  /**/
   
-  executeWithAssembly(plannerConfig,txSource);
+  //executeWithAssembly(plannerConfig,txSource);
    
   return 0;
 }
@@ -118,6 +118,9 @@ void executeWithAssembly(const char* plannerConfig, const char* txSource)
     bool result = assembly.plan(txSource, plannerConfig);
     t.stop();
 
+    // Dump the results
+    assembly.write(std::cout);
+
     std::cout << txSource << "\t" << plannerConfig << "\t";
     if( result )
 	    std::cout << assembly.getTotalNodesSearched() << "\t" << assembly.getDepthReached() << "\t";
@@ -125,9 +128,6 @@ void executeWithAssembly(const char* plannerConfig, const char* txSource)
 	    std::cout << assembly.getTotalNodesSearched() << "\t-1\t";
 
     std::cout << t.getSecondsPassed() << std::endl;
-
-    // Dump the results
-    assembly.write(std::cout);
   }
 
   // Terminate the library
