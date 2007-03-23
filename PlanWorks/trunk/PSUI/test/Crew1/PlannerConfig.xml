@@ -16,7 +16,7 @@
     <FlawHandler component="StandardThreatHandler" predicate="comm_payload_activity" order="late" priority="3"/>
     <FlawHandler component="StandardThreatHandler" predicate="restraint_payload_activity" order="late" priority="3"/>
 
-    <FlawHandler component="ResourceThreatDecisionPoint" predicate="uses" order="late" priority="1"/>
+    <!--FlawHandler component="ResourceThreatDecisionPoint" predicate="uses" order="late" priority="1"/-->
     
     <!--FlawHandler component="ResourceThreat"/>
     <FlawHandler component="ResourceThreat" predicate="change_filter" order="late" priority="2"/>

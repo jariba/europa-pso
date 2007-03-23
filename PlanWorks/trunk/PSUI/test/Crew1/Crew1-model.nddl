@@ -213,13 +213,15 @@ Crew::restraint_payload_activity
     precedes(0,start);
     precedes(end,dueDate);    
     equals(PRACapacity.uses pra);
-    eq(pra.quantity, 1);         
+    eq(pra.quantity, 1);  
+    eq(pra.duration,duration);       
 }
 
 
 Crew::change_filter
 {
-    //eq(duration,60);
+    // JRB:Introduced because of a bug creating goals through code generation
+    eq(duration,60);
     precedes(0,start);
 
     // Setup next filter change
@@ -237,7 +239,8 @@ Crew::change_filter
 
 Crew::medical_conference
 {
-    //eq(duration,60);
+    // JRB:Introduced because of a bug creating goals through code generation
+    eq(duration,60);
     precedes(0,start);
     
     equals(TDRS.uses comms);
