@@ -48,8 +48,11 @@ bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int st
 	
 	  PSSolver* solver = engine.createSolver(plannerConfig);
 	  solver->configure(startHorizon,endHorizon);
-	
-      for (int i = 0; i<maxSteps; i = solver->getStepCount()) {
+	  int i;
+      for (i = 0; 
+           !solver->isExhausted() &&
+           !solver->isTimedOut() &&
+           i<maxSteps; i = solver->getStepCount()) {
 		  solver->step();
 		  PSList<std::string> flaws;
 		  if (solver->isConstraintConsistent()) {
@@ -59,9 +62,19 @@ bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int st
 			      break;
 		  }
 		  else
-			debugMsg("XMLInterpreter","Iteration " << i << " Solver is not constraint consistent");
+			debugMsg("Main","Iteration " << i << " Solver is not constraint consistent");
 	  }
-	
+	  
+	  if (solver->isExhausted()) {
+	      debugMsg("Main","Solver was exhausted after " << i << " steps");	  
+	  }
+	  else if (solver->isTimedOut()) {
+	      debugMsg("Main","Solver timed out after " << i << " steps");
+	  }
+	  else {    
+	      debugMsg("Main","Solver finished after " << i << " steps");
+	  }	      
+	      
 	  delete solver;	
 	  engine.shutdown();
 
@@ -75,7 +88,7 @@ bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int st
 
 void printFlaws(int it, PSList<std::string>& flaws)
 {
-	std::cout << "Iteration:" << it << " " << flaws.size() << " flaws" << std::endl;
+	debugMsg("Main","Iteration:" << it << " " << flaws.size() << " flaws");
 	
 	for (int i=0; i<flaws.size(); i++) {
 		std::cout << "    " << (i+1) << " - " << flaws.get(i) << std::endl;
