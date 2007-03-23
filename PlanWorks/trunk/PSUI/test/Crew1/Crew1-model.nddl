@@ -7,7 +7,9 @@ constraint LessThan(a, b) { a <: numeric && b <: numeric }
 
 // typedef not supported yet
 //typedef int {1, 2, 3} intEnum;
-//typedef int [1 10] intRange;
+//typedef string {"foo","bar"} stringEnum;
+//typedef int [0 +inf] positiveInt;
+
 
 /**
  * 
@@ -220,9 +222,8 @@ Crew::restraint_payload_activity
 
 Crew::change_filter
 {
-    // JRB:Introduced because of a bug creating goals through code generation
-    eq(duration,60);
-    precedes(0,start);
+    int zero = [0 0]; // testing local initialization
+    precedes(zero,start);
 
     // Setup next filter change
     before(Crew.change_filter cf);
@@ -239,8 +240,6 @@ Crew::change_filter
 
 Crew::medical_conference
 {
-    // JRB:Introduced because of a bug creating goals through code generation
-    eq(duration,60);
     precedes(0,start);
     
     equals(TDRS.uses comms);
