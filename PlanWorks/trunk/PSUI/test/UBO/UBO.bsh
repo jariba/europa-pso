@@ -36,8 +36,8 @@ void usingInterpreter()
 
 void initPSEngine()
 {
-	usingCodeGeneration();
-	//usingInterpreter();
+	//usingCodeGeneration();
+	usingInterpreter();
 }
 
 String valueToString(PSVarValue v)
@@ -97,13 +97,11 @@ void setupDesktop()
     gantt.addMouseListener(dp);    
     gantt.addMouseListener(vp);  
     
-    desktop.showTokens(psengine.getObjectsByType("ActivityTimeline").get(0));
+    //desktop.showTokens(psengine.getObjectsByType("ActivityTimeline").get(0));
     
-    /*
-    resourceFrame = desktop.makeResourcesFrame(start);
+    resourceFrame = desktop.makeResourcesFrame("CapacityResource",start);
     resourceFrame.setLocation(0,180);
     resourceFrame.setSize(500,300);
-    */    
 }
 
 class PlanHistoryEntry
@@ -164,7 +162,7 @@ class UBOSolverListener
     public Vector getDecisionHistory() { return decisionHistory_; }
     public Vector getPlanHistory() { return planHistory_; }
     
-    protected PlanHistoryEntry makePlanHistoryEntry(Solver s)
+    protected PlanHistoryEntry makePlanHistoryEntry(PSSolver s)
     {
         // Compute remaining nodes to explore
         long size = 1;
@@ -198,10 +196,10 @@ class UBOSolverListener
             String tokenDecision = " tokens:{" + predId + "} < {" + succId +"}";
             
             PSObject resource = psengine.getTokenByKey(predId).getOwner();
-            PSToken pred = psengine.getTokenByKey(predId);// TODO: .getMaster();
-            PSToken succ = psengine.getTokenByKey(succId); //TODO: .getMaster();
-            String predAct = varValueToString(pred.getParameters().get(0)).substring(11,12);
-            String succAct = varValueToString(succ.getParameters().get(0)).substring(11,12);
+            PSToken pred = psengine.getTokenByKey(predId).getMaster();
+            PSToken succ = psengine.getTokenByKey(succId).getMaster();
+            String predAct = varValueToString(pred.getParameter("m_identifier"));
+            String succAct = varValueToString(succ.getParameter("m_identifier"));
 
             // Get info to compute max remaining size of search tree
             Pattern p1 = Pattern.compile("CHOICE=[0-9]+");
@@ -255,6 +253,7 @@ horizonStart = 0;
 horizonEnd = 100;
 maxSteps = 1000;
 config = "PlannerConfig.xml";
+UBOSolverListener listener;
 
 try {
     initPSEngine();
@@ -262,12 +261,13 @@ try {
     solver.configure(horizonStart,horizonEnd);
     solverDialog = desktop.makeSolverDialog(solver);
 
-    //UBOSolverListener listener = new UBOSolverListener();
-    //solverDialog.addListener(listener);
+    listener = new UBOSolverListener();
+    solverDialog.addListener(listener);
 }    
 catch (Exception e) {
   	System.err.println("Failed Initializing : "+e.getMessage());
 }
 
 //setupDesktop();
+//showHistory();
 
