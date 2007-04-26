@@ -52,8 +52,7 @@ public class ActionDetailsPanel
 
         buf.append("ID     : ").append(t.getKey()).append("\n")
            .append("Name   : ").append(t.getName()).append("\n")
-           .append("Start  : ").append(t.getParameter("start")).append("\n")
-           .append("Finish : ").append(t.getParameter("end")).append("\n")
+           .append("isFact  : ").append(t.isFact()).append("\n")
         ;
         
         if (t.getParameters().size() > 0) {
