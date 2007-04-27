@@ -10,7 +10,8 @@ typedef string {"a","bb","ccc"} stringEnum;
  * @brief Place holder class with a single predicate
  */
 class YourObject {
- predicate helloWorld{} /*!< Predicate with no arguments */
+ predicate helloWorld{ duration=10; } /*!< Predicate with no arguments */
+ predicate parallelTest {}
 }
 
 /**
@@ -20,6 +21,14 @@ YourObject::helloWorld{
  positiveInt dur = [10 10];
  
  eq(duration, dur);
+ 
  meets (object.helloWorld);
  met_by(object.helloWorld);
+ 
+ /* parallels test
+ parallels(object.parallelTest);
+ any(object.parallelTest slave);
+ precedes(start,slave.start);
+ precedes(slave.end,end);
+ */
 }

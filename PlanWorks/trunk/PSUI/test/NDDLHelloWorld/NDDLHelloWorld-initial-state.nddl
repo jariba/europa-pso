@@ -10,8 +10,13 @@ YourObject object = new YourObject();
 // Close the the PLASMA Database - no more objects can be created.
 close();
 
-// Now place your goals here.
+// Now place your facts and goals here.
+fact(YourObject.helloWorld fact1);
+fact1.start.specify(15); // Starts at beginning of the horizon
+fact(YourObject.helloWorld fact2);
+fact2.start.specify(35); // Starts at beginning of the horizon
+
 goal(YourObject.helloWorld initialToken);
-initialToken.start.specify(0); // Starts at beginning of the horizon
+initialToken.start.specify(25); // Starts at beginning of the horizon
 
 // The planner should take it form here!
