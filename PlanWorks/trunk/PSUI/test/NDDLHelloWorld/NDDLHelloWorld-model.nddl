@@ -32,3 +32,12 @@ YourObject::helloWorld{
  precedes(slave.end,end);
  */
 }
+
+class TestPC extends PlannerConfig
+{
+    TestPC()
+    {
+        super(0,100,500,+inf);
+    }
+}
+
