@@ -246,7 +246,7 @@ public class PSDesktop
         	 PSToken t = l.get(i);
         	 row.add(t.getKey());
         	 row.add(t.getName());
-        	 row.add(t.getType());
+        	 row.add(t.getEntityType());
         	 PSVariableList vars = t.getParameters();
         	 for (int j=0; j<vars.size();j++) {
         		 PSVariable var = vars.get(j);
@@ -290,7 +290,10 @@ public class PSDesktop
     public JInternalFrame makeResourcesFrame(String type,Calendar start)
     {
         JTabbedPane resourceTabs = new JTabbedPane();
-        PSResourceList resources = getPSEngine().getResourcesByType(type);
+        PSResourceList resources = null; 
+        Object obj = getPSEngine().getObjectsByType(type);
+        if ( obj instanceof PSResourceList )
+        	resources = (PSResourceList)obj;
         for (int i = 0; i < resources.size(); i++) {
         	PSResource r = resources.get(i);
             resourceTabs.add(r.getName(),makeResourceChart(r,start));
