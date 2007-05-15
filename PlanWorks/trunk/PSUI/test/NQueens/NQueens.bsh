@@ -1,0 +1,54 @@
+// NQueens.bsh
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import javax.swing.JInternalFrame;
+import org.ops.ui.PSDesktop;
+import org.ops.ui.mouse.*;
+import org.ops.ui.gantt.*;
+import org.ops.ui.chart.*;
+import org.ops.ui.util.Util;
+import psengine.PSSolver;
+import psengine.PSToken;
+
+String model = "NQueens";
+
+void usingCodeGeneration()
+{
+	cwd = bsh.cwd;
+    psengine.loadModel(cwd+"/lib"+model+"_g.so");
+    boolean isFile = true;
+    boolean useInterpreter = false;
+    psengine.executeTxns(cwd+"/"+model+"-initial-state.xml",isFile,useInterpreter);		
+}
+
+void usingInterpreter()
+{
+	cwd = bsh.cwd;
+    String nddlModel = cwd+"/"+model+"-initial-state.nddl";
+    psengine.executeScript("nddl",nddlModel);
+}
+
+void initPSEngine()
+{
+	//usingCodeGeneration();
+	usingInterpreter();
+}
+
+void printQueens()
+{
+    StringBuffer buf;
+    for (int i=0; i<psengine.getGlobalVariables().size();i++) {
+    	if (i>0)
+    		bu.append(",");
+    	buf.append(psengint.getGlobalVariables().get(i).toString());
+    }
+    print(buf.toString());
+}
+
+initPSEngine();
+desktop.makeNddlConsole();
+printQueens();
+
+//setupDesktop();
+
