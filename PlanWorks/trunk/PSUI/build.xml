@@ -23,7 +23,6 @@
   <property name="deprecation"  value="true"/>
 
   <path id="psui.class.path">
-	<pathelement location="${workspace.dir}/PLASMA/lib/DSA.jar"/>
 	<pathelement location="${workspace.dir}/PLASMA/lib/PSEngine.jar"/>
 	<pathelement location="${workspace.dir}/PLASMA/lib/nddl.jar"/>
 	<pathelement location="${lib.dir}/nanoxml/nanoxml.jar"/>
