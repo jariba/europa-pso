@@ -1,10 +1,6 @@
 package org.ops.ui.mouse;
 
 
-import dsa.Action;
-import dsa.DSA;
-import dsa.Parameter;
-
 import psengine.PSEngine;
 import psengine.PSToken;
 import psengine.PSVariable;
@@ -15,13 +11,7 @@ public class ActionDetailsPanel
 {
 	private static final long serialVersionUID = 7779941401503562818L;
 
-	protected DSA dsa_ = null;
 	protected PSEngine psengine_ = null;
-	
-    public ActionDetailsPanel(DSA dsa)
-    {
-    	dsa_ = dsa;
-    }
 	
     public ActionDetailsPanel(PSEngine pse)
     {
@@ -39,10 +29,6 @@ public class ActionDetailsPanel
 	
 	protected String getDetails(Integer key)
 	{
-		if (dsa_ != null) 
-			return actionDetails(dsa_.getAction(key)); 
-			
-		
 		return tokenDetails(psengine_.getTokenByKey(key));
 	}
 		
@@ -65,25 +51,5 @@ public class ActionDetailsPanel
         }
            
 		return buf.toString();
-	}
-	
-	protected String actionDetails(Action act)
-	{
-		StringBuffer buf = new StringBuffer();
-
-        buf.append("ID     : ").append(act.getKey()).append("\n")
-           .append("Name   : ").append(act.getName()).append("\n")
-           .append("Start  : ").append(act.getEarliestStart()).append("\n")
-           .append("Finish : ").append(act.getEarliestEnd()).append("\n")
-        ;
-        
-        if (act.getParameters().size() > 0) {
-            buf.append("Parameters:").append("\n");
-            for (Parameter p : act.getParameters()) {
-                buf.append(p.getName()).append(" : ").append(p.getValue()).append("\n");
-            }
-        }
-           
-		return buf.toString();
-	}
+	}	
 }
