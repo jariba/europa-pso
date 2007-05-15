@@ -1,26 +1,8 @@
 // NQueens.bsh
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import javax.swing.JInternalFrame;
-import org.ops.ui.PSDesktop;
-import org.ops.ui.mouse.*;
-import org.ops.ui.gantt.*;
-import org.ops.ui.chart.*;
-import org.ops.ui.util.Util;
-import psengine.PSSolver;
-import psengine.PSToken;
+import psengine.*;
 
 String model = "NQueens";
-
-void usingCodeGeneration()
-{
-	cwd = bsh.cwd;
-    psengine.loadModel(cwd+"/lib"+model+"_g.so");
-    boolean isFile = true;
-    boolean useInterpreter = false;
-    psengine.executeTxns(cwd+"/"+model+"-initial-state.xml",isFile,useInterpreter);		
-}
 
 void usingInterpreter()
 {
@@ -31,7 +13,6 @@ void usingInterpreter()
 
 void initPSEngine()
 {
-	//usingCodeGeneration();
 	usingInterpreter();
 }
 
@@ -50,6 +31,5 @@ void printQueens()
 }
 
 initPSEngine();
-desktop.makeNddlConsole();
-printQueens();
 
+//desktop.makeNddlConsole();
