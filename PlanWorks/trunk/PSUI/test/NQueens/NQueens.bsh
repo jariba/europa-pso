@@ -37,18 +37,19 @@ void initPSEngine()
 
 void printQueens()
 {
-    StringBuffer buf;
+    StringBuffer buf = new StringBuffer();
+    
+    buf.append("{");
     for (int i=0; i<psengine.getGlobalVariables().size();i++) {
     	if (i>0)
-    		bu.append(",");
-    	buf.append(psengint.getGlobalVariables().get(i).toString());
+    		buf.append(",");
+    	buf.append(psengine.getGlobalVariables().get(i).getSingletonValue().asInt());
     }
+    buf.append("}");
     print(buf.toString());
 }
 
 initPSEngine();
 desktop.makeNddlConsole();
 printQueens();
-
-//setupDesktop();
 
