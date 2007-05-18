@@ -206,7 +206,7 @@ public class PSDesktop
     public PSEngine getPSEngine()
     {
     	if (psEngine_ == null) {
-            LibraryLoader.loadLibrary("PSEngine_"+debugMode_);
+            LibraryLoader.loadLibrary("System_"+debugMode_);
             psEngine_ = new PSEngineWithNDDL();
             psEngine_.start();
     	}
