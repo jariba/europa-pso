@@ -1,19 +1,43 @@
 // NQueens.bsh
 
 import psengine.*;
+import java.io.StringReader;
+
+source("NQueensBoard.java");
 
 String model = "NQueens";
+int N = 8;
 
-void usingInterpreter()
+String generateModel(int n)
 {
-	cwd = bsh.cwd;
-    String nddlModel = cwd+"/"+model+"-initial-state.nddl";
-    psengine.executeScript("nddl",nddlModel);
+    StringBuffer buf = new StringBuffer();
+    buf.append("typedef int [1 ").append(n).append("] Row;\n\n");
+    
+    buf.append("Row ");
+    for (int i=0; i<n;i++) {
+    	if (i>0)
+    		buf.append(",");
+    	buf.append("v").append(i);
+    }
+    buf.append(";\n\n");
+    
+    buf.append("AllDiff(");
+    for (int i=0; i<n;i++) {
+    	if (i>0)
+    		buf.append(",");
+    	buf.append("v").append(i);
+    }
+    buf.append(");\n\n");
+    
+    return buf.toString();
 }
 
-void initPSEngine()
+void loadModel()
 {
-	usingInterpreter();
+	String nddlModel = generateModel(N);
+	print(nddlModel);
+	psengine.setAllowViolations(true);
+	psengine.executeScript("nddl",new StringReader(nddlModel));
 }
 
 void printQueens()
@@ -21,15 +45,40 @@ void printQueens()
     StringBuffer buf = new StringBuffer();
     
     buf.append("{");
-    for (int i=0; i<psengine.getGlobalVariables().size();i++) {
+    for (int i=0; i<N;i++) {
     	if (i>0)
     		buf.append(",");
-    	buf.append(psengine.getGlobalVariables().get(i).getSingletonValue().asInt());
+    	buf.append(psengine.getGlobalVariables().get(i).toString());
     }
     buf.append("}");
     print(buf.toString());
 }
 
-initPSEngine();
+void initQueens()
+{	
+	PSVariableList l = psengine.getGlobalVariables();	
+	PSVarValue value = PSVarValue.getInstance(1);
+	
+	for (int i=0;i<N;i++) {
+		v = l.get(i);
+		v.specifyValue(value);
+	}    		
+}
+
+void showQueens()
+{
+    f = desktop.makeNewFrame("Queens");
+    f.getContentPane().add(new NQueensBoard(psengine,N));
+    f.setSize(450,350);
+}
+
+void search()
+{
+}
+
+loadModel();
+initQueens();
+showQueens();
+search();
 
 //desktop.makeNddlConsole();

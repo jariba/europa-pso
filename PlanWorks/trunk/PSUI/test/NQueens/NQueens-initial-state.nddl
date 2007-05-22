@@ -3,12 +3,16 @@ typedef int [1 8] Row;
 
 Row q1,q2,q3,q4,q5,q6,q7,q8;
 
-q1.specify(1); 
-q2.specify(1); 
-q3.specify(1); 
-q4.specify(1); 
-q5.specify(1); 
-q6.specify(1); 
-q7.specify(1); 
-q8.specify(1); 
+AllDiff(q1,q2,q3,q4,q5,q6,q7,q8);
 
+
+/*
+q1.reset();q1.specify(1); 
+q2.reset();q2.specify(1); 
+q3.reset();q3.specify(1); 
+q4.reset();q4.specify(1); 
+q5.reset();q5.specify(1); 
+q6.reset();q6.specify(1); 
+q7.reset();q7.specify(1); 
+q8.reset();q8.specify(1); 
+*/
