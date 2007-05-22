@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.FontMetrics;
 import java.awt.Insets;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -14,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
 import psengine.*;
 
 
@@ -25,7 +25,9 @@ public class NQueensBoard
 	protected Dimension preferredSize = new Dimension(400,600);
 
 	protected int firstX_;
+	protected int lastX_;
 	protected int firstY_;
+	protected int lastY_;
 	protected int rectWidth_ = 4;
 	protected int rectHeight_ =8;
 	protected int gridSize_=50;
@@ -43,14 +45,11 @@ public class NQueensBoard
 		psengine_ = engine;
 		queenCnt_ = queenCnt;
 		zoomFactor_=1.0;
-		//Add a border of 5 pixels at the left and bottom,
-		//and 1 pixel at the top and right.
-		setBorder(BorderFactory.createMatteBorder(1,5,5,1,
-				Color.BLUE));
 		
 		setBackground(Color.WHITE);
 		setOpaque(true);
-		this.addMouseMotionListener(new TGDMouseMotionAdapter());
+		this.addMouseMotionListener(new TGDMouseInputAdapter());
+		this.addMouseListener(new TGDMouseInputAdapter());
 	}
 	
 	public double getZoomFactor() { return zoomFactor_; }
@@ -64,8 +63,11 @@ public class NQueensBoard
 	protected void paintComponent(Graphics g) 
 	{
 		Insets insets = getInsets();
-		firstX_ = insets.left+100;
+		firstX_ = insets.left+20;
 		firstY_ = insets.top+20;
+		lastX_ = firstX_+(queenCnt_*gridSize()); 
+		lastY_ = firstY_+(queenCnt_*gridSize()); 
+		
 
 		//Paint background if we're opaque.
 		if (isOpaque()) {
@@ -73,12 +75,7 @@ public class NQueensBoard
 			g.fillRect(0, 0, getWidth(), getHeight());
 		}
 		
-		g.setColor(Color.GRAY);
-		
-		// Draw option descriptions
-		FontMetrics metrics = g.getFontMetrics();		 
-		firstX_ = 10; 
-			
+		g.setColor(Color.GRAY);		
 		drawQueens(g);
 		drawGrid(g,gridSize());
 	}
@@ -103,7 +100,7 @@ public class NQueensBoard
 		List l = getQueenVars();
 		for (int col=0;col<l.size();col++) {
 			Integer row = (Integer)l.get(col);
-			drawQueen(g,col,row-1);
+			drawQueen(g,col,row);
 		}
 	}
 	
@@ -117,6 +114,12 @@ public class NQueensBoard
 	{
 		PSVariable v = psengine_.getGlobalVariables().get(col);
 		return v.getViolationExpl();
+	}
+	
+	int getQueenValue(int col)
+	{
+		PSVariable v = psengine_.getGlobalVariables().get(col);
+        return v.getSingletonValue().asInt();	    
 	}
 	
 	protected Image getQueenImage()
@@ -201,69 +204,79 @@ public class NQueensBoard
 	//Draws a gridSpace x gridSpace grid using the current color.
 	private void drawGrid(Graphics g, int gridSpace) 
 	{
-		Insets insets = getInsets();
-		// hack! : harcoded lastX and lastY for now
-		int lastX = firstX_+(queenCnt_*gridSpace); //getWidth() - insets.right;
-		int lastY = firstY_+(5*gridSpace); //getHeight() - insets.bottom;
-		
 		//Draw vertical lines.
 		int x = firstX_;
-		while (x <= lastX) {
-			g.drawLine(x, firstY_, x, lastY);
+		while (x <= lastX_) {
+			g.drawLine(x, firstY_, x, lastY_);
 			x += gridSpace;
 		}
 		
 		//Draw horizontal lines.
-		// TODO: how to draw sequre boxoes that account for X-Y differences
+		// TODO: how to draw sequre boxes that account for X-Y differences
 		int y = firstY_;
-		while (y <= lastY) {
-			g.drawLine(firstX_, y, lastX, y);
+		while (y <= lastY_) {
+			g.drawLine(firstX_, y, lastX_, y);
 			y += gridSpace;
 		}
 	}	
 	
 	protected int gridSize() { return (int)(gridSize_*zoomFactor_); }
 	
-	private class TGDMouseMotionAdapter
-	    extends MouseMotionAdapter
+	private class TGDMouseInputAdapter
+	    extends MouseInputAdapter
 	{
+		 protected void getRowCol(int col,int row)
+		 {		 
+		 }
+		 
 		 public void mouseMoved(MouseEvent e)
 		 {
 		 	int x = e.getX();
 		 	int y = e.getY();
 		 	
-		 	int queen=-1;
+		 	if (x < firstX_ || x >= lastX_ || 
+		 	    y < firstY_ || y >= lastY_) {
+		 		System.out.println("Mouse outside of board");
+		        return;
+		 	}
+
+		 	int col = (x-firstX_) / gridSize();
+		 	int row = (y-firstY_) / gridSize();
 		 	
-		 	// TODO: Find queen that overlaps (x,y), if any
-		 	
-		 	/*
-		 	double minDist=Double.MAX_VALUE;
-            for (int i=0;i<solution_.getTourCnt();i++) {
-            	List tour = solution_.getTour(i);
-            	for (int j=0;j<tour.size();j++) {
-            		TSPCity c = (TSPCity)tour.get(j);
-                    double dist = getDist(x,y,getXCoord(c.x),getYCoord(c.y)); 
-                    if (dist<5 && dist<minDist) {
-                    	minDist = dist;
-                    	closestCity=c;
-                    }
-            	}
-            }
-		 	*/
-		 	
-		 	if (queen==-1) {
-		 		//dialog_.setMouseInfo("");
-		 		System.out.println("No Queen selected");
+		 	int queenValue = getQueenValue(col);
+		 	int queen = (queenValue == row ? col : -1);
+
+		 	String mouseInfo="";
+		 	if (queen!=-1) {
+		 		mouseInfo = "Queen "+queen+" : "+getViolationExpl(queen);
 		 	}
 		 	else {
-		 		//dialog_.setMouseInfo(closestCar.toString());
-		 		System.out.println(getViolationExpl(queen));
+		 		mouseInfo = "No Queen selected";
 		 	}
+		 	System.out.println(mouseInfo);		 	
 		 }
 		 
-		 protected double getDist(int x1,int y1,int x2,int y2)
+		 public void mouseClicked(MouseEvent e)
 		 {
-		     return Math.pow(Math.pow(x1-x2,2)+Math.pow(y1-y2,2),0.5);	
-		 }
+		 	int x = e.getX();
+		 	int y = e.getY();
+		 	
+		 	if (x < firstX_ || x >= lastX_ || 
+		 	    y < firstY_ || y >= lastY_) {
+		 		System.out.println("Mouse outside of board");
+		        return;
+		 	}
+
+		 	int col = (x-firstX_) / gridSize();
+		 	int row = (y-firstY_) / gridSize();
+		 	
+		 	int queenValue = getQueenValue(col);
+		 	if (row != queenValue) {
+		 		PSVariable v = psengine_.getGlobalVariables().get(col);
+		 		PSVarValue value = PSVarValue.getInstance(row);
+		 		v.specifyValue(value);
+		 		repaint();
+		 	}
+		 }		 
 	}
 }
