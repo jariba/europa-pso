@@ -11,7 +11,7 @@ int N = 8;
 String generateModel(int n)
 {
     StringBuffer buf = new StringBuffer();
-    buf.append("typedef int [1 ").append(n).append("] Row;\n\n");
+    buf.append("typedef int [0 ").append(n-1).append("] Row;\n\n");
     
     buf.append("Row ");
     for (int i=0; i<n;i++) {
@@ -57,7 +57,7 @@ void printQueens()
 void initQueens()
 {	
 	PSVariableList l = psengine.getGlobalVariables();	
-	PSVarValue value = PSVarValue.getInstance(1);
+	PSVarValue value = PSVarValue.getInstance(0);
 	
 	for (int i=0;i<N;i++) {
 		v = l.get(i);
