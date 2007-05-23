@@ -35,16 +35,18 @@ public class NQueensBoard
 	protected double zoomFactor_;
     protected PSEngine psengine_;
     protected int queenCnt_;
+    protected JTextArea vinfo_;
     
     protected BufferedImage queenImage_ = null;
     protected ImageObserver imageObserver_ = null;
 	
     // TODO: also support static solution
-	public NQueensBoard(PSEngine engine, int queenCnt) 
+	public NQueensBoard(PSEngine engine, int queenCnt, JTextArea vinfo) 
 	{		
 		psengine_ = engine;
 		queenCnt_ = queenCnt;
 		zoomFactor_=1.0;
+		vinfo_ = vinfo;
 		
 		setBackground(Color.WHITE);
 		setOpaque(true);
@@ -236,7 +238,6 @@ public class NQueensBoard
 		 	
 		 	if (x < firstX_ || x >= lastX_ || 
 		 	    y < firstY_ || y >= lastY_) {
-		 		System.out.println("Mouse outside of board");
 		        return;
 		 	}
 
@@ -248,12 +249,15 @@ public class NQueensBoard
 
 		 	String mouseInfo="";
 		 	if (queen!=-1) {
-		 		mouseInfo = "Queen "+queen+" : "+getViolationExpl(queen);
+		 		mouseInfo = "Queen "+queen;
+		 		if (isInViolation(queen))
+		 			mouseInfo += "\nViolations:\n"+getViolationExpl(queen);
 		 	}
 		 	else {
-		 		mouseInfo = "No Queen selected";
+		 		mouseInfo = "";
 		 	}
-		 	System.out.println(mouseInfo);		 	
+		 	// TODO: do this through event notification instead
+		 	vinfo_.setText(mouseInfo);		 	
 		 }
 		 
 		 public void mouseClicked(MouseEvent e)
@@ -263,7 +267,6 @@ public class NQueensBoard
 		 	
 		 	if (x < firstX_ || x >= lastX_ || 
 		 	    y < firstY_ || y >= lastY_) {
-		 		System.out.println("Mouse outside of board");
 		        return;
 		 	}
 

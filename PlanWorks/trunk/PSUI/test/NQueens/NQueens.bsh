@@ -21,21 +21,52 @@ String generateModel(int n)
     }
     buf.append(";\n\n");
     
-    buf.append("AllDiff(");
+    // check for same row
     for (int i=0; i<n;i++) {
-    	if (i>0)
-    		buf.append(",");
-    	buf.append("v").append(i);
+    	for (int j=i+1; j<n; j++) {
+            buf.append("neq(")
+        	   .append("v").append(i)
+        	   .append(",")
+        	   .append("v").append(j)
+        	   .append(");").append("\n");
+    	}
     }
-    buf.append(");\n\n");
     
+    // check for diagonals
+    for (int i=0; i<n;i++) {
+    	for (int j=i+1; j<n; j++) {
+    		String varName = "v"+i+"down"+j;
+            buf.append("int ").append(varName).append(";\n")
+               .append("addEq(v").append(i).append(",").append(j-i).append(",").append(varName).append(");\n")
+               .append("AllDiff(")
+               .append("v").append(i)
+        	   .append(",")
+               .append("v").append(j)
+        	   .append(",")
+        	   .append(varName)
+        	   .append(");").append("\n");
+            
+    		varName = "v"+i+"up"+j;
+            buf.append("int ").append(varName).append(";\n")
+               .append("addEq(v").append(i).append(",").append(i-j).append(",").append(varName).append(");\n") 
+               .append("AllDiff(")
+               .append("v").append(i)
+        	   .append(",")
+               .append("v").append(j)
+        	   .append(",")
+        	   .append(varName)
+        	   .append(");").append("\n");
+            
+    	}
+    }
+
     return buf.toString();
 }
 
 void loadModel()
 {
 	String nddlModel = generateModel(N);
-	print(nddlModel);
+	//System.out.println(nddlModel);
 	psengine.setAllowViolations(true);
 	psengine.executeScript("nddl",new StringReader(nddlModel));
 }
@@ -67,9 +98,14 @@ void initQueens()
 
 void showQueens()
 {
+	JTextArea mouseInfo = new JTextArea("");
     f = desktop.makeNewFrame("Queens");
-    f.getContentPane().add(new NQueensBoard(psengine,N));
-    f.setSize(450,350);
+    f.getContentPane().add(new NQueensBoard(psengine,N,mouseInfo));
+    f.setSize(450,500);
+
+    f = desktop.makeNewFrame("Mouse Info");
+    f.getContentPane().add(mouseInfo);
+    f.setSize(200,300);    
 }
 
 void search()
@@ -81,4 +117,5 @@ initQueens();
 showQueens();
 search();
 
+//print(generateModel(N));
 //desktop.makeNddlConsole();
