@@ -2,8 +2,8 @@
 
 // Create a planner configuration instance in PLASMA.
 // Horizon Start, Horizon End, MaxPlannerSteps, MaxPlannerDepth
-//PlannerConfig plannerConfiguration = new PlannerConfig(0, 100, 500, +inf);
-TestPC tpc = new TestPC();
+PlannerConfig plannerConfiguration = new PlannerConfig(0, 100, 500, +inf);
+//TestPC tpc = new TestPC();
 
 // Sample object
 YourObject object = new YourObject();
