@@ -4,9 +4,64 @@ import psengine.*;
 import java.io.StringReader;
 
 source("NQueensBoard.java");
+source("TSNQueensSolver.java");
 
 String model = "NQueens";
 int N = 8;
+
+String generateModelWithAllDiff(int n)
+{
+    StringBuffer buf = new StringBuffer();
+    buf.append("typedef int [0 ").append(n-1).append("] Row;\n\n");
+    
+    buf.append("Row ");
+    for (int i=0; i<n;i++) {
+    	if (i>0)
+    		buf.append(",");
+    	buf.append("v").append(i);
+    }
+    buf.append(";\n\n");
+    
+    // check for same row
+    for (int i=0; i<n;i++) {
+    	for (int j=i+1; j<n; j++) {
+            buf.append("neq(")
+        	   .append("v").append(i)
+        	   .append(",")
+        	   .append("v").append(j)
+        	   .append(");").append("\n");
+    	}
+    }
+    
+    // check for diagonals
+    for (int i=0; i<n;i++) {
+    	for (int j=i+1; j<n; j++) {
+    		String varName = "v"+i+"_down_v"+j;
+            buf.append("int ").append(varName).append(";\n")
+               .append("addEq(v").append(i).append(",").append(j-i).append(",").append(varName).append(");\n")
+               .append("AllDiff(")
+               .append("v").append(i)
+        	   .append(",")
+               .append("v").append(j)
+        	   .append(",")
+        	   .append(varName)
+        	   .append(");").append("\n");
+            
+    		varName = "v"+i+"_up_v"+j;
+            buf.append("int ").append(varName).append(";\n")
+               .append("addEq(v").append(i).append(",").append(i-j).append(",").append(varName).append(");\n") 
+               .append("AllDiff(")
+               .append("v").append(i)
+        	   .append(",")
+               .append("v").append(j)
+        	   .append(",")
+        	   .append(varName)
+        	   .append(");").append("\n");            
+    	}
+    }
+
+    return buf.toString();
+}
 
 String generateModel(int n)
 {
@@ -35,28 +90,43 @@ String generateModel(int n)
     // check for diagonals
     for (int i=0; i<n;i++) {
     	for (int j=i+1; j<n; j++) {
-    		String varName = "v"+i+"down"+j;
+    		String varName;
+    		
+    		varName = "v"+j+"_up_v"+i;
             buf.append("int ").append(varName).append(";\n")
                .append("addEq(v").append(i).append(",").append(j-i).append(",").append(varName).append(");\n")
-               .append("AllDiff(")
-               .append("v").append(i)
-        	   .append(",")
+               .append("neq(")
                .append("v").append(j)
         	   .append(",")
         	   .append(varName)
         	   .append(");").append("\n");
+
+            varName = "v"+i+"_down_v"+j;
+            buf.append("int ").append(varName).append(";\n")
+               .append("addEq(v").append(j).append(",").append(i-j).append(",").append(varName).append(");\n")
+               .append("neq(")
+               .append("v").append(i)
+        	   .append(",")
+        	   .append(varName)
+        	   .append(");").append("\n");
             
-    		varName = "v"+i+"up"+j;
+    		varName = "v"+j+"_down_v"+i;
             buf.append("int ").append(varName).append(";\n")
                .append("addEq(v").append(i).append(",").append(i-j).append(",").append(varName).append(");\n") 
-               .append("AllDiff(")
-               .append("v").append(i)
-        	   .append(",")
+               .append("neq(")
                .append("v").append(j)
         	   .append(",")
         	   .append(varName)
         	   .append(");").append("\n");
-            
+
+    		varName = "v"+i+"_up_v"+j;
+            buf.append("int ").append(varName).append(";\n")
+               .append("addEq(v").append(j).append(",").append(j-i).append(",").append(varName).append(");\n") 
+               .append("neq(")
+               .append("v").append(i)
+        	   .append(",")
+        	   .append(varName)
+        	   .append(");").append("\n");            
     	}
     }
 
@@ -65,7 +135,7 @@ String generateModel(int n)
 
 void loadModel()
 {
-	String nddlModel = generateModel(N);
+	String nddlModel = generateModel(N); //generateModelWithAllDiff(N);
 	//System.out.println(nddlModel);
 	psengine.setAllowViolations(true);
 	psengine.executeScript("nddl",new StringReader(nddlModel));
@@ -116,61 +186,16 @@ void showQueens()
     f.setSize(200,300);    
 }
 
-PSVariable getQueenWithMaxViolation()
+void solve(int maxIter)
 {
-	double maxViolation = 0;
-	int maxVar=0;
-	
-	PSVariableList l = psengine.getGlobalVariables();	
-	
-	for (int i=0;i<N;i++) {
-		PSVariable v = l.get(i);
-		if (v.getViolation() > maxViolation) {
-			maxVar = i;
-			maxViolation = v.getViolation();
-		}
-	}    			
-	
-	return l.get(maxVar);
-}
-
-int getSlotWithMinViolation(PSVariable queen,int curPos)
-{
-	int bestSlot = 0;
-	double minViolation = psengine.getViolation();
-	
-    for (int i=0;i<N;i++) {
-    	if (i != curPos) {
-    		PSVarValue value = PSVarValue.getInstance(i);
-    		queen.specifyValue(value);
-    		double v = psengine.getViolation();
-    		if (v < minViolation) {
-    			bestSlot = i;
-    			minViolation = v;
-    		}
-    	}
-    }
-    
-    return bestSlot;
-}
-
-void search()
-{
-	for (int i=0;psengine.getViolation() > 0 && i < 500;i++) {
-	    PSVariable queenToMove = getQueenWithMaxViolation();
-		int curPos = queenToMove.getSingletonValue().asInt();
-	    int slot = getSlotWithMinViolation(queenToMove,curPos);
-		PSVarValue value = PSVarValue.getInstance(slot);
-		queenToMove.specifyValue(value);
-		print("Moved queen "+queenToMove.getName()+" from "+curPos+" to "+slot);
-	    print(i+":"+queensToString());
-	}
+    TSNQueensSolver s = new TSNQueensSolver(N,psengine);
+    s.solve(maxIter);
 }
 
 loadModel();
 initQueens();
 showQueens();
-//search();
+//solve(100);
 
 //print(generateModel(N));
 //desktop.makeNddlConsole();
