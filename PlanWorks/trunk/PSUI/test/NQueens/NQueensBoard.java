@@ -36,22 +36,25 @@ public class NQueensBoard
     protected PSEngine psengine_;
     protected int queenCnt_;
     protected JTextArea vinfo_;
+    protected boolean isReadOnly_;
+    protected Object[] solution_ = null;
     
     protected BufferedImage queenImage_ = null;
     protected ImageObserver imageObserver_ = null;
 	
     // TODO: also support static solution
-	public NQueensBoard(PSEngine engine, int queenCnt, JTextArea vinfo) 
+	public NQueensBoard(PSEngine engine, int queenCnt, JTextArea vinfo,boolean isReadOnly) 
 	{		
-		psengine_ = engine;
+		psengine_ = (isReadOnly ? null : engine); // Hack! BeanShell won't allow a null parameter to the constructor
 		queenCnt_ = queenCnt;
 		zoomFactor_=1.0;
 		vinfo_ = vinfo;
+		isReadOnly_ = isReadOnly;
 		
 		setBackground(Color.WHITE);
 		setOpaque(true);
-		this.addMouseMotionListener(new TGDMouseInputAdapter());
-		this.addMouseListener(new TGDMouseInputAdapter());
+		addMouseMotionListener(new TGDMouseInputAdapter());
+		addMouseListener(new TGDMouseInputAdapter());
 	}
 	
 	public double getZoomFactor() { return zoomFactor_; }
@@ -86,12 +89,18 @@ public class NQueensBoard
 	{
 		List retval = new Vector();
 		
-		PSVariableList l = psengine_.getGlobalVariables();
-		for (int i=0;i<queenCnt_;i++) {
-			PSVariable v = l.get(i);
-			Integer value = v.getSingletonValue().asInt(); 
-			retval.add(value);
+		if (psengine_ != null) {
+			PSVariableList l = psengine_.getGlobalVariables();
+			for (int i=0;i<queenCnt_;i++) {
+				PSVariable v = l.get(i);
+				Integer value = v.getSingletonValue().asInt(); 
+				retval.add(value);
+			}
 		}
+		else if (solution_ != null) {
+			retval = (List)solution_[1];
+		}
+		
 		return retval;
 	}
 	
@@ -108,20 +117,50 @@ public class NQueensBoard
 	
 	boolean isInViolation(int col)
 	{
-		PSVariable v = psengine_.getGlobalVariables().get(col);
-		return (v.getViolation() > 0);
+		boolean retval = false;
+		
+		if (psengine_ != null) {
+		    PSVariable v = psengine_.getGlobalVariables().get(col);
+		    retval = (v.getViolation() > 0);
+		}
+		else if (solution_ != null) {
+			List violations = (List)solution_[2];
+			return !violations.get(col).toString().equals("");
+		}
+		
+		return retval;
 	}
 	
 	String getViolationExpl(int col)
 	{
-		PSVariable v = psengine_.getGlobalVariables().get(col);
-		return v.getViolationExpl();
+		String retval = "";
+		
+		if (psengine_ != null) {
+		    PSVariable v = psengine_.getGlobalVariables().get(col);		    
+		    retval = v.getViolationExpl();
+		}
+		else if (solution_ != null) {
+			List violations = (List)solution_[2];
+			return violations.get(col).toString();
+		}
+		
+		return retval;
 	}
 	
 	int getQueenValue(int col)
 	{
-		PSVariable v = psengine_.getGlobalVariables().get(col);
-        return v.getSingletonValue().asInt();	    
+		int retval = -1;
+		
+		if (psengine_ != null) {
+		    PSVariable v = psengine_.getGlobalVariables().get(col);
+            return v.getSingletonValue().asInt();
+		}
+		else if (solution_ != null) {
+			List values = (List)solution_[1];
+			return (Integer)values.get(col);
+		}
+		
+		return retval;
 	}
 	
 	protected Image getQueenImage()
@@ -262,6 +301,9 @@ public class NQueensBoard
 		 
 		 public void mouseClicked(MouseEvent e)
 		 {
+			if (isReadOnly_)
+				return;
+			
 		 	int x = e.getX();
 		 	int y = e.getY();
 		 	
@@ -281,5 +323,11 @@ public class NQueensBoard
 		 		repaint();
 		 	}
 		 }		 
+	}
+	
+	public void setSolution(Object[] solution)
+	{
+		solution_ = solution;
+		repaint();
 	}
 }
