@@ -5,6 +5,7 @@ import java.io.StringReader;
 
 source("NQueensBoard.java");
 source("TSNQueensSolver.java");
+source("NQueensPanel.java");
 
 String model = "NQueens";
 int N = 8;
@@ -177,13 +178,15 @@ void initQueens()
 void showQueens()
 {
 	JTextArea mouseInfo = new JTextArea("");
-    f = desktop.makeNewFrame("Queens");
-    f.getContentPane().add(new NQueensBoard(psengine,N,mouseInfo));
-    f.setSize(450,500);
+    f = desktop.makeNewFrame("NQueens");
+    NQueensPanel p = new NQueensPanel(psengine,N,mouseInfo);
+    f.getContentPane().add(p.getUIPanel());
+    f.setSize(450,550);
 
     f = desktop.makeNewFrame("Mouse Info");
     f.getContentPane().add(mouseInfo);
-    f.setSize(200,300);    
+    f.setSize(200,400); 
+    f.setLocation(470,20);
 }
 
 void solve(int maxIter)
