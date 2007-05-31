@@ -23,6 +23,7 @@ class NQueensPanel
 	protected JLabel iterationCount_;
     protected List solutions_;
     protected int curSolution_;
+    protected JButton nextBtn_,prevBtn_;
 	
 	public NQueensPanel(PSEngine psengine,
 			            int queenCnt, 
@@ -49,12 +50,20 @@ class NQueensPanel
 		topPanel.add(new JLabel("Max Iterations:"));
 		topPanel.add(maxIterations_);
 		topPanel.add(solveBtn_);
+		iterationCount_ = new JLabel("Iteration : 0");
+		topPanel.add(iterationCount_);
 
 		solverBoard_ = new NQueensBoard(psengine,queenCnt,mouseInfo,true);
 
 		JPanel bottomPanel = new JPanel(new FlowLayout());
-		iterationCount_ = new JLabel("Iteration : 0");
-		bottomPanel.add(iterationCount_);
+		nextBtn_ = new JButton(">>");
+		nextBtn_.addMouseListener(this);
+		nextBtn_.setEnabled(false);
+		prevBtn_ = new JButton("<<");
+		prevBtn_.addMouseListener(this);
+		prevBtn_.setEnabled(false);
+		bottomPanel.add(prevBtn_);
+		bottomPanel.add(nextBtn_);
 		
 		solverPanel.add(BorderLayout.NORTH,topPanel);
 		solverPanel.add(BorderLayout.CENTER,solverBoard_);
@@ -74,6 +83,12 @@ class NQueensPanel
    				SolverRunner handler = new SolverRunner();
    				handler.start();        	
    			}
+   	        if (e.getSource()==nextBtn_) {
+   	            setCurrentSolution(curSolution_+1);
+   	       	}
+   	        if (e.getSource()==prevBtn_) {
+   	            setCurrentSolution(curSolution_-1);
+   	        }
    		}
    		catch (Exception ex) {
    			throw new RuntimeException(ex);
@@ -85,10 +100,12 @@ class NQueensPanel
    	{
 		public void run() 
 		{
+			solveBtn_.setEnabled(false);
 			tabbedPane_.setEnabledAt(0,false);
 			int maxIter = Integer.parseInt(maxIterations_.getText());
 	    	solver_.solve(maxIter);
 			tabbedPane_.setEnabledAt(0,true);
+			solveBtn_.setEnabled(true);
 		}   	    
    	}
 
@@ -102,11 +119,25 @@ class NQueensPanel
 		solutions_.add(new Object[]{new Integer(iteration),queenPositions,queenViolations});
 	    SwingUtilities.invokeLater(new Updater2());
 	}
-	
+
 	protected void setCurrentSolution(int i)
 	{
-		curSolution_ = i;
-		solverBoard_.setSolution((Object[])solutions_.get(curSolution_));
+    	if (i >= solutions_.size() || i < 0)
+    		return;
+    	
+    	curSolution_=i;
+
+    	if (curSolution_==solutions_.size()-1)
+    		nextBtn_.setEnabled(false);
+    	else
+    		nextBtn_.setEnabled(true);
+
+    	if (curSolution_==0)
+    		prevBtn_.setEnabled(false);
+    	else
+    		prevBtn_.setEnabled(true);
+
+    	solverBoard_.setSolution((Object[])solutions_.get(curSolution_));
 	}
 	
 	class Updater1 implements Runnable
