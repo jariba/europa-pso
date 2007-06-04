@@ -1,0 +1,33 @@
+// Light.bsh
+
+import psengine.*;
+
+void loadModel()
+{
+	cwd = bsh.cwd;
+    String nddlModel = cwd+"/Light.nddl";
+    psengine.executeScript("nddl",nddlModel);
+}
+
+void createPlan()
+{
+	solver = desktop.makeSolver("PlannerConfig.xml", 0, 50);
+
+	while (solver.hasFlaws())
+		solver.step();
+}
+
+void showPlan()
+{
+    desktop.showTokens(psengine.getObjectsByType("LightMgr").get(0));
+}
+
+void main()
+{
+	loadModel();
+    createPlan();
+	showPlan();
+}
+
+main();
+
