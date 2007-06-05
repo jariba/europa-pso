@@ -37,17 +37,36 @@ String planStructureToPlexil(PlanStructure ps, List mappings)
 	return PlanStructureToPlexilConverter.convertToPlexil(ps,mappings);
 }
 
-void main()
+// Pascal : This is what you need to move to your CI component
+void realTest()
+{
+    // Run when component starts :
+	loadModel();
+    createPlan();
+	
+	// Run when getPlan is invoked :
+	PlanStructure ps = makePlanStructure();
+	System.out.println(ps.toString()); // Real test doesn't need this
+}
+
+void debugTest()
 {
 	loadModel();
     createPlan();
-	showPlan();
+	showPlan(); 
 	PlanStructure ps = makePlanStructure();
-	System.out.println(ps.toString());
-	Vector mappings = new Vector();
-	String plexil = planStructureToPlexil(ps,mappings);
-	System.out.println(plexil);
+	System.out.println(ps.toString()); 
+	Vector mappings = new Vector();    
+	String plexil = planStructureToPlexil(ps,mappings); 
+	System.out.println(plexil); 	
 }
+
+void main()
+{
+    //realTest();
+    debugTest();
+}
+
 
 main();
 
