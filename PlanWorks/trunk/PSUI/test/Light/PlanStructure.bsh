@@ -1,0 +1,102 @@
+
+public class Entity
+{
+	public int id;
+}
+
+public class TemporalObject
+{
+	public Entity entity;
+	public int start_time_id;
+	public int end_time_id;
+}
+
+public class ActionStructure
+{
+	public TemporalObject temporal_object;
+	public int[] parameter_ids;
+	public int[] effect_ids;
+	
+    public ActionStructure()
+    {
+    	effect_ids = new int[0];
+    }
+}
+
+public class ParameterType
+{
+	protected String name_;
+
+	public ParameterType(String n) { name_ = n; }
+
+	public static ParameterType STRING_TYPE;
+	public static ParameterType LONG_TYPE;
+	public static ParameterType DOUBLE_TYPE;	
+}
+
+ParameterType.STRING_TYPE = new ParameterType("string");
+ParameterType.LONG_TYPE = new ParameterType("long");
+ParameterType.DOUBLE_TYPE = new ParameterType("double");
+
+public class ParameterValue
+{
+	protected ParameterType type_;
+	protected String value_;
+	
+	public ParameterValue(ParameterType type,String value)
+	{
+		type_ = type;
+		value_ = value;
+	}
+	
+    public ParameterType discriminator() { return type_; }
+    public String string_value() { return value_; }
+    public long double_value() { return Long.valueOf(value_).longValue(); }
+    public double double_value() { return Double.valueOf(value_).doubleValue(); }
+   
+}
+
+public class ParameterStructure
+{
+	public ParameterValue value;
+}
+
+// EUROPA models don't have propositions, so this is an empty class
+public class PropositionStructure {}
+
+public class PlanStructure
+{
+	public ActionStructure[]      actions;
+	public ParameterStructure[]   parameters;
+	public PropositionStructure[] propositions; 
+
+	public PlanStructure()
+	{
+		propositions = new PropositionStructure[0];
+	}
+}
+
+public class EUROPAtoPlanStructure
+{
+    public static PlanStructure translate(PSTokenList plan)
+    {
+        PlanStructure ps = new PlanStructure();
+        
+        return ps;
+    }
+    
+    static ActionStructure makeAction(PSToken t)
+    {
+    	ActionStructure a = new ActionStructure();
+    	
+    	return a;
+    }
+    
+    static ParameterStructure makeParameter(PSVariable v)
+    {
+    	ParameterStructure p =new ParameterStructure();
+    	
+    	return p;
+    }
+}
+

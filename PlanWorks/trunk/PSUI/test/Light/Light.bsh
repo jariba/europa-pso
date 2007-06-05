@@ -2,6 +2,9 @@
 
 import psengine.*;
 
+source("PlanStructure.bsh");
+//source("PlanStructuretoPlexilConverter.bsh");
+
 void loadModel()
 {
 	cwd = bsh.cwd;
