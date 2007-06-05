@@ -1,9 +1,11 @@
 // Light.bsh
 
 import psengine.*;
+import java.util.List;
+import java.util.Vector;
 
 source("PlanStructure.bsh");
-//source("PlanStructuretoPlexilConverter.bsh");
+source("PlanStructureToPlexilConverter.bsh");
 
 void loadModel()
 {
@@ -30,10 +32,9 @@ PlanStructure makePlanStructure()
 	return EUROPAtoPlanStructure.translate(psengine.getTokens());	
 }
 
-String planStructureToPlexil(PlanStructure ps)
+String planStructureToPlexil(PlanStructure ps, List mappings)
 {
-	// TODO:
-	return "";
+	return PlanStructureToPlexilConverter.convertToPlexil(ps,mappings);
 }
 
 void main()
@@ -42,7 +43,10 @@ void main()
     createPlan();
 	showPlan();
 	PlanStructure ps = makePlanStructure();
-	planStructureToPlexil(ps);
+	System.out.println(ps.toString());
+	Vector mappings = new Vector();
+	String plexil = planStructureToPlexil(ps,mappings);
+	System.out.println(plexil);
 }
 
 main();
