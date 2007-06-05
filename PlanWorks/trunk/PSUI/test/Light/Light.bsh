@@ -43,81 +43,176 @@ public class LibraryLoader {
   }
 }
 
-// Pascal : in your program the variable psengine is not available, so the method getPSEngine() provided below
-// should be called instead to initialize europa
-PSEngine europa = psengine;
-
-public PSEngine getPSEngine()
+public class EUROPAtoPlanStructure
 {
-	if (europa == null) {
-        LibraryLoader.loadLibrary("System_o"); // use System_g if you wnat to run the debug version
-        europa = new PSEngine();
-        europa.start();
+    public static PlanStructure translate(PSTokenList plan)
+    {
+        PlanStructure ps = new PlanStructure();
+        List actions = new Vector();
+        List parameters = new Vector();
+        
+        for (int i=0;i<plan.size();i++) {
+        	PSToken t = plan.get(i);
+        	actions.add(makeAction(t));
+        	PSVariableList params = t.getParameters();
+        	for (int j=0;j<params.size();j++) {
+        		PSVariable p = params.get(j);
+        		if (isValidParameter(p)) {
+        		    ParameterStructure param = makeParameter(p);
+       		        parameters.add(param);
+        		}
+        		else 
+        			System.out.println("Ignoring parameter:"+p.getName());
+        	}
+        }
+        
+        ps.actions = new ActionStructure[actions.size()];
+        for (int i=0;i<actions.size();i++)
+        	ps.actions[i] = (ActionStructure)actions.get(i);
+        
+        ps.parameters = new ParameterStructure[parameters.size()];
+        for (int i=0;i<parameters.size();i++)
+        	ps.parameters[i] = (ParameterStructure)parameters.get(i);
+        
+        return ps;
+    }
+    
+    static ActionStructure makeAction(PSToken t)
+    {
+    	PSVariableList params = t.getParameters();
+    	
+    	Vector valid_ids = new Vector();
+    	for (int i=0;i<params.size();i++) {
+    		if (isValidParameter(params.get(i))) 
+    		    valid_ids.add(params.get(i).getKey());
+    	}
+
+    	int[] param_ids = new int[valid_ids.size()];
+    	for (int i=0;i<valid_ids.size();i++)
+    		param_ids[i] = (Integer)valid_ids.get(i);
+
+    	
+    	ActionStructure a = new ActionStructure(
+    			t.getKey(),
+    			t.getParameter("start").getKey(),
+    			t.getParameter("end").getKey(),
+    			param_ids
+        );
+    	
+    	return a;
+    }
+    
+    static ParameterType getParameterType(PSVarType t)
+    {
+    	if (t == PSVarType.STRING)
+    		return ParameterType.STRING_TYPE;
+    	else if (t == PSVarType.DOUBLE)
+    		return ParameterType.DOUBLE_TYPE;
+    	else if (t == PSVarType.INTEGER)
+    		return ParameterType.LONG_TYPE;
+    	
+    	return null;
+    }
+    
+    static boolean isValidParameter(PSVariable v)
+    {
+    	// Skip parameters with object type and
+    	// internal europa parameters
+    	String paramName = v.getName();
+    	return (getParameterType(v.getType()) != null)
+    	    && !paramName.equals("state")
+    	    && !paramName.equals("duration")
+    	;
+    }
+    static ParameterStructure makeParameter(PSVariable v)
+    {
+    	ParameterType type = getParameterType(v.getType());
+   	    ParameterStructure p =new ParameterStructure(v.getKey(),v.getName(),type,v.toString());
+   	  	return p;
+    }
+}
+
+public class FakeDSA 
+{
+    // Pascal : in your program the variable psengine is not available, so the method getPSEngine() provided below
+    // should be called instead to initialize europa
+    // PSEngine europa_ = null;
+	PSEngine europa_ = psengine;
+
+	public PSEngine getPSEngine()
+	{
+		if (europa_ == null) {
+	        LibraryLoader.loadLibrary("System_o"); // use System_g if you wnat to run the debug version
+	        europa_ = new PSEngine();
+	        europa_.start();
+		}
+
+		return europa_;
 	}
 
-	return europa;
-}
+	void loadModel()
+	{
+		cwd = bsh.cwd;
+		String nddlModel = cwd+"/Light.nddl";
+		getPSEngine().executeScript("nddl",new FileReader(nddlModel));
+	}
 
-void loadModel()
-{
-	cwd = bsh.cwd;
-    String nddlModel = cwd+"/Light.nddl";
-    getPSEngine().executeScript("nddl",new FileReader(nddlModel));
-}
+	void createPlan()
+	{
+		solver = desktop.makeSolver("PlannerConfig.xml", 0, 50);
 
-void createPlan()
-{
-	solver = desktop.makeSolver("PlannerConfig.xml", 0, 50);
+		while (solver.hasFlaws())
+			solver.step();
+	}
 
-	while (solver.hasFlaws())
-		solver.step();
-}
+	void showPlan()
+	{
+		desktop.showTokens(getPSEngine().getObjectsByType("LightMgr").get(0));
+	}
 
-void showPlan()
-{
-    desktop.showTokens(getPSEngine().getObjectsByType("LightMgr").get(0));
-}
+	PlanStructure makePlanStructure()
+	{
+		// Get the Light Manager
+		PSObject lightMgr = getPSEngine().getObjectsByType("LightMgr").get(0);
+		// Plan == tokens on LightManager
+		return EUROPAtoPlanStructure.translate(lightMgr.getTokens());	
+	}
 
-PlanStructure makePlanStructure()
-{
-	return EUROPAtoPlanStructure.translate(getPSEngine().getTokens());	
-}
+	String planStructureToPlexil(PlanStructure ps, List mappings)
+	{
+		return PlanStructureToPlexilConverter.convertToPlexil(ps,mappings);
+	}
 
-String planStructureToPlexil(PlanStructure ps, List mappings)
-{
-	return PlanStructureToPlexilConverter.convertToPlexil(ps,mappings);
-}
-
-// Pascal : This is what you need to move to your CI component
-void realTest()
-{
-    // Run when component starts :
-	loadModel();
-    createPlan();
+	public void start()
+	{
+		loadModel();
+		createPlan();
+	}
 	
-	// Run when getPlan is invoked :
-	PlanStructure ps = makePlanStructure();
-	System.out.println(ps.toString()); // Real test doesn't need this
+    //	Pascal : This is what you need to move to your CI component
+	public void realTest()
+	{
+		// Run when getPlan() is invoked :
+		PlanStructure ps = makePlanStructure();
+		System.out.println(ps.toString()); // Real test doesn't need this
+	}
+
+	public void debugTest()
+	{
+		showPlan(); 
+		
+		PlanStructure ps = makePlanStructure();
+		System.out.println(ps.toString());
+
+		Vector mappings = new Vector();    
+		String plexil = planStructureToPlexil(ps,mappings); 
+		System.out.println(plexil); 	
+	}
 }
 
-void debugTest()
-{
-	loadModel();
-    createPlan();
-	showPlan(); 
-	PlanStructure ps = makePlanStructure();
-	System.out.println(ps.toString()); 
-	Vector mappings = new Vector();    
-	String plexil = planStructureToPlexil(ps,mappings); 
-	System.out.println(plexil); 	
-}
-
-void main()
-{
-    //realTest();
-    debugTest();
-}
-
-
-main();
+// main()
+	FakeDSA dsa = new FakeDSA();
+	dsa.start();
+    dsa.debugTest();
+    //dsa.realTest();
 

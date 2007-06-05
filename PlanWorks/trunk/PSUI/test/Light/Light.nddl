@@ -1,7 +1,10 @@
 
+
+enum ActionName {turnOn,turnOff};
+
 class LightMgr {
- predicate turnOn  { duration=10; } 
- predicate turnOff { duration=10; }
+ predicate turnOn  { ActionName action_name; duration=10; } 
+ predicate turnOff { ActionName action_name; duration=10; }
 }
 
 /**
@@ -10,11 +13,13 @@ class LightMgr {
  
 LightMgr::turnOn
 {
+ eq(action_name,turnOn);
  meets (object.turnOff);
 }
 
 LightMgr::turnOff
 {
+ eq(action_name,turnOff);
  meets (object.turnOn);
 }
 
