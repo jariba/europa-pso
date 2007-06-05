@@ -1,4 +1,3 @@
-//#include "Plasma.nddl"
 
 class LightMgr {
  predicate turnOn  { duration=10; } 
