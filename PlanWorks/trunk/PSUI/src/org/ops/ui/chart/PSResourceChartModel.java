@@ -3,10 +3,10 @@ package org.ops.ui.chart;
 
 // TODO: introduce UI specific classes?
 
-import dsa.ResourceProfile;
+import psengine.PSResourceProfile;
 
 public interface PSResourceChartModel 
 {
-    public ResourceProfile getCapacity();
-    public ResourceProfile getUsage();
+    public PSResourceProfile getCapacity();
+    public PSResourceProfile getUsage();
 }
