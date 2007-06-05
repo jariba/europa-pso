@@ -1,7 +1,6 @@
 package org.ops.ui.chart;
 
 import java.util.Calendar;
-import java.util.Iterator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,7 +22,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
-import dsa.ResourceProfile;
+import psengine.PSResourceProfile;
+import psengine.PSTimePointList;
 
 public class PSJFreeResourceChart 
     extends PSResourceChart 
@@ -108,16 +108,16 @@ public class PSJFreeResourceChart
         return dataset;
     }        
     
-    protected TimeSeries resourceProfileToTimeSeries(String name,ResourceProfile rp,boolean useUB)
+    protected TimeSeries resourceProfileToTimeSeries(String name,PSResourceProfile rp,boolean useUB)
     {
     	TimeSeries ts = new TimeSeries(name,Minute.class);
     	
     	double lastValue = Double.NEGATIVE_INFINITY;
     	int lastTime = Integer.MIN_VALUE;
     	
-    	Iterator<Integer> it = rp.getTimes();
-    	while (it.hasNext()) {
-    		Integer i = it.next();
+    	PSTimePointList times = rp.getTimes();
+    	for (int j=0; j<times.size();j++) {
+    		Integer i = times.get(j);
     		// Ignore initial MINUS_INFINITY entry
     		if (i < 0)
     			continue;
