@@ -25,11 +25,24 @@ void showPlan()
     desktop.showTokens(psengine.getObjectsByType("LightMgr").get(0));
 }
 
+PlanStructure makePlanStructure()
+{
+	return EUROPAtoPlanStructure.translate(psengine.getTokens());	
+}
+
+String planStructureToPlexil(PlanStructure ps)
+{
+	// TODO:
+	return "";
+}
+
 void main()
 {
 	loadModel();
     createPlan();
 	showPlan();
+	PlanStructure ps = makePlanStructure();
+	planStructureToPlexil(ps);
 }
 
 main();

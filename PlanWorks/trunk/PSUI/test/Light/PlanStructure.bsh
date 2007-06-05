@@ -1,7 +1,16 @@
 
+import java.util.List;
+import java.util.Vector;
+import psengine.*;
+
 public class Entity
 {
 	public int id;
+	
+	public Entity(int i)
+	{
+		id = i;
+	}
 }
 
 public class TemporalObject
@@ -9,6 +18,13 @@ public class TemporalObject
 	public Entity entity;
 	public int start_time_id;
 	public int end_time_id;
+	
+	public TemporalObject(int id,int start, int end)
+	{
+		entity = new Entity(id);
+		start_time_id = start;
+		end_time_id = end;
+	}
 }
 
 public class ActionStructure
@@ -17,9 +33,42 @@ public class ActionStructure
 	public int[] parameter_ids;
 	public int[] effect_ids;
 	
-    public ActionStructure()
+    public ActionStructure(int id,int start,int end,int[] param_ids)
     {
+    	temporal_object = new TemporalObject(id,start,end);
+    	parameter_ids = param_ids;
     	effect_ids = new int[0];
+    }
+    
+    public String toString()
+    {
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append("        ")
+		   .append("Action { ")
+		   .append("id=").append(temporal_object.entity.id).append(" ")
+		   .append("start_time_id=").append(temporal_object.start_time_id).append(" ")
+		   .append("end_time_id=").append(temporal_object.end_time_id).append(" ");
+		
+		buf.append("parameter_ids(").append(parameter_ids.length).append(") {");
+		for (int i=0;i<parameter_ids.length;i++) {
+		    if (i>0)
+		    	buf.append(",");
+		    buf.append(parameter_ids[i]);
+		}
+        buf.append("} ");
+        
+		buf.append("effect_ids(").append(effect_ids.length).append(") {");
+		for (int i=0;i<effect_ids.length;i++) {
+		    if (i>0)
+		    	buf.append(",");
+		    buf.append(effect_ids[i]);
+		}
+        buf.append("} ");
+        
+		buf.append("}\n");		
+		
+		return buf.toString();    	
     }
 }
 
@@ -32,6 +81,8 @@ public class ParameterType
 	public static ParameterType STRING_TYPE;
 	public static ParameterType LONG_TYPE;
 	public static ParameterType DOUBLE_TYPE;	
+	
+	public String toString() { return name_; }
 }
 
 ParameterType.STRING_TYPE = new ParameterType("string");
@@ -54,11 +105,33 @@ public class ParameterValue
     public long double_value() { return Long.valueOf(value_).longValue(); }
     public double double_value() { return Double.valueOf(value_).doubleValue(); }
    
+    public String toString() { return type_.toString() + "("+value_+")"; }
 }
 
 public class ParameterStructure
 {
+	public Entity entity;
+	public String name;
 	public ParameterValue value;
+	
+	public ParameterStructure(int id,String n,ParameterType type,String v)
+	{
+		entity = new Entity(id);
+		name = n;
+	    value = new ParameterValue(type,v);	
+	}
+	
+	public String toString() 
+	{ 
+	    StringBuffer buf = new StringBuffer();
+	    
+	    buf.append("        ").append("parameter { ")
+	       .append("id=").append(entity.id).append(" ")
+	       .append("name=").append(name).append(" ")
+	       .append(value.toString()).append(" }\n");
+	    
+		return buf.toString(); 
+    }
 }
 
 // EUROPA models don't have propositions, so this is an empty class
@@ -74,6 +147,29 @@ public class PlanStructure
 	{
 		propositions = new PropositionStructure[0];
 	}
+	
+	public String toString()
+	{
+		StringBuffer buf = new StringBuffer();
+		
+		buf.append("PlanStructure {\n");
+		
+		buf.append("   Actions(").append(actions.length).append(")\n");
+		for (int i=0;i<actions.length;i++)
+			buf.append(actions[i].toString());
+		
+		buf.append("   Parameters(").append(parameters.length).append(")\n");
+		for (int i=0;i<parameters.length;i++)
+			buf.append(parameters[i].toString());
+
+		buf.append("   Propositions(").append(propositions.length).append(")\n");
+		for (int i=0;i<propositions.length;i++)
+			buf.append(propositions[i].toString());
+
+		buf.append("}\n");
+		
+		return buf.toString();
+	}
 }
 
 public class EUROPAtoPlanStructure
@@ -81,22 +177,73 @@ public class EUROPAtoPlanStructure
     public static PlanStructure translate(PSTokenList plan)
     {
         PlanStructure ps = new PlanStructure();
+        List actions = new Vector();
+        List parameters = new Vector();
+        
+        for (int i=0;i<plan.size();i++) {
+        	PSToken t = plan.get(i);
+        	actions.add(makeAction(t));
+        	PSVariableList params = t.getParameters();
+        	for (int j=0;j<params.size();j++) {
+        		PSVariable p = params.get(j);
+        		ParameterStructure param = makeParameter(p);
+        		if (param != null)
+        		    parameters.add(param);
+        		else 
+        			System.out.println("Ignoring parameter:"+p.getName());
+        	}
+        }
+        
+        ps.actions = new ActionStructure[actions.size()];
+        for (int i=0;i<actions.size();i++)
+        	ps.actions[i] = (ActionStructure)actions.get(i);
+        
+        ps.parameters = new ParameterStructure[parameters.size()];
+        for (int i=0;i<parameters.size();i++)
+        	ps.parameters[i] = (ParameterStructure)parameters.get(i);
         
         return ps;
     }
     
     static ActionStructure makeAction(PSToken t)
     {
-    	ActionStructure a = new ActionStructure();
+    	PSVariableList params = t.getParameters();
+    	int[] param_ids = new int[params.size()];
+    	
+    	for (int i=0;i<params.size();i++)
+    		param_ids[i] = params.get(i).getKey();
+    	
+    	ActionStructure a = new ActionStructure(
+    			t.getKey(),
+    			t.getParameter("start").getKey(),
+    			t.getParameter("end").getKey(),
+    			param_ids
+        );
     	
     	return a;
     }
     
+    static ParameterType getParameterType(PSVarType t)
+    {
+    	if (t == PSVarType.STRING)
+    		return ParameterType.STRING_TYPE;
+    	else if (t == PSVarType.DOUBLE)
+    		return ParameterType.DOUBLE_TYPE;
+    	else if (t == PSVarType.INTEGER)
+    		return ParameterType.LONG_TYPE;
+    	
+    	return null;
+    }
+    
     static ParameterStructure makeParameter(PSVariable v)
     {
-    	ParameterStructure p =new ParameterStructure();
+    	ParameterType type = getParameterType(v.getType());
+    	if (type != null) {
+    	    ParameterStructure p =new ParameterStructure(v.getKey(),v.getName(),type,v.toString());
+    	  	return p;
+    	}
     	
-    	return p;
+    	return null;
     }
 }
 
