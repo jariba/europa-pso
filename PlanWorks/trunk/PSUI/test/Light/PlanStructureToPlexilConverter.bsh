@@ -4,10 +4,12 @@ import java.util.List;
 class Logger
 {
     protected Class clazz_;
+    protected boolean debug_;
     
     public Logger(Class c)
     {
     	clazz_ = c;
+    	debug_ = false;
     }
     
     public static Logger getLogger(Class c)
@@ -15,7 +17,8 @@ class Logger
     	return new Logger(c);
     }
     
-    public boolean isDebugEnabled() { return true; }
+    public boolean isDebugEnabled() { return debug_; }
+    public void setDebug(boolean b) { debug_ = b; }
     
     public void debug(String s)
     {
@@ -39,7 +42,7 @@ public class PlanStructureToPlexilConverter
 {
     private static int nodeCounter = 0;
     private static final String SCHEMA_DECLARATION =  "xsi:noNamespaceSchemaLocation=\"schema_060503.xsd\"";
-    private final static Logger LOGGER = Logger.getLogger(PlanStructureToPlexilConverter.class);
+    public final static Logger LOGGER = Logger.getLogger(PlanStructureToPlexilConverter.class);
 
     /**
      * Converts the specified PlanStructute to PLEXIL.
