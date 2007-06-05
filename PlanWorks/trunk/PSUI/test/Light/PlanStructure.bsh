@@ -89,6 +89,16 @@ ParameterType.STRING_TYPE = new ParameterType("string");
 ParameterType.LONG_TYPE = new ParameterType("long");
 ParameterType.DOUBLE_TYPE = new ParameterType("double");
 
+public class DSATime
+{
+	public int seconds;
+	
+    public DSATime(int secs)
+    {
+        seconds = secs;	
+    }
+}
+
 public class ParameterValue
 {
 	protected ParameterType type_;
@@ -102,9 +112,10 @@ public class ParameterValue
 	
     public ParameterType discriminator() { return type_; }
     public String string_value() { return value_; }
-    public long double_value() { return Long.valueOf(value_).longValue(); }
+    public long long_value() { return Long.valueOf(value_).longValue(); }
     public double double_value() { return Double.valueOf(value_).doubleValue(); }
-   
+    public DSATime time_value() { return new DSATime(Integer.valueOf(value_).intValue()); }
+    
     public String toString() { return type_.toString() + "("+value_+")"; }
 }
 
@@ -186,9 +197,10 @@ public class EUROPAtoPlanStructure
         	PSVariableList params = t.getParameters();
         	for (int j=0;j<params.size();j++) {
         		PSVariable p = params.get(j);
-        		ParameterStructure param = makeParameter(p);
-        		if (param != null)
-        		    parameters.add(param);
+        		if (isValidParameter(p)) {
+        		    ParameterStructure param = makeParameter(p);
+       		        parameters.add(param);
+        		}
         		else 
         			System.out.println("Ignoring parameter:"+p.getName());
         	}
@@ -208,10 +220,17 @@ public class EUROPAtoPlanStructure
     static ActionStructure makeAction(PSToken t)
     {
     	PSVariableList params = t.getParameters();
-    	int[] param_ids = new int[params.size()];
     	
-    	for (int i=0;i<params.size();i++)
-    		param_ids[i] = params.get(i).getKey();
+    	Vector valid_ids = new Vector();
+    	for (int i=0;i<params.size();i++) {
+    		if (isValidParameter(params.get(i))) 
+    		    valid_ids.add(params.get(i).getKey());
+    	}
+
+    	int[] param_ids = new int[valid_ids.size()];
+    	for (int i=0;i<valid_ids.size();i++)
+    		param_ids[i] = (Integer)valid_ids.get(i);
+
     	
     	ActionStructure a = new ActionStructure(
     			t.getKey(),
@@ -235,15 +254,15 @@ public class EUROPAtoPlanStructure
     	return null;
     }
     
+    static boolean isValidParameter(PSVariable v)
+    {
+    	return getParameterType(v.getType()) != null;
+    }
     static ParameterStructure makeParameter(PSVariable v)
     {
     	ParameterType type = getParameterType(v.getType());
-    	if (type != null) {
-    	    ParameterStructure p =new ParameterStructure(v.getKey(),v.getName(),type,v.toString());
-    	  	return p;
-    	}
-    	
-    	return null;
+   	    ParameterStructure p =new ParameterStructure(v.getKey(),v.getName(),type,v.toString());
+   	  	return p;
     }
 }
 
