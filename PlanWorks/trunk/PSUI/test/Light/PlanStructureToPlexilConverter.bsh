@@ -97,6 +97,7 @@ public class PlanStructureToPlexilConverter
 
 	    // Add the end condition. Time == end time
 	    int endTick = getTick(action.temporal_object.end_time_id, ps);
+	    xmlStr += makeEndCondition(indent, endTick ) + "\n";
 	    xmlStr += makeInvariantCondition(indent, endTick) + "\n";
 
 	    // Output the command
@@ -208,6 +209,15 @@ public class PlanStructureToPlexilConverter
 	return resultStr;
     }
 
+    private static String makeEndCondition(int indent, int endTime){
+    	String resultStr = new String();
+    	resultStr += indentation(indent++) + "<EndCondition> <GE> \n";
+    	resultStr += indentation(indent++) + "<LookupOnChange><StateName>time</StateName><Tolerance><RealValue>1.0</RealValue> </Tolerance> </LookupOnChange>\n";
+    	resultStr += indentation(indent) + "<RealValue>" + endTime + "</RealValue> \n";
+    	resultStr += indentation(--indent) + "</GE></EndCondition>\n";
+    	return resultStr;
+        }
+
     /**
      * @brief The invariant condition is used to monitor invariants during node execution. Note that for now, we only monitor
      * time. However, in the future, conditions of an action should also lead to invariants for monitoring.
@@ -225,6 +235,16 @@ public class PlanStructureToPlexilConverter
 	return resultStr;
     }
 
+    private static boolean isSystemParameter(String name)
+    {
+    	return 
+    	    name.equals("action_name") ||
+    	    name.equals("start") ||
+    	    name.equals("end") 
+    	;
+    }
+    
+    
     private static String makeCommand(int indent, ActionStructure action, PlanStructure ps){
 	String resultStr = new String();
 	int[] parameters = action.parameter_ids;
@@ -235,6 +255,8 @@ public class PlanStructureToPlexilConverter
 	    resultStr += indentation(indent++) + "<Arguments>\n";
 	    for(int i=0;i<parameters.length;i++){
 		ParameterStructure parameter = getParameter(parameters[i], ps);
+		if (isSystemParameter(parameter.name))
+			continue;
 		String argTag = "BadTag<MeansThatWeCouldNoptMatchTheType with string, long or double>";
 		String argValue = new String();
 
