@@ -61,10 +61,10 @@ public class PlanStructureToPlexilConverter
 	// Iterate over the actions. We assume their time bounds are grounded and they are all peers. Planner
 	// should have ensured required orderings are maintained when grounding, so no need to worry about any of that.
 	ActionStructure[] actions = ps.actions;
-	xmlStr += indentation(indent++) +"<PlexilPlan " + SCHEMA_DECLARATION + ">\n";
+	xmlStr += indentation(indent++) +"<PlexilPlan>\n";
 
 	// Allocate a master node
-	xmlStr += indentation(indent++) + "<Node type=\"NodeList\">\n";
+	xmlStr += indentation(indent++) + "<Node NodeType=\"NodeList\">\n";
 
 	// Allocate a nodeId for the plan identifier.
 	xmlStr += indentation(indent) + " <NodeId>DSA_Plan_Structure</NodeId>\n";
@@ -84,7 +84,7 @@ public class PlanStructureToPlexilConverter
 	    int id = action.temporal_object.entity.id;
 
 	    // Allocate the node for this action
-	    xmlStr += indentation(indent++) + "<Node type=\"Command\">\n";
+	    xmlStr += indentation(indent++) + "<Node NodeType=\"Command\">\n";
 
 	    // Allocate the NodeId for this action
 	    String nodeId = "ActionNode_" + nodeCounter++;
@@ -98,7 +98,7 @@ public class PlanStructureToPlexilConverter
 	    // Add the end condition. Time == end time
 	    int endTick = getTick(action.temporal_object.end_time_id, ps);
 	    xmlStr += makeEndCondition(indent, endTick ) + "\n";
-	    xmlStr += makeInvariantCondition(indent, endTick) + "\n";
+	    //xmlStr += makeInvariantCondition(indent, endTick) + "\n";
 
 	    // Output the command
 	    xmlStr += indentation(indent++) + " <NodeBody>\n";
@@ -158,11 +158,10 @@ public class PlanStructureToPlexilConverter
      */
     private static String makeUpdateNode(int indent, String actionNodeId, ActionStructure action, PlanStructure ps, String updateNodeId){
       String xmlStr = new String();
-	xmlStr += indentation(indent++) + "<Node type=\"Update\">\n";
+	xmlStr += indentation(indent++) + "<Node NodeType=\"Update\">\n";
 	xmlStr += indentation(indent) + "<NodeId>" + updateNodeId + "</NodeId>\n";
 	xmlStr += indentation(indent) + "<StartCondition><EQInternal><NodeStateVariable><NodeId>" + actionNodeId + "</NodeId></NodeStateVariable><NodeStateValue>FINISHED</NodeStateValue></EQInternal></StartCondition>\n";
 
-	// Now output all the pairs, one for each effect, in the node body
 	xmlStr += indentation(indent++) + "<NodeBody><Update>\n";
 	for(int j=0; j<action.effect_ids.length; j++){
 	    PropositionStructure prop = getProposition(action.effect_ids[j], ps);
@@ -246,48 +245,63 @@ public class PlanStructureToPlexilConverter
     
     
     private static String makeCommand(int indent, ActionStructure action, PlanStructure ps){
-	String resultStr = new String();
-	int[] parameters = action.parameter_ids;
-	resultStr += indentation(indent++) + "<Command>\n";
-	resultStr += indentation(indent) + "<CommandName>" + getParameterStringValueByName(parameters, "action_name", ps) + "</CommandName>\n";
+    	String resultStr = new String();
+    	int[] parameters = action.parameter_ids;
+    	resultStr += indentation(indent++) + "<Command>\n";
+    	resultStr += indentation(indent) + "<CommandName>" + getParameterStringValueByName(parameters, "action_name", ps) + "</CommandName>\n";
 
-	if(parameters.length > 0){
-	    resultStr += indentation(indent++) + "<Arguments>\n";
-	    for(int i=0;i<parameters.length;i++){
-		ParameterStructure parameter = getParameter(parameters[i], ps);
-		if (isSystemParameter(parameter.name))
-			continue;
-		String argTag = "BadTag<MeansThatWeCouldNoptMatchTheType with string, long or double>";
-		String argValue = new String();
+    	if(parameters.length > 0){
+    	    int parameterCnt=0;	    
+    	    indent++;
+    	    
+    	    StringBuffer buf = new StringBuffer();
+    	    
+    	    for(int i=0;i<parameters.length;i++){
+    		    ParameterStructure parameter = getParameter(parameters[i], ps);
+    		    if (isSystemParameter(parameter.name))
+    			    continue;
+    		
+    		    String argTag = "BadTag<MeansThatWeCouldNoptMatchTheType with string, long or double>";
+    		    String argValue = new String();
 
-		ParameterType paramType = parameter.value.discriminator();
+    		    ParameterType paramType = parameter.value.discriminator();
 
-		if(paramType == ParameterType.STRING_TYPE){
-		    argTag = "StringValue";
-		    argValue += "\"" + parameter.value.string_value() + "\"";
-		}
-		else if(paramType == ParameterType.LONG_TYPE){
-		    argTag = "IntegerValue";
-		    argValue += parameter.value.long_value();
-		}
-		else if(paramType == ParameterType.DOUBLE_TYPE){
-		    argTag = "RealValue";
-		    argValue += parameter.value.double_value();
-		}
-		else {
-		    if(LOGGER.isDebugEnabled())
-			LOGGER.debug("No parameter type match for " + parameter.name + " with type " + paramType.value());
-        continue; /* per cmcgann email to srschaff dated 2006.07.28 */
-		}
+    		    if(paramType == ParameterType.STRING_TYPE){
+    		      argTag = "StringValue";
+    		      argValue += "\"" + parameter.value.string_value() + "\"";
+    		    }
+    		    else if(paramType == ParameterType.LONG_TYPE){
+    		      argTag = "IntegerValue";
+    		      argValue += parameter.value.long_value();
+    		    }
+    		    else if(paramType == ParameterType.DOUBLE_TYPE){
+    		      argTag = "RealValue";
+    		      argValue += parameter.value.double_value();
+    		    }
+    		    else {
+    		      if(LOGGER.isDebugEnabled())
+    			      LOGGER.debug("No parameter type match for " + parameter.name + " with type " + paramType.value());
+                  continue; /* per cmcgann email to srschaff dated 2006.07.28 */
+    		    }
 
-		resultStr += indentation(indent) + "<" + argTag + ">" + argValue + "</" + argTag + ">\n";
-	    }
+    		    buffer.append(indentation(indent))
+    		          .append("<").append(argTag).append(">").append(argValue)
+    		          .append("</").append(argTag).append(">\n")
+    		    ;
+    		    
+    		    parameterCnt++;
+    	    }
+    	    --indent;
+    	    
+    	    if (parameterCnt > 0) {
+    	        resultStr += indentation(indent) + "<Arguments>\n"
+    	                  + buf.toString()  
+    	                  + indentation(indent) + "</Arguments>\n";
+    	    }
+    	}
 
-	    resultStr += indentation(--indent) + "</Arguments>\n";
-	}
-
-	resultStr += indentation(--indent) + "</Command>\n";
-	return resultStr;
+    	resultStr += indentation(--indent) + "</Command>\n";
+    	return resultStr;
     }
 
     static private ParameterStructure getParameter(int id, PlanStructure ps){
