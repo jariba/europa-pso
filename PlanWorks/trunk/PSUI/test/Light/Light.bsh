@@ -197,7 +197,7 @@ public class FakeDSA
 		System.out.println(ps.toString()); // Real test doesn't need this
 	}
 
-	public void debugTest()
+	public String debugTest()
 	{
 		showPlan(); 
 		
@@ -206,13 +206,15 @@ public class FakeDSA
 
 		Vector mappings = new Vector();    
 		String plexil = planStructureToPlexil(ps,mappings); 
-		System.out.println(plexil); 	
+		System.out.println(plexil);
+		
+		return plexil;
 	}
 }
 
 // main()
 	FakeDSA dsa = new FakeDSA();
 	dsa.start();
-    dsa.debugTest();
+    plexil = dsa.debugTest();
     //dsa.realTest();
 
