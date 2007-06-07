@@ -124,6 +124,8 @@ public class PlanStructureToPlexilConverter
 	// If there are effects, wait till the last node (update node) ends.
 	if(hasEffects)
 	    lastNodeId = "EffectsNode_" + (nodeCounter - 1);
+	else 
+		lastNodeId = "ActionNode_" + (nodeCounter - 1);
 
 	// Allocate an end condition to ensure the overall plan does not end until the last node executes. Note that this will have to be done more carefully
 	// for plans with more than one action since we will have identify some possible sub-sets of actions that have to execute in order to finish.
