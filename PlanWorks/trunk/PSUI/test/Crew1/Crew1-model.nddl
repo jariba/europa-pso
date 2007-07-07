@@ -1,6 +1,7 @@
 #include "Constraints.nddl"
 #include "Plasma.nddl"
 #include "PlannerConfig.nddl"
+#include "Resources.nddl"
 
 // avoiding warnings:
 constraint LessThan(a, b) { a <: numeric && b <: numeric }
