@@ -8,8 +8,7 @@ import org.ops.ui.mouse.*;
 import org.ops.ui.gantt.*;
 import org.ops.ui.chart.*;
 import org.ops.ui.util.Util;
-import psengine.PSSolver;
-import psengine.PSToken;
+import psengine.*;
 
 int month = GregorianCalendar.SEPTEMBER, day = 11; 
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
@@ -33,6 +32,7 @@ void usingInterpreter()
 
 void initPSEngine()
 {
+	psengine.setAllowViolations(true);
 	//usingCodeGeneration();
 	usingInterpreter();
 }
@@ -76,4 +76,32 @@ solver = desktop.makeSolver(
 
 desktop.makeSolverDialog(solver);
 //setupDesktop();
+
+/*
+show();
+res = psengine.getObjectsByType("CapacityResource").get(0);
+t1 = res.getTokens().get(0);
+t2 = res.getTokens().get(1);
+
+PSVarValue five = PSVarValue.getInstance(5);
+PSVarValue eleven = PSVarValue.getInstance(11);
+
+PSVariable s1 = t1.getParameter("start");
+PSVariable s2 = t2.getParameter("start");
+
+// Cause Violation
+s1.specifyValue(five);
+s2.specifyValue(five);
+psengine.getViolation();
+psengine.getViolationExpl();
+
+// Remove Violation
+s2.specifyValue(eleven);
+psengine.getViolation();
+psengine.getViolationExpl();
+ 
+*/
+
+
+
 
