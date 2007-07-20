@@ -137,10 +137,11 @@ createVarValues();
 //setupDesktop();
 
 /*
+to test, run solver, then from the BeanShell listener:
 
 findTokens();
-setStart(vv5,vv5); // Cause Violation
-setStart(vv5,vv11); // Remove Violation
+setStart(vv5,vv7,vv6); // Cause Violation
+setStart(vv3,vv8,vv14); // Remove Violation
  
 */
 
