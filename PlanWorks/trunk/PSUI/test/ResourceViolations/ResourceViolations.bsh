@@ -74,31 +74,54 @@ solver = desktop.makeSolver(
 	, 100               // endHorizon
 );
 
+PSVarValue vv5,vv6,vv7,vv8,vv9,vv10,vv11,vv12;
+
+void createVarValues()
+{
+	vv5 = PSVarValue.getInstance(5);
+	vv6 = PSVarValue.getInstance(6);
+	vv7 = PSVarValue.getInstance(7);
+	vv8 = PSVarValue.getInstance(8);
+	vv9 = PSVarValue.getInstance(9);
+	vv10 = PSVarValue.getInstance(10);
+	vv11 = PSVarValue.getInstance(11);
+	vv12 = PSVarValue.getInstance(12);
+}
+
+PSToken t1,t2,act1,act2;
+PSVariable s1,s2;
+
+void findTokens()
+{
+	res = psengine.getObjectsByType("CapacityResource").get(0);
+	t1 = res.getTokens().get(0);
+	t2 = res.getTokens().get(1);
+
+	act_obj1 = psengine.getObjectsByType("Activity").get(0);
+	act_obj2 = psengine.getObjectsByType("Activity").get(1);
+
+	act1 = act_obj1.getTokens().get(0);
+	act2 = act_obj2.getTokens().get(0);	
+	s1 = act1.getParameter("start");
+	s2 = act2.getParameter("start");
+}
+
+void setStart(PSVarValue a, PSVarValue b)
+{
+	s1.specifyValue(a);
+	s2.specifyValue(b);
+	print(psengine.getViolation() + " : " + psengine.getViolationExpl());	
+}
+
 desktop.makeSolverDialog(solver);
+createVarValues();
 //setupDesktop();
 
 /*
-show();
-res = psengine.getObjectsByType("CapacityResource").get(0);
-t1 = res.getTokens().get(0);
-t2 = res.getTokens().get(1);
 
-PSVarValue five = PSVarValue.getInstance(5);
-PSVarValue eleven = PSVarValue.getInstance(11);
-
-PSVariable s1 = t1.getParameter("start");
-PSVariable s2 = t2.getParameter("start");
-
-// Cause Violation
-s1.specifyValue(five);
-s2.specifyValue(five);
-psengine.getViolation();
-psengine.getViolationExpl();
-
-// Remove Violation
-s2.specifyValue(eleven);
-psengine.getViolation();
-psengine.getViolationExpl();
+findTokens();
+setStart(vv5,vv5); // Cause Violation
+setStart(vv5,vv11); // Remove Violation
  
 */
 
