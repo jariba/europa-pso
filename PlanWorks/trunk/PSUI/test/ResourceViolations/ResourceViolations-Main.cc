@@ -47,19 +47,52 @@ int main(int argc, const char ** argv){
   return 0;
 }
 
+void testViolations(PSEngine& psengine)
+{
+	PSList<PSObject*> l = psengine.getObjectsByType("CapacityResource");
+	debugMsg("testViolations", l.size() << " CapacityResource objects");
+	PSObject* res = l.get(0);
+	PSList<PSToken*> toks = res->getTokens();
+	debugMsg("testViolations", res->getName() << " has " << toks.size() << " tokens");
+	debugMsg("testViolations", psengine.getTokens().size() << " tokens in psengine");
+	PSToken* t1 = toks.get(0);
+	PSToken* t2 = toks.get(1);
+
+	debugMsg("testViolations", " tok1 is : " << t1->toString());
+	debugMsg("testViolations", " tok2 is : " << t2->toString());
+
+	PSVarValue five = PSVarValue::getInstance(5);
+	PSVarValue eleven = PSVarValue::getInstance(11);
+
+	PSVariable* s1 = t1->getParameter("start");
+	PSVariable* s2 = t2->getParameter("start");
+
+	// Cause Violation
+//	s1->specifyValue(five);
+//	s2->specifyValue(five);
+//	debugMsg("testViolations",psengine.getViolation());
+//	debugMsg("testViolations",psengine.getViolationExpl());
+
+	// Remove Violation
+	s2->specifyValue(eleven);
+	debugMsg("testViolations",psengine.getViolation());
+	debugMsg("testViolations",psengine.getViolationExpl());
+}
 
 bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int startHorizon, int endHorizon, int maxSteps)
 {
     try {
 	  PSEngineWithResources engine;
-	
+	  
 	  engine.start();
+	  engine.setAllowViolations(true);
 	  engine.executeTxns(txSource,true,true);
 	
 	  PSSolver* solver = engine.createSolver(plannerConfig);
 	  solver->configure(startHorizon,endHorizon);
 	  int i;
       for (i = 0; 
+           solver->hasFlaws() &&
            !solver->isExhausted() &&
            !solver->isTimedOut() &&
            i<maxSteps; i = solver->getStepCount()) {
@@ -85,7 +118,9 @@ bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int st
 	      debugMsg("Main","Solver finished after " << i << " steps");
 	  }	      
 	      
-	  delete solver;	
+	  testViolations(engine);
+	  
+	  delete solver;	  
 	  engine.shutdown();
 
 	  return true;
