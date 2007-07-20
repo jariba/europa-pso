@@ -53,6 +53,13 @@ void setupDesktop()
     desktop.showTokens(psengine.getObjectsByType("CapacityResource").get(0));
 }
 
+void showResourceLevels()
+{
+    resourceFrame = desktop.makeResourcesFrame("CapacityResource",start);
+    resourceFrame.setLocation(0,180);
+    resourceFrame.setSize(500,300);    	
+}
+
 String getBounds(PSToken t)
 {
     StringBuffer buf = new StringBuffer();
