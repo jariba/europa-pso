@@ -49,29 +49,30 @@ int main(int argc, const char ** argv){
 
 void testViolations(PSEngine& psengine)
 {
-	PSList<PSObject*> l = psengine.getObjectsByType("CapacityResource");
-	debugMsg("testViolations", l.size() << " CapacityResource objects");
-	PSObject* res = l.get(0);
+	/*
+	PSObject* res = psengine.getObjectsByType("CapacityResource").get(0);
 	PSList<PSToken*> toks = res->getTokens();
-	debugMsg("testViolations", res->getName() << " has " << toks.size() << " tokens");
-	debugMsg("testViolations", psengine.getTokens().size() << " tokens in psengine");
 	PSToken* t1 = toks.get(0);
 	PSToken* t2 = toks.get(1);
+    */
+	
+	PSObject* act_obj1 = psengine.getObjectsByType("Activity").get(0);
+	PSObject* act_obj2 = psengine.getObjectsByType("Activity").get(1);
 
-	debugMsg("testViolations", " tok1 is : " << t1->toString());
-	debugMsg("testViolations", " tok2 is : " << t2->toString());
+	PSToken* act1 = act_obj1->getTokens().get(0);
+	PSToken* act2 = act_obj2->getTokens().get(0);	
+
+	PSVariable* s1 = act1->getParameter("start");
+	PSVariable* s2 = act2->getParameter("start");
 
 	PSVarValue five = PSVarValue::getInstance(5);
 	PSVarValue eleven = PSVarValue::getInstance(11);
 
-	PSVariable* s1 = t1->getParameter("start");
-	PSVariable* s2 = t2->getParameter("start");
-
 	// Cause Violation
-//	s1->specifyValue(five);
-//	s2->specifyValue(five);
-//	debugMsg("testViolations",psengine.getViolation());
-//	debugMsg("testViolations",psengine.getViolationExpl());
+	s1->specifyValue(five);
+	s2->specifyValue(five);
+	debugMsg("testViolations",psengine.getViolation());
+	debugMsg("testViolations",psengine.getViolationExpl());
 
 	// Remove Violation
 	s2->specifyValue(eleven);
