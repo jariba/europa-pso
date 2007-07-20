@@ -81,10 +81,12 @@ solver = desktop.makeSolver(
 	, 100               // endHorizon
 );
 
-PSVarValue vv5,vv6,vv7,vv8,vv9,vv10,vv11,vv12;
+PSVarValue vv3,vv4,vv5,vv6,vv7,vv8,vv9,vv10,vv11,vv12,vv13,vv14,vv15,vv16,vv17,vv18;
 
 void createVarValues()
 {
+	vv3 = PSVarValue.getInstance(3);
+	vv4 = PSVarValue.getInstance(4);
 	vv5 = PSVarValue.getInstance(5);
 	vv6 = PSVarValue.getInstance(6);
 	vv7 = PSVarValue.getInstance(7);
@@ -93,10 +95,16 @@ void createVarValues()
 	vv10 = PSVarValue.getInstance(10);
 	vv11 = PSVarValue.getInstance(11);
 	vv12 = PSVarValue.getInstance(12);
+	vv13 = PSVarValue.getInstance(13);
+	vv14 = PSVarValue.getInstance(14);
+	vv15 = PSVarValue.getInstance(15);
+	vv16 = PSVarValue.getInstance(16);
+	vv17 = PSVarValue.getInstance(17);
+	vv18 = PSVarValue.getInstance(18);
 }
 
-PSToken t1,t2,act1,act2;
-PSVariable s1,s2;
+PSToken t1,t2,act1,act2,act3;
+PSVariable s1,s2,s3;
 
 void findTokens()
 {
@@ -106,17 +114,21 @@ void findTokens()
 
 	act_obj1 = psengine.getObjectsByType("Activity").get(0);
 	act_obj2 = psengine.getObjectsByType("Activity").get(1);
+	act_obj3 = psengine.getObjectsByType("Activity").get(2);
 
 	act1 = act_obj1.getTokens().get(0);
 	act2 = act_obj2.getTokens().get(0);	
+	act3 = act_obj3.getTokens().get(0);	
 	s1 = act1.getParameter("start");
 	s2 = act2.getParameter("start");
+	s3 = act3.getParameter("start");
 }
 
-void setStart(PSVarValue a, PSVarValue b)
+void setStart(PSVarValue a, PSVarValue b, PSVarValue c)
 {
 	s1.specifyValue(a);
 	s2.specifyValue(b);
+	s3.specifyValue(c);
 	print(psengine.getViolation() + " : " + psengine.getViolationExpl());	
 }
 

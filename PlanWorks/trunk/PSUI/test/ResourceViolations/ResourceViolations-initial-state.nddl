@@ -5,18 +5,22 @@ PlannerConfig plannerConfiguration = new PlannerConfig(0, 100, 500, +inf);
 CapacityResource r1 = new CapacityResource(0.0,1.0);
 Activity act1 = new Activity(5,1.0);
 Activity act2 = new Activity(6,1.0);
+Activity act3 = new Activity(7,1.0);
 
 // Close the the PLASMA Database - no more objects can be created.
 close();
 
-// Now place your goals here.
 goal(act1.perform goal1);
-leq(5,goal1.start); 
-leq(goal1.end,18); 
+leq(3,goal1.start); 
+leq(goal1.end,25); 
 goal1.start.specify(5);
 
 goal(act2.perform goal2);
-leq(3,goal2.start); 
-leq(goal2.end,20); 
+leq(4,goal2.start); 
+leq(goal2.end,25); 
 goal2.start.specify(8);
 
+goal(act3.perform goal3);
+leq(5,goal3.start); 
+leq(goal3.end,25); 
+goal3.start.specify(10);
