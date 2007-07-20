@@ -42,14 +42,14 @@ public class PSDesktop
 	public static PSDesktop desktop;
 	protected JDesktopPane desktop_;
 	protected int windowCnt_=0;
-	protected PSEngine psEngine_=null;
+	protected PSEngineWithResources psEngine_=null;
 	protected static NddlInterpreter nddlInterpreter = new NddlInterpreter();
 
 	protected static String debugMode_="g";
 	protected static String bshFile_=null;
 
     protected static class PSEngineWithNDDL
-        extends PSEngine
+        extends PSEngineWithResources
     {
       public String executeScript(String language, String script) throws PSException
       {
@@ -203,7 +203,7 @@ public class PSDesktop
     	}
     }
 
-    public PSEngine getPSEngine()
+    public PSEngineWithResources getPSEngine()
     {
     	if (psEngine_ == null) {
             LibraryLoader.loadLibrary("System_"+debugMode_);
@@ -290,10 +290,7 @@ public class PSDesktop
     public JInternalFrame makeResourcesFrame(String type,Calendar start)
     {
         JTabbedPane resourceTabs = new JTabbedPane();
-        PSResourceList resources = null; 
-        Object obj = getPSEngine().getObjectsByType(type);
-        if ( obj instanceof PSResourceList )
-        	resources = (PSResourceList)obj;
+        PSResourceList resources = getPSEngine().getResourcesByType(type);
         for (int i = 0; i < resources.size(); i++) {
         	PSResource r = resources.get(i);
             resourceTabs.add(r.getName(),makeResourceChart(r,start));
