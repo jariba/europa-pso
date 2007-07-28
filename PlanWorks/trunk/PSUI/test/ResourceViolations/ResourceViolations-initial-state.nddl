@@ -11,16 +11,16 @@ Activity act3 = new Activity(7,1.0);
 close();
 
 goal(act1.perform goal1);
-leq(3,goal1.start); 
-leq(goal1.end,25); 
+precedes(3,goal1.start); 
+precedes(goal1.end,25); 
 goal1.start.specify(5);
 
 goal(act2.perform goal2);
-leq(4,goal2.start); 
-leq(goal2.end,25); 
+precedes(4,goal2.start); 
+precedes(goal2.end,25); 
 goal2.start.specify(8);
 
 goal(act3.perform goal3);
-leq(5,goal3.start); 
-leq(goal3.end,25); 
+precedes(5,goal3.start); 
+precedes(goal3.end,25); 
 goal3.start.specify(10);

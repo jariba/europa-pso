@@ -81,10 +81,14 @@ solver = desktop.makeSolver(
 	, 100               // endHorizon
 );
 
-PSVarValue vv3,vv4,vv5,vv6,vv7,vv8,vv9,vv10,vv11,vv12,vv13,vv14,vv15,vv16,vv17,vv18;
+PSVarValue      vv1 ,vv2 ,vv3 ,vv4 ,vv5 ,vv6 ,vv7 ,vv8 ,vv9,
+           vv10,vv11,vv12,vv13,vv14,vv15,vv16,vv17,vv18,vv19,
+           vv20,vv21,vv22,vv23,vv24,vv25;
 
 void createVarValues()
 {
+	vv2 = PSVarValue.getInstance(1);
+	vv1 = PSVarValue.getInstance(2);
 	vv3 = PSVarValue.getInstance(3);
 	vv4 = PSVarValue.getInstance(4);
 	vv5 = PSVarValue.getInstance(5);
@@ -101,6 +105,13 @@ void createVarValues()
 	vv16 = PSVarValue.getInstance(16);
 	vv17 = PSVarValue.getInstance(17);
 	vv18 = PSVarValue.getInstance(18);
+	vv19 = PSVarValue.getInstance(19);
+	vv20 = PSVarValue.getInstance(20);
+	vv21 = PSVarValue.getInstance(21);
+	vv22 = PSVarValue.getInstance(22);
+	vv23 = PSVarValue.getInstance(23);
+	vv24 = PSVarValue.getInstance(24);
+	vv25 = PSVarValue.getInstance(25);
 }
 
 PSToken t1,t2,act1,act2,act3;
