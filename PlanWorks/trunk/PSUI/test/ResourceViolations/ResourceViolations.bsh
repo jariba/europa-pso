@@ -43,7 +43,7 @@ void setupDesktop()
     ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
     ActionViolationsPanel vp = (ActionViolationsPanel)desktop.makeViolationsFrame().getContentPane().getComponent(0);
 
-    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame("CapacityResource",start,end);
+    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame("Activity",start,end);
     ganttFrame.setLocation(0,0);
     ganttFrame.setSize(700,300);
     PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
