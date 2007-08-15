@@ -24,3 +24,8 @@ goal(act3.perform goal3);
 precedes(5,goal3.start); 
 precedes(goal3.end,25); 
 goal3.start.specify(10);
+
+// Another token on act3 to test violations on timelines
+goal(act3.perform goal4);
+precedes(20,goal4.start); 
+precedes(goal4.end,100); 

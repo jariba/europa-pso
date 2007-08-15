@@ -114,8 +114,9 @@ void createVarValues()
 	vv25 = PSVarValue.getInstance(25);
 }
 
-PSToken t1,t2,act1,act2,act3;
-PSVariable s1,s2,s3;
+PSObject act_obj1,act_obj2,act_obj3;
+PSToken t1,t2,act1,act2,act3,act4;
+PSVariable s1,s2,s3,s4;
 
 void findTokens()
 {
@@ -123,16 +124,20 @@ void findTokens()
 	t1 = res.getTokens().get(0);
 	t2 = res.getTokens().get(1);
 
-	act_obj1 = psengine.getObjectsByType("Activity").get(0);
-	act_obj2 = psengine.getObjectsByType("Activity").get(1);
-	act_obj3 = psengine.getObjectsByType("Activity").get(2);
+	activities = psengine.getObjectsByType("Activity"); 
+	act_obj1 = activities.get(0);
+	act_obj2 = activities.get(1);
+	act_obj3 = activities.get(2);
 
 	act1 = act_obj1.getTokens().get(0);
 	act2 = act_obj2.getTokens().get(0);	
 	act3 = act_obj3.getTokens().get(0);	
+	act4 = act_obj3.getTokens().get(1);
+	
 	s1 = act1.getParameter("start");
 	s2 = act2.getParameter("start");
 	s3 = act3.getParameter("start");
+	s4 = act4.getParameter("start");
 }
 
 void setStart(PSVarValue a, PSVarValue b, PSVarValue c)
