@@ -234,37 +234,42 @@ public class PSDesktop
 
     public void showTokens(PSObject o)
     {
-         List columnNames = new Vector();
-         List data = new Vector();
-         columnNames.add("Key");
-         columnNames.add("Name");
-         columnNames.add("Type");
-
          PSTokenList l = o.getTokens();
-         for (int i=0; i<l.size();i++) {
-        	 List row = new Vector();
-        	 PSToken t = l.get(i);
-        	 row.add(t.getKey());
-        	 row.add(t.getName());
-        	 row.add(t.getEntityType());
-        	 PSVariableList vars = t.getParameters();
-        	 for (int j=0; j<vars.size();j++) {
-        		 PSVariable var = vars.get(j);
-        		 row.add(var.toString());
-
-        		 // Only add cols for the first row
-        		 if (i==0)
-        			 columnNames.add(var.getName());
-        	 }
-        	 data.add(row);
-         }
-
-     	JInternalFrame frame = makeNewFrame("Activities for "+o.getName());
-    	JTable table = new JTable(new Util.MatrixTableModel(data,columnNames));
-    	JScrollPane scrollpane = new JScrollPane(table);
-    	frame.getContentPane().add(scrollpane);
+         showTokens("Activities for "+o.getName(),l);
     }
 
+    public void showTokens(String title,PSTokenList l)
+    {
+        List columnNames = new Vector();
+        List data = new Vector();
+        columnNames.add("Key");
+        columnNames.add("Name");
+        columnNames.add("Type");
+
+        for (int i=0; i<l.size();i++) {
+       	 List row = new Vector();
+       	 PSToken t = l.get(i);
+       	 row.add(t.getKey());
+       	 row.add(t.getName());
+       	 row.add(t.getEntityType());
+       	 PSVariableList vars = t.getParameters();
+       	 for (int j=0; j<vars.size();j++) {
+       		 PSVariable var = vars.get(j);
+       		 row.add(var.toString());
+
+       		 // Only add cols for the first row
+       		 if (i==0)
+       			 columnNames.add(var.getName());
+       	 }
+       	 data.add(row);
+        }
+
+    	JInternalFrame frame = makeNewFrame(title);
+   	    JTable table = new JTable(new Util.MatrixTableModel(data,columnNames));
+   	    JScrollPane scrollpane = new JScrollPane(table);
+   	    frame.getContentPane().add(scrollpane);    	
+    }
+    
     public JInternalFrame makeResourceGanttFrame(
     		String objectsType,
 	        Calendar start,
