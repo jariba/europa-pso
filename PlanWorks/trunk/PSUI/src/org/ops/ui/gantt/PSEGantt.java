@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.swing.JTable;
+import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableColumn;
@@ -57,14 +58,29 @@ public class PSEGantt
 	
 	GanttTable gantt_;
     Map<Object,MutableDrawingPart> actEntries_;
+    JButton refreshBtn_;
+    Calendar start_;
+    Calendar end_;
 	
     public PSEGantt(PSGanttModel model,
     		        Calendar start, 
     		        Calendar end)
     {
     	super(model);
+    	start_ = start;
+    	end_ = end;
+    	makeGantt();
     	
-    	gantt_ = new GanttTable(makeTableModel(model));
+    	refreshBtn_ = new JButton("Refresh");
+    	setLayout(new BorderLayout());
+    	//add(BorderLayout.NORTH,refreshBtn_);
+    	add(BorderLayout.CENTER,gantt_);
+    	add(new GanttToolBar(gantt_.getViewManager(GanttTable.TIME_AXIS)), BorderLayout.SOUTH);    	
+    }
+    
+    protected void makeGantt()
+    {
+    	gantt_ = new GanttTable(makeTableModel(model_));
 
     	//System.out.println("model rows:"+model.getTableModel().getRowCount());
     	TableColumnModel columnModel = gantt_.getColumnModel(1);
@@ -86,7 +102,7 @@ public class PSEGantt
 
     	// Display timeline at the top
     	column.setHeaderValue(GanttEntryHelper.createCalendar());
-    	gantt_.setTimeRange(start.getTime(),end.getTime());    	
+    	gantt_.setTimeRange(start_.getTime(),end_.getTime());    	
     	gantt_.addMouseMotionListener(this);
 
     	/* TODO: Disable row selection?
@@ -94,11 +110,15 @@ public class PSEGantt
     	activityTable.setRowSelectionAllowed(false);
     	activityTable.setColumnSelectionAllowed(false);
     	activityTable.setCellSelectionEnabled(false);
-    	*/
-    	
-    	setLayout(new BorderLayout());
-    	add(gantt_);
-    	add(new GanttToolBar(gantt_.getViewManager(GanttTable.TIME_AXIS)), BorderLayout.SOUTH);    	
+    	*/    	    	
+    }
+    
+    public void refresh()
+    {
+    	remove(gantt_);
+    	makeGantt();
+    	add(BorderLayout.CENTER,gantt_);
+    	repaint(); 
     }
     
     protected TableModel makeTableModel(PSGanttModel model)
