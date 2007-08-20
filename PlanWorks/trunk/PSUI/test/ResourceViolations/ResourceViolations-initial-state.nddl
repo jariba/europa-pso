@@ -11,21 +11,21 @@ Activity act3 = new Activity(7,1.0);
 close();
 
 goal(act1.perform goal1);
-precedes(3,goal1.start); 
+leq(3,goal1.start); 
 precedes(goal1.end,25); 
 goal1.start.specify(5);
 
 goal(act2.perform goal2);
-precedes(4,goal2.start); 
+leq(4,goal2.start); 
 precedes(goal2.end,25); 
 goal2.start.specify(8);
 
 goal(act3.perform goal3);
-precedes(5,goal3.start); 
+leq(5,goal3.start); 
 precedes(goal3.end,25); 
 goal3.start.specify(10);
 
 // Another token on act3 to test violations on timelines
 goal(act3.perform goal4);
-precedes(20,goal4.start); 
+leq(20,goal4.start); 
 precedes(goal4.end,100); 

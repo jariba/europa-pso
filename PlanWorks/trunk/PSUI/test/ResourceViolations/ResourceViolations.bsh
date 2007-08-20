@@ -37,20 +37,26 @@ void initPSEngine()
 	usingInterpreter();
 }
 
+PSGantt gantt;
+JInternalFrame ganttFrame;
+
 void setupDesktop()
     throws Exception
 {
     ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
     ActionViolationsPanel vp = (ActionViolationsPanel)desktop.makeViolationsFrame().getContentPane().getComponent(0);
 
-    JInternalFrame ganttFrame = desktop.makeResourceGanttFrame("Activity",start,end);
+    ganttFrame = desktop.makeResourceGanttFrame("CapacityResource",start,end);
     ganttFrame.setLocation(0,0);
     ganttFrame.setSize(700,300);
-    PSGantt gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
+    gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
     gantt.addMouseListener(dp);    
-    gantt.addMouseListener(vp);  
-    
-    desktop.showTokens(psengine.getObjectsByType("CapacityResource").get(0));
+    gantt.addMouseListener(vp);      
+}
+
+void showResourceTokens()
+{
+    desktop.showTokens(psengine.getObjectsByType("CapacityResource").get(0));	
 }
 
 void showResourceLevels()
@@ -80,39 +86,6 @@ solver = desktop.makeSolver(
 	, 0                 // startHorizon
 	, 100               // endHorizon
 );
-
-PSVarValue      vv1 ,vv2 ,vv3 ,vv4 ,vv5 ,vv6 ,vv7 ,vv8 ,vv9,
-           vv10,vv11,vv12,vv13,vv14,vv15,vv16,vv17,vv18,vv19,
-           vv20,vv21,vv22,vv23,vv24,vv25;
-
-void createVarValues()
-{
-	vv2 = PSVarValue.getInstance(1);
-	vv1 = PSVarValue.getInstance(2);
-	vv3 = PSVarValue.getInstance(3);
-	vv4 = PSVarValue.getInstance(4);
-	vv5 = PSVarValue.getInstance(5);
-	vv6 = PSVarValue.getInstance(6);
-	vv7 = PSVarValue.getInstance(7);
-	vv8 = PSVarValue.getInstance(8);
-	vv9 = PSVarValue.getInstance(9);
-	vv10 = PSVarValue.getInstance(10);
-	vv11 = PSVarValue.getInstance(11);
-	vv12 = PSVarValue.getInstance(12);
-	vv13 = PSVarValue.getInstance(13);
-	vv14 = PSVarValue.getInstance(14);
-	vv15 = PSVarValue.getInstance(15);
-	vv16 = PSVarValue.getInstance(16);
-	vv17 = PSVarValue.getInstance(17);
-	vv18 = PSVarValue.getInstance(18);
-	vv19 = PSVarValue.getInstance(19);
-	vv20 = PSVarValue.getInstance(20);
-	vv21 = PSVarValue.getInstance(21);
-	vv22 = PSVarValue.getInstance(22);
-	vv23 = PSVarValue.getInstance(23);
-	vv24 = PSVarValue.getInstance(24);
-	vv25 = PSVarValue.getInstance(25);
-}
 
 PSObject act_obj1,act_obj2,act_obj3;
 PSToken t1,t2,act1,act2,act3,act4;
@@ -146,11 +119,18 @@ void setStart(PSVarValue a, PSVarValue b, PSVarValue c)
 	s2.specifyValue(b);
 	s3.specifyValue(c);
 	print(psengine.getViolation() + " : " + psengine.getViolationExpl());	
+	gantt.refresh();	
+	ganttFrame.setSize(ganttFrame.getSize());
+}
+
+void setStart(int a, int b, int c)
+{
+    setStart(PSVarValue.getInstance(a),PSVarValue.getInstance(b),PSVarValue.getInstance(c));	
 }
 
 desktop.makeSolverDialog(solver);
 createVarValues();
-//setupDesktop();
+setupDesktop();
 
 /*
 to test, run solver, then from the BeanShell listener:
