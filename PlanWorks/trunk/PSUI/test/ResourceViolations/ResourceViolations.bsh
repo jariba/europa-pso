@@ -129,7 +129,6 @@ void setStart(int a, int b, int c)
 }
 
 desktop.makeSolverDialog(solver);
-createVarValues();
 setupDesktop();
 
 /*
