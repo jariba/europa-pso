@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/beanshell/bsh-2.0b4.jar"/>
-	<!--classpathentry combineaccessrules="false" kind="src" path="/egantt"/-->
+    <!--classpathentry combineaccessrules="false" kind="src" path="/egantt"/-->
 	<classpathentry kind="lib" path="lib/egantt/egantt-core.jar"/>
 	<classpathentry kind="lib" path="lib/egantt/egantt-ext.jar"/>
 	<classpathentry kind="lib" path="lib/egantt/egantt-resources.jar"/>
@@ -12,7 +12,7 @@
 	<classpathentry kind="lib" path="lib/josql/JoSQL-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/josql/gentlyWEB-utils-1.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/PLASMA/lib/PSEngine.jar"/>
 	<classpathentry kind="lib" path="/PLASMA/lib/nddl.jar"/>
+	<classpathentry kind="lib" path="/PLASMA/lib/PSEngine.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
