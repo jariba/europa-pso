@@ -1,10 +1,10 @@
 /**
 /**
-* @file RCSPSProgen.nddl
+* @file UBO-model.nddl
 * @author Automated ProGen/max RCPSP input format converter to NDDL (David Rijsman)
 */
 
-#include "Plasma.nddl"
+#include "Resources.nddl"
 #include "PlannerConfig.nddl"
 
 class CapacityResource extends Reusable {
@@ -50,7 +50,7 @@ class ProblemInstance extends Object {
 }
 
 ProblemInstance::Activity{
-	  eq(start, [ 0 +inf ]);
+	//eq(start, [ 0 +inf ]);
     equals(timeline.act);
 
 	Allocation allocations;

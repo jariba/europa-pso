@@ -2,12 +2,14 @@
 * Original file 'psp2'
 */
 
-//#include "RCSPSProgen.nddl"
 #include "UBO-model.nddl"
 
-PlannerConfig c = new PlannerConfig(0, 1000, +inf );
+PlannerConfig c = new PlannerConfig(0, 1000, +inf, +inf );
 
 ProblemInstance problem = new ProblemInstance();
+
+int maxDuration = 100;
+int maxDurationPlusOne = 101;
 
 CapacityResource resource0 = new CapacityResource( 0.00000 , 10.0000 );
 CapacityResource resource1 = new CapacityResource( 0.00000 , 10.0000 );
@@ -73,84 +75,84 @@ goal( problem.Activity activity0 );
 eq( activity0.duration, 1 );
 eq( activity0.m_identifier, 0);
 eq( activity0.timeline, at0);
-leq( activity0.end, 60);
-
+leq(0,activity0.start);
+leq( activity0.end, maxDuration);
 
 goal( problem.Activity activity1 );
 eq( activity1.duration, 4 );
 eq( activity1.m_identifier, 1);
 eq( activity1.timeline, at1);
-leq( activity1.end, 60);
+leq( activity1.end, maxDuration);
 
 
 goal( problem.Activity activity2 );
 eq( activity2.duration, 4 );
 eq( activity2.m_identifier, 2);
 eq( activity2.timeline, at2);
-leq( activity2.end, 60);
+leq( activity2.end, maxDuration);
 
 
 goal( problem.Activity activity3 );
 eq( activity3.duration, 10 );
 eq( activity3.m_identifier, 3);
 eq( activity3.timeline, at3);
-leq( activity3.end, 60);
+leq( activity3.end, maxDuration);
 
 
 goal( problem.Activity activity4 );
 eq( activity4.duration, 10 );
 eq( activity4.m_identifier, 4);
 eq( activity4.timeline, at4);
-leq( activity4.end, 60);
+leq( activity4.end, maxDuration);
 
 
 goal( problem.Activity activity5 );
 eq( activity5.duration, 3 );
 eq( activity5.m_identifier, 5);
 eq( activity5.timeline, at5);
-leq( activity5.end, 60);
+leq( activity5.end, maxDuration);
 
 
 goal( problem.Activity activity6 );
 eq( activity6.duration, 1 );
 eq( activity6.m_identifier, 6);
 eq( activity6.timeline, at6);
-leq( activity6.end, 60);
+leq( activity6.end, maxDuration);
 
 
 goal( problem.Activity activity7 );
 eq( activity7.duration, 8 );
 eq( activity7.m_identifier, 7);
 eq( activity7.timeline, at7);
-leq( activity7.end, 60);
+leq( activity7.end, maxDuration);
 
 
 goal( problem.Activity activity8 );
 eq( activity8.duration, 10 );
 eq( activity8.m_identifier, 8);
 eq( activity8.timeline, at8);
-leq( activity8.end, 60);
+leq( activity8.end, maxDuration);
 
 
 goal( problem.Activity activity9 );
 eq( activity9.duration, 9 );
 eq( activity9.m_identifier, 9);
 eq( activity9.timeline, at9);
-leq( activity9.end, 60);
+leq( activity9.end, maxDuration);
 
 
 goal( problem.Activity activity10 );
 eq( activity10.duration, 5 );
 eq( activity10.m_identifier, 10);
 eq( activity10.timeline, at10);
-leq( activity10.end, 60);
+leq( activity10.end, maxDuration);
 
 
 goal( problem.Activity activity11 );
 eq( activity11.duration, 1 );
 eq( activity11.m_identifier, 11);
 eq( activity11.timeline, at11);
-leq( activity11.end, 61);
+leq( activity11.end, maxDurationPlusOne);
 
 
 
@@ -185,5 +187,17 @@ activity8.b.specify( true );
 activity9.b.specify( true );
 activity10.b.specify( true );
 activity11.b.specify( true );
+
+leq(0,activity1.start);
+leq(0,activity2.start);
+leq(0,activity3.start);
+leq(0,activity4.start);
+leq(0,activity5.start);
+leq(0,activity6.start);
+leq(0,activity7.start);
+leq(0,activity8.start);
+leq(0,activity9.start);
+leq(0,activity10.start);
+leq(0,activity11.start);
 
 close();
