@@ -7,8 +7,9 @@
  */
 
 #include "Nddl.hh" /*!< Includes protypes required to load a model */
-#include "SolverAssembly.hh" /*!< For using a test EUROPA Assembly */
+#include "SolverAssemblyWithResources.hh" /*!< For using a test EUROPA Assembly */
 #include "PSEngine.hh" 
+#include "PSResources.hh" 
 #include "Debug.hh"
 
 #include "SAVH_ReusableFVDetector.hh"
@@ -41,11 +42,12 @@ int main(int argc, const char ** argv)
   int endHorizon   = 1000;
   int maxSteps     = 5000;
 
+  /*
   if (!executeWithPSEngine(plannerConfig,txSource,startHorizon,endHorizon,maxSteps)) 
       return -1;
   /**/
   
-  //executeWithAssembly(plannerConfig,txSource);
+  executeWithAssembly(plannerConfig,txSource);
    
   return 0;
 }
@@ -53,7 +55,7 @@ int main(int argc, const char ** argv)
 bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int startHorizon, int endHorizon, int maxSteps)
 {
     try {
-	  PSEngine engine;
+	  PSEngineWithResources engine;
 	
 	  engine.start();
 	  engine.executeTxns(txSource,true,true);
@@ -114,7 +116,7 @@ void executeWithAssembly(const char* plannerConfig, const char* txSource)
   REGISTER_FLAW_HANDLER( EUROPA::SOLVERS::ResourceThreatDecisionPoint, ResourceThreat);
 
   // Initialize Library  
-  SolverAssembly::initialize();
+  SolverAssemblyWithResources::initialize();
 
   // Allocate the schema with a call to the linked in model function - eventually
   // make this called via dlopen
@@ -123,7 +125,7 @@ void executeWithAssembly(const char* plannerConfig, const char* txSource)
   // Enacpsualte allocation so that they go out of scope before calling terminate
   {  
     // Allocate the test assembly.
-    SolverAssembly assembly(schema);
+    SolverAssemblyWithResources assembly(schema);
 
     Timer t;
     t.start();
