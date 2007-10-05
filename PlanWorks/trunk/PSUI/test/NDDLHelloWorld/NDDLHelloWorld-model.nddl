@@ -41,3 +41,22 @@ class TestPC extends PlannerConfig
     }
 }
 
+class TestIf {
+  predicate ScopedIf {};
+}
+
+TestIf::ScopedIf
+{
+  eq(duration,10);
+  bool b;
+  any (ScopedIf child);
+  if (b == 0) {
+      precedes(start,child.start);
+  }
+  if (b == 1) {
+      precedes(child.start,start);
+  }
+}
+
+
+
