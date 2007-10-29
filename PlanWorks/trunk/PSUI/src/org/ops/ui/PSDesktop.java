@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map;
+import java.util.HashMap;
+
 
 import javax.swing.JInternalFrame;
 import javax.swing.JTabbedPane;
@@ -40,48 +43,50 @@ import psengine.*;
 public class PSDesktop
 {
 	public static PSDesktop desktop;
+
 	protected JDesktopPane desktop_;
 	protected int windowCnt_=0;
 	protected PSEngineWithResources psEngine_=null;
-	protected static NddlInterpreter nddlInterpreter = new NddlInterpreter();
 
+	protected static NddlInterpreter nddlInterpreter = new NddlInterpreter();
 	protected static String debugMode_="g";
 	protected static String bshFile_=null;
 
-    protected static class PSEngineWithNDDL
-        extends PSEngineWithResources
-    {
-      public String executeScript(String language, String script) throws PSException
-      {
-        try {
-          if ("nddl".equals(language)) {
-            nddlInterpreter.source(script);
-          }
-          else
-            super.executeScript(language, script);
-        }
-				catch (PSException ps) {
-					throw ps;
-				}
-        catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-				return "";
-      }
-    }
-
 	public static void main(String[] args)
+	{		
+		run(args);
+	}
+	
+	public static Map<String,String> parseArgs(String args[])
 	{
-		if (args.length < 1)
-			throw new RuntimeException("Please specify debug mode : g or o");
-		debugMode_ = args[0];
+		Map<String,String> retval = new HashMap<String,String>();
+		String debugMode = "g";
+		String bshFile = null; 
+		
+		if (args.length > 0)
+ 		    debugMode = args[0];
 		if ((args.length > 1) && (args[1].length()>0))
-			bshFile_ = args[1];
+			bshFile = args[1];
 
-		PSDesktop.desktop = new PSDesktop();
-		desktop.runUI();
+		retval.put("debugMode", debugMode);
+		retval.put("bshFile",bshFile);
+		
+		return retval;
 	}
 
+	public static void run(String[] args)
+	{
+		init(parseArgs(args));
+		desktop.runUI();		
+	}
+	
+	public static void init(Map<String,String> args)
+	{
+		PSDesktop.desktop = new PSDesktop();
+		debugMode_ = args.get("debugMode");
+		bshFile_ = args.get("bshFile");		
+	}
+	
     public void runUI()
     {
 	    SwingUtilities.invokeLater(new UICreator());
@@ -171,6 +176,7 @@ public class PSDesktop
     	JTable table = Util.makeTable(l,fields);
     	JScrollPane scrollpane = new JScrollPane(table);
     	frame.getContentPane().add(scrollpane);
+		frame.setSize(frame.getSize()); // Force repaint
     }
 
     /*
@@ -268,6 +274,7 @@ public class PSDesktop
    	    JTable table = new JTable(new Util.MatrixTableModel(data,columnNames));
    	    JScrollPane scrollpane = new JScrollPane(table);
    	    frame.getContentPane().add(scrollpane);    	
+		frame.setSize(frame.getSize()); // Force repaint
     }
     
     public JInternalFrame makeResourceGanttFrame(
@@ -356,4 +363,28 @@ public class PSDesktop
       console.setTokenMarker(new AnmlTokenMarker());
       anmlInterpFrame.setContentPane(console);
     }
+    
+    protected static class PSEngineWithNDDL
+        extends PSEngineWithResources
+    {
+    	public String executeScript(String language, String script) throws PSException
+    	{
+    	    // This keeps all the nddl in the same evaluation context
+    		try {
+    			if ("nddl".equals(language)) {
+    				nddlInterpreter.source(script);
+    			}
+    			else
+    				super.executeScript(language, script);
+    		}
+    		catch (PSException ps) {
+    			throw ps;
+    		}
+    		catch (Exception e) {
+    			throw new RuntimeException(e);
+    		}
+    		return "";
+    	}
+    }
 }
+
