@@ -8,7 +8,7 @@
   <property file="${env.HOME}/.ant.psui.properties"/>
 	
   <property name="src.dir"     value="src"/>
-  <property name="build.dir"   value="classes"/>
+  <property name="build.dir"   value="build"/>
   <property name="lib.dir"     value="lib"/>
 
   <property name="project"        value="NDDLHelloWorld"/>
