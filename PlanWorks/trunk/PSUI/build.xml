@@ -10,10 +10,9 @@
   <property name="src.dir"     value="src"/>
   <property name="build.dir"   value="classes"/>
   <property name="lib.dir"     value="lib"/>
-  <property name="workspace.dir" value="${env.HOME}/workspace"/>
 
   <property name="project"        value="NDDLHelloWorld"/>
-  <property name="project.dir"    value="${workspace.dir}/${project}"/>
+  <property name="project.dir"    value="${env.HOME}/workspace/${project}"/>
   <property name="plasma.dir"    value="${env.PLASMA_HOME}"/>
   <!-- project.mode = o for optimized, g for debug --> 	
   <property name="project.mode" value="o"/>
