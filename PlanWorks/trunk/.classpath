@@ -20,5 +20,20 @@
 	<classpathentry kind="lib" path="java/lib/nanoxml/nanoxml.jar"/>
 	<classpathentry kind="lib" path="java/lib/testLang/testLang.jar"/>
 	<classpathentry kind="lib" path="java/lib/JGo"/>
+
+        <classpathentry kind="src" path="PSUI/src"/>
+        <classpathentry kind="lib" path="PSUI/lib/beanshell/bsh-2.0b4.jar"/>
+    <!--classpathentry combineaccessrules="false" kind="src" path="/egantt"/-->
+        <classpathentry kind="lib" path="PSUI/lib/egantt/egantt-core.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/egantt/egantt-ext.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/egantt/egantt-resources.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/jfreechart/jfreechart-1.0.2.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/jfreechart/jcommon-1.0.5.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/nanoxml/nanoxml.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/josql/JoSQL-1.9.jar"/>
+        <classpathentry kind="lib" path="PSUI/lib/josql/gentlyWEB-utils-1.1.jar"/>
+        <classpathentry kind="lib" path="/PLASMA/lib/nddl.jar"/>
+        <classpathentry kind="lib" path="/PLASMA/lib/PSEngine.jar"/>
+	
 	<classpathentry kind="output" path="bin"/>
 </classpath>
