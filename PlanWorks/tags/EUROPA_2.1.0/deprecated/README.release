@@ -1,0 +1,52 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README.release,v 1.18 2004-10-13 23:49:01 taylor Exp $
+#
+
+Releasing the PlanWorks Plan Visualization Application
+======================================================
+
+o Update PlanWorks/README
+
+o Update PlanWorks/build.xml (property name="name.application" with new value)
+
+o Update PlanWorks/GETTING_STARTED
+
+o Update PlanWorks/testCases/planViz.txt
+
+o Run "ant test" to execute the BackendTest, the MySQLDBTest,
+  the PlanWorksUtilsTest, and the PlanWorksGUITest [1-12 & 13(1-7) of 25 planViz.txt tests]
+
+o Perform test cases outlined in PlanWorks/testCases/planViz.txt [13(8-15) & 14-25]
+
+o Execute 'ant createJars' to update PlanWorks/java/jars
+
+o With a freshly checked-out PLASMA (cvs co PLASMA), run
+  "cd PLASMA/System; jam nddl-planner-tests".  View generated sequences in PlanWorks.
+
+o Tag the Release
+  - In a clean directory, do a fresh checkout of the CVS "head":
+    > cvs co PlanWorks
+  - Tag the files:
+    > cvs tag PW_M_<release_num> PlanWorks
+
+o Test the Release
+  - In a clean directory, do a fresh checkout and build:
+    > cvs co -r PW_M_<release_num> PlanWorks
+    > cd PlanWorks/lib/mysql/bin
+    > cp <...>/mysql-max-4.0.13-<...>/bin/mysql .
+    > cp <...>/mysql-max-4.0.13-<...>/bin/mysqld .
+    > cp <...>/mysql-max-4.0.13-<...>/bin/mysqladmin .
+    > cd ../../..
+    > setenv PLANWORKS_HOME `pwd`
+    > ant planWorksDbInstall
+    > ant
+
+o Email Release Announcment
+  - Send to pw-users@postdoc 
+  - Include PlanWorks/README
+

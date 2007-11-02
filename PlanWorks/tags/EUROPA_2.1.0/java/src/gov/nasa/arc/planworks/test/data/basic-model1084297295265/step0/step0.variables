@@ -1,0 +1,21 @@
+15	1084297295285	14	world.m_horizonStart	IntervalDomain	\N	REAL_SORT	10	10	MEMBER_VAR
+16	1084297295285	14	world.m_horizonEnd	IntervalDomain	\N	REAL_SORT	101	101	MEMBER_VAR
+17	1084297295285	14	world.m_maxPlannerSteps	IntervalDomain	\N	REAL_SORT	350	350	MEMBER_VAR
+19	1084297295285	14	world.m_rover	EnumeratedDomain	world.m_rover 	\N	\N	\N	MEMBER_VAR
+22	1084297295285	20	object	EnumeratedDomain	world 	\N	\N	\N	OBJECT_VAR
+25	1084297295285	20	start	IntervalDomain	\N	INTEGER_SORT	10	100	START_VAR
+26	1084297295285	20	end	IntervalDomain	\N	INTEGER_SORT	11	101	END_VAR
+23	1084297295285	20	duration	IntervalDomain	\N	INTEGER_SORT	1	Infinity	DURATION_VAR
+21	1084297295285	20	state	EnumeratedDomain	2 	\N	\N	\N	STATE_VAR
+38	1084297295285	36	object	EnumeratedDomain	world.m_rover 	\N	\N	\N	OBJECT_VAR
+41	1084297295285	36	start	IntervalDomain	\N	INTEGER_SORT	10	10	START_VAR
+42	1084297295285	36	end	IntervalDomain	\N	INTEGER_SORT	11	11	END_VAR
+39	1084297295285	36	duration	IntervalDomain	\N	INTEGER_SORT	1	1	DURATION_VAR
+37	1084297295285	36	state	EnumeratedDomain	2 3 	\N	\N	\N	STATE_VAR
+50	1084297295285	36	m_location	EnumeratedDomain	Lander 	\N	\N	\N	PARAMETER_VAR
+56	1084297295285	54	object	EnumeratedDomain	world.m_rover 	\N	\N	\N	OBJECT_VAR
+59	1084297295285	54	start	IntervalDomain	\N	INTEGER_SORT	100	100	START_VAR
+60	1084297295285	54	end	IntervalDomain	\N	INTEGER_SORT	101	101	END_VAR
+57	1084297295285	54	duration	IntervalDomain	\N	INTEGER_SORT	1	1	DURATION_VAR
+55	1084297295285	54	state	EnumeratedDomain	2 3 	\N	\N	\N	STATE_VAR
+68	1084297295285	54	m_location	EnumeratedDomain	Rock 	\N	\N	\N	PARAMETER_VAR

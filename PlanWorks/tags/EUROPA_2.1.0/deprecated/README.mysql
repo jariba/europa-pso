@@ -1,0 +1,80 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README.mysql,v 1.4 2004-07-19 22:28:23 taylor Exp $
+#
+
+PlanWorks MySQL DB Maintenance
+======================================================
+
+# start mysql
+/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysqld --basedir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql --skip-bdb --bind-address=127.0.0.1 --datadir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/data --log=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/log/mysql.log --log-error=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/log/mysql.error.log --skip-symlink --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock --tmpdir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/tmp
+
+# shutdown mysql
+/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysqladmin --user=root --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock shutdown
+
+
+# mysql cmd line
+/home/wtaylor/pub/mysql-max-4.0.13-pc-linux-i686/bin/mysql --user=root --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock
+
+connect PlanWorks;
+show tables;
+show columns from <name>;
+alter table <table-name> modify <column-name> int
+alter table <table-name> modify <column-name> bigint
+alter table <table-name> drop <varaible-name>;
+# show table values
+select * from <table-name>;
+
+# execute a query
+=================
+# partial plan id
+  SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=1089938593645 && StepNum=3043 ;
+# load tables for partial plan query
+LOAD DATA INFILE '/home/wtaylor/PlanWorksProject/sequences/PLASMA/big-basic-model-3-3001089938593645/step3043/step3043.tokens' IGNORE INTO TABLE Token ;
+LOAD DATA INFILE '/home/wtaylor/PlanWorksProject/sequences/PLASMA/big-basic-model-3-3001089938593645/step3043/step3043.ruleInstances' IGNORE INTO TABLE RuleInstance ;
+
+# query for slotted tokens & rule instances
+SELECT Token.PartialPlanId, Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=1089938593645 WHERE Token.PartialPlanId= 1089941776799 && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId INTO OUTFILE '/home/wtaylor/junk/mysql-test/step3043';
+
+input file
+---------
+value <tab> value <tab> .... <lf>
+
+
+
+
+grant all on PlanWorks.* to 'PlanWorksUser' identified by 'PlanWorksUser';
+grant alter , delete , drop , file , index , insert , select , shutdown , update on *.* to 'PlanWorksUser';
+
+select * from user;
+
+# clean sql db
+/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysql --user=root --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock < /home/wtaylor/PlanWorksProject/PlanWorks/cleandb
+
+
+## before installing mysql db: ant planWorksDbInstall
+cd lib/mysql/data; /bin/rm -r PlanWorks; cd mysql; /bin/rm *.frm *.MYI *.MYD; cd ../../../..
+
+## at cmd line prompt -- look at projects and sequences
+select * from Project;
+select * from Sequence;
+
+
+UPDATE PLANWORKS TABLES
+-----------------------
+ant planWorksDbInstall
+
+DELETE SEQUENCES FROM MYSQL DB
+------------------------------
+"start mysql" (above)
+"mysql cmd line" (above)
+mysql> connect PlanWorks;
+mysql>  select * from Sequence;
+mysql> delete from Sequence where SequenceOrdering = 9 || SequenceOrdering = 10 || SequenceOrdering = 11;
+mysql> quit
+
+
