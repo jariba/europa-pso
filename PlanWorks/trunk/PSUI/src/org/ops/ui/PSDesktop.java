@@ -46,7 +46,7 @@ public class PSDesktop
 
 	protected JDesktopPane desktop_;
 	protected int windowCnt_=0;
-	protected PSEngineWithResources psEngine_=null;
+	protected PSEngine psEngine_=null;
 
 	protected static NddlInterpreter nddlInterpreter = new NddlInterpreter();
 	protected static String debugMode_="g";
@@ -209,12 +209,16 @@ public class PSDesktop
     	}
     }
 
-    public PSEngineWithResources getPSEngine()
+    public PSEngine getPSEngine()
     {
     	if (psEngine_ == null) {
             LibraryLoader.loadLibrary("System_"+debugMode_);
-            psEngine_ = new PSEngineWithNDDL();
+    		PSEngine.initialize();
+            psEngine_ = PSEngine.makeInstance();
+            psEngine_.nddlInterpreter = nddlInterpreter;
             psEngine_.start();
+            
+            // TODO: call PSEngine.shutdown() and PSEngine.terminate() before program quits
     	}
 
     	return psEngine_;
@@ -362,29 +366,6 @@ public class PSDesktop
       anmlInterpreter.setConsole(console);
       console.setTokenMarker(new AnmlTokenMarker());
       anmlInterpFrame.setContentPane(console);
-    }
-    
-    protected static class PSEngineWithNDDL
-        extends PSEngineWithResources
-    {
-    	public String executeScript(String language, String script) throws PSException
-    	{
-    	    // This keeps all the nddl in the same evaluation context
-    		try {
-    			if ("nddl".equals(language)) {
-    				nddlInterpreter.source(script);
-    			}
-    			else
-    				super.executeScript(language, script);
-    		}
-    		catch (PSException ps) {
-    			throw ps;
-    		}
-    		catch (Exception e) {
-    			throw new RuntimeException(e);
-    		}
-    		return "";
-    	}
-    }
+    }    
 }
 
