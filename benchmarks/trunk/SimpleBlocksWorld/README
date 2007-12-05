@@ -1,0 +1,10 @@
+12/05/07:  Experimental nddl to model and solve the Sussman anomaly.
+
+See http://en.wikipedia.org/wiki/Sussman_Anomaly
+
+The goal here was to keep things as simple as possible and the model doesn't
+allow for a block to be moved from one block to another.  So, blocks can only
+be moved to and from the table.
+
+EUROPA does solve this problem, although it takes a suprisingly large number of
+steps to do so!

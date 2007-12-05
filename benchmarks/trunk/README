@@ -1,0 +1,9 @@
+This directory is intended to hold:
+
+- various problem domains
+- instances from those problem domains
+- EUROPA models and solvers to handle those problem domains
+
+In other words, a location to test EUROPA, improve its performance, work on
+algorithms and compare EUROPA with state-of-the-art approaches in planning,
+scheduling, and constraint satisfaction.

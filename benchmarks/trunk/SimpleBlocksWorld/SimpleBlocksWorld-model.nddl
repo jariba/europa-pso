@@ -1,0 +1,67 @@
+#include "Plasma.nddl"
+#include "PlannerConfig.nddl"
+
+// A minimal blocks world representation.  Note that blocks are only moved to
+// and from the table.  How might we extend to moving 
+
+class Block extends Timeline {
+
+  Block(){
+  }
+		
+  predicate under{
+    Block block;
+  }
+  
+  predicate uncovered{
+  }
+  
+  predicate moveToTable{
+    Block fromBlock;
+  }
+  
+  predicate moveFromTable{
+    Block toBlock;
+  }
+}
+
+
+Block::under{
+  // Before this, we were uncovered and 'block' moved above us:
+  met_by(object.uncovered);
+  met_by(block.moveFromTable x);
+  eq(x.toBlock, object);
+
+  // After this, we're uncovered again, and 'block' moved away:
+  meets(object.uncovered);
+  meets(block.moveToTable y);
+  eq(y.fromBlock, object);
+}
+
+
+// No constraints here.  This could be start/end because it gets covered OR
+// because it is moved.
+Block::uncovered{
+}
+
+
+Block::moveToTable{
+  // Can't moved unless uncovered:
+  met_by(object.uncovered);
+
+  // The block we were on changes from 'under' to 'uncovered'
+  met_by(fromBlock.under u);
+  eq(u.block, object);
+  meets(fromBlock.uncovered);
+}
+
+Block::moveFromTable{
+  // Can't move unless uncovered:
+  met_by(object.uncovered);
+
+  // The block we move to changes from 'uncovered' to 'under'
+  met_by(toBlock.uncovered);
+  meets(toBlock.under u);
+  eq(u.block, object);
+}
+
