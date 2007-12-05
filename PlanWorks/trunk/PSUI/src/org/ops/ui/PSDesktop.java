@@ -306,11 +306,9 @@ public class PSDesktop
     public JInternalFrame makeResourcesFrame(String type,Calendar start)
     {
         JTabbedPane resourceTabs = new JTabbedPane();
-        PSResourceList resources = getPSEngine().getResourcesByType(type);
-        for (int i = 0; i < resources.size(); i++) {
-        	PSResource r = resources.get(i);
+        List<PSResource> resources = PSUtil.toResourceList(getPSEngine().getObjectsByType(type));
+        for (PSResource r : resources) 
             resourceTabs.add(r.getName(),makeResourceChart(r,start));
-        }
 
         JInternalFrame frame = makeNewFrame("Resources");
         frame.getContentPane().add(resourceTabs);
