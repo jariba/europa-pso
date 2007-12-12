@@ -282,11 +282,20 @@ public class PSDesktop
     }
     
     public JInternalFrame makeResourceGanttFrame(
+            String objectsType,
+            Calendar start,
+            Calendar end)
+    {
+        return makeResourceGanttFrame(objectsType,start,end,Calendar.MINUTE);
+    }
+    
+    public JInternalFrame makeResourceGanttFrame(
     		String objectsType,
 	        Calendar start,
-	        Calendar end)
+	        Calendar end,
+	        int timeUnit)
     {
-        PSGantt gantt = new PSEGantt(new PSGanttPSEModel(getPSEngine(),start,objectsType),start,end);
+        PSGantt gantt = new PSEGantt(new PSGanttPSEModel(getPSEngine(),start,objectsType,timeUnit),start,end);
 
         JInternalFrame frame = makeNewFrame("Resource Schedule");
         frame.getContentPane().add(gantt);
