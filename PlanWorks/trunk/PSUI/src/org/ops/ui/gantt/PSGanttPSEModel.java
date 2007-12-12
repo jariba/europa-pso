@@ -21,12 +21,19 @@ public class PSGanttPSEModel
 	Calendar startHorizon_;
 	String objectsType_;
 	PSObjectList resources_;
+    int timeUnit_;
 	
-	public PSGanttPSEModel(PSEngine pse, Calendar startHorizon, String objectsType)
+    public PSGanttPSEModel(PSEngine pse, Calendar startHorizon, String objectsType)
+    {
+        this(pse,startHorizon,objectsType,Calendar.MINUTE);    
+    }
+    
+    public PSGanttPSEModel(PSEngine pse, Calendar startHorizon, String objectsType, int timeUnit)
 	{
 	    startHorizon_ = startHorizon;
 	    objectsType_ = objectsType;
 	    resources_ = pse.getObjectsByType(objectsType_);
+	    timeUnit_=timeUnit;
 	    
 	}
 
@@ -54,8 +61,7 @@ public class PSGanttPSEModel
 	protected Calendar instantToCalendar(double i)
 	{
 		Calendar retval = (Calendar)startHorizon_.clone();
-		// TODO: time unit must be a parameter, assuming minutes for now
-		retval.add(Calendar.MINUTE, (int)i);
+		retval.add(timeUnit_, (int)i);
 		//System.out.println("instantToCalendar:"+i.value()+" -> "+SimpleDateFormat.getInstance().format(retval.getTime()));
 		return retval;
 	}
