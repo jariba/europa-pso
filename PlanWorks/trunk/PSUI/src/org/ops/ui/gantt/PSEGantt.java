@@ -1,6 +1,7 @@
 package org.ops.ui.gantt;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -61,6 +62,7 @@ public class PSEGantt
     JButton refreshBtn_;
     Calendar start_;
     Calendar end_;
+    PSGanttColorProvider colorProvider_;
 	
     public PSEGantt(PSGanttModel model,
     		        Calendar start, 
@@ -69,6 +71,8 @@ public class PSEGantt
     	super(model);
     	start_ = start;
     	end_ = end;
+    	colorProvider_ = new DefaultColorProvider();
+    	
     	makeGantt();
     	
     	refreshBtn_ = new JButton("Refresh");
@@ -77,6 +81,9 @@ public class PSEGantt
     	add(BorderLayout.CENTER,gantt_);
     	add(new GanttToolBar(gantt_.getViewManager(GanttTable.TIME_AXIS)), BorderLayout.SOUTH);    	
     }
+    
+    public PSGanttColorProvider getColorProvider() { return colorProvider_; }
+    public void setColorProvider(PSGanttColorProvider cp) { colorProvider_ = cp; }
     
     protected void makeGantt()
     {
@@ -117,8 +124,7 @@ public class PSEGantt
     {
     	remove(gantt_);
     	makeGantt();
-    	add(BorderLayout.CENTER,gantt_);
-    	repaint(); 
+    	add(BorderLayout.CENTER,gantt_); 
     }
     
     protected TableModel makeTableModel(PSGanttModel model)
@@ -138,10 +144,7 @@ public class PSEGantt
     		Iterator<PSGanttActivity> resActivities = model.getActivities(i);
     		while (resActivities.hasNext()) {
     			PSGanttActivity act = resActivities.next();
-
-    			String context = (act.getViolation() == 0.0 
-    					          ? GradientColorModule.GREEN_GRADIENT_CONTEXT
-    					          : GradientColorModule.RED_GRADIENT_CONTEXT);
+    			String context = mapColor(colorProvider_.getColor(act));
     			
     			MutableDrawingPart entry = GanttDrawingPartHelper.createActivityEntry(
     					act.getKey(), 
@@ -174,10 +177,10 @@ public class PSEGantt
 		
 		Object key = event.getSource();
 		MutableDrawingPart entry = actEntries_.get(key);
-		//LongInterval li = (LongInterval)entry.getInterval()[0];
-		int idx = (int)(Math.round(Math.random()));
+		//LongInterval li = (LongInterval)entry.getInterval()[0];		
+		//int idx = (int)(Math.round(Math.random()));
 		//System.out.println("range:"+li.getRangeValue()+" idx:"+idx);
-		entry.setContext(key, colors[idx]);
+		//entry.setContext(key, colors[idx]);
 		
 		List changes = (List)(event.changes().next());
 		
@@ -294,4 +297,36 @@ public class PSEGantt
 		Object value = table.getValueAt(row, column);
 		return value instanceof DrawingState ? (DrawingState) value : null;
 	}	
+	
+	protected static class DefaultColorProvider
+	    implements PSGanttColorProvider
+    {
+        @Override
+        public Color getColor(PSGanttActivity activity) 
+        {
+            return (activity.getViolation() == 0 ? Color.GREEN : Color.RED);
+        }
+    }
+	
+	static Map<Color,String> colorMap_;
+	
+	static String mapColor(Color c)
+	{
+	    String retval = colorMap_.get(c);
+	    
+	    if (retval == null)
+	        retval = GradientColorModule.WHITE_GRADIENT_CONTEXT;
+	    
+	    return retval;
+	}
+	
+	static 
+	{
+	    colorMap_ = new HashMap<Color,String>();
+	    colorMap_.put(Color.BLACK, GradientColorModule.BLACK_GRADIENT_CONTEXT);
+        colorMap_.put(Color.BLUE, GradientColorModule.BLUE_GRADIENT_CONTEXT);
+        colorMap_.put(Color.GREEN, GradientColorModule.GREEN_GRADIENT_CONTEXT);
+        colorMap_.put(Color.RED, GradientColorModule.RED_GRADIENT_CONTEXT);
+        colorMap_.put(Color.WHITE, GradientColorModule.WHITE_GRADIENT_CONTEXT);
+	}
 }
