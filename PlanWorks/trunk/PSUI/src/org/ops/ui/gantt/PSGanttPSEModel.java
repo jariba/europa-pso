@@ -48,8 +48,8 @@ public class PSGanttPSEModel
 		for (int i=0;i<tokens.size();i++) {
 			PSToken token = tokens.get(i);
 			acts.add(new PSGanttActivityImpl(token.getKey(),
-					                         instantToCalendar(token.getParameter("start").getLowerBound()),
-					                         instantToCalendar(token.getParameter("end").getLowerBound()),
+					                         instantToCalendar(token.getStart().getLowerBound()),
+					                         instantToCalendar(token.getEnd().getLowerBound()),
 					                         token.getViolation()
 					                         )
 			);
