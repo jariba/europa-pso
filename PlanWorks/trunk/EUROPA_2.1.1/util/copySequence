@@ -1,0 +1,70 @@
+#!/bin/sh
+
+# copy stepnn directories from input dir to output dir, up to nn=maxStep
+# will taylor 21oct03
+
+#
+# Usage:
+#     Usage: copySequence FROM_DIR TO_DIR MAX_STEP
+#
+
+case $# in
+  0|1) echo 'Usage: copySequence from_dir to_dir max_step';exit 2
+esac
+
+TEST='/usr/bin/test'
+TAR=/bin/tar
+
+$TEST -d $1 || (echo "$1 not found!";exit 1)
+$TEST -d $2 || (echo "$2 not found!"; 
+                echo;echo -n "Create $2 ? "> /dev/tty;
+                read answer
+                case $answer in
+                  y*|Y*) mkdir $2; echo; echo "$2 Created..";;
+                  *) exit 1;;
+                esac)  
+MAX_STEP=$3
+
+FROM_DIR=$1
+TO_DIR=$2
+
+echo;echo "Copying stepnn directories from $1 to $2 upto step$3 ...";echo
+
+for dir in `find $FROM_DIR -type d -print`
+do
+  # echo "$dir"
+  length=`expr length $dir`
+  # echo "length $length"
+  idx=`expr index "$dir" "sp"`
+  # echo "idx $idx"
+  start=`expr $idx + 4`
+  # echo "start $start"
+  stepNum=`expr substr $dir $start $length`
+  # echo "stepNum $stepNum"
+  if [ $idx -ne 0 ]
+  then
+    if [ "$stepNum" -le "$MAX_STEP" ]
+    then
+      echo "copy $dir to $TO_DIR/$seqDir/step$stepNum"
+
+      $TEST -d $TO_DIR/$seqDir || (echo "$TO_DIR/$seqDir not found!"; 
+         echo;echo -n "Create $TO_DIR/$seqDir ? "> /dev/tty;
+         read answer
+         case $answer in
+           y*|Y*) mkdir $TO_DIR/$seqDir; echo; echo "$TO_DIR/$seqDir Created..";;
+           *) exit 1;;
+         esac)  
+
+
+      cp -R $dir $TO_DIR/$seqDir
+    fi
+  else
+    seqDir=$dir
+  fi
+done
+
+
+echo "...Done";echo
+
+exit 0
+
