@@ -1,0 +1,12 @@
+if [ "${JAVA_HOME}" == "" ] ; then
+	echo "$0: Error: JAVA_HOME must be set"
+	exit
+fi
+
+echo "Compiling PlannerControlJNI.cc..."
+g++ -c  -o PlannerControlJNI.o -fPIC -g3 -Wall \
+             -I${JAVA_HOME}/include -I${JAVA_HOME}/include/macosx \
+             PlannerControlJNI.cc
+
+echo "Linking shared library libPlannerControlJNI.dylib..."
+g++ -fno-common -dynamiclib -o libPlannerControlJNI.dylib PlannerControlJNI.o  -ldl

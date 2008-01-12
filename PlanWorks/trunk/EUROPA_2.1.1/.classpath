@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="java/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="java/jars/PlanWorksDB.jar"/>
+	<classpathentry kind="lib" path="java/jars/PlanWorksPlugin.jar"/>
+	<classpathentry kind="lib" path="java/lib/antlr/antlr.jar"/>
+	<classpathentry kind="lib" path="java/lib/apache-ant/lib/ant.jar"/>
+	<classpathentry kind="lib" path="java/lib/apache-ant/lib/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="java/lib/apache-ant/lib/ant-nodeps.jar"/>
+	<classpathentry kind="lib" path="java/lib/apache-ant/lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="java/lib/apache-ant/lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="java/lib/JFCUnit/jakarta-regexp.jar"/>
+	<classpathentry kind="lib" path="java/lib/JFCUnit/jfcunit.jar"/>
+	<classpathentry kind="lib" path="java/lib/JFCUnit/junit.jar"/>
+	<classpathentry kind="lib" path="java/lib/JGo/Classier.jar"/>
+	<classpathentry kind="lib" path="java/lib/JGo/JGo.jar"/>
+	<classpathentry kind="lib" path="java/lib/JGo/JGoLayout.jar"/>
+	<classpathentry kind="lib" path="java/lib/mysql/mysql-connector.jar"/>
+	<classpathentry kind="lib" path="java/lib/nanoxml/nanoxml.jar"/>
+	<classpathentry kind="lib" path="java/lib/testLang/testLang.jar"/>
+	<classpathentry kind="lib" path="java/lib/JGo"/>
+	
+	<classpathentry kind="output" path="bin"/>
+</classpath>
