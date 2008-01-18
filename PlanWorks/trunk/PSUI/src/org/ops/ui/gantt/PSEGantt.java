@@ -301,7 +301,6 @@ public class PSEGantt
 	protected static class DefaultColorProvider
 	    implements PSGanttColorProvider
     {
-        @Override
         public Color getColor(PSGanttActivity activity) 
         {
             return (activity.getViolation() == 0 ? Color.GREEN : Color.RED);
