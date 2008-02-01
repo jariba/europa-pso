@@ -1,0 +1,26 @@
+SubDir PLASMA Examples CrewPlanning ;
+
+if ! $(CrewPlanning_READY) && ! $(PLASMA_READY) {
+ # Declare a library for PlanWorks Control
+
+ ModuleSharedLibrary CrewPlanningController 
+     : $(PLASMA_HOME)/ControllerStub.cc $(PLASMA_HOME)/MasterController.cc $(PLASMA_HOME)/SingleSolverController.cc 
+     : System : CrewPlanningController ;
+
+ # Create a build target to run a problem
+ RunNDDLProblem CrewPlanning : CrewPlanning-initial-state.nddl : CrewPlanning-planner : PlannerConfig.xml ;
+
+ # Create a build target for the planner executable with the given model.
+ NddlMain CrewPlanning-planner : CrewPlanning-Main.cc : CrewPlanning-model.nddl : System : CrewPlanning-planner ;
+
+ # Create a build target for the planner shared library with model.
+ ModuleSharedLibrary CrewPlanning : CrewPlanning-model.o : System : CrewPlanning ;
+
+ NOTFILE CrewPlanning CrewPlanningController ; 
+
+ # Only let all run project if we're in this directory:
+ if $(SUBDIR) = . { 
+    Depends all : CrewPlanning CrewPlanningController ;
+ } 
+ Depends run-CrewPlanning-tests : CrewPlanning CrewPlanningController ;
+} # CrewPlanning_READY
