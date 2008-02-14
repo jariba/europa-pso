@@ -1,0 +1,363 @@
+#include "PlannerConfig.nddl"
+#include "Resources.nddl"
+
+float 	 STATE_COND_TRUE = 	 1000.0;
+float 	 STATE_COND_FALSE = 	 0.0;
+float 	 STATE_COND_TRUE_DELTA = 	 1000.0;
+float 	 STATE_COND_FALSE_DELTA = 	 -1000.0;
+
+// Define basic passive and active Timeline/Resource classes.
+
+// **********************************************************
+// Define Claimable_Resource class.
+// Contains active and passive members.
+
+class Passive_Unit_Resource extends Resource {
+  Passive_Unit_Resource() {
+    super(1.0, 0.0, +inff, +inff, +inff, -inff, -inff);
+  }
+}
+
+class Active_Unit_Resource extends Timeline {
+  Active_Unit_Resource() {}
+  predicate Active_Claim {}
+}
+
+class Claimable_Resource extends Object {
+  Passive_Unit_Resource passive;
+  Active_Unit_Resource active;
+
+  Claimable_Resource() {
+    passive = new Passive_Unit_Resource();
+    active = new Active_Unit_Resource();
+  }
+
+  predicate Claim {
+    bool subsolved;
+  }
+}
+
+Claimable_Resource::Claim {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, -1.0);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, 1.0);
+
+  if (subsolved == true) {
+    equals(object.active.Active_Claim tok3);
+    eq(tok3.state, ACTIVE);
+  }
+}
+
+// **********************************************************
+// Define Sharable_Resource class.
+
+class Passive_Multi_Resource extends Resource {
+  Passive_Multi_Resource(float maxCap) {
+    super(maxCap, 0.0, +inff, +inff, +inff, -inff, -inff);
+  }
+}
+
+class Active_Multi_Resource extends Timeline {
+  Active_Multi_Resource() {}
+  predicate Active_Reserve {}
+}
+
+// Sharable_Resource class contains Passive_Multi_Resource member but
+// not Active_Multi_Resource member.
+
+// AD translation will create subclass of Active_Multi_Resource.
+// that has the right number of instances and pass it as the active
+// parameter of the reserve subgoal.  This indirect method is
+// necessary because iteration (to create num timelines) is not
+// supported in the Sharable_Resource constructor.
+
+class Sharable_Resource extends Object {
+  Passive_Multi_Resource passive;
+
+  Sharable_Resource(float num) {
+    passive = new Passive_Multi_Resource(num);
+  }
+
+  predicate Reserve {
+    bool subsolved;
+    Active_Multi_Resource active;
+  }
+}
+
+Sharable_Resource::Reserve {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, -1.0);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, 1.0);
+
+  if (subsolved == true) {
+    equals(active.Active_Reserve tok3);
+    eq(tok3.state, ACTIVE);
+  }
+}
+
+// **********************************************************
+// Define State_Condition passive resource
+
+class State_Condition extends Resource {
+  State_Condition(float initCap) {
+    super(initCap, 0.0, +inff, +inff, +inff, -inff, -inff);
+  }
+}
+
+// **********************************************************
+// Define Blackout_Resource
+// (One-sided Boolean, starts true, requirers can't overlap.)
+
+class Passive_Blackout_Resource extends State_Condition {
+  Passive_Blackout_Resource() {
+    super(1000.0);
+  }
+}
+
+class Active_Blackout_Resource extends Timeline {
+  Active_Blackout_Resource() {}
+  predicate Active_Blackout_Mutex {
+  }
+}
+
+class Blackout_Resource extends Object {
+  Passive_Blackout_Resource passive;
+  Active_Blackout_Resource active;
+
+  Blackout_Resource() {
+    passive = new Passive_Blackout_Resource();
+    active = new Active_Blackout_Resource();
+  }
+
+  predicate StartPrevent {
+    bool subsolved;
+  }
+
+  predicate EndPrevent {
+    bool subsolved;
+  }
+
+  predicate Prevent {
+    bool subsolved;
+  }
+
+  predicate Require {
+    bool subsolved;
+  }
+}
+
+Blackout_Resource::StartPrevent {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_FALSE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Blackout_Mutex tok3);
+  }
+}
+
+Blackout_Resource::EndPrevent {
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, STATE_COND_TRUE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Blackout_Mutex tok3);
+  }
+}
+
+Blackout_Resource::Prevent {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_FALSE_DELTA);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, STATE_COND_TRUE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Blackout_Mutex tok3);
+  }
+}
+
+Blackout_Resource::Require {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, -1.0);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, 1.0);
+
+  if (subsolved == true) {
+    equals(object.active.Active_Blackout_Mutex tok3);
+    eq(tok3.state, ACTIVE);  // Can't merge
+  }
+}
+
+// **********************************************************
+// Define Achievable_Resource
+// (One-sided Boolean, starts false, requirers may overlap.)
+
+class Passive_Achievable_Resource extends State_Condition {
+  Passive_Achievable_Resource() {
+    super(0.0);
+  }
+}
+
+class Active_Achievable_Resource extends Timeline {
+  Active_Achievable_Resource() {}
+  predicate Active_Achievable_Mutex {
+  }
+}
+
+class Achievable_Resource extends Object {
+  Passive_Achievable_Resource passive;
+  Active_Achievable_Resource active;
+
+  Achievable_Resource() {
+    passive = new Passive_Achievable_Resource();
+    active = new Active_Achievable_Resource();
+  }
+
+  predicate StartEnable {
+    bool subsolved;
+  }
+
+  predicate EndEnable {
+    bool subsolved;
+  }
+
+  predicate Enable {
+    bool subsolved;
+  }
+
+  predicate Require {
+    bool subsolved;
+  }
+}
+
+Achievable_Resource::StartEnable {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_TRUE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Achievable_Mutex tok3);
+  }
+}
+
+Achievable_Resource::EndEnable {
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, STATE_COND_FALSE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Achievable_Mutex tok3);
+  }
+}
+
+Achievable_Resource::Enable {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_TRUE_DELTA);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, STATE_COND_FALSE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Achievable_Mutex tok3);
+  }
+}
+
+Achievable_Resource::Require {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, -1.0);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, 1.0);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Achievable_Mutex tok3);
+    neq(tok3.state, ACTIVE);  // Must merge
+  }
+}
+
+// **********************************************************
+// Define Boolean_Resource
+// (Two-sided Boolean, starts true or false, requirers may overlap,
+//    make-falsers may overlap, make-truers may NOT overlap for now.)
+
+class Passive_Boolean_Resource extends State_Condition {
+  Passive_Boolean_Resource() {
+    super(0.0);
+  }
+}
+
+class Active_Boolean_Resource extends Timeline {
+  Active_Boolean_Resource() {}
+  predicate Active_Boolean_True {}
+  predicate Active_Boolean_False {}
+}
+
+class Boolean_Resource extends Object {
+  Passive_Boolean_Resource passive;
+  Active_Boolean_Resource active;
+
+  Boolean_Resource() {
+    passive = new Passive_Boolean_Resource();
+    active = new Active_Boolean_Resource();
+  }
+
+  predicate Init_True {
+  }
+
+  predicate Init_False {
+  }
+
+  predicate Make_True {
+    bool subsolved;
+  }
+
+  predicate Make_False {
+    bool subsolved;
+  }
+
+  predicate Require {
+    bool subsolved;
+  }
+}
+
+Boolean_Resource::Init_True {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_TRUE_DELTA);
+
+  contained_by(object.active.Active_Boolean_True tok3);
+}
+
+Boolean_Resource::Init_False {
+  contained_by(object.active.Active_Boolean_False tok3);
+}
+
+Boolean_Resource::Make_True {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_TRUE_DELTA);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, STATE_COND_FALSE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Boolean_True tok3);
+  }
+}
+
+Boolean_Resource::Make_False {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, STATE_COND_FALSE_DELTA);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, STATE_COND_TRUE_DELTA);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Boolean_False tok3);
+  }
+}
+
+Boolean_Resource::Require {
+  starts(object.passive.change tok1);
+  eq(tok1.quantity, -1.0);
+  ends(object.passive.change tok2);
+  eq(tok2.quantity, 1.0);
+
+  if (subsolved == true) {
+    contained_by(object.active.Active_Boolean_True tok3);
+    neq(tok3.state, ACTIVE);  // Must merge
+  }
+}
