@@ -1,0 +1,775 @@
+#include "common.nddl"
+
+string AD_VERSION = "20070813.2";
+
+class Active_gurneys extends Active_Multi_Resource {}
+new Active_gurneys();
+new Active_gurneys();
+new Active_gurneys();
+
+class Active_kitchen_staff extends Active_Multi_Resource {}
+new Active_kitchen_staff();
+new Active_kitchen_staff();
+
+
+// System class provides place to put global resources.
+
+class System extends Object {
+
+  Claimable_Resource UCR_Level1;
+  Claimable_Resource UCR_Continuable_Equipment_Cardio;
+  Claimable_Resource UCR_Continuable_Room_Cardio;
+  Claimable_Resource UCR_Operator_Cardio_Team;
+  Claimable_Resource UCR_Operator_Meck;
+  Claimable_Resource UCR_Operator_Hagan;
+  Claimable_Resource UCR_Continuable_Equipment_Isokinetic;
+  Claimable_Resource UCR_Continuable_Room_First_Floor;
+  Claimable_Resource UCR_Operator_Baldwin;
+  Claimable_Resource UCR_Operator_LeBlanc;
+  Claimable_Resource UCR_Continuable_Equipment_Neuro;
+  Claimable_Resource UCR_Operator_Taylor;
+  Claimable_Resource UCR_Operator_Seaton;
+  Claimable_Resource UCR_Operator_Rubin;
+  Claimable_Resource UCR_Continuable_Equipment_Vibe;
+  Claimable_Resource UCR_Operator_Therapist;
+  Claimable_Resource UCR_van;
+  Sharable_Resource MCR_gurneys;
+  Sharable_Resource MCR_kitchen_staff;
+  Blackout_Resource SC_First_Floor_can_be_setup_for_Isokinetic;
+  Blackout_Resource SC_First_Floor_can_be_setup_for_Neuro;
+  Blackout_Resource SC_First_Floor_can_be_setup_for_Vibe;
+  Blackout_Resource SC_Cardio_can_be_setup_for_Cardio;
+  Blackout_Resource SC_Cardio_can_be_setup_for_Vibe;
+
+  System() {
+
+  UCR_Level1 = new Claimable_Resource();
+  UCR_Continuable_Equipment_Cardio = new Claimable_Resource();
+  UCR_Continuable_Room_Cardio = new Claimable_Resource();
+  UCR_Operator_Cardio_Team = new Claimable_Resource();
+  UCR_Operator_Meck = new Claimable_Resource();
+  UCR_Operator_Hagan = new Claimable_Resource();
+  UCR_Continuable_Equipment_Isokinetic = new Claimable_Resource();
+  UCR_Continuable_Room_First_Floor = new Claimable_Resource();
+  UCR_Operator_Baldwin = new Claimable_Resource();
+  UCR_Operator_LeBlanc = new Claimable_Resource();
+  UCR_Continuable_Equipment_Neuro = new Claimable_Resource();
+  UCR_Operator_Taylor = new Claimable_Resource();
+  UCR_Operator_Seaton = new Claimable_Resource();
+  UCR_Operator_Rubin = new Claimable_Resource();
+  UCR_Continuable_Equipment_Vibe = new Claimable_Resource();
+  UCR_Operator_Therapist = new Claimable_Resource();
+  UCR_van = new Claimable_Resource();
+  MCR_gurneys = new Sharable_Resource(3.0);
+  MCR_kitchen_staff = new Sharable_Resource(2.0);
+  SC_First_Floor_can_be_setup_for_Isokinetic = new Blackout_Resource();
+  SC_First_Floor_can_be_setup_for_Neuro = new Blackout_Resource();
+  SC_First_Floor_can_be_setup_for_Vibe = new Blackout_Resource();
+  SC_Cardio_can_be_setup_for_Cardio = new Blackout_Resource();
+  SC_Cardio_can_be_setup_for_Vibe = new Blackout_Resource();
+
+  }
+
+
+}
+
+
+// // Subject class for multi-subject application.
+
+class Subject extends Object {
+
+  Claimable_Resource UCR_This_Subject_Availability;
+  Blackout_Resource SC_This_Subject_is_on_sixth_floor;
+  Blackout_Resource SC_This_Subject_Allowed_To_Eat;
+  Blackout_Resource SC_This_Subject_Allowed_To_Eat_Regular_Food;
+  Blackout_Resource SC_This_Subject_Allowed_To_Eat_Non_Special_Food;
+  Blackout_Resource SC_This_Subject_Allowed_To_Exercise;
+  Blackout_Resource SC_This_Subject_Allowed_To_Exercise_Maximally;
+  Blackout_Resource SC_This_Subject_May_Not_Have_Science_Constraint_CPX;
+  Blackout_Resource SC_This_Subject_May_Not_Be_Subjected_To_Sore_Foot;
+  Achievable_Resource SC_This_Subject_is_on_first_floor;
+  Blackout_Resource SC_This_Subject_May_Not_Have_Science_Constraint_NB;
+  Blackout_Resource SC_This_Subject_May_Not_Have_Science_Constraint_vibration;
+
+  Subject() {
+
+  UCR_This_Subject_Availability = new Claimable_Resource();
+  SC_This_Subject_is_on_sixth_floor = new Blackout_Resource();
+  SC_This_Subject_Allowed_To_Eat = new Blackout_Resource();
+  SC_This_Subject_Allowed_To_Eat_Regular_Food = new Blackout_Resource();
+  SC_This_Subject_Allowed_To_Eat_Non_Special_Food = new Blackout_Resource();
+  SC_This_Subject_Allowed_To_Exercise = new Blackout_Resource();
+  SC_This_Subject_Allowed_To_Exercise_Maximally = new Blackout_Resource();
+  SC_This_Subject_May_Not_Have_Science_Constraint_CPX = new Blackout_Resource();
+  SC_This_Subject_May_Not_Be_Subjected_To_Sore_Foot = new Blackout_Resource();
+  SC_This_Subject_is_on_first_floor = new Achievable_Resource();
+  SC_This_Subject_May_Not_Have_Science_Constraint_NB = new Blackout_Resource();
+  SC_This_Subject_May_Not_Have_Science_Constraint_vibration = new Blackout_Resource();
+
+  }
+
+  predicate Sleep {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Other {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Response_to_Tilt_CT1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Response_to_Tilt_CT2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vascular_Function_CV1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vascular_Function_CV2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Plasma_Volume_CP1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Cardiac_Function_Echo_CE1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate PE_Nitroprusside_CPX1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Dorsal_Foot_Vein_CPX2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Dorsal_Hand_Vein_CPX3 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Leg_Compliance_CPX4 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Cycle_Ergometer_EC1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Functional_Fitness_EF1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Isokinetic_EK1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Isokinetic_EK2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Serum_Preg___Blood_PS1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate DEXA_BD1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate pQCT_BP1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Clinical_Nutritional_Assessment_NN1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Clinical_Laboratory_Assessment_NL1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Sublingual_Scrape_NSS1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Stress_Measures_SM1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Saliva_Sample_SS1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Saliva_Briefing_SB1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Functional_Stretch_Reflex_NS1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Balance_Control_NB1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Balance_Control_NB2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Balance_Control_NB3 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Balance_Control_NB4 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Lactulose_Acetaminophen_Test_PL1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Lactulose_Post_5_PL2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Lactulose_Post_6_PL3 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Pharmacy_Briefing_PB1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate WinSCAT_PW1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Quantitative_Ultrasound_Scan_RPX1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Posture_Study_RPX2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate QCT_Scan_RPX3 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate MRI_Lumbar_RPX4 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Serum_Pregnancy_Test_RPX5 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate DEXA_RPX6 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vibration_RPX7 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vibe_Echo_RPX8 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vibe_EMG_RPX9 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Post_Vibration_FSR_RPX10 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vest_Fitting_RPX11 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vitals_V1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Vitals_No_Meds_V2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Physiotherapy_WP1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate AM_Stretching_WS1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate PM_Stretching_WS2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Stretch_FAM_WSF {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Reconditioning_WR1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Away_T1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Come_back_T1R {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Go_to_JSC_T2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Return_from_JSC_T2R {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Hygiene_H1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Admit_Physical_A1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Dimissal_A2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Subject_Briefing_A3 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Head_Down_A4 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Breakfast_B1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Light_Breakfast___Complex_Carbs_B2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Lunch_L1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Light_Lunch___Complex_Carbs_L2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Special_Lact_Light_Lunch___Complex_Carbs_L3 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Special_Lact_Lunch_L4 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Remaining_Meal_RM1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Special_Lact_Remaining_Meal_RM2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Dinner_D1 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+  predicate Special_Lact_Dinner_D2 {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+ }
+
+}
+
+class ContainerObj extends Object {
+
+  ContainerObj() {}
+
+  predicate CONTAINER {
+    int          priority;
+    int          reftime;
+    bool         enforce;
+    bool         scheduled;
+    bool         solved;
+    float        container_id;
+    float        name;
+    string       Name;
+  }
+}
