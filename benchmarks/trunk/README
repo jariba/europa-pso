@@ -7,3 +7,7 @@ This directory is intended to hold:
 In other words, a location to test EUROPA, improve its performance, work on
 algorithms and compare EUROPA with state-of-the-art approaches in planning,
 scheduling, and constraint satisfaction.
+
+NOTE: For now, we're also storing the 'Example' project here, which is instead
+used to demonstrate how to extend EUROPA in various ways (adding a custom
+constraint is the only current piece)
