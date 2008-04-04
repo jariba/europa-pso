@@ -12,6 +12,7 @@
 #include "Debug.hh"
 
 #include "ModuleExample.hh"
+#include "ExampleCustomCode.hh"
 
 using namespace EUROPA;
 
@@ -42,6 +43,10 @@ int main(int argc, const char ** argv)
       1000 // maxSteps
   ); 
   */
+
+  // Calling code from with C++ that is also swig-wrapped:
+  Foo f;
+  f.bar();
      
   return 0;
 }

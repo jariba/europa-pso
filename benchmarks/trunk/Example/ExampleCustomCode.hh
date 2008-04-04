@@ -8,6 +8,7 @@
 #include "BoolDomain.hh"
 #include "Constraints.hh"
 #include "Token.hh"
+#include <iostream>
 
 using namespace EUROPA;
 
@@ -33,6 +34,18 @@ public:
 private:
   static const int X = 0;  
   static const int ARG_COUNT = 1;
+};
+
+
+
+// Example code used to show how to access custom C++ code from Java:
+class Foo
+{
+ public:
+  void bar()
+  { 
+    std::cout << "Foo.bar called." << std::endl;
+  }
 };
 
 #endif
