@@ -1,6 +1,7 @@
 import psengine.*;
 import org.ops.ui.util.Util;
 import org.ops.ui.util.LibraryLoader;
+import Example.*;
 
 //Load module with any custom code if it exists:
 String debugMode = desktop.getLibsMode();
@@ -8,12 +9,13 @@ String libName = "Example_" + debugMode;
 String fullLibName = LibraryLoader.getResolvedName(libName); 
 if(fullLibName == null) {
 	// Run 'make' to compile the library if you need it:
-	System.out.println("WARNING: Your custom library " + libName + " wasn't found and won't be loaded.");  
+	System.out.println("WARNING: Your custom library " + libName + " wasn't found and won't be loaded.");
 }
 else {
+        // WARNING: Shared library loaded twice (see ticket #164)
+        System.load(fullLibName);
 	psengine.loadModule(fullLibName);
 }
-
 
 psengine.executeScript("nddl",bsh.cwd+"/Example-initial-state.nddl",true/*isFile*/);
 desktop.makeNddlConsole();
@@ -25,9 +27,6 @@ solver = desktop.makeSolver(
 
 desktop.makeSolverDialog(solver);
 
-// Some useful calls
-// desktop.showTokens("All Tokens",psengine.getTokens());
-// desktop.makeTableFrame("All Objects",Util.SWIGList(psengine.getObjectsByType("Object")),new String[]{"Key","Name","ObjectType"});
-// key = ???; // see results of previous query
-// desktop.showTokens(psengine.getObjectByKey(key));
-
+// Access swig-wrapped custom C++ code:
+Foo f = new Foo();
+f.bar();
