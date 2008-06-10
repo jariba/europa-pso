@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ "${JAVA_HOME}" == "" ] ; then
+	echo "$0: Error: JAVA_HOME must be set"
+	exit
+fi
+
+SHARED_FLAG="-shared"
+SHARED_LIB_SUFFIX="so"
+if [ "${OSTYPE}" == "linux" ] ; then
+	JNI_INCLUDE="-I${JAVA_HOME}/include/linux"
+elif [ "${OSTYPE}" == "solaris" ] ; then
+	JNI_INCLUDE="-I${JAVA_HOME}/include/solaris"
+elif [ "${OSTYPE}" == "darwin" ] ; then
+	JNI_INCLUDE=""
+	SHARED_FLAG="-fno-common -dynamiclib"
+  SHARED_LIB_SUFFIX="dylib"
+elif [ "${OSTYPE}" == "cygwin" ] ; then
+	JNI_INCLUDE="-I${JAVA_HOME}/include/win32"
+  SHARED_LIB_SUFFIX="dll"
+fi
+
+
+echo "$0: Compiling PlannerControlJNI.cc..."
+g++ -c  -o ${PLANWORKS_HOME}/build/objects/PlannerControlJNI.o \
+             -fPIC -g3 -Wall \
+             -I${JAVA_HOME}/include ${JNI_INCLUDE} \
+             ${PLANWORKS_HOME}/src/cpp/PlannerControlJNI.cc
+
+echo "$0: Linking shared library libPlannerControlJNI.${SHARED_LIB_SUFFIX}..."
+g++ ${SHARED_FLAG} \
+      -o ${PLANWORKS_HOME}/build/lib/libPlannerControlJNI.${SHARED_LIB_SUFFIX} \
+			${PLANWORKS_HOME}/build/objects/PlannerControlJNI.o  -ldl
+
+exit 0
