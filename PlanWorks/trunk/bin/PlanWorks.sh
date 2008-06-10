@@ -2,11 +2,16 @@
 
 if [ "${EUROPA_HOME}" != "" -a "${PLANWORKS_HOME}" == "" ] ; then
 	export PLANWORKS_HOME=${EUROPA_HOME}
+	jarfile="${EUROPA_HOME}/lib/PlanWorks.jar"
 fi
 
 if [ "${PLANWORKS_HOME}" == "" ] ; then 
 	echo "\$PLANWORKS_HOME is undefined, attempting to use ${PWD}"
 	export PLANWORKS_HOME=`pwd`
+fi
+
+if [ "${jarfile}" == "" ] ; then
+	jarfile="${PLANWORKS_HOME}/build/lib/PlanWorks.jar"
 fi
 
 ismaxscreen=false
@@ -25,5 +30,4 @@ java \
   -Dintegration.home=${PLANWORKS_HOME}/src/cpp \
   -Ddb.class=gov.nasa.arc.planworks.db.util.HSQLDB \
   -Dhsqldb.db=${PLANWORKS_HOME}/res/hsql/database \
-  -jar ${PLANWORKS_HOME}/build/lib/PlanWorks.jar \
-	"PlanWorks (PW_M_23): Plan Visualization" $ismaxscreen
+  -jar ${jarfile} "PlanWorks (PW_M_23): Plan Visualization" $ismaxscreen
