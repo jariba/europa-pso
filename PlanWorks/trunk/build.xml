@@ -96,16 +96,16 @@
   </target>
 
   <target name="test" depends="planworks" description="Execute PlanWorks test suite.">
-    <antcall target="cleanDB"/>
+    <antcall target="cleanDb"/>
     <exec executable="${bin.dir}/PlanWorks-tests.sh" failonerror="true" failifexecutionfails="true">
       <env key="PLANWORKS_HOME" path="${basedir}"/>
     </exec>
-    <antcall target="cleanDB"/>
+    <antcall target="cleanDb"/>
   </target>
 
   <target name="cleanDb" description="-- delete loaded projects from data base">
     <delete verbose="true">
-      <fileset dir="${basedir}/lib/hsql" includes="database*"/>
+      <fileset dir="${basedir}/res/hsql" includes="database*"/>
     </delete>
   </target>
 </project>
