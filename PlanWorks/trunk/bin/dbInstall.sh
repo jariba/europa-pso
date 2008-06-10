@@ -9,8 +9,8 @@ if [ -z $PLANWORKS_HOME ]; then
 echo "Error: PLANWORKS_HOME not defined."
 fi
 
-/bin/rm -f ${PLANWORKS_HOME?}/lib/mysql/data/mysql/*
-/bin/rm -rf ${PLANWORKS_HOME?}/lib/mysql/data/PlanWorks
+/bin/rm -f ${PLANWORKS_HOME?}/res/mysql/data/mysql/*
+/bin/rm -rf ${PLANWORKS_HOME?}/res/mysql/data/PlanWorks
 
 #utility database creation code taken from mysql_install_db.
 
