@@ -14,13 +14,14 @@
     <property name="bin.dir" value="bin"/>
     <property name="src.dir" value="src/java"/>
     <property name="jni.dir" value="src/cpp"/>
-    <property name="lib.dir" value="lib"/>
+    <property name="jar.dir" value="lib"/>
     <property name="build.dir" value="build"/>
     <property name="class.dir" value="${build.dir}/classes"/>
     <property name="cache.dir" value="${build.dir}/.cache"/>
+    <property name="lib.dir" value="${build.dir}/lib"/>
     <property name="europa.home" value="${env.EUROPA_HOME}"/>
     <!-- this can be culled down to what's actually required later -->
-    <fileset dir="${lib.dir}" id="planworks.libfiles">
+    <fileset dir="${jar.dir}" id="planworks.libfiles">
       <include name="JFCUnit/jakarta-regexp.jar"/>
       <include name="JFCUnit/jfcunit.jar"/>
       <include name="JFCUnit/junit.jar"/>
@@ -57,7 +58,8 @@
       <fileset refid="planworks.libfiles"/>
     </unjar>
     <delete dir="${cache.dir}/unjar/META-INF"/>
-    <jar jarfile="${build.dir}/PlanWorks.jar">
+    <mkdir dir="${lib.dir}"/>
+    <jar jarfile="${lib.dir}/PlanWorks.jar">
       <fileset dir="${class.dir}"/>
       <fileset dir="${cache.dir}/unjar"/>
       <!-- <fileset dir="${basedir}" includes="res/**/*"/> -->
@@ -65,7 +67,7 @@
         <attribute name="Main-Class" value="gov.nasa.arc.planworks.PlanWorks"/>
       </manifest>
     </jar>
-    <touch file="${build.dir}/PlanWorks.jar"/>
+    <touch file="${lib.dir}/PlanWorks.jar"/>
   </target>
 
   <target name="createJNI" depends="init" description="create the JNI interface for PlanWorks.">

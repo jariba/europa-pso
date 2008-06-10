@@ -27,4 +27,5 @@ java \
 	-Dboolean.isMaxTestScreen=$ismaxscreen \
 	-Dant.target.test=true \
 	-Dplanworks.test.data.dir=${PLANWORKS_HOME}/src/java/gov/nasa/arc/planworks/test/data \
-  -cp build/PlanWorks.jar gov.nasa.arc.planworks.test.PlanWorksTest "PlanWorks (PW_M_23): Plan Visualization [test mode]" $ismaxscreen
+  -cp ${PLANWORKS_HOME}/build/lib/PlanWorks.jar \
+	gov.nasa.arc.planworks.test.PlanWorksTest "PlanWorks (PW_M_23): Plan Visualization [test mode]" $ismaxscreen
