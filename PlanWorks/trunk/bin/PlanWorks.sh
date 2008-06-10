@@ -1,6 +1,11 @@
 #!/bin/sh
 
+if [ "${EUROPA_HOME}" != "" -a "${PLANWORKS_HOME}" == "" ] ; then
+	export PLANWORKS_HOME=${EUROPA_HOME}
+fi
+
 if [ "${PLANWORKS_HOME}" == "" ] ; then 
+	echo "\$PLANWORKS_HOME is undefined, attempting to use ${PWD}"
 	export PLANWORKS_HOME=`pwd`
 fi
 
