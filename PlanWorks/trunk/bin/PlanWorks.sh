@@ -25,4 +25,5 @@ java \
   -Dintegration.home=${PLANWORKS_HOME}/src/cpp \
   -Ddb.class=gov.nasa.arc.planworks.db.util.HSQLDB \
   -Dhsqldb.db=${PLANWORKS_HOME}/res/hsql/database \
-  -jar build/PlanWorks.jar "PlanWorks (PW_M_23): Plan Visualization" $ismaxscreen
+  -jar ${PLANWORKS_HOME}/build/lib/PlanWorks.jar \
+	"PlanWorks (PW_M_23): Plan Visualization" $ismaxscreen
