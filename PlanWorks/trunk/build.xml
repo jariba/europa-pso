@@ -11,11 +11,11 @@
       <arg value="-o"/>
     </exec>
     <property environment="env"/>
-    <property name="bin.dir" value="bin"/>
-    <property name="src.dir" value="src/java"/>
-    <property name="jni.dir" value="src/cpp"/>
-    <property name="jar.dir" value="lib"/>
-    <property name="build.dir" value="build"/>
+    <property name="bin.dir" value="${basedir}/bin"/>
+    <property name="src.dir" value="${basedir}/src/java"/>
+    <property name="jni.dir" value="${basedir}/src/cpp"/>
+    <property name="jar.dir" value="${basedir}/lib"/>
+    <property name="build.dir" value="${basedir}/build"/>
     <property name="class.dir" value="${build.dir}/classes"/>
     <property name="cache.dir" value="${build.dir}/.cache"/>
     <property name="lib.dir" value="${build.dir}/lib"/>
