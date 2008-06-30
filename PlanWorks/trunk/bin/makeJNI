@@ -8,16 +8,23 @@ fi
 SHARED_FLAG="-shared"
 SHARED_LIB_SUFFIX="so"
 if [ "${OSTYPE}" == "linux" ] ; then
+	echo "$0: Build JNI planner interface for linux."
 	JNI_INCLUDE="-I${JAVA_HOME}/include/linux"
 elif [ "${OSTYPE}" == "solaris" ] ; then
+	echo "$0: Build JNI planner interface for solaris."
 	JNI_INCLUDE="-I${JAVA_HOME}/include/solaris"
 elif [ "${OSTYPE}" == "darwin" ] ; then
+	echo "$0: Build JNI planner interface for darwin."
 	JNI_INCLUDE=""
 	SHARED_FLAG="-fno-common -dynamiclib"
   SHARED_LIB_SUFFIX="dylib"
 elif [ "${OSTYPE}" == "cygwin" ] ; then
+	echo "$0: Build JNI planner interface for cygwin."
 	JNI_INCLUDE="-I${JAVA_HOME}/include/win32"
   SHARED_LIB_SUFFIX="dll"
+else
+	echo "$0: \$OSTYPE not recognized, using defaults."
+	JNI_INCLUDE="-I${JAVA_HOME}/include/linux"
 fi
 
 
