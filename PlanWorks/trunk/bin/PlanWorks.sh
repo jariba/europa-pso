@@ -21,7 +21,7 @@ java \
   -Xms192m \
   -Xmx256m \
   -Dplanworks.root=${PLANWORKS_HOME} \
-  -Dplanworks.config=${PLANWORKS_HOME}/config/planworks.config \
+  -Dplanworks.config=${PLANWORKS_HOME}/config/planWorks.config \
   -Dprojects.config=${PLANWORKS_HOME}/config/projects.config \
   -Duser=${USER} \
   -Dos.type=${OSTYPE} \
