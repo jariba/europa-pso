@@ -1,7 +1,6 @@
 #include "ExampleCustomCode.hh"
 
 #include "ConstraintEngine.hh"
-#include "ConstraintLibrary.hh"
 #include "ConstrainedVariable.hh"
 #include "IntervalIntDomain.hh"
 #include "BoolDomain.hh"
@@ -24,13 +23,6 @@ ExampleConstraint::ExampleConstraint(const LabelStr& name,
 {
 	check_error(variables.size() == (unsigned int) ARG_COUNT);	
 }
-
-
-void ExampleConstraint::registerSelf(string name, string propagator)  
-{ 
-    REGISTER_CONSTRAINT(ExampleConstraint, name.c_str(), propagator.c_str()); 
-} 
-
 
 /**
  * @brief Restrict interval bounds to be integer values

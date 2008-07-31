@@ -27,9 +27,7 @@ public:
                     const LabelStr& propagatorName,
                     const ConstraintEngineId& constraintEngine,
                     const std::vector<ConstrainedVariableId>& variables);
-
-  static void registerSelf(std::string name, std::string propagator);
-  void handleExecute();
+ void handleExecute();
 
 private:
   static const int X = 0;  
