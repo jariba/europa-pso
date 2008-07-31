@@ -2,7 +2,6 @@
 #include "ExampleCustomCode.hh"
 
 // Pieces necessary for various customizations:
-#include "ConstraintLibrary.hh"
 #include "PSPlanDatabase.hh"
 #include "TransactionInterpreter.hh"
 #include "Schema.hh"
@@ -36,23 +35,27 @@ extern "C"
   
   void ModuleExample::initialize()
   {
-      if(ExampleInitialized())
-    	  return;
-      
-      REGISTER_CONSTRAINT(ExampleConstraint, "example", "Default");
-	  ExampleInitialized() = true;
+ 
   }  
 
   void ModuleExample::uninitialize()
   {
-	  ExampleInitialized() = false;
   }  
   
   void ModuleExample::initialize(EngineId engine)
   {
+	  if(ExampleInitialized())
+		  return;
+
+	  CESchema* schema = (CESchema*)engine->getComponent("CESchema");
+
+	  REGISTER_CONSTRAINT(schema, ExampleConstraint, "example", "Default");
+	  ExampleInitialized() = true; 
   }
+
   
   void ModuleExample::uninitialize(EngineId engine)
   {	  
+	  ExampleInitialized() = false;
   }  
 }

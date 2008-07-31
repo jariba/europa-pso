@@ -7,7 +7,6 @@
  */
 
 #include "Nddl.hh" /*!< Includes protypes required to load a model */
-#include "SolverAssembly.hh" /*!< For using a test EUROPA Assembly */
 #include "PSEngine.hh" 
 #include "Debug.hh"
 
@@ -32,9 +31,6 @@ int main(int argc, const char ** argv)
   const char* txSource = argv[1];
   const char* plannerConfig = argv[2];
   
-  executeWithAssembly(plannerConfig,txSource);
-  
-  /*
   executeWithPSEngine(
       plannerConfig,
       txSource,
@@ -42,7 +38,6 @@ int main(int argc, const char ** argv)
       100, // endHorizon
       1000 // maxSteps
   ); 
-  */
 
   // Calling code from with C++ that is also swig-wrapped:
   Foo f;
@@ -51,24 +46,6 @@ int main(int argc, const char ** argv)
   return 0;
 }
 
-void executeWithAssembly(const char* plannerConfig, const char* txSource)
-{
-  SolverAssembly::initialize();
-
-  // Allocate the schema with a call to the linked in model function   
-  SchemaId schema = NDDL::loadSchema(); // eventually make this called via dlopen
-  
-  { // Encapsualte allocation so that they go out of scope before calling terminate  
-    SolverAssembly assembly(schema);    
-    assembly.addModule(new ModuleExample());
-    
-    assembly.plan(txSource, plannerConfig); // Run the planner    
-    assembly.write(std::cout); // Dump the results
-  }
-
-  SolverAssembly::terminate();
-  std::cout << "Finished\n";
-}
 
 bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int startHorizon, int endHorizon, int maxSteps)
 {
@@ -85,6 +62,10 @@ bool executeWithPSEngine(const char* plannerConfig, const char* txSource, int st
 
 	      PSSolver* solver = engine->createSolver(plannerConfig);
 	      runSolver(solver,startHorizon,endHorizon,maxSteps);
+	      
+	      std::cout << "x lower bound: " << engine->getVariableByName("x")->getLowerBound() << std::endl;
+	      std::cout << "x upper bound: " << engine->getVariableByName("x")->getUpperBound() << std::endl;
+	      
 	      delete solver;	
 
 	      delete engine;
