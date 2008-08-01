@@ -15,7 +15,7 @@ extern "C"
 {
 	ModuleId initializeModule()
 	{
-		return new ModuleExample();
+		return (new ModuleExample())->getId();
 	}
 }
 
