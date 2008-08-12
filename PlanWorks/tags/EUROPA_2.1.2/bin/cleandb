@@ -1,0 +1,15 @@
+connect PlanWorks;
+DELETE FROM ConstraintVarMap;
+DELETE FROM Object;
+DELETE FROM PartialPlan;
+DELETE FROM PartialPlanStats;
+DELETE FROM Project;
+DELETE FROM Sequence;
+DELETE FROM Token;
+DELETE FROM VConstraint;
+DELETE FROM Variable;
+DELETE FROM ResourceInstants;
+DELETE FROM Rules;
+DELETE FROM RuleInstance;
+DELETE FROM RuleInstanceSlaveMap;
+DELETE FROM Decision;

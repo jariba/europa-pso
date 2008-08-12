@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<project name="planworks-test" default="test" basedir=".">
+<property name="boolean.isMaxTestScreen" value="false"/>
+<property name="apache.ant.lib" value="${planworks.root}/java/lib/apache-ant/lib"/>
+<target name="test">
+        <path id="planworks.jars">
+          <pathelement path="${planworks.root}/java/classes"/>
+          <pathelement location="${jgo.home}/JGo.jar"/>
+          <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jgo.home}"/>
+          <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+          <pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+          <pathelement location="${jfcunit.home}/junit.jar"/>
+          <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+          <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
+          <pathelement location="${antlr.home}/antlr.jar"/>
+          <pathelement location="${nanoxml.home}/nanoxml.jar"/>
+          <pathelement location="${testLang.home}/testLang.jar"/>
+    <pathelement location="${planworks.root}/java/lib/hsqldb/hsqldb.jar"/>
+          <!-- pathelement path="/home/wtaylor/pub/apache-ant-1.6.1/lib"/ -->
+        </path>
+
+        <java dir="${planworks.root}/java/src"
+              classname="gov.nasa.arc.planworks.test.PlanWorksTest" fork="true">
+          <classpath refid="planworks.jars"/>
+          <jvmarg value="-Xms200m"/>
+          <jvmarg value="-Xmx300m"/>
+          <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+          <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+          <jvmarg value="-Dprojects.config=${projects.config}"/>
+          <jvmarg value="-Duser=${env.USER}"/>
+          <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+          <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+          <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+          <jvmarg value="-Dmysql.log=${mysql.log}"/>
+          <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	  <jvmarg value="-Dmysql.port=${mysql.port}"/>
+          <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+          <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+          <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+      <jvmarg value="-Ddb.class=${db.class}"/>
+      <jvmarg value="-Dhsqldb.db=${hsqldb.db}"/>
+          <jvmarg value="-Dsplash.image=${splash.image}"/>
+          <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
+          <jvmarg value="-Dname.application=${name.application}"/>
+          <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/>
+	  <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
+	  <jvmarg value="-Dant.target.test=true"/>
+          <jvmarg value="-Dintegration.home=${integration.home}"/>
+        </java>
+
+<!--         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="yes" haltonerror="yes" -->
+<!--               showoutput="yes"> -->
+<!--           <formatter type="plain" usefile="false"/> -->
+<!--           <classpath> -->
+<!--             <pathelement path="${planworks.root}/java/classes"/> -->
+<!--             <pathelement location="${jgo.home}/JGo.jar"/> -->
+<!--             <pathelement location="${jgo.layout.home}/JGoLayout.jar"/> -->
+<!--             <pathelement location="${jgo.home}/Classier.jar"/> -->
+<!--             <pathelement location="${jgo.home}"/> -->
+<!--             <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/> -->
+<!--             <pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/> -->
+<!--             COMMENT junit & jfcunit are in apache-ant/lib, so that <junit> will load -->
+<!--             <pathelement location="${apache.ant.lib}/junit.jar"/> -->
+<!--             <pathelement location="${apache.ant.lib}/jfcunit.jar"/> -->
+<!--             <pathelement location="${apache.ant.lib}/jakarta-regexp.jar"/> -->
+<!--           </classpath> -->
+
+<!--           <test name="gov.nasa.arc.planworks.test.PlanWorksTest"/> -->
+
+<!--           <jvmarg value="-Xms200m"/> -->
+<!--           <jvmarg value="-Xmx300m"/> -->
+<!--           <jvmarg value="-Dplanworks.root=${planworks.root}"/> -->
+<!--           <jvmarg value="-Duser=${env.USER}"/> -->
+<!--           <jvmarg value="-Dos.type=${env.OSTYPE}"/> -->
+<!--           <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/> -->
+<!--           <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/> -->
+<!--           <jvmarg value="-Dmysql.log=${mysql.log}"/> -->
+<!--           <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/> -->
+<!--           <jvmarg value="-Dmysql.sock=${mysql.sock}"/> -->
+<!--           <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/> -->
+<!--           <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/> -->
+<!--           <jvmarg value="-Dsplash.image=${splash.image}"/> -->
+<!--           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/> -->
+<!--           <jvmarg value="-Dname.application=${name.application}"/> -->
+<!--           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/> -->
+<!-- 	       <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
+
+<!--         </junit> -->
+
+</target>
+</project>
+
+

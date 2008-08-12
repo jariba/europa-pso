@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!-- $Id: build.xml,v 1.70 2006-10-03 16:13:34 miatauro Exp $ -->
+<project name="PlanWorks" default="run" basedir=".">
+  <description>
+    PlanWorks: A graphical debugging utility for EUROPA models and planners.
+  </description>
+
+  <target name="init">
+    <tstamp/>
+    <exec executable="uname" outputproperty="uname.o">
+      <arg value="-o"/>
+    </exec>
+    <property environment="env"/>
+    <property name="bin.dir" value="${basedir}/bin"/>
+    <property name="src.dir" value="${basedir}/src/java"/>
+    <property name="jni.dir" value="${basedir}/src/cpp"/>
+    <property name="jar.dir" value="${basedir}/lib"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="class.dir" value="${build.dir}/classes"/>
+    <property name="cache.dir" value="${build.dir}/.cache"/>
+    <property name="lib.dir" value="${build.dir}/lib"/>
+    <property name="europa.home" value="${env.EUROPA_HOME}"/>
+    <!-- this can be culled down to what's actually required later -->
+    <fileset dir="${jar.dir}" id="planworks.libfiles">
+      <include name="JFCUnit/jakarta-regexp.jar"/>
+      <include name="JFCUnit/jfcunit.jar"/>
+      <include name="JFCUnit/junit.jar"/>
+      <include name="antlr/antlr.jar"/>
+      <include name="JGo/JGoExamples.jar"/>
+      <include name="JGo/Classier.jar"/>
+      <include name="JGo/JGo.jar"/>
+      <include name="JGo/JGoLayout.jar"/>
+      <include name="hsqldb/hsqldb.jar"/>
+      <include name="nanoxml/nanoxml.jar"/>
+      <include name="testLang/testLang.jar"/>
+    </fileset>
+    <path id="planworks.classpath">
+      <fileset refid="planworks.libfiles"/>
+    </path>
+  </target>
+
+  <target name="clean" description="delete files created during the build process.">
+    <delete dir="${build.dir}"/>
+  </target>
+
+  <target name="compile" depends="init" description="Compile updated java sources into classes.">
+    <mkdir dir="${class.dir}"/>
+    <mkdir dir="${cache.dir}"/>
+    <depend srcdir="${src.dir}" destdir="${class.dir}" cache="${cache.dir}" closure="yes"/>
+    <javac fork="yes" compiler="modern" debug="on" optimize="on" srcdir="${src.dir}" destdir="${class.dir}">
+      <classpath refid="planworks.classpath"/>
+    </javac>
+  </target>
+
+  <target name="planworks" depends="compile" description="Bundle PlanWorks and its libraries into a distributable executable jar file.">
+    <mkdir dir="${cache.dir}/unjar"/>
+    <unjar dest="${cache.dir}/unjar">
+      <fileset refid="planworks.libfiles"/>
+    </unjar>
+    <delete dir="${cache.dir}/unjar/META-INF"/>
+    <mkdir dir="${lib.dir}"/>
+    <jar jarfile="${lib.dir}/PlanWorks.jar">
+      <fileset dir="${class.dir}"/>
+      <fileset dir="${cache.dir}/unjar"/>
+      <!-- <fileset dir="${basedir}" includes="res/**/*"/> -->
+      <manifest>
+        <attribute name="Main-Class" value="gov.nasa.arc.planworks.PlanWorks"/>
+      </manifest>
+    </jar>
+    <touch file="${lib.dir}/PlanWorks.jar"/>
+  </target>
+
+  <target name="createJNI" depends="init" description="create the JNI interface for PlanWorks.">
+    <mkdir dir="${class.dir}"/>
+    <dependset>
+      <srcfilelist dir="${src.dir}/gov/nasa/arc/planworks" files="PlannerControlJNI.java"/>
+      <targetfilelist dir="${class.dir}/gov/nasa/arc/planworks" files="PlannerControlJNI.class"/>
+    </dependset>
+    <javac classpathref="planworks.classpath" fork="yes" compiler="modern" debug="on" optimize="on" srcdir="${src.dir}" destdir="${class.dir}">
+      <include name="gov/nasa/arc/planworks/PlannerControlJNI.java"/>
+    </javac>
+    <dependset>
+      <srcfilelist dir="${class.dir}/gov/nasa/arc/planworks" files="PlannerControlJNI.class"/>
+      <targetfilelist dir="${jni.dir}" files="PlannerControlJNI.h"/>
+    </dependset>
+    <javah outputFile="${jni.dir}/PlannerControlJNI.h" classpath="${class.dir}" class="gov.nasa.arc.planworks.PlannerControlJNI"/>
+    <mkdir dir="${build.dir}/objects"/>
+    <mkdir dir="${build.dir}/lib"/>
+    <exec executable="${bin.dir}/makeJNI" failonerror="true" failifexecutionfails="true">
+      <env key="PLANWORKS_HOME" path="${basedir}"/>
+    </exec>
+  </target>
+
+  <target name="run" depends="planworks" description="Execute PlanWorks.">
+    <exec executable="${bin.dir}/PlanWorks.sh" failonerror="true" failifexecutionfails="true">
+      <env key="PLANWORKS_HOME" path="${basedir}"/>
+    </exec>
+  </target>
+
+  <target name="test" depends="planworks" description="Execute PlanWorks test suite.">
+    <antcall target="cleanDb"/>
+    <exec executable="${bin.dir}/PlanWorks-tests.sh" failonerror="true" failifexecutionfails="true">
+      <env key="PLANWORKS_HOME" path="${basedir}"/>
+    </exec>
+    <antcall target="cleanDb"/>
+  </target>
+
+  <target name="cleanDb" description="-- delete loaded projects from data base">
+    <delete verbose="true">
+      <fileset dir="${basedir}/res/hsql" includes="database*"/>
+    </delete>
+  </target>
+</project>
