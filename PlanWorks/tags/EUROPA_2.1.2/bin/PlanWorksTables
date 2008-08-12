@@ -1,0 +1,427 @@
+-- What is a model?
+
+-- A model is a set of rules that describe valid plans.  Models contain
+-- declarative descriptions of Attributes and Predicates.  Attributes are
+-- concurrent threads of activity, and Predicates represent temporally
+-- extended values of these concurrent threads.  Thus, there is a mapping
+-- from Predicates to Attributes.  Predicates represent either states
+-- that hold in the world, or actions that modify the state of the world.
+-- Predicates can have Parameters, each of which has a type
+-- (e.g. interval, enumerated) that elaborate on the value of
+-- the Attribute.  
+
+-- Models also contain rules that describe causal relationships between
+-- Predicates.  Each rule takes the following form: if a Predicate P is
+-- in the plan, then one of a set of predicates {Q1...Qk} is also in the
+-- plan.  If Q* is also in the plan, a number of relationships hold
+-- between parameters of P and Q*.  Finally, a number of relationships
+-- hold between the parameters of P.
+
+-- A planning problem is a combination of a model and an initial
+-- state.  The initial state contains a declaration of attribute
+-- instances, called Timelines, and a declaration of predicate
+-- instances, called Tokens.  Thus, there can be many Timelines
+-- with the same attribute type; one example of this is a domain
+-- with several satellites all of which have the same properties.
+-- Tokens can either be sequenced or unsequenced.  
+
+-- What is a Plan?
+
+-- A PartialPlan consists of a set of Timelines, a set of Tokens a set of
+-- relationships between Tokens and Timelines, and a set of relationships
+-- between Tokens and Tokens.  
+
+-- Timelines consist of an ordered list of Slots.  A Slot is either an
+-- equivalence class of Tokens (called a full slot) or a gap between a
+-- pair of sequential Slots where tokens can be placed (called an empty
+-- slot).  Tokens are denoted as either free or sequenced; free tokens
+-- can be sequenced by either adding them to an equivalence class or
+-- inserting them into an empty slot.  Thus, there is a mapping from
+-- slots to sequenced tokens.  ( and
+-- this mapping can be further restricted by constraints.)
+
+-- There are two types of relationships between Tokens. The first
+-- type is causal; this means that the presence of a token A in a
+-- plan causes another token B to be in the plan.  The second
+-- type of relationship is a constraint that governs how the two
+-- tokens can co-exist in the plan.  One example is an equivalence
+-- constraint; when two tokens share the same slot, all of their features
+-- must be the same, leading to a number of equivalence constraints.
+
+-- Constraints are enforced among Variables that represent the Parameters
+-- of Tokens.  Recall that parameters are defined in terms of Predicates,
+-- and we can have many Tokens with the same Predicate.  Thus there is a
+-- mapping from Variables to Parameters.  All Tokens all have a set of
+-- additional Variables including start, end, duration, object and
+-- rejectable.  Start, end and duration describe when the interval that
+-- the token represents can occur in the plan and how long it can be.
+-- Object refers to which Timelines the Token can be sequenced on, and
+-- Rejectable indicates whether the Token has been omitted from the plan
+-- or not.
+
+-- Some constraints are very common in plannnig; these are constraints
+-- among the start, end and duration variables of Tokens.  We distinguish
+-- between these constriants, called Temporal Constraints, and other
+-- constraints in the plan.
+
+-- (I know this isn't supported yet, are we going to?)
+-- Because of the type of planning we support (more about this below),
+-- it may be possible to formally prove that a Variable has fewer
+-- choices as a consequence of previous commitments.  For example,
+-- suppose we have two integer variables x and y, know that x can't equal
+-- y, and that at some point were told that x was between 1 and 5
+-- and that y was 2.  We can see that y can't be 2; thus, there is
+-- a mismatch between what is asserted and what can be proved to be
+-- true.  This is supported by two Domains for each Variable:
+-- the SpecifiedDomain indicating what has been asserted, and
+-- the DerivedDomain indicating what has been proven to be
+-- true about the values of Variables given the constraints.
+
+-- Domains are divided into sub-types.  EnumeratedDomains contain
+-- sets of discrete quantities, while IntervalDomains contain
+-- only their endpoints.  IntervalDomains are also divided
+-- into Integer and Real interval domains.
+
+-- What is Planning?
+
+-- We take a very general view of planning.  Planning is the process of
+-- transforming a PartialPlan into another PartialPlan.  The number of
+-- transformations is limited as follows: a Token can be sequenced by
+-- inserting it onto a Slot, or unsequenced by removing it from a slot.
+-- A Variable's SpecifiedDomain can be changed arbitrarily.
+-- Each of these transformations can lead to consequences
+-- due to the domain rules.  For instance,
+-- if Token A is unsequenced, a Token B "caused by" A may no longer
+-- be justified, and can be removed from the plan.
+-- (for details on when this happens, see CAIP paper.)
+-- This may lead to the removal of Variables, Constraints,
+-- CausalLinks and Domains.  Similarly, the sequencing of a Token
+-- can lead to the creation of new Tokens, Variables, Constraints
+-- and Domains.
+
+-- We don't enforce any notion of how many transformations take place
+-- between logging steps, or how the transformations are guided.  This is
+-- because we have assumed: 1. that the plan itself is managed by a
+-- server, with one or more planners as clients, 2. that the server logs
+-- modifications to the plan only when requested by the client, and
+-- 3. that the only data available is information about the plan in the
+-- server.  Thus, we only get periodic snapshots of PartialPlans with
+-- little information of how they were generated.  (We're working on
+-- that.)
+
+-- As described above, a Plan is mapped to a set of Variables
+-- and Constraints between those variables.  We have also
+-- described the possibility of inferring the consequences
+-- of transformations.  The combination of the consequences
+-- of transformations (e.g. inferences and domain rule consequences)
+-- are collective referred to as Transactions.
+-- Each transformation is logged, and each resulting Transaction
+-- is also logged (but the reasons for the Transactions are not
+-- logged).  
+
+-- Thus, we assume that "planning" is reflected by an ordered
+-- sequence of PartialPlans, a set of transactions, and nothing more. 
+
+-- Organization
+
+-- Just about every concept we have mentioned above is identified
+-- by a unique key.  The keys are guaranteed to be unique across
+-- all planning steps.  These keys form the basis of the 
+-- SQL tables described below.
+
+-- Some things also have names, like
+-- constraints, variables, predicates, models.  
+
+-- What don't we show?  (and why?)
+
+-- The set of slots a Token can be inserted on is expensive to compute
+-- and isn't logged.
+
+-- The causal chain for Transactions are not logged.
+
+-- Heuristic information s isn't logged.
+
+-- It's hard to show anything if logging steps are skipped.
+
+-- Search algorithm specific information is not logged.  Thus,
+-- you can't really show a backtrack search tree if you are doing
+-- chronological backtracking.
+
+-- Reference: CAIP paper.
+
+--
+-- Table structure for table 'ConstraintVarMap'
+--
+
+CREATE TABLE ConstraintVarMap (
+  ConstraintId int(11) NOT NULL default '0',
+  VariableId int(11) NOT NULL default '0',
+  PartialPlanId bigint(20) unsigned NOT NULL default '0',
+  PRIMARY KEY  (PartialPlanId,ConstraintId,VariableId),
+  INDEX (ConstraintId), INDEX(VariableId), INDEX (PartialPlanId)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'ConstraintVarMap'
+--
+
+--
+-- Table structure for table 'Object'
+--
+
+--ChildObjectIds is a CSV
+--ObjectType is currently Object = 0, Timeline = 1, Resource = 2
+--If the object is a timeline:
+--ExtraInfo format SlotId,SlotIndex:SlotId,SlotIndex
+--If the object is a Resource:
+--ExtraInfo format HorizonStart,HorizonEnd,InitialCapacity,LimitMin,LimitMax, InstantIdList
+CREATE TABLE Object (
+  ObjectId int(11) NOT NULL default '0',
+  ObjectType int(11) NOT NULL default '0',
+  ParentId int(11) default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  ObjectName varchar(255) NOT NULL default 'ErrorObject',
+  ChildObjectIds blob default NULL,
+  VariableIds blob default NULL,
+  TokenIds blob default NULL,
+  ExtraInfo blob default NULL,
+  PRIMARY KEY  (PartialPlanId,ObjectId),
+  INDEX (ObjectId)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Object'
+--
+
+--
+-- Table structure for table 'PartialPlan'
+--
+
+CREATE TABLE PartialPlan (
+  PlanName varchar(255) NOT NULL default 'ErrorPlan',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  Model varchar(255) default NULL,
+  SequenceId bigint(20) NOT NULL default '0',
+  PRIMARY KEY (PartialPlanId),
+  INDEX (PlanName), INDEX (SequenceId)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'PartialPlan'
+--
+
+
+--
+-- Table structure for table 'Project'
+--
+
+CREATE TABLE Project (
+  ProjectId int(11) NOT NULL auto_increment,
+  ProjectName varchar(255) NOT NULL default 'ErrorProject',
+  PRIMARY KEY  (ProjectId)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Project'
+--
+
+
+--
+-- Table structure for table 'Sequence'
+--
+
+CREATE TABLE Sequence (
+  SequenceURL varchar(255) NOT NULL default 'ErrorURL',
+  SequenceId bigint(20) NOT NULL default '0',
+  RulesText longblob default NULL,
+  ProjectId int(11) NOT NULL default '-1',
+  SequenceOrdering int(11) NOT NULL auto_increment,
+  PRIMARY KEY  (SequenceId),
+  KEY(SequenceURL),
+  KEY(SequenceOrdering)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Sequence'
+--
+
+--
+-- Table structure for table 'Token'
+--
+--TokenType currently IntervalToken = 0, ResourceTransaction = 1
+--If TokenType == ResourceTransaction
+--ExtraData format QuantityMin:QuantityMax
+--If TokenType == IntervalToken && !IsFreeToken
+--ExtraData format SlotOrder
+
+CREATE TABLE Token (
+  TokenId int(11) NOT NULL default '0',
+  TokenType int(11) NOT NULL default '0',
+  SlotId int(11) default NULL,
+  SlotIndex int(11) default NULL,
+  PartialPlanId bigint(20) NOT NULL default '0',
+  IsFreeToken tinyint(1) NOT NULL default '1',
+  IsValueToken tinyint(1) NOT NULL default '1',
+  StartVarId int(11) NOT NULL default '0',
+  EndVarId int(11) NOT NULL default '0',
+  DurationVarId int(11) default NULL,
+  StateVarId int(11) NOT NULL default '0',
+  PredicateName varchar(255) default 'ErrorPredicate',
+  ParentId int(11) default NULL,
+  ParentName varchar(255) default 'ErrorParentName',
+  ObjectVarId int(11) default NULL,
+  ParamVarIds blob default NULL,
+  ExtraData blob default NULL,
+  PRIMARY KEY  (PartialPlanId,TokenId),
+  INDEX (TokenId), INDEX (SlotId), INDEX (SlotIndex), INDEX (StartVarId), 
+  INDEX (EndVarId), INDEX (DurationVarId), INDEX (StateVarId), 
+  INDEX (PredicateName), INDEX (ParentId), INDEX (ObjectVarId),
+  INDEX (IsFreeToken)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Token'
+--
+
+
+--
+-- Table structure for table 'VConstraint'
+--
+
+CREATE TABLE VConstraint (
+  ConstraintId int(11) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  ConstraintName varchar(255) NOT NULL default 'ErrorConstraint',
+  ConstraintType enum('TEMPORAL','ATEMPORAL') NOT NULL default 'TEMPORAL',
+  PRIMARY KEY  (PartialPlanId,ConstraintId),
+  INDEX (ConstraintId), INDEX (ConstraintType)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'VConstraint'
+--
+
+
+--
+-- Table structure for table 'Variable'
+--
+
+CREATE TABLE Variable (
+  VariableId int(11) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  ParentId int(10) NOT NULL default '0',
+  ParameterName varchar(255) default 'ErrorParam',
+  DomainType enum('EnumeratedDomain','IntervalDomain') NOT NULL default 'IntervalDomain',
+  EnumDomain blob,
+  IntDomainType enum('INTEGER_SORT','REAL_SORT'),
+  IntDomainLowerBound varchar(255),
+  IntDomainUpperBound varchar(255),
+  VariableType varchar(255) NOT NULL,
+  PRIMARY KEY  (PartialPlanId,VariableId),
+  INDEX (VariableId), INDEX (VariableType), INDEX (ParentId), INDEX (DomainType), 
+  INDEX (ParameterName), INDEX (PartialPlanId)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Variable'
+--
+
+--
+-- Table structure for table 'Transaction'
+--
+
+-- TransactionInfo has format:
+--VariableType,PredicateName,ParameterName,DomainType,DerivedDomain,DomainType,SpecifiedDomain
+
+-- CREATE TABLE Transaction (
+--  TransactionName varchar(255) NOT NULL, 
+--  TransactionType varchar(255) NOT NULL,
+--  ObjectId int(11) NOT NULL default '0',
+--  Source enum('USER','SYSTEM','UNKNOWN') NOT NULL default 'UNKNOWN',
+--  TransactionId int(11) NOT NULL default '0',
+--  StepNumber int(11) NOT NULL default '0',
+--  SequenceId bigint(20) NOT NULL default '0',
+--  PartialPlanId bigint(20) NOT NULL default '0',
+--  TransactionInfo blob NOT NULL,
+--  PRIMARY KEY (PartialPlanId,TransactionId),
+--  INDEX (SequenceId), INDEX (StepNumber), INDEX (TransactionName)
+-- ) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Transaction'
+--
+
+--
+-- Table structure for table 'PartialPlanStats'
+--
+
+CREATE TABLE PartialPlanStats (
+  SequenceId bigint(20) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  StepNum int(11) NOT NULL default '0',
+  NumTokens int(11) NOT NULL default '0',
+  NumVariables int(11) NOT NULL default '0',
+  NumConstraints int(11) NOT NULL default '0',
+--  NumTransactions int(11) NOT NULL default '0',
+  PRIMARY KEY (SequenceId, PartialPlanId),
+  INDEX (StepNum), 
+  INDEX (NumTokens), INDEX (NumVariables), INDEX (NumConstraints)
+--  INDEX ( NumTransactions)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'ResourceInstants'
+--
+
+--Transactions blob is a CSV of Transaction Ids
+CREATE TABLE ResourceInstants (
+  PartialPlanId bigint(20) NOT NULL default '0',
+  ResourceId int(11) NOT NULL default '0',
+  InstantId int(11) NOT NULL default '0',
+  TimePoint int(11) NOT NULL default '0',
+  LevelMin decimal(15,5) NOT NULL default '0',
+  LevelMax decimal(15,5) NOT NULL default '0',
+  Transactions blob default NULL,
+  PRIMARY KEY (PartialPlanId, ResourceId, InstantId),
+  INDEX (TimePoint)
+) TYPE=MyISAM;
+
+CREATE TABLE Rules (
+  SequenceId bigint(20) NOT NULL default '0',
+  RuleId int(11) NOT NULL default '0',
+  RuleSource blob NOT NULL,
+  PRIMARY KEY(SequenceId, RuleId)
+) TYPE=MyISAM;
+
+CREATE TABLE RuleInstance (
+  RuleInstanceId int(11) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  SequenceId bigint(20) NOT NULL default '0',
+  RuleId int(11) NOT NULL default '0',
+  MasterTokenId int(11) NOT NULL default '0',
+  SlaveTokenIds blob default NULL,
+  RuleVarIds blob default NULL,
+  PRIMARY KEY(RuleInstanceId, PartialPlanId),
+  INDEX (SequenceId), INDEX (PartialPlanId),
+  INDEX (RuleId), INDEX(MasterTokenId)
+) TYPE=MyISAM;
+
+CREATE TABLE RuleInstanceSlaveMap (
+  RuleInstanceId int(11) NOT NULL default '0',
+  SlaveTokenId int(11) NOT NULL default '0',
+  PartialPlanId bigint(20) unsigned NOT NULL default '0',
+  PRIMARY KEY  (PartialPlanId,RuleInstanceId,SlaveTokenId)
+) TYPE=MyISAM;
+
+CREATE TABLE Decision (
+  PartialPlanId bigint(20) NOT NULL default '0',
+  DecisionId int(11) NOT NULL default '0',
+  DecisionType int(11) NOT NULL default '0',
+  EntityId int(11) NOT NULL default '0',
+  IsUnit tinyint(1) NOT NULL default '0',
+  Choices blob default NULL,
+  PRIMARY KEY(PartialPlanId, DecisionId)
+) TYPE=MyISAM; 
+
+--------------060506080005040106060505--
+
