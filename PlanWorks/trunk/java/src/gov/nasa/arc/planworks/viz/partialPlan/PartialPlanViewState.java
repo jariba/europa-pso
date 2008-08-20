@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewState.java,v 1.4 2004-02-11 02:29:30 taylor Exp $
+// $Id: PartialPlanViewState.java,v 1.5 2004-03-17 01:45:20 taylor Exp $
 //
 // PlanWorks -- 
 
@@ -17,10 +17,12 @@ public class PartialPlanViewState {
 
   private List contentSpec;
   private Point contentSpecWindowLocation;
+  private int currentZoomFactor;
 
   public PartialPlanViewState( final PartialPlanView view) {
     contentSpec = ((PartialPlanViewSet)view.getViewSet()).getCurrentSpec();
     contentSpecWindowLocation = null;
+    currentZoomFactor = view.getZoomFactor();
   }
 
   public final List getContentSpec(){
@@ -33,6 +35,10 @@ public class PartialPlanViewState {
 
   public final void setContentSpecWindowLocation( final Point loc) {
     this.contentSpecWindowLocation = loc;
+  }
+
+  public final int getCurrentZoomFactor() {
+    return currentZoomFactor;
   }
 
 }

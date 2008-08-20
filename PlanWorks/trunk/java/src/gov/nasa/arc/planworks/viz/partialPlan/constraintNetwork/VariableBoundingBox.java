@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VariableBoundingBox.java,v 1.8 2004-01-12 19:46:24 taylor Exp $
+// $Id: VariableBoundingBox.java,v 1.9 2004-03-17 01:45:21 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -35,9 +35,16 @@ public class VariableBoundingBox {
   private ArrayList constraintNodes;
   private NewConstraintNetworkLayout layout;
   private boolean visited;
-  public VariableBoundingBox(VariableNode varNode, NewConstraintNetworkLayout layout) {
+  private ConstraintNetworkView constraintNetworkView;
+  private int zoomDimensionDelta;
+
+  public VariableBoundingBox(VariableNode varNode, NewConstraintNetworkLayout layout,
+                             ConstraintNetworkView constraintNetworkView) {
     this.varNode = varNode;
     this.layout = layout;
+    this.constraintNetworkView = constraintNetworkView;
+    zoomDimensionDelta = 2 * (constraintNetworkView.getOpenJGoPenWidth
+                              ( constraintNetworkView.getZoomFactor()) - 2);
     visited = false;
     constraintNodes = new ArrayList(varNode.getConstraintNodeList());
   }
@@ -81,16 +88,20 @@ public class VariableBoundingBox {
             BasicNodeLink link = node.getLinkToNode(varNode);
             if(link != null && link.isVisible()) {
               constraintsHeight += node.getSize().getHeight();
+              constraintsHeight += zoomDimensionDelta;
               visibleConstraints++;
             }
           }
         }
-        retval = Math.max(varNode.getSize().getHeight() + ConstraintNetworkView.NODE_SPACING,
-                          constraintsHeight + (ConstraintNetworkView.NODE_SPACING * visibleConstraints));
+        retval = Math.max(varNode.getSize().getHeight() + zoomDimensionDelta +
+                          ConstraintNetworkView.NODE_SPACING,
+                          constraintsHeight + (ConstraintNetworkView.NODE_SPACING *
+                                               visibleConstraints));
       }
     }
     return retval;
   }
+
   public double getWidth() {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
@@ -105,12 +116,15 @@ public class VariableBoundingBox {
             BasicNodeLink link = node.getLinkToNode(varNode);
             if(link != null && link.isVisible()) {
               constraintsWidth += node.getSize().getWidth();
+              constraintsWidth += zoomDimensionDelta;
               visibleConstraints++;
             }
           }
         }
-        retval = Math.max(varNode.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING,
-                          constraintsWidth + (ConstraintNetworkView.NODE_SPACING*visibleConstraints));
+        retval = Math.max(varNode.getSize().getWidth() + zoomDimensionDelta +
+                          ConstraintNetworkView.NODE_SPACING,
+                          constraintsWidth + (ConstraintNetworkView.NODE_SPACING *
+                                              visibleConstraints));
       }
     }
     else {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.8 2004-03-16 02:24:11 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.9 2004-03-17 01:45:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -250,14 +250,14 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
       // StringBuffer tip = new StringBuffer( "<html>constraint <br>");
       StringBuffer tip = new StringBuffer( "<html>");
       tip.append( constraint.getType());
+      if (isDebug) {
+        tip.append( " linkCntVariable ").append( String.valueOf( linkCount));
+      }
       if (navigatorView.getZoomFactor() > 1) {
         tip.append( "<br>");
         tip.append( constraint.getName());
         tip.append( "<br>key=");
         tip.append( constraint.getId().toString());
-      }
-      if (isDebug) {
-        tip.append( " linkCntVariable ").append( String.valueOf( linkCount));
       }
       tip.append( "<br> Mouse-L: ").append( operation);
       tip.append( "</html>");

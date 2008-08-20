@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.8 2004-03-16 02:24:13 taylor Exp $
+// $Id: VariableNavNode.java,v 1.9 2004-03-17 01:45:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -261,15 +261,22 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html>");
-    NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
+    boolean isVariableWithConstraints = (! hasZeroConstraints);
+    if (isVariableWithConstraints) {
+      NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
+      if (isDebug) {
+        tip.append( " linkCnt ").append( String.valueOf( linkCount));
+      }
+    } else {
+      tip.append( variable.getType());
+    }
     if (navigatorView.getZoomFactor() > 1) {
       tip.append( "<br>key=");
       tip.append( variable.getId().toString());
     }
-    if (isDebug) {
-      tip.append( " linkCnt ").append( String.valueOf( linkCount));
+    if (isVariableWithConstraints) {
+      tip.append( "<br> Mouse-L: ").append( operation);
     }
-    tip.append( "<br> Mouse-L: ").append( operation);
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText

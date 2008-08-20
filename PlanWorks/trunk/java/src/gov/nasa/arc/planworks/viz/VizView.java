@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.12 2004-03-16 02:24:08 taylor Exp $
+// $Id: VizView.java,v 1.13 2004-03-17 01:45:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,9 +46,11 @@ import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -378,27 +380,8 @@ public class VizView extends JPanel {
                 // String zoomName = ZOOM_ITEM_NAMES[i];
                 // System.err.println( zoomName);
                 zoomFactor = ZOOM_FACTORS[i];
-                int penWidth = getOpenJGoPenWidth( zoomFactor);
-                JGoSelection selection = jGoView.getSelection();
-                // for primary selection pen
-                selection.setBoundingHandlePen
-                  ( new JGoPen( JGoPen.SOLID, penWidth, jGoView.getPrimarySelectionColor()));
-                // for secondary selection pens
-                selection.setBoundingHandlePenWidth( penWidth);
-                boolean isRedraw = false;
-                if (jGoView instanceof ConstraintNetworkView.ConstraintJGoView) {
-                  ((ConstraintNetworkView.ConstraintJGoView) jGoView).resetOpenNodes();
-                  ((ConstraintNetworkView) partialPlanView).setLayoutNeeded();
-                  isRedraw = true;
-                } else if (jGoView instanceof NavigatorView.NavigatorJGoView) {
-                  ((NavigatorView.NavigatorJGoView) jGoView).resetOpenNodes();
-                  ((NavigatorView) partialPlanView).setLayoutNeeded();
-                   isRedraw = true;
-                }
-                jGoView.setScale( 1.0d / zoomFactor);
-                if (isRedraw) {
-                  partialPlanView.redraw();
-                }
+                boolean isSetState = false;
+                zoomView( jGoView, isSetState, partialPlanView);
                 break;
               }
             }
@@ -407,7 +390,50 @@ public class VizView extends JPanel {
       });
 
     mouseRightPopup.add( zoomItem);
-  } // createZoomItems
+  } // createZoomItem
+
+  /**
+   * <code>zoomView</code>
+   *
+   * @param jGoView - <code>JGoView</code> - 
+   * @param doRedraw - <code>boolean</code> - 
+   * @param partialPlanView - <code>VizView</code> - 
+   */
+  protected void zoomView( final JGoView jGoView, final boolean isSetState,
+                           final VizView partialPlanView) {
+    int penWidth = getOpenJGoPenWidth( zoomFactor);
+    JGoSelection selection = jGoView.getSelection();
+    // for primary selection pen
+    selection.setBoundingHandlePen
+      ( new JGoPen( JGoPen.SOLID, penWidth, jGoView.getPrimarySelectionColor()));
+    // for secondary selection pens
+    selection.setBoundingHandlePenWidth( penWidth);
+    boolean isRedraw = false, hasStepButtons = true;
+    if (jGoView instanceof ConstraintNetworkView.ConstraintJGoView) {
+      ((ConstraintNetworkView.ConstraintJGoView) jGoView).resetOpenNodes();
+      ((ConstraintNetworkView) partialPlanView).setLayoutNeeded();
+      isRedraw = true;
+    } else if (jGoView instanceof NavigatorView.NavigatorJGoView) {
+      ((NavigatorView.NavigatorJGoView) jGoView).resetOpenNodes();
+      ((NavigatorView) partialPlanView).setLayoutNeeded();
+      isRedraw = true;
+      hasStepButtons = false;
+    } else if ( jGoView instanceof SequenceStepsView.SequenceStepsJGoView) {
+       hasStepButtons = false;
+    }
+    // keep backword/forward buttons the same size
+    if (isRedraw && (! isSetState)) {
+      partialPlanView.redraw();
+    }
+    if (hasStepButtons) {
+      ((PartialPlanView) partialPlanView).removeStepButtons( jGoView);
+      ((PartialPlanView) partialPlanView).addStepButtons( jGoView);
+    }
+    jGoView.getHorizontalScrollBar().setValue( 0);
+    jGoView.getVerticalScrollBar().setValue( 0);
+
+    jGoView.setScale( 1.0d / zoomFactor);
+  } // end zoomView
 
 
 } // end class VizView

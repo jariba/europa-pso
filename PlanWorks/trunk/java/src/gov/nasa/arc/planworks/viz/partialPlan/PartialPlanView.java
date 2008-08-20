@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.32 2004-03-12 23:22:33 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.33 2004-03-17 01:45:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Container;
 import java.awt.Rectangle;
@@ -71,12 +72,22 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentS
  */
 public class PartialPlanView extends VizView {
 
+  private static final String [] BACKWARD_BUTTONS_LABELS =
+  { "<", "< <\n< <", "< < < <\n< < < <\n< < < <\n< < < <",
+    "< < < < < < < <\n< < < < < < < <\n< < < < < < < <\n< < < < < < < <\n< < < < < < < <\n< < < < < < < <\n< < < < < < < <\n< < < < < < < <" };
+  private static final String [] FORWARD_BUTTONS_LABELS =
+  { ">", "> >\n> >", "> > > >\n> > > >\n> > > >\n> > > >",
+    "> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >" };
+
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
 
   private StepButton backwardButton;
   private StepButton forwardButton;
+  private ButtonAdjustmentListener horizontalAdjustmentListener;
+  private ButtonAdjustmentListener verticalAdjustmentListener;
+  private ButtonViewListener buttonViewListener;
 
   private Map navigatorFrameNameMap;
 
@@ -92,6 +103,11 @@ public class PartialPlanView extends VizView {
     validTokenIds = null;
     displayedTokenIds = null;
     navigatorFrameNameMap = new HashMap();
+    backwardButton = null;
+    forwardButton = null;
+    horizontalAdjustmentListener = null;
+    verticalAdjustmentListener = null;
+    buttonViewListener = null;
   }
 
   /**
@@ -120,6 +136,24 @@ public class PartialPlanView extends VizView {
         csw.buildFromSpec();
       }
     }
+  }
+
+  /**
+   * <code>getBackwardButton</code>
+   *
+   * @return - <code>StepButton</code> - 
+   */
+  public final StepButton getBackwardButton() {
+    return backwardButton;
+  }
+
+  /**
+   * <code>getForwardButton</code>
+   *
+   * @return - <code>StepButton</code> - 
+   */
+  public final StepButton getForwardButton() {
+    return forwardButton;
   }
 
   /**
@@ -256,12 +290,20 @@ public class PartialPlanView extends VizView {
     }
   } // end isTokenInContentSpec
 
-  protected int addStepButtons(JGoView view) {
+  public int addStepButtons(JGoView view) {
+    if ((backwardButton != null) || (forwardButton != null)) {
+      removeStepButtons( view);
+    }
+    int zoomIndex = getZoomIndex( zoomFactor);
+    String backwardLabelText = BACKWARD_BUTTONS_LABELS[zoomIndex];
+    String forwardLabelText = FORWARD_BUTTONS_LABELS[zoomIndex];    
     Rectangle viewRect = view.getViewRect();
     Point backwardButtonPt = new Point((int)viewRect.getX(), 
                                        (int)(viewRect.getY() + viewRect.getHeight()));
     backwardButton = new StepButton(backwardButtonPt, ColorMap.getColor("khaki2"), "<",
                                    "Step backward.");
+    backwardButton.getLabel().setMultiline( true);
+    backwardButton.setText( backwardLabelText);
     backwardButton.setLocation((int)(viewRect.getX() + backwardButton.getSize().getWidth()),
                                (int)(viewRect.getY() + viewRect.getHeight() - 
                                      backwardButton.getSize().getHeight()));
@@ -271,6 +313,8 @@ public class PartialPlanView extends VizView {
                                       (int)(viewRect.getY() + viewRect.getHeight()));
     forwardButton = new StepButton(forwardButtonPt, ColorMap.getColor("khaki2"), ">", 
                                   "Step forward.");
+    forwardButton.getLabel().setMultiline( true);
+    forwardButton.setText( forwardLabelText);
     forwardButton.setLocation((int)(backwardButton.getLocation().getX() + 
                                     backwardButton.getWidth()),
                               (int)(backwardButton.getLocation().getY()));
@@ -289,7 +333,17 @@ public class PartialPlanView extends VizView {
     forwardButton.addActionListener(new StepButtonListener(1, view, this));
     return (int) (viewRect.getY() + viewRect.getHeight());
   }
-  
+
+  public void removeStepButtons( JGoView view) {
+    view.getHorizontalScrollBar().removeAdjustmentListener( horizontalAdjustmentListener);
+    view.getVerticalScrollBar().removeAdjustmentListener( verticalAdjustmentListener);
+    view.removeViewListener( buttonViewListener);
+    view.getDocument().removeObject( backwardButton);
+    view.getDocument().removeObject( forwardButton);
+    backwardButton = null;
+    forwardButton = null;
+  }
+
   class StepButtonListener implements ActionListener {
     private int dir;
     private JGoView view;

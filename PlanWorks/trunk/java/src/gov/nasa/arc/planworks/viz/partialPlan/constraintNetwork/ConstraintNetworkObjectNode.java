@@ -150,7 +150,8 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
   public void addContainerNodeVariables( VariableContainerNode objNode,
                                             ConstraintNetworkView constraintNetworkView) {
     ConstraintNetworkUtils.addContainerNodeVariables(objNode, constraintNetworkView);
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
   } // end addTokenNodeVariables 
 
   public void removeContainerNodeVariables( VariableContainerNode objNode,

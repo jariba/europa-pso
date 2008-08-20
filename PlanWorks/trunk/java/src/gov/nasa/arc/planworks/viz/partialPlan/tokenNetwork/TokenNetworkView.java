@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.34 2004-03-16 02:24:13 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.35 2004-03-17 01:45:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -168,6 +168,16 @@ public class TokenNetworkView extends PartialPlanView {
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
+
+  public void setState( PartialPlanViewState s) {
+    super.setState( s);
+    if(s == null) {
+      return;
+    }
+    zoomFactor = s.getCurrentZoomFactor();
+    boolean isSetState = true;
+    zoomView( jGoView, isSetState, this);
+  } // end setState
 
   /**
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.

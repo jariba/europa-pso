@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.18 2004-03-16 02:24:12 taylor Exp $
+// $Id: NavigatorView.java,v 1.19 2004-03-17 01:45:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -483,7 +483,7 @@ public class NavigatorView extends PartialPlanView {
   }
 
   /**
-   * <code>isLayoutNeeded</code>> - needed for PlanWorksTest
+   * <code>isLayoutNeeded</code>> - 
    *
    * @return - <code>boolean</code> - 
    */
@@ -878,6 +878,8 @@ public class NavigatorView extends PartialPlanView {
           navigatorNode.setPen( new JGoPen( JGoPen.SOLID, penWidth,
                                             ColorMap.getColor( "black")));
         }
+        // force links to be redrawn to eliminate gaps when changing zoom factor
+        navigatorNode.setLocation( navigatorNode.getLocation());
       }
     } // end resetOpenNodes
 

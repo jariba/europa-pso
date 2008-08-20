@@ -1,3 +1,11 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: NewConstraintNetworkLayout.java,v 1.13 2004-03-17 01:45:21 taylor Exp $
+//
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.util.ArrayList;
@@ -17,7 +25,8 @@ public class NewConstraintNetworkLayout {
   private List orderedTokenNodes;
   private List tokenBoundingBoxes;
   private boolean horizontalLayout;
-  public NewConstraintNetworkLayout(List tokenNodes) {
+  public NewConstraintNetworkLayout( List tokenNodes,
+                                     ConstraintNetworkView constraintNetworkView) {
     long t1 = System.currentTimeMillis();
     horizontalLayout = true;
     //horizontalLayout = false;
@@ -74,7 +83,7 @@ public class NewConstraintNetworkLayout {
     while(orderedIterator.hasNext()) {
       VariableContainerNode node = (VariableContainerNode) orderedIterator.next();
       VariableContainerBoundingBox box = 
-        new VariableContainerBoundingBox(this, node);
+        new VariableContainerBoundingBox(this, node, constraintNetworkView);
       tokenBoundingBoxes.add(box);
     }
     System.err.println("Constraint network init took " + (System.currentTimeMillis() - t1) +

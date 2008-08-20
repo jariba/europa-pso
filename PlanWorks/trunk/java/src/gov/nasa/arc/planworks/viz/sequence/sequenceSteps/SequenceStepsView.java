@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.17 2004-02-12 01:26:51 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.18 2004-03-17 01:45:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -353,7 +353,7 @@ public class SequenceStepsView extends SequenceView {
    * <code>SequenceStepsJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
-  class SequenceStepsJGoView extends JGoView {
+  public class SequenceStepsJGoView extends JGoView {
 
     /**
      * <code>SequenceStepsJGoView</code> - constructor 
@@ -396,6 +396,8 @@ public class SequenceStepsView extends SequenceView {
     JMenuItem refreshItem = new JMenuItem("Refresh");
     createRefreshItem(refreshItem, this);
     mouseRightPopup.add(refreshItem);
+
+    createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
     createCloseHideShowViewItems( mouseRightPopup);
 
