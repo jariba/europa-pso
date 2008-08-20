@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.34 2004-03-16 02:24:06 taylor Exp $
+# $Id: GETTING_STARTED,v 1.35 2004-03-17 01:45:19 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -50,12 +50,13 @@ rectangle will cause the "observed" view to "jump" to that location.
 Zooming of Plan Sequence and Partial Plan Views
 =================================================
 Mouse-Right "Zoom View" is available for the Constraint Network, Navigator, 
-Timeline, and Token Network views. The zoom out factors are x2, x4, x6, 
-and x8 (the same scaling as the Overview windows).  Whereas Mouse-Right 
-"Overview Window" creates a new window and allows the coordinated viewing 
-of the paired windows, "Zoom View" does not create a new window, rather it 
-changes scaling in the existing window.  Thus the existing Mouse-Right 
-functionality on the view background and the view nodes is maintained.
+Timeline, and Token Network views.  It also is available in the Sequence 
+Steps view.  The zoom out factors are x2, x4, x6, and x8 (the same scaling 
+as the Overview windows).  Whereas Mouse-Right "Overview Window" creates a 
+new window and allows the coordinated viewing of the paired windows, 
+"Zoom View" does not create a new window, rather it changes scaling in the 
+existing window.  Thus the existing Mouse-Right functionality on the view 
+background and the view nodes is maintained.
 
 
 Plan Sequence Views

@@ -1,3 +1,11 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: VariableContainerBoundingBox.java,v 1.2 2004-03-17 01:45:21 taylor Exp $
+//
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.util.ArrayList;
@@ -25,15 +33,22 @@ public class VariableContainerBoundingBox {
   private VariableContainerNode varCont;
   private ArrayList variableBoundingBoxes;
   private NewConstraintNetworkLayout layout;
+  private ConstraintNetworkView constraintNetworkView;
+  private int zoomDimensionDelta;
+
   public VariableContainerBoundingBox(final NewConstraintNetworkLayout layout, 
-                                      final VariableContainerNode node) {
+                                      final VariableContainerNode node,
+                                      final ConstraintNetworkView constraintNetworkView) {
     this.varCont = node;
     this.layout = layout;
+    this.constraintNetworkView = constraintNetworkView;
+    zoomDimensionDelta = 2 * (constraintNetworkView.getOpenJGoPenWidth
+                              ( constraintNetworkView.getZoomFactor()) - 2);
     variableBoundingBoxes = new ArrayList(varCont.getVariableNodes().size());
     ListIterator variableIterator = varCont.getVariableNodes().listIterator();
     while(variableIterator.hasNext()) {
       variableBoundingBoxes.add(new VariableBoundingBox((VariableNode) variableIterator.next(), 
-                                                        layout));
+                                                        layout, constraintNetworkView));
     }
   }
   public VariableContainerBoundingBox(final NewConstraintNetworkLayout layout, 
@@ -45,11 +60,12 @@ public class VariableContainerBoundingBox {
     ListIterator variableIterator = variables.listIterator();
     while(variableIterator.hasNext()) {
       variableBoundingBoxes.add(new VariableBoundingBox((VariableNode)variableIterator.next(),
-                                                        layout));
+                                                        layout, constraintNetworkView));
     }
   }
+
   public void addVariable(VariableNode variable) {
-    VariableBoundingBox temp = new VariableBoundingBox(variable, layout);
+    VariableBoundingBox temp = new VariableBoundingBox(variable, layout, constraintNetworkView);
     //apparently this isn't calling .equals() correctly.  have to do it by hand...
     //     if(!variableBoundingBoxes.contains(temp)) {
     //       variableBoundingBoxes.add(temp);
@@ -76,6 +92,7 @@ public class VariableContainerBoundingBox {
         double varBoxesHeight = 0.;
         while(variableBoxIterator.hasNext()) {
           varBoxesHeight += ((VariableBoundingBox)variableBoxIterator.next()).getHeight();
+          varBoxesHeight += zoomDimensionDelta;
         }
         retval = Math.max(varCont.getSize().getHeight() + ConstraintNetworkView.NODE_SPACING,
                           varBoxesHeight + ConstraintNetworkView.NODE_SPACING);
@@ -83,6 +100,7 @@ public class VariableContainerBoundingBox {
     }
     return retval;
   }
+
   public double getWidth() {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
@@ -92,6 +110,7 @@ public class VariableContainerBoundingBox {
         double varBoxesWidth = 0.;
         while(variableBoxIterator.hasNext()) {
           varBoxesWidth += ((VariableBoundingBox)variableBoxIterator.next()).getWidth();
+          varBoxesWidth += zoomDimensionDelta;
         }
         retval = Math.max(varCont.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING,
                           varBoxesWidth + ConstraintNetworkView.NODE_SPACING);
@@ -103,6 +122,7 @@ public class VariableContainerBoundingBox {
     }
     return retval;
   }
+
   public void positionNodes(double pos) {
     if(!varCont.isVisible()) {
       return;

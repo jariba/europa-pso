@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.44 2004-03-16 02:24:13 taylor Exp $
+// $Id: TimelineView.java,v 1.45 2004-03-17 01:45:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -129,6 +129,16 @@ public class TimelineView extends PartialPlanView {
     jGoView.setVisible( true);
     this.setVisible( true);
   }
+
+  public void setState( PartialPlanViewState s) {
+    super.setState( s);
+    if(s == null) {
+      return;
+    }
+    zoomFactor = s.getCurrentZoomFactor();
+    boolean isSetState = true;
+    zoomView( jGoView, isSetState, this);
+  } // end setState
 
   Runnable runInit = new Runnable() {
       public void run() {

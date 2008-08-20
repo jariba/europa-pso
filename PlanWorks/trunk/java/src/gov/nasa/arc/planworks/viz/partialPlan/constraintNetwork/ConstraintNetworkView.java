@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.50 2004-03-16 02:24:10 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.51 2004-03-17 01:45:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -183,6 +183,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     if(s == null) {
       return;
     }
+    zoomFactor = s.getCurrentZoomFactor();
+    boolean isSetState = true;
+    zoomView( jGoView, isSetState, this);
+    int penWidth = getOpenJGoPenWidth( zoomFactor);
+
     ConstraintNetworkViewState state = (ConstraintNetworkViewState) s;
     ListIterator idIterator = state.getModContainers().listIterator();
     while(idIterator.hasNext()) {
@@ -192,7 +197,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         addVariableNodes(node);
         addVariableToContainerLinks(node);
         node.setAreNeighborsShown(true);
-        node.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+        node.setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
       }
     }
     idIterator = state.getModVariables().listIterator();
@@ -202,7 +207,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         addConstraintNodes(node);
         addContainerAndConstraintToVariableLinks(node);
         node.setAreNeighborsShown(true);
-        node.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+        node.setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
       }
     }
     idIterator = state.getModConstraints().listIterator();
@@ -212,7 +217,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         addVariableNodes(node);
         addConstraintToVariableLinks(node);
         node.setAreNeighborsShown(true);
-        node.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+        node.setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
       }
     }
     if(state.layoutHorizontal()) {
@@ -256,7 +261,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     long t1 = System.currentTimeMillis();
     createContainerNodes();
-    newLayout = new NewConstraintNetworkLayout(getContainerNodeList());
+    newLayout = new NewConstraintNetworkLayout(getContainerNodeList(), this);
     setState(s);
     s = null;
     System.err.println("createTokenNodes took " + (System.currentTimeMillis() - t1) + "ms");
