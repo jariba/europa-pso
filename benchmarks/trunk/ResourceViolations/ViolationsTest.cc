@@ -1,8 +1,19 @@
 
-#include "PSEngine.hh"
+#include <sstream>
 #include "Debug.hh"
+#include "PSEngine.hh"
 
 using namespace EUROPA;
+
+
+std::string toString(const PSList<std::string>& violations)
+{
+    std::ostringstream os;
+    for (int i=0;i<violations.size();i++)
+        os <<  (const std::string&)violations.get(i) << std::endl;
+
+    return os.str();
+}
 
 void testViolations(PSEngine& psengine)
 {
@@ -12,14 +23,14 @@ void testViolations(PSEngine& psengine)
 	PSToken* t1 = toks.get(0);
 	PSToken* t2 = toks.get(1);
     */
-	
+
 	PSObject* act_obj1 = psengine.getObjectsByType("Activity").get(0);
 	PSObject* act_obj2 = psengine.getObjectsByType("Activity").get(1);
 	PSObject* act_obj3 = psengine.getObjectsByType("Activity").get(2);
 
 	PSToken* act1 = act_obj1->getTokens().get(0);
-	PSToken* act2 = act_obj2->getTokens().get(0);	
-	PSToken* act3 = act_obj3->getTokens().get(0);	
+	PSToken* act2 = act_obj2->getTokens().get(0);
+	PSToken* act3 = act_obj3->getTokens().get(0);
 
 	PSVariable* s1 = act1->getParameter("start");
 	PSVariable* s2 = act2->getParameter("start");
@@ -35,11 +46,11 @@ void testViolations(PSEngine& psengine)
 	s2->specifyValue(vv11);
 	s2->specifyValue(vv20);
 	debugMsg("testViolations",psengine.getViolation());
-	debugMsg("testViolations",psengine.getViolationExpl());
+	debugMsg("testViolations",toString(psengine.getViolationExpl()));
 
 	// Remove Violation
 	s3->specifyValue(vv18);
 	debugMsg("testViolations",psengine.getViolation());
-	debugMsg("testViolations",psengine.getViolationExpl());
+    debugMsg("testViolations",toString(psengine.getViolationExpl()));
 }
 

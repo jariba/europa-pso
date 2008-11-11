@@ -1,12 +1,10 @@
 <Solver name="DefaultTestSolver">
   <FlawFilter component="HorizonFilter" policy="PartiallyContained"/>
 
-  <SAVHThreatManager order="most,earliest,lower" defaultPriority="1">
-    <FlawHandler component="SAVHThreatHandler" filter="both" />
-  </SAVHThreatManager>
-
   <ThreatManager defaultPriority="0">
     <FlawHandler component="StandardThreatHandler"/>
+    <FlawFilter class-match="Reservoir"/>
+    <FlawFilter class-match="Reusable"/>
   </ThreatManager>
 
   <OpenConditionManager defaultPriority="0">
