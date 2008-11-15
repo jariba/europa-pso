@@ -89,7 +89,7 @@ solver = desktop.makeSolver(
 
 PSObject act_obj1,act_obj2,act_obj3;
 PSToken t1,t2,act1,act2,act3,act4;
-PSVariable s1,s2,s3,s4;
+PSVariable s1,s2,s3,s4,e1,e2,e3,e4;
 
 void findTokens()
 {
@@ -107,25 +107,43 @@ void findTokens()
 	act3 = act_obj3.getTokens().get(0);	
 	act4 = act_obj3.getTokens().get(1);
 	
-	s1 = act1.getParameter("start");
-	s2 = act2.getParameter("start");
-	s3 = act3.getParameter("start");
-	s4 = act4.getParameter("start");
+	s1 = act1.getParameter("start");  e1 = act1.getParameter("end");
+	s2 = act2.getParameter("start");  e2 = act2.getParameter("end");
+	s3 = act3.getParameter("start");  e3 = act3.getParameter("end");
+	s4 = act4.getParameter("start");  e4 = act4.getParameter("end");
 }
 
-void setStart(PSVarValue a, PSVarValue b, PSVarValue c)
+String toString (PSStringList l)
 {
-	s1.specifyValue(a);
-	s2.specifyValue(b);
-	s3.specifyValue(c);
-	print(psengine.getViolation() + " : " + psengine.getViolationExpl());	
+    StringBuffer buf = new StringBuffer();
+    
+    for (int i;i<l.size();i++)
+        buf.append(l.get(i)).append("\n");
+    
+    return buf.toString();    
+}
+
+void setStart(PSVarValue a1, PSVarValue a2, 
+              PSVarValue b1, PSVarValue b2,
+              PSVarValue c1, PSVarValue c2
+             )
+{
+    psengine.setAutoPropagation(false);
+	s1.specifyValue(a1);e1.specifyValue(a2);
+	s2.specifyValue(b1);e2.specifyValue(b2);
+	s3.specifyValue(c1);e3.specifyValue(c2);
+    psengine.setAutoPropagation(true);
+	print(psengine.getViolation() + " : " + toString(psengine.getViolationExpl()));	
 	gantt.refresh();	
 	ganttFrame.setSize(ganttFrame.getSize());
 }
 
 void setStart(int a, int b, int c)
 {
-    setStart(PSVarValue.getInstance(a),PSVarValue.getInstance(b),PSVarValue.getInstance(c));	
+    setStart(PSVarValue.getInstance(a),PSVarValue.getInstance(a+5),
+             PSVarValue.getInstance(b),PSVarValue.getInstance(b+6),
+             PSVarValue.getInstance(c),PSVarValue.getInstance(c+7)
+    );	
 }
 
 desktop.makeSolverDialog(solver);
@@ -135,8 +153,8 @@ setupDesktop();
 to test, run solver, then from the BeanShell listener:
 
 findTokens();
-setStart(vv5,vv7,vv6); // Cause Violation
-setStart(vv3,vv8,vv14); // Remove Violation
+setStart(5,10,3); // Cause Violation
+setStart(5,10,16); // Remove Violation
  
 */
 
