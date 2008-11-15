@@ -15,42 +15,44 @@ std::string toString(const PSList<std::string>& violations)
     return os.str();
 }
 
+void setStart(PSEngine& psengine,
+              PSVariable* s1,PSVariable* s2,PSVariable* s3,
+              int v1, int v2, int v3)
+{
+    PSVarValue vv1 = PSVarValue::getInstance(v1);
+    PSVarValue vv2 = PSVarValue::getInstance(v2);
+    PSVarValue vv3 = PSVarValue::getInstance(v3);
+
+    s1->specifyValue(vv1);
+    s2->specifyValue(vv2);
+    s2->specifyValue(vv3);
+    std::ostringstream os;
+    os << "Set start to {"<<v1<<","<<v2<<","<<v3<<"}";
+    debugMsg("testViolations",os.str());
+    debugMsg("testViolations",psengine.getViolation());
+    debugMsg("testViolations",toString(psengine.getViolationExpl()));
+}
+
 void testViolations(PSEngine& psengine)
 {
-	/*
-	PSObject* res = psengine.getObjectsByType("CapacityResource").get(0);
-	PSList<PSToken*> toks = res->getTokens();
-	PSToken* t1 = toks.get(0);
-	PSToken* t2 = toks.get(1);
-    */
+	PSObject* act_obj[3];
+	PSToken* act[3];
+    PSVariable* s[3];
+	for (int i=0;i<3;i++) {
+	    act_obj[i] = psengine.getObjectsByType("Activity").get(i);
+	    act[i] = act_obj[i]->getTokens().get(0);
+	    s[i] = act[i]->getParameter("start");
+	}
 
-	PSObject* act_obj1 = psengine.getObjectsByType("Activity").get(0);
-	PSObject* act_obj2 = psengine.getObjectsByType("Activity").get(1);
-	PSObject* act_obj3 = psengine.getObjectsByType("Activity").get(2);
-
-	PSToken* act1 = act_obj1->getTokens().get(0);
-	PSToken* act2 = act_obj2->getTokens().get(0);
-	PSToken* act3 = act_obj3->getTokens().get(0);
-
-	PSVariable* s1 = act1->getParameter("start");
-	PSVariable* s2 = act2->getParameter("start");
-	PSVariable* s3 = act3->getParameter("start");
-
-	PSVarValue vv5 = PSVarValue::getInstance(5);
-	PSVarValue vv11 = PSVarValue::getInstance(11);
-	PSVarValue vv18 = PSVarValue::getInstance(18);
-	PSVarValue vv20 = PSVarValue::getInstance(20);
+    debugMsg("testViolations",psengine.getViolation());
+    debugMsg("testViolations",toString(psengine.getViolationExpl()));
 
 	// Cause Violation
-	s1->specifyValue(vv5);
-	s2->specifyValue(vv11);
-	s2->specifyValue(vv20);
-	debugMsg("testViolations",psengine.getViolation());
-	debugMsg("testViolations",toString(psengine.getViolationExpl()));
+	setStart(psengine,s[0],s[1],s[2],5,8,16);
+    setStart(psengine,s[0],s[1],s[2],5,11,20);
+    setStart(psengine,s[0],s[1],s[2],5,11,3);
 
 	// Remove Violation
-	s3->specifyValue(vv18);
-	debugMsg("testViolations",psengine.getViolation());
-    debugMsg("testViolations",toString(psengine.getViolationExpl()));
+    setStart(psengine,s[0],s[1],s[2],5,10,16);
 }
 

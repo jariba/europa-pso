@@ -59,6 +59,7 @@ bool solve(const char* plannerConfig,
           PSEngine* engine = PSEngine::makeInstance();
           engine->start();
           engine->addModule((new ModuleResourceViolations()));
+          engine->setAllowViolations(true);
           engine->executeScript("nddl-xml",txSource,true/*isFile*/);
 
           PSSolver* solver = engine->createSolver(plannerConfig);
