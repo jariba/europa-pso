@@ -153,8 +153,14 @@ setupDesktop();
 to test, run solver, then from the BeanShell listener:
 
 findTokens();
-setStart(5,10,3); // Cause Violation
-setStart(5,10,16); // Remove Violation
+
+// Cause Violation
+setStart(5,8,16); 
+setStart(6,11,20); 
+setStart(5,10,3); 
+
+// Remove Violation
+setStart(5,10,16); 
  
 */
 
