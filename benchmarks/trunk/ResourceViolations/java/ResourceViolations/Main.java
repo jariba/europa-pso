@@ -16,6 +16,7 @@ class Main
 	    PSEngine.initialize();
 
 	    psEngine_ = PSEngine.makeInstance();
+	    psEngine_.getConfig().setProperty("TemporalNetwork.useTemporalPropagator","N");	    
 	    psEngine_.start();
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		loadCustomCode(debugMode);
