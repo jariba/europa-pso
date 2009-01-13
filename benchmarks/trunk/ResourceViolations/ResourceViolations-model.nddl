@@ -2,33 +2,36 @@
 #include "Resources.nddl"
 #include "PlannerConfig.nddl"
 
-class CapacityResource extends Reusable 
+//class CapacityResource extends Reusable
+class CapacityResource extends CBReusable
 {
-    CapacityResource( float mincapacity, float maxcapacity ) 
+    CapacityResource( float mincapacity, float maxcapacity )
     {
         super( maxcapacity, mincapacity );
-    } 
+    }
 }
 
 class Activity
 {
     int length_;
     float qty_;
-        
+
     Activity(int i, float q)
     {
         length_ = i;
         qty_ = q;
     }
-    
+
     predicate perform {CapacityResource r;}
 }
 
 Activity::perform
 {
     eq(duration,object.length_);
-    equals( r.uses u );
-    eq(u.quantity, object.qty_ );    
+
+    uses(r,object.qty_,start,end);
+    //equals( r.uses u );
+    //eq(u.quantity, object.qty_ );
 }
 
 
