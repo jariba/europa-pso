@@ -27,7 +27,7 @@ void setStart(PSEngine& psengine,
     s1->specifyValue(vv1);
     s2->specifyValue(vv2);
     s3->specifyValue(vv3);
-    psengine.setAutoPropagation(false);
+    psengine.setAutoPropagation(true);
     std::ostringstream os;
     os << "Set start to {"<<v1<<","<<v2<<","<<v3<<"}";
     debugMsg("testViolations",os.str());
