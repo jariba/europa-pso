@@ -53,8 +53,6 @@ bool solve(const char* plannerConfig,
 {
     try {
 
-      PSEngine::initialize();
-
       {
           PSEngine* engine = PSEngine::makeInstance();
           engine->start();
@@ -69,8 +67,6 @@ bool solve(const char* plannerConfig,
 
           delete engine;
       }
-
-      PSEngine::terminate();
 
       return true;
     }
