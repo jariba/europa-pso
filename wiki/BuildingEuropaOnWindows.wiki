@@ -1,0 +1,264 @@
+#summary Tweaks for building EUROPA on Windows
+
+= Building EUROPA on Windows =
+
+This page describes building Europa on Windows. This page is an addition to the [http://babelfish.arc.nasa.gov/trac/europa main Wiki].
+
+All changes discussed here are with respect to *build 5208* (circa Friday the 13th of February 2009). In the end of this page is a diff containing the changes discussed. The diff is not part of the official build (yet), but it should be safe for other platforms as well.
+
+I assume that you are building Europa using Ant build.xml file in the root of the project. The easiest thing is to use Ant from ext/ant. Make sure *ANT_HOME* is not set, or it will confuse the build.
+
+
+== PThreads ==
+
+Cygwin comes with pthreads. If you are building for Cygwin (which is not default), this is good enough. If you want to build for MinGW (default), use
+http://sourceware.org/pthreads-win32/
+
+Copy includes and libraries from this new PThreads installation into */usr/local/mingw/include* and */usr/local/mingw/lib* respectively. The paths are specified in PlatformRules, and let's not mess with them unless we really have to. Also
+
+ * symlink pthread.dll to pthreadGC2.dll
+ * symlink libpthread.a to libpthreadGC.a
+
+
+== Paths ==
+
+Windows paths tend to have spaces in them. This confuses the build. The diff below goes around this in two steps. First, all executables are enclosed in quotes. Second, to get correct path to Java's JNI include files in SWIGRules, a new environment variable called *CYG_JAVA_HOME* is created in build.xml. This new variable does not do anything on other platforms, so it should be safe.
+
+== Cygwin vs. MinGW ==
+
+Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries. By default, Europa wants to build for MinGW. The diff makes Europa _build_ on MinGW (`ext/ant/bin/ant clean build` is happy), but as of this writing I still cannot figure out why tests refuse to link (`ext/ant/bin/ant clean build test` fails). So, if you are happy with just Cygwin, open build.xml (_after_ you apply the diff) and change the following line
+{{{
+          <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE" />
+}}}
+to
+{{{
+          <property name="jam.misc" value="-sOS=CYGWIN" />
+}}}
+Cygwin comes with MinGW. However, check that MinGW's includes and libraries end up in /usr/local/mingw. This is not where cygwin puts them by default. Copy or symlink if necessary.
+
+== The diff ==
+
+Now, the promised diff. 
+{{{
+Index: build.xml
+===================================================================
+--- build.xml	(revision 5208)
++++ build.xml	(working copy)
+@@ -59,6 +59,11 @@
+             <!--<arg value="-absolute"/>-->
+             <arg value="${basedir}"/>
+           </exec>
++          <exec executable="cygpath" outputproperty="local.env.CYG_JAVA_HOME">
++             <arg value="--unix"/>
++             <arg value="--absolute"/>
++             <arg value="${env.JAVA_HOME}"/>
++          </exec>
+           <property name="jam.libraries" value="STATIC"/>
+           <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE"/>
+         </then>
+@@ -111,6 +116,8 @@
+       <arg line="${jam.opts} build"/>
+       <env key="PLASMA_HOME" value="${local.env.PLASMA_HOME}"/>
+       <env key="${local.env.LD_LIBRARY_PATH.name}" value="${local.env.PLASMA_HOME}/build/lib"/>
++      <!-- This is set only for Windows, but other OS don't care anyway -->
++      <env key="CYG_JAVA_HOME" value="${local.env.CYG_JAVA_HOME}" />
+     </exec>
+   </target>
+ 
+Index: src/PLASMA/Antlr3/base/antlr3config.h
+===================================================================
+--- src/PLASMA/Antlr3/base/antlr3config.h	(revision 5208)
++++ src/PLASMA/Antlr3/base/antlr3config.h	(working copy)
+@@ -11,7 +11,9 @@
+ #define HAVE_ACCEPT 1
+ 
+ /* Define to 1 if you have the <arpa/nameser.h> header file. */
++#ifndef __CYGWIN__
+ #define HAVE_ARPA_NAMESER_H 1
++#endif
+ 
+ /* Define to 1 if you have the <ctype.h> header file. */
+ #define HAVE_CTYPE_H 1
+Index: src/PLASMA/Antlr3/base/antlr3defs.h
+===================================================================
+--- src/PLASMA/Antlr3/base/antlr3defs.h	(revision 5208)
++++ src/PLASMA/Antlr3/base/antlr3defs.h	(working copy)
+@@ -129,7 +129,7 @@
+ typedef uint64_t	    ANTLR3_BITWORD, *pANTLR3_BITWORD;
+ #endif
+ 
+-typedef	UINT8	ANTLR3_BOOLEAN, *pANTLR3_BOOLEAN;
++typedef	ANTLR3_UINT8	ANTLR3_BOOLEAN, *pANTLR3_BOOLEAN;
+ 
+ #define	ANTLR3_UINT64_LIT(lit)	    lit##ULL
+ 
+Index: src/PLASMA/Antlr3Rules
+===================================================================
+--- src/PLASMA/Antlr3Rules	(revision 5208)
++++ src/PLASMA/Antlr3Rules	(working copy)
+@@ -58,7 +58,7 @@
+ {
+ rm -f $(1)
+ #echo $(JAVA) -cp $(ANTLR3_JAR) $(JREFLAGS) org.antlr.Tool -fo ./$(1[0]:D) -traceParser $(ANTLR3FLAGS) $(2) 
+-$(JAVA) -cp $(ANTLR3_JAR) $(JREFLAGS) org.antlr.Tool -fo ./$(1[0]:D) -traceParser $(ANTLR3FLAGS) $(2) 
++"$(JAVA)" -cp $(ANTLR3_JAR) $(JREFLAGS) org.antlr.Tool -fo ./$(1[0]:D) -traceParser $(ANTLR3FLAGS) $(2) 
+ mv $(1[0]:D)/NDDL3Lexer.c $(1[0]:D)/NDDL3Lexer.cpp 
+ mv $(1[0]:D)/NDDL3Parser.c $(1[0]:D)/NDDL3Parser.cpp 
+ }
+@@ -90,7 +90,7 @@
+ {
+ rm -f $(1)
+ #echo $(JAVA) -cp $(ANTLR3_JAR) $(JREFLAGS) org.antlr.Tool -fo ./$(1[0]:D) -traceParser $(ANTLR3FLAGS) $(2) 
+-$(JAVA) -cp $(ANTLR3_JAR) $(JREFLAGS) org.antlr.Tool -fo ./$(1[0]:D) -traceParser $(ANTLR3FLAGS) $(2) 
++"$(JAVA)" -cp $(ANTLR3_JAR) $(JREFLAGS) org.antlr.Tool -fo ./$(1[0]:D) -traceParser $(ANTLR3FLAGS) $(2) 
+ mv $(1[0]:D)/NDDL3Tree.c $(1[0]:D)/NDDL3Tree.cpp 
+ }
+ 
+Index: src/PLASMA/AntlrRules
+===================================================================
+--- src/PLASMA/AntlrRules	(revision 5208)
++++ src/PLASMA/AntlrRules	(working copy)
+@@ -59,7 +59,7 @@
+ actions RunAntlrTool
+ {
+ rm -f $(1)
+-$(JAVA) -cp $(ANTLR_JAR) $(JREFLAGS) antlr.Tool -traceParser -o ./$(1[0]:D) $(ANTLRFLAGS) $(2) 
++"$(JAVA)" -cp $(ANTLR_JAR) $(JREFLAGS) antlr.Tool -traceParser -o ./$(1[0]:D) $(ANTLRFLAGS) $(2) 
+ }
+ 
+ rule AntlrTreeTool
+@@ -90,7 +90,7 @@
+ actions RunAntlrTreeTool
+ {
+ rm -f $(1)
+-$(JAVA) -cp $(ANTLR_JAR) $(JREFLAGS) antlr.Tool -traceTreeParser -o ./$(1[0]:D) $(ANTLRFLAGS) $(2) 
++"$(JAVA)" -cp $(ANTLR_JAR) $(JREFLAGS) antlr.Tool -traceTreeParser -o ./$(1[0]:D) $(ANTLRFLAGS) $(2) 
+ }
+ 
+ } # AntlrRules_INCLUDED
+\ No newline at end of file
+Index: src/PLASMA/CommonRules
+===================================================================
+--- src/PLASMA/CommonRules	(revision 5208)
++++ src/PLASMA/CommonRules	(working copy)
+@@ -777,11 +777,11 @@
+ # use cd to move to current subdirectory
+ actions ApacheAnt
+ {
+-$(ANT) -f "$(2[1]:G=)" $(ARGS)
++"$(ANT)" -f "$(2[1]:G=)" $(ARGS)
+ }
+ 
+ actions ApacheAntClean {
+-$(ANT) -f "$(2[1]:G=)" clean
++"$(ANT)" -f "$(2[1]:G=)" clean
+ }
+ 
+ 
+Index: src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java
+===================================================================
+--- src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java	(revision 5208)
++++ src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java	(working copy)
+@@ -1158,6 +1158,12 @@
+         String[]paths = pathAsString.split(";");
+         for(int i=0; i < paths.length; ++i) {
+           String aPath=NddlUtil.expandEnvVariables(paths[i]);   
++          // CygWin hack
++          final String cygdrive = "/cygdrive/";
++          if (aPath.startsWith(cygdrive)) {
++        	  final int off = cygdrive.length();
++        	  aPath = aPath.charAt(off) + ":" + aPath.substring(off+1);
++          }
+           if(new File(aPath).isAbsolute())
+             addSearchPath(aPath);
+           else
+Index: src/PLASMA/NddlRules
+===================================================================
+--- src/PLASMA/NddlRules	(revision 5208)
++++ src/PLASMA/NddlRules	(working copy)
+@@ -98,7 +98,7 @@
+ 
+ # send the flag -Wall to Nddl to enable warning messages
+ actions Nddl {
+-$(JAVA) $(JREFLAGS) -jar `$(PATH_PREPROCESSOR) $(NDDL_JAR)` -C "$(2:D)" $(NDDL_FLAGS) $(2)
++"$(JAVA)" $(JREFLAGS) -jar `$(PATH_PREPROCESSOR) $(NDDL_JAR)` -C "$(2:D)" $(NDDL_FLAGS) $(2)
+ }
+ 
+ # NddlParser model.xml : model.nddl ;
+@@ -132,7 +132,7 @@
+ }
+ 
+ actions NddlParser1 {
+-$(JAVA) $(JREFLAGS) -jar `$(PATH_PREPROCESSOR) $(NDDL_JAR)` --NddlParser -C "$(2:D)" $(NDDL_FLAGS) -q $(2) 
++"$(JAVA)" $(JREFLAGS) -jar `$(PATH_PREPROCESSOR) $(NDDL_JAR)` --NddlParser -C "$(2:D)" $(NDDL_FLAGS) -q $(2) 
+ }
+ 
+ } # NddlRules_INCLUDED
+Index: src/PLASMA/SWIGRules
+===================================================================
+--- src/PLASMA/SWIGRules	(revision 5208)
++++ src/PLASMA/SWIGRules	(working copy)
+@@ -14,7 +14,13 @@
+   SEARCH on $(swigfile) = $(SUBDIR) ;
+   LOCATE on $(cfile) = $(SUBDIR) ;
+ 
+-  local arguments = -$(language) -o [ FDirName $(SUBDIR) $(cfile:G=) ] -Wall ;
++  local arguments = -$(language) -o ;
++  if $(OS) = CYGWIN {
++    arguments += $(cfile:G=) ;
++  } else {
++    arguments += [ FDirName $(SUBDIR) $(cfile:G=) ] ;
++  }
++  arguments += -Wall ;
+ 
+   if $(cpp) {
+     arguments += "-c++" ;
+@@ -28,7 +34,14 @@
+       Depends $(cfile) : $(actualdestdir) ;
+     }
+   }
+-  arguments += -outdir $(actualdestdir) ;
++  
++  if $(OS) = CYGWIN {
++    arguments += -outdir $(destdir) ;
++    INDIR on $(cfile) = $(SUBDIR) ;
++    TARGETFILE on $(cfile) = $(swigfile) ;
++  } else {
++    arguments += -outdir $(actualdestdir) ;
++  }
+ 
+   NOCARE $(swigfile) ;
+   Depends $(cfile) : $(swigfile) ;
+@@ -37,6 +50,12 @@
+   RmDir clean : $(destdir) ;
+ }
+ 
++if $(OS) = CYGWIN {
++  actions Swig {
++     cd $(INDIR)
++     "$(SWIG)" $(ARGUMENTS) $(TARGETFILE) 
++  }
++} else {
+ actions Swig {
+   echo $(SWIG) $(ARGUMENTS) $(2) ;
+   $(SWIG) $(ARGUMENTS) $(2)
+@@ -41,6 +60,7 @@
+   echo $(SWIG) $(ARGUMENTS) $(2) ;
+   $(SWIG) $(ARGUMENTS) $(2)
+ }
++}
+ 
+ rule SwigJava {
+      local swigfile = $(1) ;
+@@ -59,7 +79,8 @@
+ 		SubDirC++Flags -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux ;
+ 	}
+ 	else if $(OS) = MINGW || $(OS) = CYGWIN {
+-		SubDirC++Flags -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 ;
++		# Including variable in the command line gets around spaces in names
++		SubDirC++Flags -I\"$CYG_JAVA_HOME\"/include -I\"$CYG_JAVA_HOME\"/include/win32 ;
+ 	}
+ 	else {
+ 		SubDirC++Flags -I$(JAVA_HOME)/include ;
+
+}}}
