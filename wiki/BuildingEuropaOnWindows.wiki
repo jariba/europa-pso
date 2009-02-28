@@ -14,7 +14,7 @@ I assume that you are building Europa using Ant build.xml file in the root of th
 Cygwin comes with pthreads. If you are building for Cygwin (which is not default), this is good enough. If you want to build for MinGW (default), use
 http://sourceware.org/pthreads-win32/
 
-Copy includes and libraries from this new PThreads installation into */usr/local/mingw/include* and */usr/local/mingw/lib* respectively. The paths are specified in PlatformRules, and let's not mess with them unless we really have to. Also
+Copy includes and libraries from this new PThreads installation into _/usr/local/mingw/include_ and _/usr/local/mingw/lib_ respectively. The paths are specified in PlatformRules, and let's not mess with them unless we really have to. Also
 
  * symlink pthread.dll to pthreadGC2.dll
  * symlink libpthread.a to libpthreadGC.a
@@ -26,7 +26,7 @@ Windows paths tend to have spaces in them. This confuses the build. The diff bel
 
 == Cygwin vs. MinGW ==
 
-Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries. By default, Europa wants to build for MinGW. The diff makes Europa _build_ on MinGW (`ext/ant/bin/ant clean build` is happy), but as of this writing I still cannot figure out why tests refuse to link (`ext/ant/bin/ant clean build test` fails). So, if you are happy with just Cygwin, open build.xml (_after_ you apply the diff) and change the following line
+Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries. By default, Europa wants to build for MinGW. The diff makes Europa _build_ on MinGW (_ext/ant/bin/ant clean build_ is happy), but it does not fix all the problems (see below). So, if you are happy with just Cygwin, open build.xml (_after_ you apply the diff) and change the following line
 {{{
           <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE" />
 }}}
@@ -34,7 +34,20 @@ to
 {{{
           <property name="jam.misc" value="-sOS=CYGWIN" />
 }}}
-Cygwin comes with MinGW. However, check that MinGW's includes and libraries end up in /usr/local/mingw. This is not where cygwin puts them by default. Copy or symlink if necessary.
+
+If you really want MinGW, you'll need to do something beyond the diff. For some reason, MinGW-specific compilation flags are passed to the C++ compiler, but not to the C compiler. The only module that uses C is Antlr3. So, until this bug is properly fixed, do the following:
+
+ * create _build/objects/Antlr3_ if it does not yet exist
+ * from _src/PLASMA/Antlr3/base_ do the following (or change paths if you run it from some other directory): 
+
+
+for %%d in (antlr3baserecognizer antlr3basetree antlr3basetreeadaptor antlr3bitset antlr3collections antlr3commontoken antlr3commontree antlr3commontreeadaptor antlr3commontreenodestream antlr3convertutf antlr3cyclicdfa antlr3debughandlers antlr3encodings antlr3exception antlr3filestream antlr3inputstream antlr3intstream antlr3lexer antlr3parser antlr3rewritestreams antlr3string antlr3stringstream antlr3tokenstream antlr3treeparser antlr3ucs2inputstream) do gcc -c -D__cygwin__ -D__MINGW32__ -mno-cygwin -I. -o ../../../../build/objects/Antlr3/%%d_g.o %%d.c
+
+ * run _ext/ant/bin/ant build_ to finish the build
+
+With these changes, most of the regression tests will work too. However, several tests use _cppunit_, which depends on Cygwin DLL. Even if you copy cppunit files into mingw, these tests will compile and link, but will do the Windows equivalent of core dump if you try to run them.
+
+Finally, the build expects MinGW files in /usr/local/mingw/include and /usr/local/mingw/lib. This is not where Cygwin puts them by default. Copy or symlink if necessary.
 
 == The diff ==
 
