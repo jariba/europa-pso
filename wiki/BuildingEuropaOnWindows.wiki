@@ -4,7 +4,7 @@
 
 This page describes building Europa on Windows. This page is an addition to the [http://babelfish.arc.nasa.gov/trac/europa main Wiki].
 
-All changes discussed here are with respect to *build 5208* (circa Friday the 13th of February 2009). In the end of this page is a diff containing the changes discussed. The diff is not part of the official build (yet), but it should be safe for other platforms as well.
+All changes discussed here are with respect to *build 5250*. In the end of this page is a diff containing the changes discussed. The diff is not part of the official build (yet), but it should be safe for other platforms as well.
 
 I assume that you are building Europa using Ant build.xml file in the root of the project. The easiest thing is to use Ant from ext/ant. Make sure *ANT_HOME* is not set, or it will confuse the build.
 
@@ -14,7 +14,7 @@ I assume that you are building Europa using Ant build.xml file in the root of th
 Cygwin comes with pthreads. If you are building for Cygwin (which is not default), this is good enough. If you want to build for MinGW (default), use
 http://sourceware.org/pthreads-win32/
 
-Copy includes and libraries from this new PThreads installation into _/usr/local/mingw/include_ and _/usr/local/mingw/lib_ respectively. The paths are specified in PlatformRules, and let's not mess with them unless we really have to. Also
+Copy includes and libraries from this new PThreads installation into _/usr/include/mingw_ and _/lib/mingw_ respectively. Also
 
  * symlink pthread.dll to pthreadGC2.dll
  * symlink libpthread.a to libpthreadGC.a
@@ -26,7 +26,7 @@ Windows paths tend to have spaces in them. This confuses the build. The diff bel
 
 == Cygwin vs. MinGW ==
 
-Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries. By default, Europa wants to build for MinGW. The diff makes Europa _build_ on MinGW (_ext/ant/bin/ant clean build_ is happy), but it does not fix all the problems (see below). So, if you are happy with just Cygwin, open build.xml (_after_ you apply the diff) and change the following line
+Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries. By default, Europa wants to build for MinGW. If you are happy with just Cygwin, open build.xml (_after_ you apply the diff) and change the following line
 {{{
           <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE" />
 }}}
@@ -35,19 +35,10 @@ to
           <property name="jam.misc" value="-sOS=CYGWIN" />
 }}}
 
-If you really want MinGW, you'll need to do something beyond the diff. For some reason, MinGW-specific compilation flags are passed to the C++ compiler, but not to the C compiler. The only module that uses C is Antlr3. So, until this bug is properly fixed, do the following:
 
- * create _build/objects/Antlr3_ if it does not yet exist
- * from _src/PLASMA/Antlr3/base_ do the following (or change paths if you run it from some other directory): 
+Now, for builds around 5208, the diff was enough to run regression tests on Cygwin. MinGW had problems with some of the tests, because several tests use _cppunit_, which depends on Cygwin DLL. This caused the Windows equivalent of core dump if you try to run them.
 
-
-for %%d in (antlr3baserecognizer antlr3basetree antlr3basetreeadaptor antlr3bitset antlr3collections antlr3commontoken antlr3commontree antlr3commontreeadaptor antlr3commontreenodestream antlr3convertutf antlr3cyclicdfa antlr3debughandlers antlr3encodings antlr3exception antlr3filestream antlr3inputstream antlr3intstream antlr3lexer antlr3parser antlr3rewritestreams antlr3string antlr3stringstream antlr3tokenstream antlr3treeparser antlr3ucs2inputstream) do gcc -c -D__cygwin__ -D__MINGW32__ -mno-cygwin -I. -o ../../../../build/objects/Antlr3/%%d_g.o %%d.c
-
- * run _ext/ant/bin/ant build_ to finish the build
-
-With these changes, most of the regression tests will work too. However, several tests use _cppunit_, which depends on Cygwin DLL. Even if you copy cppunit files into mingw, these tests will compile and link, but will do the Windows equivalent of core dump if you try to run them.
-
-Finally, the build expects MinGW files in /usr/local/mingw/include and /usr/local/mingw/lib. This is not where Cygwin puts them by default. Copy or symlink if necessary.
+Build 5250 still has serious issues with log4cpp on Windows, both Cygwin and MinGW.  
 
 == The diff ==
 
@@ -55,7 +46,7 @@ Now, the promised diff.
 {{{
 Index: build.xml
 ===================================================================
---- build.xml	(revision 5208)
+--- build.xml	(revision 5250)
 +++ build.xml	(working copy)
 @@ -59,6 +59,11 @@
              <!--<arg value="-absolute"/>-->
@@ -80,7 +71,7 @@ Index: build.xml
  
 Index: src/PLASMA/Antlr3/base/antlr3config.h
 ===================================================================
---- src/PLASMA/Antlr3/base/antlr3config.h	(revision 5208)
+--- src/PLASMA/Antlr3/base/antlr3config.h	(revision 5250)
 +++ src/PLASMA/Antlr3/base/antlr3config.h	(working copy)
 @@ -11,7 +11,9 @@
  #define HAVE_ACCEPT 1
@@ -94,7 +85,7 @@ Index: src/PLASMA/Antlr3/base/antlr3config.h
  #define HAVE_CTYPE_H 1
 Index: src/PLASMA/Antlr3/base/antlr3defs.h
 ===================================================================
---- src/PLASMA/Antlr3/base/antlr3defs.h	(revision 5208)
+--- src/PLASMA/Antlr3/base/antlr3defs.h	(revision 5250)
 +++ src/PLASMA/Antlr3/base/antlr3defs.h	(working copy)
 @@ -129,7 +129,7 @@
  typedef uint64_t	    ANTLR3_BITWORD, *pANTLR3_BITWORD;
@@ -107,7 +98,7 @@ Index: src/PLASMA/Antlr3/base/antlr3defs.h
  
 Index: src/PLASMA/Antlr3Rules
 ===================================================================
---- src/PLASMA/Antlr3Rules	(revision 5208)
+--- src/PLASMA/Antlr3Rules	(revision 5250)
 +++ src/PLASMA/Antlr3Rules	(working copy)
 @@ -58,7 +58,7 @@
  {
@@ -129,7 +120,7 @@ Index: src/PLASMA/Antlr3Rules
  
 Index: src/PLASMA/AntlrRules
 ===================================================================
---- src/PLASMA/AntlrRules	(revision 5208)
+--- src/PLASMA/AntlrRules	(revision 5250)
 +++ src/PLASMA/AntlrRules	(working copy)
 @@ -59,7 +59,7 @@
  actions RunAntlrTool
@@ -152,7 +143,7 @@ Index: src/PLASMA/AntlrRules
 \ No newline at end of file
 Index: src/PLASMA/CommonRules
 ===================================================================
---- src/PLASMA/CommonRules	(revision 5208)
+--- src/PLASMA/CommonRules	(revision 5250)
 +++ src/PLASMA/CommonRules	(working copy)
 @@ -777,11 +777,11 @@
  # use cd to move to current subdirectory
@@ -168,9 +159,62 @@ Index: src/PLASMA/CommonRules
  }
  
  
+Index: src/PLASMA/ModuleRules
+===================================================================
+--- src/PLASMA/ModuleRules	(revision 5250)
++++ src/PLASMA/ModuleRules	(working copy)
+@@ -99,7 +99,7 @@
+   local variant ;
+   for variant in $(ALL_VARIANTS) {
+     local C++FLAGS = $(C++FLAGS) [ FVariantC++Flags $(variant) ] ;
+-    local CFLAGS = $(CFLAGS) [ FVariantCFlags $(variant) ] ;
++    local CCFLAGS = $(CCFLAGS) [ FVariantCFlags $(variant) ] ;
+ 
+     local use_pic_flags ;
+     if SHARED in $(LIBRARIES) {
+@@ -110,7 +110,7 @@
+     }
+     for use_pic_flag in $(use_pic_flags) {
+       local C++FLAGS = $(C++FLAGS) ;
+-      local CFLAGS = $(CFLAGS) ;
++      local CCFLAGS = $(CCFLAGS) ;
+ 
+       #MJI: changed so that the compiled static libraries can be linked
+       #into shared objects.  By removing this conditional, I hope that
+@@ -117,7 +117,7 @@
+       #everything gets compiled with position independent code.
+       #if $(use_pic_flag) = YES {
+         C++FLAGS += $(POSITION_INDEPENDENT_CODE_FLAG) ;
+-        CFLAGS += $(POSITION_INDEPENDENT_CODE_FLAG) ;
++        CCFLAGS += $(POSITION_INDEPENDENT_CODE_FLAG) ;
+       #}
+ 
+       local file ;
+@@ -162,7 +162,7 @@
+   local variant ;
+   for variant in $(ALL_VARIANTS) {
+     local C++FLAGS = $(C++FLAGS) [ FVariantC++Flags $(variant) ] ;
+-    local CFLAGS = $(CFLAGS) [ FVariantCFlags $(variant) ] ;
++    local CCFLAGS = $(CCFLAGS) [ FVariantCFlags $(variant) ] ;
+ 
+     local use_pic_flags ;
+     if SHARED in $(LIBRARIES) {
+@@ -173,10 +173,10 @@
+     }
+     for use_pic_flag in $(use_pic_flags) {
+       local C++FLAGS = $(C++FLAGS) ;
+-      local CFLAGS = $(CFLAGS) ;
++      local CCFLAGS = $(CCFLAGS) ;
+       #if $(use_pic_flag) = YES {
+         C++FLAGS += $(POSITION_INDEPENDENT_CODE_FLAG) ;
+-        CFLAGS += $(POSITION_INDEPENDENT_CODE_FLAG) ;
++        CCFLAGS += $(POSITION_INDEPENDENT_CODE_FLAG) ;
+       #}
+ 
+       local file ;
 Index: src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java
 ===================================================================
---- src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java	(revision 5208)
+--- src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java	(revision 5250)
 +++ src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java	(working copy)
 @@ -1158,6 +1158,12 @@
          String[]paths = pathAsString.split(";");
@@ -187,7 +231,7 @@ Index: src/PLASMA/NDDL/base/java/nddl/ModelAccessor.java
            else
 Index: src/PLASMA/NddlRules
 ===================================================================
---- src/PLASMA/NddlRules	(revision 5208)
+--- src/PLASMA/NddlRules	(revision 5250)
 +++ src/PLASMA/NddlRules	(working copy)
 @@ -98,7 +98,7 @@
  
@@ -209,7 +253,7 @@ Index: src/PLASMA/NddlRules
  } # NddlRules_INCLUDED
 Index: src/PLASMA/SWIGRules
 ===================================================================
---- src/PLASMA/SWIGRules	(revision 5208)
+--- src/PLASMA/SWIGRules	(revision 5250)
 +++ src/PLASMA/SWIGRules	(working copy)
 @@ -14,7 +14,13 @@
    SEARCH on $(swigfile) = $(SUBDIR) ;
@@ -273,5 +317,16 @@ Index: src/PLASMA/SWIGRules
  	}
  	else {
  		SubDirC++Flags -I$(JAVA_HOME)/include ;
-
+Index: src/PLASMA/Utils/base/Logger.hh
+===================================================================
+--- src/PLASMA/Utils/base/Logger.hh	(revision 5250)
++++ src/PLASMA/Utils/base/Logger.hh	(working copy)
+@@ -205,7 +205,7 @@
+      * message will always be visible, regardless of the level.
+      */
+     void log( string msg ) {
+-	uint level = currentCategory->getPriority();
++	unsigned int level = currentCategory->getPriority();
+ 	currentCategory->log( level, msg );
+     }
 }}}
