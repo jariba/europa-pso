@@ -2,22 +2,79 @@
 
 = Building EUROPA on Windows =
 
-This page describes building Europa on Windows. This page is an addition to the [http://babelfish.arc.nasa.gov/trac/europa main Wiki].
+This page supplements the build page for [http://babelfish.arc.nasa.gov/trac/europa EuropaDevelopment] by covering specific setup that is needed for a windows build.  You may configure your build platform for MinGW or Cygwin or both, though MinGW is the officially supported platform for Windows.
 
-I assume that you are building Europa using Ant build.xml file in the root of the project. The easiest thing is to use Ant from ext/ant. Make sure *ANT_HOME* is not set, or it will confuse the build.
+The supported build process is to build Europa using Ant build.xml file in the root of the project. The easiest thing is to use Ant from ext/ant. Make sure *ANT_HOME* is not set to another ANT directory, or it will confuse the build.
+
+== Cygwin vs. MinGW ==
+
+Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries.  
+
+Europa uses MinGW to compile a windows executable because MinGW is not under the GPL, while (at least part of) Cygwin is under the GPL.  Never-the-less, the user may wish to develop/test inside cygwin but compile MinGW executables.  These instructions allow the user to do both.  While you can certainly compile Europa using only Cygwin (there is an extra step to do this outlined below), _please be aware of the licensing issues with distributing any executables under the GPL_.
+
+----
+== Cygwin ==
+
+=== Setting up Cygwin ===
+We assume you already have a working cygwin installation.  For details, see the[www.cygwin.com Cygwin] site.
+
+To install on cygwin, you will need to add the following packages using the cygwin setup:
+
+  * from devel: automake, binutils, cppunit, gcc, gcc-mingw-core, make, mingw-runtime, subersion, subversion-python, swig
+  * from perl: perl
+
+The Java JDK must be installed in windows and the JAVA_HOME variable set in your .bashrc file.  For example
+{{{
+  setenv JAVA_HOME /cygdrive/c/Program\ Files/Java/jdk1.6.0_12
+}}}
+or
+{{{
+  export JAVA_HOME=/cygdrive/c/Program\ Files/Java/jdk1.6.0_12
+}}}
+  
+
+The following tools/packages will need to be installed by hand:
+  * jam-2.5 - you can use a cygwin shell to make this program.  Then the exec jam0.exe needs to be copied to the /usr/bin directory for cygwin.  Check the installation by running jam at the command line.  
+
+  * Cygwin comes with pthreads. If you are building for Cygwin (which is not default), this is good enough. 
+
+=== Building on Cygwin ===
+
+By default, Europa is only supported on MinGW bacause of the licensing issues with the GPL mentioned above.  If you change your build, _please be aware of the licensing issues with distributing any executables under the GPL_.
+
+To compile under Cygwin, open build.xml and change the following line
+{{{
+   <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE" />
+}}}
+to
+{{{
+   <property name="jam.misc" value="-sOS=CYGWIN" />
+}}}
+
+FIXME - mcr - Is the following line really needed or can we check in this change as a flag for the build target?
+
+Please do not check in this change.
 
 
-== PThreads ==
+----
+== MinGW ==
 
-Cygwin comes with pthreads. If you are building for Cygwin (which is not default), this is good enough. If you want to build for MinGW (default), use
-http://sourceware.org/pthreads-win32/
+=== Setting up MinGW ===
+
+The simplest way to setup MinGW is to install Cygwin as above and add the following components to your system.  
+
+FIXME - mcr - if you do not install cygwin as above, you will need to do what to get MinGW only?
+
+==== PThreads ====
+
+If you want to build for MinGW (default), one option is to use [http://sourceware.org/pthreads-win32/ Pthreads32].
 
 Copy includes and libraries from this new PThreads installation into _/usr/include/mingw_ and _/lib/mingw_ respectively. Also
 
  * symlink pthread.dll to pthreadGC2.dll
  * symlink libpthread.a to libpthreadGC.a
 
-== DLL paths ==
+==== DLL paths ====
 
 When you run Java examples, make sure the pthread DLL is in *PATH*. If it is not, you may get something like this:
 
@@ -27,16 +84,6 @@ C:\cygwin\Program\europa-2.1.2-windows\lib\System_g.dll: Can't find
 dependent libraries
 }}}
 
-== Cygwin vs. MinGW ==
-
-Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries. By default, Europa wants to build for MinGW. If you are happy with just Cygwin, open build.xml and change the following line
-{{{
-          <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE" />
-}}}
-to
-{{{
-          <property name="jam.misc" value="-sOS=CYGWIN" />
-}}}
 
 
 On pure Cygwin, both _build_ and _test_ targets work. MinGW has problems with some of the tests, because several tests use _cppunit_, which depends on Cygwin DLL. This causes the Windows equivalent of core dump if you try to run them.
