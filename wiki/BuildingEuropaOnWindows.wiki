@@ -2,7 +2,7 @@
 
 = Building EUROPA on Windows =
 
-This page supplements the build page for [http://babelfish.arc.nasa.gov/trac/europa EuropaDevelopment] by covering specific setup that is needed for a windows build.  You may configure your build platform for MinGW or Cygwin or both, though MinGW is the officially supported platform for Windows.
+This page supplements the build page for [http://babelfish.arc.nasa.gov/trac/europa/wiki/EuropaDevelopment Europa Development] by covering specific setup that is needed for a windows build.  You may configure your build platform for MinGW or Cygwin or both, though MinGW is the officially supported platform for Windows.
 
 The supported build process is to build Europa using Ant build.xml file in the root of the project. The easiest thing is to use Ant from ext/ant. Make sure *ANT_HOME* is not set to another ANT directory, or it will confuse the build.
 
