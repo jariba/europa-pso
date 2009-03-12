@@ -20,7 +20,7 @@ We assume you already have a working cygwin installation.  For details, see the[
 
 To install on cygwin, you will need to add the following packages using the cygwin setup:
 
-  * from devel: automake, binutils, cppunit, gcc, gcc-mingw-core, make, mingw-runtime, subersion, subversion-python, swig
+  * from devel: automake, binutils, cppunit, gcc, make, subersion, subversion-python, swig
   * from perl: perl
 
 The Java JDK must be installed in windows and the JAVA_HOME variable set in your .bashrc file.  For example
@@ -61,9 +61,11 @@ Please do not check in this change.
 
 === Setting up MinGW ===
 
-The simplest way to setup MinGW is to install Cygwin as above and add the following components to your system.  
+The simplest way to setup MinGW is to install Cygwin as above and add the following components to your system using the cygwin setup utility:
 
-FIXME - mcr - if you do not install cygwin as above, you will need to do what to get MinGW only?
+  * from devel: gcc-mingw-core, mingw-runtime
+
+]_We welcome notes if anyone has tried a straight MinGW setup_
 
 ==== PThreads ====
 
@@ -73,6 +75,22 @@ Copy includes and libraries from this new PThreads installation into _/usr/inclu
 
  * symlink pthread.dll to pthreadGC2.dll
  * symlink libpthread.a to libpthreadGC.a
+
+==== CPPUnit ====
+
+The cppunit installed above for cygwin clashes with the MinGW setup.  You will need to download, compile, and install cppunit by hand from [http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page Sourceforge]; the these instructions used cppunit-1.12.1.
+{{{
+  % tar zxvf cppunit.distro.tar.gz
+  % cd cppunit.distro
+  % mkdir include.install
+  % ./configure --libdir=./lib --includedir=./include.install CFLAGS=-mno-cygwin CPPFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin 
+  % make
+  % make install
+  % cd include.install
+  % cp -R * /usr/include
+  % cd ../lib 
+  % cp * /lib/mingw  
+}}}
 
 ==== DLL paths ====
 
