@@ -1,0 +1,37 @@
+#!/usr/bin/python
+import re
+import sys
+import os
+import stat
+
+#
+# Author: Mark Roberts
+#
+
+#you may need to install the Apache Portable Runtime and development headers
+
+log4cxxVersion = "apache-log4cxx-0.10.0"
+log4cxxDir = os.path.join( ".", log4cxxVersion )
+log4cxxMakefile = os.path.join( ".", log4cxxVersion, "Makefile" )
+log4cxxSrcDir = os.path.join( ".", log4cxxVersion, "src" )
+log4cxxLibfile = os.path.join( ".", log4cxxVersion, "src", "main", "cpp", "liblog4cxx.la" )
+
+if not os.path.exists( log4cxxDir ) :
+  cmd = "tar jxvf " + log4cxxVersion + ".tar.bz2"
+  os.system( cmd )
+
+if not os.path.exists( log4cxxMakefile ) :
+  cmd = "cd apache-log4cxx-0.10.0; ./configure"
+  os.system( cmd )
+
+if not os.path.exists( log4cxxLibfile ) :
+  cmd = "cd " + log4cxxSrcDir + "; make"
+  os.system( cmd )
+
+if not os.environ['USER'] == "root" :
+  print "Error: You must run as root to install this program"
+  sys.exit(1)
+
+
+cmd = "cd apache-log4cxx-0.10.0; make install"
+os.system( cmd )
