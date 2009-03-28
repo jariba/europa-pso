@@ -15,7 +15,7 @@ import stat
 log4cxxVersion = "apache-log4cxx-0.10.0"
 log4cxxDir = os.path.join( ".", log4cxxVersion )
 log4cxxMakefile = os.path.join( ".", log4cxxVersion, "Makefile" )
-log4cxxSrcDir = os.path.join( ".", log4cxxVersion, "src" )
+log4cxxSrcDir = os.path.join( ".", log4cxxVersion, "src", "main" )
 log4cxxLibfile = os.path.join( ".", log4cxxVersion, "src", "main", "cpp", "liblog4cxx.la" )
 
 if not os.path.exists( log4cxxDir ) :
@@ -35,9 +35,9 @@ if not os.path.exists( log4cxxLibfile ) :
   os.system( cmd )
 
 if not os.environ['USER'] == "root" :
-  print "Error: You must run as root to install this program"
-  print "  (or you will need to change the install directories for this package"
-  sys.exit(1)
+  print "WARNING: You may need to be root to install this program"
+  print "  (or you will need to change the install directories for this package)"
+  print "  WATCH FOR ERRORS DURING INSTALL"
 
 cmd = "cd " + log4cxxSrcDir + "; make install"
 os.system( cmd )
