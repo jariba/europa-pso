@@ -9,6 +9,8 @@ import stat
 #
 
 #you may need to install the Apache Portable Runtime and development headers
+#on a debian system, this includes libaprX, libaprX-dev, libaprutilX and libaprutilX-dev
+#on a cygwin system, this includes libaprX, libaprX-devel, libaprutilX, libaprutilX-devel
 
 log4cxxVersion = "apache-log4cxx-0.10.0"
 log4cxxDir = os.path.join( ".", log4cxxVersion )
@@ -17,21 +19,25 @@ log4cxxSrcDir = os.path.join( ".", log4cxxVersion, "src" )
 log4cxxLibfile = os.path.join( ".", log4cxxVersion, "src", "main", "cpp", "liblog4cxx.la" )
 
 if not os.path.exists( log4cxxDir ) :
-  cmd = "tar jxvf " + log4cxxVersion + ".tar.bz2"
+  #cmd = "tar jxvf " + log4cxxVersion + ".tar.bz2"
+  cmd = "bunzip2 -c " + log4cxxVersion + ".tar.bz2 | tar xv"
+  print "Running cmd: " + cmd
   os.system( cmd )
 
 if not os.path.exists( log4cxxMakefile ) :
-  cmd = "cd apache-log4cxx-0.10.0; ./configure"
+  cmd = "cd " + log4cxxDir + "; ./configure"
+  print "Running cmd: " + cmd
   os.system( cmd )
 
 if not os.path.exists( log4cxxLibfile ) :
   cmd = "cd " + log4cxxSrcDir + "; make"
+  print "Running cmd: " + cmd
   os.system( cmd )
 
 if not os.environ['USER'] == "root" :
   print "Error: You must run as root to install this program"
+  print "  (or you will need to change the install directories for this package"
   sys.exit(1)
 
-
-cmd = "cd apache-log4cxx-0.10.0; make install"
+cmd = "cd " + log4cxxSrcDir + "; make install"
 os.system( cmd )
