@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            file-extensions="nddl"
+            id="EuropaPlugin.nddlType"
+            name="NDDL type"
+            priority="normal">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.ops.ui"
+            name="Europa">
+      </category>
+      <!-- view
+            category="org.ops.ui"
+            class="org.ops.ui.schemabrowser.swt.SchemaBrowser"
+            icon="icons/sample.gif"
+            id="org.ops.ui.schemabrowser.swt.SchemaBrowser"
+            name="Schema Browser">
+      </view -->
+      <view
+            category="org.ops.ui"
+            class="org.ops.ui.filemanager.swt.FileManager"
+            icon="icons/sample.gif"
+            id="org.ops.ui.filemanager.swt.FileManager"
+            name="File Manager">
+      </view>
+   </extension>
+
+</plugin>

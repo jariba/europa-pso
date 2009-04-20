@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Europa Plug-in
+Bundle-SymbolicName: org.ops.ui.europaplugin;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.ops.ui.europaplugin.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.jdt.ui;bundle-version="3.4.0",
+ org.eclipse.ui.views;bundle-version="3.3.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.eclipse.core.filesystem,
+ org.eclipse.jdt.internal.ui.text,
+ org.eclipse.ui.ide
+Bundle-ClassPath: .,
+ lib/nddl.jar,
+ lib/PSEngine.jar
