@@ -33,5 +33,18 @@
             name="File Manager">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="NDDL Editor"
+            icon="icons/sample.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.ops.ui.editor.swt.NddlEditor"
+            id="EuropaPlugin.editors.NddlEditor">
+         <contentTypeBinding
+               contentTypeId="EuropaPlugin.nddlType">
+         </contentTypeBinding>
+      </editor>
+   </extension>
 
 </plugin>
