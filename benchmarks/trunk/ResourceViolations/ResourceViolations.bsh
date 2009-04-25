@@ -14,27 +14,11 @@ int month = GregorianCalendar.SEPTEMBER, day = 11;
 GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
 GregorianCalendar end = new GregorianCalendar(2006,month,day,0,200);
 
-void usingCodeGeneration()
-{
-	cwd = bsh.cwd;
-    psengine.loadModel(cwd+"/libResourceViolations_g.so");
-    boolean isFile = true;
-    boolean useInterpreter = false;
-    psengine.executeScript("nddl-xml-txn",cwd+"/ResourceViolations-initial-state.xml",true/*isFile*/);		
-}
-
-void usingInterpreter()
-{
-	cwd = bsh.cwd;
-    String nddlModel = cwd+"/ResourceViolations-initial-state.nddl";
-    psengine.executeScript("nddl",nddlModel,true/*isFile*/);
-}
-
 void initPSEngine()
 {
 	psengine.setAllowViolations(true);
-	//usingCodeGeneration();
-	usingInterpreter();
+    String nddlModel = bsh.cwd+"/ResourceViolations-initial-state.nddl";
+    psengine.executeScript("nddl",nddlModel,true/*isFile*/);
 }
 
 PSGantt gantt;
@@ -123,6 +107,21 @@ String toString (PSStringList l)
     return buf.toString();    
 }
 
+String toString (PSTokenList l)
+{
+    StringBuffer buf = new StringBuffer();
+    
+    for (int i;i<l.size();i++) {
+        PSToken act = l.get(i); 
+        buf.append(act.getParameter("act_id")).append(" ")
+           .append(act.getParameter("start")).append(",")
+           .append(act.getParameter("end")).append(",")
+           .append("\n");
+    }
+    
+    return buf.toString();    
+}
+
 void setStart(PSVarValue a1, PSVarValue a2, 
               PSVarValue b1, PSVarValue b2,
               PSVarValue c1, PSVarValue c2
@@ -146,13 +145,22 @@ void setStart(int a, int b, int c)
     );	
 }
 
-desktop.makeSolverDialog(solver);
+String acts()
+{
+    StringBuffer buf = new StringBuffer();
+    
+    PSObjectList acts = psengine.getObjectsByType("Activity");
+    for (int i=0;i<acts.size();i++)
+        buf.append(toString(acts.get(i).getTokens()));    
+    
+    return buf.toString();
+}
+
+//desktop.makeSolverDialog(solver);
 setupDesktop();
+findTokens();
 
 /*
-to test, run solver, then from the BeanShell listener:
-
-findTokens();
 
 // Cause Violation
 setStart(5,8,16); 
