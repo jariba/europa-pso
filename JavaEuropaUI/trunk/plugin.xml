@@ -18,13 +18,13 @@
             id="org.ops.ui"
             name="Europa">
       </category>
-      <!-- view
+      <view
             category="org.ops.ui"
-            class="org.ops.ui.schemabrowser.swt.SchemaBrowser"
+            class="org.ops.ui.schemabrowser.swt.SchemaView"
             icon="icons/sample.gif"
-            id="org.ops.ui.schemabrowser.swt.SchemaBrowser"
+            id="org.ops.ui.schemabrowser.swt.SchemaView"
             name="Schema Browser">
-      </view -->
+      </view>
       <view
             category="org.ops.ui"
             class="org.ops.ui.filemanager.swt.FileManager"
