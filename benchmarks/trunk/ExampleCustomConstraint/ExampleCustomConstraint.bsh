@@ -1,8 +1,8 @@
 import psengine.*;
 import org.ops.ui.util.Util;
-import Example.*;
+import ExampleCustomConstraint.*;
 
-psengine.executeScript("nddl",bsh.cwd+"/Example-initial-state.nddl",true/*isFile*/);
+psengine.executeScript("nddl",bsh.cwd+"/ExampleCustomConstraint-initial-state.nddl",true/*isFile*/);
 desktop.makeNddlConsole();
 solver = desktop.makeSolver(
                             "PlannerConfig.xml" // config

@@ -1,14 +1,14 @@
-#ifndef _H_ModuleExample
-#define _H_ModuleExample
+#ifndef _H_ModuleExampleStateResource
+#define _H_ModuleExampleStateResource
 
 #include "Module.hh"
 
 namespace EUROPA {
-  class ModuleExample : public Module
+  class ModuleExampleStateResource : public Module
   {
     public:
-      ModuleExample();
-      virtual ~ModuleExample();
+      ModuleExampleStateResource();
+      virtual ~ModuleExampleStateResource();
 
       /**
        * @brief Initialize all default elements of the module 
@@ -24,8 +24,8 @@ namespace EUROPA {
 	  virtual void uninitialize(EngineId engine); // cleanup of a particular engine instance	  
   };
 
-  typedef Id<ModuleExample> ModuleExampleId;  
+  typedef Id<ModuleExampleStateResource> ModuleExampleStateResourceId;  
 }  
 
 
-#endif /* #ifndef _H_ModuleExample */
+#endif /* #ifndef _H_ModuleExampleStateResource */

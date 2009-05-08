@@ -1,4 +1,4 @@
-package Example;
+package ExampleStateResource;
 
 import psengine.PSUtil;
 import psengine.util.LibraryLoader;
@@ -11,23 +11,28 @@ class Main
     
     public static void main(String args[]) 
     {
-	    String debugMode = args[0];
-        PSUtil.loadLibraries(debugMode);	   
-	    PSEngine.initialize();
+    	try {
+    		String debugMode = args[0];
+    		PSUtil.loadLibraries(debugMode);	   
 
-	    psEngine_ = PSEngine.makeInstance();
-	    psEngine_.start();
-		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
-		loadCustomCode(debugMode);
-		
-		PSDesktop d = PSDesktop.makeInstance(psEngine_,args);
-		d.runUI();
+    		psEngine_ = PSEngine.makeInstance();
+    		psEngine_.start();
+    		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+    		loadCustomCode(debugMode);
+
+    		PSDesktop d = PSDesktop.makeInstance(psEngine_,args);
+    		d.runUI();
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    		Runtime.getRuntime().exit(-1);    
+    	}
     }
 
     protected static void loadCustomCode(String debugMode)
     {
     	//Load module with any custom code if it exists:
-    	String libName = "Example_" + debugMode;
+    	String libName = "ExampleStateResource_" + debugMode;
     	String fullLibName = LibraryLoader.getResolvedName(libName); 
     	if(fullLibName == null) {
     		// Run 'make' to compile the library if you need it:
@@ -48,8 +53,7 @@ class Main
 	    
 	    public void run() 
 	    {
-	        //psEngine_.shutdown(); TODO this is causing deallocation errors (see ticket #165)
-	        PSEngine.terminate();
+	        psEngine_.shutdown();
 	    }
     }	  
 }

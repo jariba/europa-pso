@@ -1,14 +1,9 @@
-#include "ExampleCustomCode.hh"
+#include "ExampleCustomConstraintCustomCode.hh"
 
 #include "ConstraintEngine.hh"
 #include "ConstrainedVariable.hh"
-#include "IntervalIntDomain.hh"
-#include "BoolDomain.hh"
-#include "EnumeratedDomain.hh"
 #include "Utils.hh"
 #include "Debug.hh"
-#include "TypeFactory.hh"
-#include "NumericDomain.hh"
 
 #include <fstream>
 #include <sstream>
@@ -21,7 +16,7 @@ ExampleConstraint::ExampleConstraint(const LabelStr& name,
 				   const vector<ConstrainedVariableId>& variables)
   : Constraint(name, propagatorName, constraintEngine, variables)
 {
-	check_error(variables.size() == (unsigned int) ARG_COUNT);	
+	check_error(variables.size() == (unsigned int) ARG_COUNT);
 }
 
 /**
@@ -31,7 +26,7 @@ void ExampleConstraint::handleExecute() {
   check_error(isActive());
 
   IntervalDomain& dom = static_cast<IntervalDomain&>(getCurrentDomain(m_variables[X]));
-  
+
   // Discontinue if either domain is open.
   if (dom.isOpen())
     return;
@@ -40,4 +35,3 @@ void ExampleConstraint::handleExecute() {
   double max = floor(dom.getUpperBound());
   dom.intersect(min, max);
 }
-
