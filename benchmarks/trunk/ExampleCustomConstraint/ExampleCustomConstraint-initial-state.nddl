@@ -1,8 +1,4 @@
-#include "Example-model.nddl"
-
-// Create a planner configuration instance in PLASMA.
-// Horizon Start, Horizon End, MaxPlannerSteps, MaxPlannerDepth
-PlannerConfig plannerConfiguration = new PlannerConfig(0, 100, 500, +inf);
+#include "ExampleCustomConstraint-model.nddl"
 
 // Sample object
 YourObject object = new YourObject();
@@ -17,6 +13,5 @@ initialToken.start.specify(0); // Starts at beginning of the horizon
 // Using our custom constraint:
 float x = [0.5, 3.5];
 example(x);  // will be constrained to [1, 3];
-
 
 // The planner should take it form here!

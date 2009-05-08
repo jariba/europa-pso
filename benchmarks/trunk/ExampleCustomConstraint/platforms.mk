@@ -1,12 +1,22 @@
 UNAME := $(shell uname)
 
+
+OPT_FLAGS = -O3 -DEUROPA_FAST  -fno-strict-aliasing
+LD_FLAGS = -O3  -fno-strict-aliasing
+
 ifeq (1,$(FAST))
   BUILD_SUFFIX := _o
-  CXXFLAGS += -O3 -DEUROPA_FAST
-  LDFLAGS += -O3
+  CXXFLAGS += $(OPT_FLAGS)
+  LDFLAGS += $(LD_FLAGS)
 else
-  BUILD_SUFFIX := _g
-  CXXFLAGS += -ggdb3
+  ifeq (1,$(PROFILE))
+    BUILD_SUFFIX := _o_p
+    CXXFLAGS += -pg $(OPT_FLAGS)
+    LDFLAGS += -pg $(LD_FLAGS)
+  else
+    BUILD_SUFFIX := _g
+    CXXFLAGS += -ggdb3
+  endif
 endif
 
 ifdef ANT_HOME
@@ -72,12 +82,10 @@ ifneq (,$(findstring Solaris,$(UNAME)))
   endif
 endif
 
-CXXFLAGS += $(POSITION_INDEPENDENT_FLAG) -I$(EUROPA_HOME)/include/PLASMA
+CXXFLAGS += $(POSITION_INDEPENDENT_FLAG) -I$(EUROPA_HOME)/include/PLASMA -I$(EUROPA_HOME)/include/
 LDFLAGS += $(POSITION_INDEPENDENT_FLAG) -L$(EUROPA_HOME)/lib
 LOADLIBS += -lSystem$(BUILD_SUFFIX) \
             -ldl \
-            -lANML$(BUILD_SUFFIX) \
-            -lAntlr$(BUILD_SUFFIX) \
             -lResource$(BUILD_SUFFIX) \
             -lNDDL$(BUILD_SUFFIX) \
             -lSolvers$(BUILD_SUFFIX) \
@@ -86,6 +94,8 @@ LOADLIBS += -lSystem$(BUILD_SUFFIX) \
             -lPlanDatabase$(BUILD_SUFFIX) \
             -lConstraintEngine$(BUILD_SUFFIX) \
             -lUtils$(BUILD_SUFFIX) \
+            -lAntlr3$(BUILD_SUFFIX) \
             -lTinyXml$(BUILD_SUFFIX)
 
 vpath %.dylib $(EUROPA_HOME)/lib
+

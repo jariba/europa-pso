@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This file is placed by the makeproject script in new projects -->
-<project name="Example" default="run" basedir=".">
-  <description>Example -- A EUROPA PSDesktop Project</description>
+<project name="ExampleStateResource" default="run" basedir=".">
+  <description>ExampleStateResource -- A EUROPA PSDesktop Project</description>
 
   <property environment="env"/>
   <!-- load overrides from build.properties file -->
@@ -25,16 +25,16 @@
   </target>
 
   <property name="java.src.dir" value="java"/> 
-  <property name="swig.src.dir" value="build/swig/Example/"/>
+  <property name="swig.src.dir" value="build/swig/ExampleStateResource/"/>
   <property name="class.dir"     value="build/classes"/> 
 
   <!-- Create .jar to include any custom Java and swig-wrapped C++ -->
-  <target name="Example" depends="compile">
+  <target name="ExampleStateResource" depends="compile">
      <mkdir dir="${dist}"/>  				<!-- if necessary -->
-     <jar jarfile="${dist}/Example.jar">
+     <jar jarfile="${dist}/ExampleStateResource.jar">
        <fileset dir="${class.dir}"/>
      </jar>
-     <touch file="${dist}/Example.jar"/>
+     <touch file="${dist}/ExampleStateResource.jar"/>
   </target>
 
   <target name="clean" description="delete the 'classes' directory trees" >
@@ -61,7 +61,7 @@
   <!-- project,project.dir,project.mode and project.bsh.script are read from build.properties -->
   <target name="run" depends="compile" description="build and run">
     <echo message="Running ${project} project"/>
-    <java classname="${project}.Main" dir="${project.dir}" fork="yes">
+    <java classname="${project}.Main" dir="${project.dir}" fork="yes" failonerror="true">
       <jvmarg value="-Xms256m"/>
       <jvmarg value="-Xmx2048m"/>
       <jvmarg value="-Djava.library.path=build/lib"/>
