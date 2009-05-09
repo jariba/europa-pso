@@ -7,7 +7,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.ops.ui.europaplugin.Activator;
+import org.ops.ui.europaplugin.EuropaPlugin;
 import org.ops.ui.filemanager.model.FileModelListener;
 import org.ops.ui.schemabrowser.model.SchemaSource;
 
@@ -24,7 +24,7 @@ public class SchemaView extends ViewPart implements FileModelListener {
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		// Parent class ignores memento, but can set some defaults
 		super.init(site);
-		Activator activator = Activator.getDefault();
+		EuropaPlugin activator = EuropaPlugin.getDefault();
 		model = new SchemaSource(activator.getEngine());
 		activator.getFileModel().addListener(this);
 	}

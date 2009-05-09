@@ -3,6 +3,7 @@ package org.ops.ui.editor.swt;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 /**
  * NDDL editor with syntax highlighting.
@@ -12,8 +13,8 @@ import org.eclipse.ui.editors.text.TextEditor;
 public class NddlEditor extends TextEditor {
 
 	private ColorManager colorManager;
-	// TODO private NddlOutlinePage outlinePage;
-	// TODO private NddlDocumentModel documentModel;
+	private NddlOutlinePage outlinePage;
+	// private NddlDocumentModel documentModel;
 
 	public NddlEditor() {
 		super();
@@ -33,7 +34,7 @@ public class NddlEditor extends TextEditor {
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 //		this.getDocumentProvider().getDocument(getEditorInput())
-//				.addDocumentListener(this.documentModel);
+//				.addDocumentListener(this.documentListener);
 //		this.documentModel.initializeModel();
 //		this.documentModel.updateNow();
 	}
@@ -41,6 +42,8 @@ public class NddlEditor extends TextEditor {
 	@Override
 	public void dispose() {
 		colorManager.dispose();
+//		this.getDocumentProvider().getDocument(getEditorInput())
+//			.removeDocumentListener(this.documentListener);
 		super.dispose();
 	}
 	
@@ -48,14 +51,14 @@ public class NddlEditor extends TextEditor {
 	 * Used by platform to get the OutlinePage and ProjectionSupport adapter.
 	 * 
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 * /
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (this.outlinePage == null) {
 				this.outlinePage = new NddlOutlinePage(this);
-				this.documentModel.updateOutline();
+				// TODO this.documentModel.updateOutline();
 			}
 			return outlinePage;
 		}
@@ -63,12 +66,8 @@ public class NddlEditor extends TextEditor {
 	}
 
 	public NddlOutlinePage getOutlinePage() {
-		if (this.outlinePage == null) {
-			this.outlinePage = new NddlOutlinePage(this);
-			// need it? this.documentModel.updateOutline();
-		}
 		return outlinePage;
-	}*/
+	}
 	
 	/**
 	 * @return The source viewer of this editor

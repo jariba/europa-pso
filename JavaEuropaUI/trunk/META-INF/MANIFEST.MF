@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Europa Plug-in
 Bundle-SymbolicName: org.ops.ui.europaplugin;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.ops.ui.europaplugin.Activator
+Bundle-Activator: org.ops.ui.europaplugin.EuropaPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
@@ -16,5 +16,4 @@ Import-Package: org.eclipse.core.filesystem,
  org.eclipse.jdt.internal.ui.text,
  org.eclipse.ui.ide
 Bundle-ClassPath: .,
- lib/nddl.jar,
  lib/PSEngine.jar

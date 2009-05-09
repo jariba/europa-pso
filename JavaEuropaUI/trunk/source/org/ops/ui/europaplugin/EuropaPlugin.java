@@ -1,5 +1,6 @@
 package org.ops.ui.europaplugin;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -14,13 +15,13 @@ import psengine.PSUtil;
  * 
  * @author Tatiana Kichkaylo
  */
-public class Activator extends AbstractUIPlugin {
+public class EuropaPlugin extends AbstractUIPlugin {
 
 	/** The plug-in ID */
-	public static final String PLUGIN_ID = "EuropaPlugin";
+	public static final String PLUGIN_ID = "org.ops.ui.europaplugin";
 
 	/** The shared instance */
-	private static Activator plugin;
+	private static EuropaPlugin plugin;
 
 	/** Wrapper/access point for Europa engine */
 	private PSEngine engine;
@@ -31,7 +32,7 @@ public class Activator extends AbstractUIPlugin {
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public EuropaPlugin() {
 	}
 
 	/*
@@ -68,7 +69,7 @@ public class Activator extends AbstractUIPlugin {
 	 * 
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static EuropaPlugin getDefault() {
 		return plugin;
 	}
 
@@ -103,7 +104,7 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	public void logError(String message) {
-		this.getLog().log(new Status(Status.ERROR, PLUGIN_ID, message));
+		this.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, message));
 	}
 
 	/** Shutdown and release engine. Save any state if necessary */

@@ -41,7 +41,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
-import org.ops.ui.europaplugin.Activator;
+import org.ops.ui.europaplugin.EuropaPlugin;
 import org.ops.ui.filemanager.model.FileModel;
 import org.ops.ui.filemanager.model.FileModelListener;
 
@@ -100,7 +100,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		// Parent class ignores memento, but can set some defaults
 		super.init(site);
-		model = Activator.getDefault().getFileModel();
+		model = EuropaPlugin.getDefault().getFileModel();
 		model.addListener(this);
 		if (memento == null)
 			return;
