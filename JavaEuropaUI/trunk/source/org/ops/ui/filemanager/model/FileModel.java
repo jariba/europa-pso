@@ -1,7 +1,6 @@
 package org.ops.ui.filemanager.model;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,6 +19,9 @@ public class FileModel implements Iterable<File> {
 
 	/** Europa engine */
 	private PSEngine engine;
+	
+	/** Current AST tree, or NULL */
+	private AstNode astTree = null;
 
 	/** Model listeners */
 	private ArrayList<FileModelListener> listeners = new ArrayList<FileModelListener>();
@@ -91,9 +93,17 @@ public class FileModel implements Iterable<File> {
 		this.engine.start();
 		for (File f : files)
 			try {
-				this.engine.executeScript("NDDL", new FileReader(f));
+				String fname = f.getAbsolutePath();
+				String astString = this.engine.executeScript("nddl-ast", fname, true);
+				// System.out.println(astString);				
+				AstNode root = new AstNode();
+				int offset = root.readTreeFrom(astString, 0);
+				// root.print(System.out, "");
+				assert (offset == astString.length());
+				astTree = root;
 			} catch (Exception e) {
 				System.err.println("Cannot load NDDL file? " + e);
+				astTree = null;
 			}
 		for (FileModelListener lnr : this.listeners)
 			lnr.databaseReloaded();
@@ -120,5 +130,9 @@ public class FileModel implements Iterable<File> {
 
 	public Iterator<File> iterator() {
 		return files.iterator();
+	}
+	
+	public AstNode getAstTree() {
+		return this.astTree;
 	}
 }

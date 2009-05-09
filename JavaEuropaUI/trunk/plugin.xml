@@ -37,7 +37,7 @@
          point="org.eclipse.ui.editors">
       <editor
             name="NDDL Editor"
-            icon="icons/sample.gif"
+            icon="icons/nddl_editor.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.ops.ui.editor.swt.NddlEditor"
             id="EuropaPlugin.editors.NddlEditor">
