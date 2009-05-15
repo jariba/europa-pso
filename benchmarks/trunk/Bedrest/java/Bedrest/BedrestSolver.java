@@ -4,7 +4,7 @@ import psengine.*;
 import java.util.List;
 import java.util.Vector;
 
-import org.ops.ui.util.SimpleTimer;
+import psengine.util.SimpleTimer;
 
 public class BedrestSolver
 {

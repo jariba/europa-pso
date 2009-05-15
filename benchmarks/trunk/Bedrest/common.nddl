@@ -4,7 +4,7 @@
 float 	 STATE_COND_TRUE = 	 1000.0;
 float 	 STATE_COND_FALSE = 	 0.0;
 float 	 STATE_COND_TRUE_DELTA = 	 1000.0;
-float 	 STATE_COND_FALSE_DELTA = 	 -1000.0;
+float 	 STATE_COND_FALSE_DELTA = 	 1000.0;
 
 // Define basic passive and active Timeline/Resource classes.
 
@@ -12,9 +12,9 @@ float 	 STATE_COND_FALSE_DELTA = 	 -1000.0;
 // Define Claimable_Resource class.
 // Contains active and passive members.
 
-class Passive_Unit_Resource extends Resource {
+class Passive_Unit_Resource extends Reservoir {
   Passive_Unit_Resource() {
-    super(1.0, 0.0, +inff, +inff, +inff, -inff, -inff);
+    super(1.0, 0.0, +inff, +inff, +inff, +inff, +inff);
   }
 }
 
@@ -38,9 +38,9 @@ class Claimable_Resource extends Object {
 }
 
 Claimable_Resource::Claim {
-  starts(object.passive.change tok1);
-  eq(tok1.quantity, -1.0);
-  ends(object.passive.change tok2);
+  starts(object.passive.consume tok1);
+  eq(tok1.quantity, 1.0);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, 1.0);
 
   if (subsolved == true) {
@@ -52,9 +52,9 @@ Claimable_Resource::Claim {
 // **********************************************************
 // Define Sharable_Resource class.
 
-class Passive_Multi_Resource extends Resource {
+class Passive_Multi_Resource extends Reservoir {
   Passive_Multi_Resource(float maxCap) {
-    super(maxCap, 0.0, +inff, +inff, +inff, -inff, -inff);
+    super(maxCap, 0.0, +inff, +inff, +inff, +inff, +inff);
   }
 }
 
@@ -86,9 +86,9 @@ class Sharable_Resource extends Object {
 }
 
 Sharable_Resource::Reserve {
-  starts(object.passive.change tok1);
-  eq(tok1.quantity, -1.0);
-  ends(object.passive.change tok2);
+  starts(object.passive.consume tok1);
+  eq(tok1.quantity, 1.0);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, 1.0);
 
   if (subsolved == true) {
@@ -100,9 +100,9 @@ Sharable_Resource::Reserve {
 // **********************************************************
 // Define State_Condition passive resource
 
-class State_Condition extends Resource {
+class State_Condition extends Reservoir {
   State_Condition(float initCap) {
-    super(initCap, 0.0, +inff, +inff, +inff, -inff, -inff);
+    super(initCap, 0.0, +inff, +inff, +inff, +inff, +inff);
   }
 }
 
@@ -149,7 +149,7 @@ class Blackout_Resource extends Object {
 }
 
 Blackout_Resource::StartPrevent {
-  starts(object.passive.change tok1);
+  starts(object.passive.consume tok1);
   eq(tok1.quantity, STATE_COND_FALSE_DELTA);
 
   if (subsolved == true) {
@@ -158,7 +158,7 @@ Blackout_Resource::StartPrevent {
 }
 
 Blackout_Resource::EndPrevent {
-  ends(object.passive.change tok2);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, STATE_COND_TRUE_DELTA);
 
   if (subsolved == true) {
@@ -167,9 +167,9 @@ Blackout_Resource::EndPrevent {
 }
 
 Blackout_Resource::Prevent {
-  starts(object.passive.change tok1);
+  starts(object.passive.consume tok1);
   eq(tok1.quantity, STATE_COND_FALSE_DELTA);
-  ends(object.passive.change tok2);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, STATE_COND_TRUE_DELTA);
 
   if (subsolved == true) {
@@ -178,9 +178,9 @@ Blackout_Resource::Prevent {
 }
 
 Blackout_Resource::Require {
-  starts(object.passive.change tok1);
-  eq(tok1.quantity, -1.0);
-  ends(object.passive.change tok2);
+  starts(object.passive.consume tok1);
+  eq(tok1.quantity, 1.0);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, 1.0);
 
   if (subsolved == true) {
@@ -232,7 +232,7 @@ class Achievable_Resource extends Object {
 }
 
 Achievable_Resource::StartEnable {
-  starts(object.passive.change tok1);
+  starts(object.passive.produce tok1);
   eq(tok1.quantity, STATE_COND_TRUE_DELTA);
 
   if (subsolved == true) {
@@ -241,7 +241,7 @@ Achievable_Resource::StartEnable {
 }
 
 Achievable_Resource::EndEnable {
-  ends(object.passive.change tok2);
+  ends(object.passive.consume tok2);
   eq(tok2.quantity, STATE_COND_FALSE_DELTA);
 
   if (subsolved == true) {
@@ -250,9 +250,9 @@ Achievable_Resource::EndEnable {
 }
 
 Achievable_Resource::Enable {
-  starts(object.passive.change tok1);
+  starts(object.passive.produce tok1);
   eq(tok1.quantity, STATE_COND_TRUE_DELTA);
-  ends(object.passive.change tok2);
+  ends(object.passive.consume tok2);
   eq(tok2.quantity, STATE_COND_FALSE_DELTA);
 
   if (subsolved == true) {
@@ -261,9 +261,9 @@ Achievable_Resource::Enable {
 }
 
 Achievable_Resource::Require {
-  starts(object.passive.change tok1);
-  eq(tok1.quantity, -1.0);
-  ends(object.passive.change tok2);
+  starts(object.passive.consume tok1);
+  eq(tok1.quantity, 1.0);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, 1.0);
 
   if (subsolved == true) {
@@ -318,7 +318,7 @@ class Boolean_Resource extends Object {
 }
 
 Boolean_Resource::Init_True {
-  starts(object.passive.change tok1);
+  starts(object.passive.produce tok1);
   eq(tok1.quantity, STATE_COND_TRUE_DELTA);
 
   contained_by(object.active.Active_Boolean_True tok3);
@@ -329,9 +329,9 @@ Boolean_Resource::Init_False {
 }
 
 Boolean_Resource::Make_True {
-  starts(object.passive.change tok1);
+  starts(object.passive.produce tok1);
   eq(tok1.quantity, STATE_COND_TRUE_DELTA);
-  ends(object.passive.change tok2);
+  ends(object.passive.consume tok2);
   eq(tok2.quantity, STATE_COND_FALSE_DELTA);
 
   if (subsolved == true) {
@@ -340,9 +340,9 @@ Boolean_Resource::Make_True {
 }
 
 Boolean_Resource::Make_False {
-  starts(object.passive.change tok1);
+  starts(object.passive.consume tok1);
   eq(tok1.quantity, STATE_COND_FALSE_DELTA);
-  ends(object.passive.change tok2);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, STATE_COND_TRUE_DELTA);
 
   if (subsolved == true) {
@@ -351,9 +351,9 @@ Boolean_Resource::Make_False {
 }
 
 Boolean_Resource::Require {
-  starts(object.passive.change tok1);
-  eq(tok1.quantity, -1.0);
-  ends(object.passive.change tok2);
+  starts(object.passive.consume tok1);
+  eq(tok1.quantity, 1.0);
+  ends(object.passive.produce tok2);
   eq(tok2.quantity, 1.0);
 
   if (subsolved == true) {

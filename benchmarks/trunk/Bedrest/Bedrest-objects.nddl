@@ -1,12 +1,12 @@
 
 float 	 STATE_COND_TRUE = 	 1000.0;
-float 	 STATE_COND_FALSE = 	 -1000.0;
+float 	 STATE_COND_FALSE = 	 1000.0;
 
 string 	 AD_VERSION = 	 "20070813.2";
 
-class State_Condition extends Resource {
+class State_Condition extends Reservoir {
   State_Condition(float initCap) {
-    super(initCap, 0.0, +inff, +inff, +inff, -inff, -inff);
+    super(initCap, 0.0, +inff, +inff, +inff, +inff, +inff);
   }
 }
 
@@ -106,9 +106,9 @@ class Cardio_can_be_setup_for_Vibe extends State_Condition {
   }
 }
 
-class Unit_Capacity_Resource extends Resource {
+class Unit_Capacity_Resource extends Reservoir {
   Unit_Capacity_Resource() {
-    super(1.0, 0.0, 10.0, +inff, +inff, -inff, -inff);
+    super(1.0, 0.0, 10.0, +inff, +inff, +inff, +inff);
   }
 }
 
@@ -226,15 +226,15 @@ class van extends Unit_Capacity_Resource {
   }
 }
 
-class gurneys extends Resource {
+class gurneys extends Reservoir {
   gurneys(float maxCap) {
-    super(maxCap, 0.0, maxCap, +inff, +inff, -inff, -inff);
+    super(maxCap, 0.0, maxCap, +inff, +inff, +inff, +inff);
   }
 }
 
-class kitchen_staff extends Resource {
+class kitchen_staff extends Reservoir {
   kitchen_staff(float maxCap) {
-    super(maxCap, 0.0, maxCap, +inff, +inff, -inff, -inff);
+    super(maxCap, 0.0, maxCap, +inff, +inff, +inff, +inff);
   }
 }
 
