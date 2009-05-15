@@ -78,7 +78,7 @@ public class RMLWriter
 	
 	protected void generateActivity(PSToken t)
 	{
-		String id = t.getName() + (activityCnt_++);
+		String id = t.getEntityName() + (activityCnt_++);
 		out_.append(indentation()).append("<Activity Id=\"").append(id).append("\"  xsi:type=\"Activity\">\n");
 		indent_++;
 	    // TODO : generate the body of the activity
@@ -89,7 +89,7 @@ public class RMLWriter
 	
 	protected void generateActivities(PSObject obj)
 	{
-		generateObservationStart(obj.getName(),obj.getName());
+		generateObservationStart(obj.getEntityName(),obj.getEntityName());
 
 		PSTokenList toks = obj.getTokens();
 	    
