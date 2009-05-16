@@ -7,8 +7,8 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.ops.ui.europaplugin.EuropaPlugin;
 import org.ops.ui.filemanager.model.FileModelListener;
+import org.ops.ui.main.swt.EuropaPlugin;
 import org.ops.ui.schemabrowser.model.SchemaSource;
 
 /**

@@ -117,10 +117,9 @@ public class NddlScanner extends BufferedRuleBasedScanner {
 				} while (fChars.indexOf(character) >= 0);
 				scanner.unread();
 				return fToken;
-			} else {
-				scanner.unread();
-				return Token.UNDEFINED;
 			}
+			scanner.unread();
+			return Token.UNDEFINED;
 		}
 	}
 
