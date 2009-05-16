@@ -3,9 +3,9 @@ package org.ops.ui.editor.swt;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.ops.ui.europaplugin.EuropaPlugin;
 import org.ops.ui.filemanager.model.AstNode;
 import org.ops.ui.filemanager.model.AstNodeTypes;
+import org.ops.ui.main.swt.EuropaPlugin;
 
 /**
  * Label/icon provider for the NDDL outline

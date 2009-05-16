@@ -41,7 +41,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
-import org.ops.ui.europaplugin.EuropaPlugin;
+import org.ops.ui.main.swt.EuropaPlugin;
 import org.ops.ui.filemanager.model.FileModel;
 import org.ops.ui.filemanager.model.FileModelListener;
 
@@ -87,6 +87,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 			return getImage(obj);
 		}
 
+		@Override
 		public Image getImage(Object obj) {
 			return PlatformUI.getWorkbench().getSharedImages().getImage(
 					ISharedImages.IMG_OBJ_FILE);
@@ -97,6 +98,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 	 * Obtains the model from the Activator singleton and reads files from the
 	 * Memento
 	 */
+	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		// Parent class ignores memento, but can set some defaults
 		super.init(site);
@@ -119,6 +121,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 		model.addFiles(files);
 	}
 
+	@Override
 	public void saveState(IMemento memento) {
 		super.saveState(memento);
 		IMemento mem = memento.createChild(FILE_LIST_TAG);
@@ -128,6 +131,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 	}
 
 	/** Create and initialize the viewer */
+	@Override
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
@@ -181,6 +185,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 
 	private void makeActions() {
 		deleteAction = new Action() {
+			@Override
 			public void run() {
 				ISelection selection = viewer.getSelection();
 				IStructuredSelection sel = (IStructuredSelection) selection;
@@ -203,6 +208,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 						ISharedImages.IMG_ELCL_REMOVE));
 
 		reloadAction = new Action() {
+			@Override
 			public void run() {
 				model.reload();
 			}
@@ -215,6 +221,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 						ISharedImages.IMG_ELCL_SYNCED));
 
 		doubleClickAction = new Action() {
+			@Override
 			public void run() {
 				ISelection selection = viewer.getSelection();
 				IStructuredSelection sel = (IStructuredSelection) selection;
@@ -257,6 +264,7 @@ public class FileManager extends ViewPart implements FileModelListener {
 	}
 
 	/** Passing the focus request to the viewer's control. */
+	@Override
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}

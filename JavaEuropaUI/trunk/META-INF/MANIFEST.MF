@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Europa Plug-in
 Bundle-SymbolicName: org.ops.ui.europaplugin;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.ops.ui.europaplugin.EuropaPlugin
+Bundle-Activator: org.ops.ui.main.swt.EuropaPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

@@ -1,4 +1,4 @@
-package org.ops.ui.europaplugin;
+package org.ops.ui.main.swt;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -110,6 +110,8 @@ public class EuropaPlugin extends AbstractUIPlugin {
 	/** Shutdown and release engine. Save any state if necessary */
 	protected void releaseEngine() {
 		engine.shutdown();
+		engine.delete();
+		engine = null;
 	}
 
 	/** Give access to the engine */

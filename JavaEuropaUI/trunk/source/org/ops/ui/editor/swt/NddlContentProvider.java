@@ -5,10 +5,10 @@ import java.util.HashSet;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.ops.ui.europaplugin.EuropaPlugin;
 import org.ops.ui.filemanager.model.AstNode;
 import org.ops.ui.filemanager.model.AstNodeTypes;
 import org.ops.ui.filemanager.model.FileModel;
+import org.ops.ui.main.swt.EuropaPlugin;
 
 public class NddlContentProvider implements IStructuredContentProvider,
 		ITreeContentProvider {
@@ -92,7 +92,7 @@ public class NddlContentProvider implements IStructuredContentProvider,
 
 	public void reload(String fileName) {
 		FileModel fmodel = EuropaPlugin.getDefault().getFileModel();
-		AstNode root = fmodel.getAstTree();
+		AstNode root = fmodel.getAstTree(fileName);
 		outlinePage.update(root);		
 	}
 }
