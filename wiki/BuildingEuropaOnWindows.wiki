@@ -51,13 +51,13 @@ to
    <property name="jam.misc" value="-sOS=CYGWIN" />
 }}}
 
-FIXME - mcr - Is the following line really needed or can we check in this change as a flag for the build target?
-
-Please do not check in this change.
+Please do not check in this change (because MinGW is the officially supported windows build environment).
 
 
 ----
 == MinGW ==
+
+MinGW is the default windows build environment.
 
 === Setting up MinGW ===
 
@@ -65,7 +65,7 @@ The simplest way to setup MinGW is to install Cygwin as above and add the follow
 
   * from devel: gcc-mingw-core, mingw-runtime
 
-]_We welcome notes if anyone has tried a straight MinGW setup_
+_We welcome notes if anyone has tried a straight MinGW setup_
 
 ==== PThreads ====
 
@@ -83,7 +83,7 @@ The cppunit installed above for cygwin clashes with the MinGW setup.  You will n
   % tar zxvf cppunit.distro.tar.gz
   % cd cppunit.distro
   % mkdir include.install
-  % ./configure --libdir=./lib --includedir=./include.install CFLAGS=-mno-cygwin CPPFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin 
+  % ./configure --build=mingw32 --libdir=./lib --includedir=./include.install CFLAGS=-mno-cygwin CPPFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin 
   % make
   % make install
   % cd include.install
