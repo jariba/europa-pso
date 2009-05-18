@@ -2,7 +2,6 @@
 
 #include "Y-model.nddl"
 
-PlannerConfig plannerConfiguration = new PlannerConfig(-10, +100000000, 10000, 10000);
 System system = new System();
 ContainerObj Containers = new ContainerObj();
 

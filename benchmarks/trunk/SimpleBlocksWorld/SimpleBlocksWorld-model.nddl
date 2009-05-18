@@ -1,25 +1,24 @@
 #include "Plasma.nddl"
-#include "PlannerConfig.nddl"
 
 // A minimal blocks world representation.  Note that blocks are only moved to
-// and from the table.  How might we extend to moving 
+// and from the table.  How might we extend to moving
 
 class Block extends Timeline {
 
   Block(){
   }
-		
+
   predicate under{
     Block block;
   }
-  
+
   predicate uncovered{
   }
-  
+
   predicate moveToTable{
     Block fromBlock;
   }
-  
+
   predicate moveFromTable{
     Block toBlock;
   }

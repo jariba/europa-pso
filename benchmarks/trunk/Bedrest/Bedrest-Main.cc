@@ -35,9 +35,9 @@ int main(int argc, const char ** argv)
   solve(
       plannerConfig,
       txSource,
-      0,   // startHorizon
-      100, // endHorizon
-      1000 // maxSteps
+      -10,   // startHorizon
+      100000000, // endHorizon
+      10000 // maxSteps
   );
 
   return 0;

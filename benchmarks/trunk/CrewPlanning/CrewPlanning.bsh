@@ -63,7 +63,7 @@ void setupDesktop()
 
 horizonStart = 0;
 horizonEnd = 5760;
-maxSteps = 500;
+maxSteps = 1500;
 maxDepth = 100000;
 config = "PlannerConfig.xml";
 

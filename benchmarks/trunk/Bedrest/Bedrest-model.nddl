@@ -1,8 +1,5 @@
-#include "PlannerConfig.nddl"
 #include "Resources.nddl"
 #include "Bedrest-objects.nddl"
-
-
 
 Subject::Sleep {
   if (object) {

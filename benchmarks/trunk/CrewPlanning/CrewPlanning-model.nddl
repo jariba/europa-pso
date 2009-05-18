@@ -1,4 +1,3 @@
-#include "PlannerConfig.nddl"
 #include "StringData.nddl"
 #include "Resources.nddl"
 
@@ -6,7 +5,7 @@
 constraint LessThan(a, b) { a <: numeric && b <: numeric }
 
 /**
- * 
+ *
  */
 class FastingWindow extends Timeline
 {
@@ -15,9 +14,9 @@ class FastingWindow extends Timeline
 }
 
 /*
- * Multi-capacity resources 
+ * Multi-capacity resources
  */
-// TDRS satellites 
+// TDRS satellites
 class TDRS extends Reusable
 {
     TDRS()
@@ -25,9 +24,9 @@ class TDRS extends Reusable
         // Capacity, Lower Limit
         super(4.0,0.0);
     }
-}    
-        
-// Max number of Physically Restraining activities 
+}
+
+// Max number of Physically Restraining activities
 class PRACapacity extends Reusable
 {
     PRACapacity()
@@ -35,8 +34,8 @@ class PRACapacity extends Reusable
         // Capacity, Lower Limit
         super(3.0,0.0);
     }
-}    
-        
+}
+
 class ExerciseEquipment extends Reusable
 {
     ExerciseEquipment()
@@ -44,9 +43,9 @@ class ExerciseEquipment extends Reusable
         // Capacity, Lower Limit
         super(2.0,0.0);
     }
-}    
-        
-// TDRS satellites 
+}
+
+// TDRS satellites
 class Power extends Reusable
 {
     Power()
@@ -54,12 +53,12 @@ class Power extends Reusable
         // Capacity, Lower Limit
         super(1300.0,0.0);
     }
-}    
-        
+}
+
 class CrewMember extends Timeline
 {
     FastingWindow fw;
-    
+
     CrewMember()
     {
         fw = new FastingWindow();
@@ -71,44 +70,44 @@ class CrewMember extends Timeline
     predicate dpc { duration = 15;}
     predicate meal { duration = 60; }
     predicate exercise { duration = 60; }
-    
+
     predicate payload_activity {
-        int id; 
-        StringData desc; 
-        int length; 
-        int priority; 
+        int id;
+        StringData desc;
+        int length;
+        int priority;
         int dueDate;
         int usesComms;
         int isPhysicallyRestraining;
     }
-    
+
     predicate comm_payload_activity {
-        int id; 
-        StringData desc; 
-        int length; 
-        int priority; 
+        int id;
+        StringData desc;
+        int length;
+        int priority;
         int dueDate;
     }
-    
+
     predicate restraint_payload_activity {
-        int id; 
-        StringData desc; 
-        int length; 
-        int priority; 
+        int id;
+        StringData desc;
+        int length;
+        int priority;
         int dueDate;
     }
-    
+
     predicate power_activity {
-        int id; 
-        StringData desc; 
-        int length; 
-        float usage; 
+        int id;
+        StringData desc;
+        int length;
+        float usage;
         int dueDate;
     }
-    
-    predicate change_filter { duration = 60; }    
+
+    predicate change_filter { duration = 60; }
     predicate medical_conference { duration = 60; }
-    
+
     // RPCM R&R Predicates
     predicate remove_sleep_station { duration = 60; }
     predicate reconfigure_thermal_loops {  duration = 60; int loopCnt;}
@@ -134,14 +133,14 @@ CrewMember::post_sleep
     equals(object.fw.not_fasting f);
     meets(object.fw.fasting t);
     LessThan(240,t.duration);
-    
+
     meets(dpc);
 }
 
 CrewMember::dpc
 {
     equals(TDRS.uses t);
-    eq(t.quantity, 1.0); 
+    eq(t.quantity, 1.0);
 }
 
 CrewMember::exercise
@@ -149,14 +148,14 @@ CrewMember::exercise
     // Can't exercise unless fasting for 1 hour or more
     contained_by(object.fw.fasting f);
     int lb;
-    
+
     temporalDistance(lb,1,start);
     precedes(f.start,lb);
     //leq(f.start,lb);
 
     // use capacity on excercise equipment
     equals(ExerciseEquipment.uses equipment);
-    eq(equipment.quantity, 1); 
+    eq(equipment.quantity, 1);
 }
 
 CrewMember::meal
@@ -170,26 +169,26 @@ CrewMember::payload_activity
 {
     eq(duration,length);
     precedes(0,start);
-    precedes(end,dueDate);    
-    
+    precedes(end,dueDate);
+
     // optional, use capacity on comms
     if (usesComms == 1) {
         equals(TDRS.uses comms);
-        eq(comms.quantity, 1);                 
-    }        
+        eq(comms.quantity, 1);
+    }
     else if (isPhysicallyRestraining == 1) { // optional, require physical restraining of crew member
         equals(PRACapacity.uses pra);
-        eq(pra.quantity, 1);         
-    }    
+        eq(pra.quantity, 1);
+    }
 }
 
 CrewMember::comm_payload_activity
 {
     eq(duration,length);
     precedes(0,start);
-    precedes(end,dueDate);     
+    precedes(end,dueDate);
     equals(TDRS.uses comms);
-    eq(comms.quantity, 1);                 
+    eq(comms.quantity, 1);
 }
 
 
@@ -197,9 +196,9 @@ CrewMember::power_activity
 {
     eq(duration,length);
     precedes(0,start);
-    precedes(end,dueDate);     
+    precedes(end,dueDate);
     equals(Power.uses power);
-    eq(power.quantity, usage);                 
+    eq(power.quantity, usage);
 }
 
 
@@ -207,10 +206,10 @@ CrewMember::restraint_payload_activity
 {
     eq(duration,length);
     precedes(0,start);
-    precedes(end,dueDate);    
+    precedes(end,dueDate);
     equals(PRACapacity.uses pra);
-    eq(pra.quantity, 1);  
-    eq(pra.duration,duration);       
+    eq(pra.quantity, 1);
+    eq(pra.duration,duration);
 }
 
 
@@ -235,10 +234,10 @@ CrewMember::change_filter
 CrewMember::medical_conference
 {
     precedes(0,start);
-    
+
     equals(TDRS.uses comms);
-    eq(comms.quantity, 1); 
-    
+    eq(comms.quantity, 1);
+
     // Setup next medical conference
     before(object.medical_conference mc);
 
@@ -253,27 +252,27 @@ CrewMember::medical_conference
 }
 
 
-CrewMember::remove_sleep_station 
+CrewMember::remove_sleep_station
 {
 }
 
-CrewMember::reconfigure_thermal_loops 
+CrewMember::reconfigure_thermal_loops
 {
 }
 
-CrewMember::remove_power_source 
+CrewMember::remove_power_source
 {
 }
 
-CrewMember::replace_rpcm 
+CrewMember::replace_rpcm
 {
 }
 
-CrewMember::place_power_source 
+CrewMember::place_power_source
 {
 }
 
-CrewMember::assemble_sleep_station 
+CrewMember::assemble_sleep_station
 {
 }
 
@@ -294,20 +293,20 @@ RPCM_RR::perform
     contains(CrewMember.remove_sleep_station step1);
     contains(CrewMember.remove_power_source step2);
     precedes(step1.end,step2.start);
-    
+
     // Reconfigure thermal loops as single loop
     contains(CrewMember.reconfigure_thermal_loops step3);
     eq(step3.loopCnt,1);
-        
+
     contains(CrewMember.replace_rpcm step4);
     precedes(step2.end,step4.start);
     precedes(step3.end,step4.start);
-    
+
     contains(CrewMember.place_power_source step5);
     contains(CrewMember.assemble_sleep_station step6);
     precedes(step4.end,step5.start);
     precedes(step5.end,step6.start);
-    
+
     // Reconfigure thermal loops as redundant loops
     contains(CrewMember.reconfigure_thermal_loops step7);
     precedes(step4.end,step7.start);
@@ -318,12 +317,12 @@ RPCM_RR::perform
 class CrewPlanner extends Timeline
 {
     CrewMember c_;
-    
+
     CrewPlanner(CrewMember c)
     {
         c_ = c;
     }
-    
+
     predicate daily_routine {}
 }
 
@@ -331,29 +330,29 @@ class CrewPlanner extends Timeline
  * Use concurrent instead of eq to get temporal network propagation
  */
 CrewPlanner::daily_routine
-{   
+{
     eq(duration,1440); // 24 hours
 
     contains(object.c_.post_sleep ps);
     concurrent(ps.start,start);
-    
+
     contains(object.c_.sleep sleep);
     concurrent(sleep.end,end);
-    
+
     // Breakfast is part of post-sleep and dinner part of pre-sleep
     // so we only generate lunch
     // TODO: need to express a preference for scheduling all crew members together
-    contains(object.c_.meal lunch); 
-    
+    contains(object.c_.meal lunch);
+
     /*
     int bfstLunchDist;
     temporalDistance(bfstLunchDist,ps.end,lunch.start);
     precedes(bfstLunchDist,240);
     precedes(180,bfstLunchDist);
     */
-        
-    contains(object.c_.exercise exercise);    
-        
+
+    contains(object.c_.exercise exercise);
+
     // generate routine for the next day...
     meets(daily_routine);
 }
