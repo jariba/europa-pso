@@ -1,7 +1,5 @@
 #include "Y-model.nddl"
 
-PlannerConfig plannerConfiguration = new PlannerConfig(-10, +100000000, 10000, 10000);
-
 Subject SUBJECT_0 = new Subject();
 Subject SUBJECT_1 = new Subject();
 Subject SUBJECT_2 = new Subject();

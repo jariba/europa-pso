@@ -17,7 +17,7 @@ desktop.makeNddlConsole();
 
 solver = desktop.makeSolver(
     "PlannerConfig.xml" // config
-	, 0                 // startHorizon
+	 , -10                 // startHorizon
 	, 100000000         // endHorizon
 );
 

@@ -1,6 +1,5 @@
 #include "Plasma.nddl"
 #include "Resources.nddl"
-#include "PlannerConfig.nddl"
 
 class CapacityResource extends Reusable
 //class CapacityResource extends CBReusable
