@@ -1,0 +1,80 @@
+#!/usr/bin/python
+import re
+import sys
+import os
+import stat
+import subprocess
+
+#
+# Author: Mark Roberts
+#
+
+#ensure this a cygwin process
+p1 = subprocess.Popen(["uname", "-s"], stdout=subprocess.PIPE)
+p2 = subprocess.Popen(["grep", "-i", "cygwin"], stdin=p1.stdout, stdout=subprocess.PIPE)
+result = p2.communicate()[0]
+print "result:" + result
+print "len:%d" % len(result)
+
+if ( len(result) ==  0) :
+  print "Error: You must run this in a cygwin shell"
+  sys.exit(1)
+
+currentDir = os.path.abspath( "." )
+cppUnitVersion = "cppunit-1.12.1"
+cppUnitDir = os.path.join( currentDir, cppUnitVersion )
+cppUnitMakefile = os.path.join( currentDir, cppUnitVersion, "Makefile" )
+cppUnitSrcDir = os.path.join( currentDir, cppUnitVersion, "src", "cppunit" )
+cppUnitLibfile = os.path.join( currentDir, cppUnitVersion, "src", "cppunit", "libcppunit.la" )
+
+if not os.path.exists( cppUnitDir ) :
+  #cmd = "tar jxvf " + cppUnitVersion + ".tar.bz2"
+  cmd = "bunzip2 -c " + cppUnitVersion + ".tar.bz2 | tar x"
+  print "----------------------------------------"
+  print "Running cmd: " + cmd
+  os.system( cmd )
+
+if not os.path.exists( cppUnitMakefile ) :
+  #pwd as a string in a windows format for ranlib
+  p2 = subprocess.Popen(["cygpath", "--windows", currentDir], stdout=subprocess.PIPE)
+  winCurrentDir = p2.communicate()[0].strip().replace( "\\", "/")
+  print "winCurrentDir:" + winCurrentDir
+  winCppUnitDir = os.path.join( winCurrentDir, cppUnitVersion )
+  libDir = os.path.join( winCppUnitDir, "lib" )
+  includeDir = os.path.join( winCppUnitDir, "include.install" )
+  cmd = "cd " + cppUnitDir + "; ./configure --build=mingw32 --libdir=" + libDir + " --includedir=" + includeDir + " CFLAGS=-mno-cygwin CCFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin "
+  print "----------------------------------------"
+  print "Running cmd: " + cmd
+  os.system( cmd )
+
+if not os.path.exists( cppUnitLibfile ) :
+  cmd = "cd " + cppUnitSrcDir + "; make"
+  print "----------------------------------------"
+  print "Running cmd: " + cmd
+  os.system( cmd )
+
+
+print "Replacing 'c:' with '/cygdrive/c' actual path in .deps files so 'make install' is happy"
+#depsDir = os.path.join( cppUnitSrcDir, "cppunit", ".deps" )
+depsDir = os.path.join( cppUnitSrcDir, ".deps" )
+cmd = "cd " + depsDir + "; sed --in-place=.bak s/\"c:\"/\"\/cygdrive\/c\"/g *.Plo"
+os.system( cmd )
+cmd = "cd " + depsDir + "; sed --in-place=.bak s/\"tc\/cygdrive\/c\"/\"tcc:\"/g *.Plo"
+os.system( cmd )
+cmd = "cd " + cppUnitSrcDir + "; make install"
+os.system( cmd )
+includePath = os.path.join( winCppUnitDir, "include" )
+cmd = "cd " + includePath + "; make install"
+os.system( cmd )
+
+print "----------------------------------------"
+print "----------------------------------------"
+print "----------------------------------------"
+print "you need to manually install the library and includes"
+print "for mingw (the default Europa build), this is:"
+print "  cd lib; cp * c:/mingw/lib"
+print "  cd include.install; cp -R * c:/mingw/include"
+print "for cygwin, this is:"
+print "  cd lib; cp * /lib/mingw"
+print "  cd lib; cp * /usr/lib"
+print "  cd include.install; cp -R * /usr/include"
