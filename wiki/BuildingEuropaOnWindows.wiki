@@ -61,22 +61,28 @@ MinGW is the default windows build environment.
 
 === Setting up MinGW ===
 
-The simplest way to setup MinGW is to install Cygwin as above and add the following components to your system using the cygwin setup utility:
+There are two choices to installing MinGW.  The first is in Cygwin by adding  the following components to your system using the cygwin setup utility:
 
   * from devel: gcc-mingw-core, mingw-runtime
 
-_We welcome notes if anyone has tried a straight MinGW setup_
+A cleaner way is to install the MinGW toolkit directly into c:/MinGW and then set the MinGW path before the Cygwin path (assuming you installed Cygwin as well for the toolset).  See the MinGW [http://www.mingw.org/wiki/FAQ FAQ] for details.  The relevant places to change the path are in the windows environment, the .bashrc, and possibly the .cshrc.
+
+_add more notes here about modifying paths and confirming that mingw is the default gcc_
+
+Once the paths are correct, you can follow the instructions below for installing pthreads.   
 
 ==== PThreads ====
 
 If you want to build for MinGW (default), one option is to use [http://sourceware.org/pthreads-win32/ Pthreads32].
 
-Copy includes and libraries from this new PThreads installation into _/usr/include/mingw_ and _/lib/mingw_ respectively. Also
+Copy includes and libraries from this new PThreads installation into _/usr/include/mingw_ and _/lib/mingw_ respectively for cygwin while for mingw use _c:/mingw/include/_ and _c:/mingw/lib. Also
 
  * symlink pthread.dll to pthreadGC2.dll
  * symlink libpthread.a to libpthreadGC.a
 
 ==== CPPUnit ====
+
+MinGW note: You may see errors about 'multiple target patterns' if you run the make process from the command line as listed below.  This is caused by the path "c:..." in the .deps files.  To fix this, consider running the makeCppUnit.mingw from the ThirdParty library.
 
 The cppunit installed above for cygwin clashes with the MinGW setup.  You will need to download, compile, and install cppunit by hand from [http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page Sourceforge]; the these instructions used cppunit-1.12.1.
 {{{
@@ -87,10 +93,23 @@ The cppunit installed above for cygwin clashes with the MinGW setup.  You will n
   % make
   % make install
   % cd include.install
-  % cp -R * /usr/include
+  % cp -R * /usr/include #or c:/mingw/include for MinGW
   % cd ../lib 
-  % cp * /lib/mingw  
+  % cp * /lib/mingw  #or c:/mingw/lib for MinGW
 }}}
+
+=== Setting up Log4cxx ===
+
+For Cygwin, you can include the liblog4cxx library.
+
+For MinGW, performing this task requires getting APR, APR-util, and APR-iconf, Log4cxx (an possibly other libraries) to compile under MinGW.  We are still working on getting this suite to compile for MinGW.  Some hints along the way:
+  * APR
+  ** [[http://wiki.apache.org/logging-log4cxx/MSWindowsBuildInstructions these] may help
+  ** you'll need to install libtool for cygwin
+  ** problem in configure script with long long variable not being used properly.  Had to comment lines 37062ff except the case where _long_long = 8 (which it does)
+  ** the symlink for pthread must be a HARD link (mingw cannot seem to follow soft links)
+  ** you will need to include the MinGW winsock library (either -lws2_32 or -lwsock32
+
 
 ==== DLL paths ====
 
