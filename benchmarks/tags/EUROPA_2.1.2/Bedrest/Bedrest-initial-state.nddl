@@ -1,0 +1,22 @@
+// File generated from addcontains-slowdown.log.cc
+
+#include "Y-model.nddl"
+
+PlannerConfig plannerConfiguration = new PlannerConfig(-10, +100000000, 10000, 10000);
+System system = new System();
+ContainerObj Containers = new ContainerObj();
+
+Subject ID_f83etxqr_lce1c_8 = new Subject();
+Subject ID_f83etxqr_ldyd4_8 = new Subject();
+Subject ID_f83etxqr_lbbgg_8 = new Subject();
+Subject ID_f83etxqr_lf1ps_8 = new Subject();
+Subject ID_f83etxqs_lg4ao_8 = new Subject();
+Subject ID_f83etxqr_lej74_8 = new Subject();
+Subject ID_f83etxqr_lbuqw_8 = new Subject();
+Subject ID_f83etxqr_ldfug_8 = new Subject();
+Subject ID_f83etxqr_lacqg_8 = new Subject();
+Subject ID_f83etxqr_lfk8g_8 = new Subject();
+Subject ID_f83etxqr_lcxbs_8 = new Subject();
+Subject ID_f83etxql_hsgbs_8 = new Subject();
+close();
+

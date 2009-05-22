@@ -1,0 +1,20 @@
+SubDir Bedrest ;
+
+if ! $(Bedrest_READY) {
+ # Declare a library for PlanWorks Control
+
+ ModuleSharedLibrary BedrestController 
+     : ../PLASMA/ControllerStub.cc ../PLASMA/MasterController.cc ../PLASMA/SingleSolverController.cc 
+     : System : BedrestController ;
+
+ # Create a build target to run a problem
+ RunNDDLProblem Bedrest : Bedrest-initial-state.nddl : Bedrest-planner : PlannerConfig.xml ;
+
+ # Create a build target for the planner executable with the given model.
+ NddlMain Bedrest-planner : Bedrest-Main.cc : Bedrest-model.nddl : System : Bedrest-planner ;
+
+ # Create a build target for the planner shared library with model.
+ ModuleSharedLibrary Bedrest : Bedrest-model.o : System : Bedrest ;
+
+ Depends all : Bedrest BedrestController ;
+} # Bedrest_READY

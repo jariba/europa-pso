@@ -1,0 +1,7 @@
+{
+  local SUBDIR = $(Bedrest) ;
+  local PLASMA = [ FDirName $(Bedrest) .. PLASMA ] ;
+  include [ FDirName $(PLASMA) Jamrules ] ;
+  include [ FDirName $(SUBDIR) Jamfile ] ;
+  Bedrest_READY = TRUE ;
+}

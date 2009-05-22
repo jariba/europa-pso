@@ -1,0 +1,26 @@
+SubDir SimpleBlocksWorld ;
+
+if ! $(SimpleBlocksWorld_READY) {
+ # Declare a library for PlanWorks Control
+
+ ModuleSharedLibrary SimpleBlocksWorldController 
+     : $(PLASMA_HOME)/ControllerStub.cc $(PLASMA_HOME)/MasterController.cc $(PLASMA_HOME)/SingleSolverController.cc 
+     : System : SimpleBlocksWorldController ;
+
+ # Create a build target to run a problem
+ RunNDDLProblem SimpleBlocksWorld : SimpleBlocksWorld-initial-state.nddl : SimpleBlocksWorld-planner : PlannerConfig.xml ;
+
+ # Create a build target for the planner executable with the given model.
+ NddlMain SimpleBlocksWorld-planner : SimpleBlocksWorld-Main.cc : SimpleBlocksWorld-model.nddl : System : SimpleBlocksWorld-planner ;
+
+ # Create a build target for the planner shared library with model.
+ ModuleSharedLibrary SimpleBlocksWorld : SimpleBlocksWorld-model.o : System : SimpleBlocksWorld ;
+
+ NOTFILE SimpleBlocksWorld SimpleBlocksWorldController ; 
+
+ # Only let all run project if we're in this directory:
+ if $(SUBDIR) = . { 
+    Depends all : SimpleBlocksWorld SimpleBlocksWorldController ;
+ } 
+ Depends run-SimpleBlocksWorld-tests : SimpleBlocksWorld SimpleBlocksWorldController ;
+} # SimpleBlocksWorld_READY
