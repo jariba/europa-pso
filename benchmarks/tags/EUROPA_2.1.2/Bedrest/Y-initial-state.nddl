@@ -1,0 +1,25 @@
+#include "Y-model.nddl"
+
+PlannerConfig plannerConfiguration = new PlannerConfig(-10, +100000000, 10000, 10000);
+
+Subject SUBJECT_0 = new Subject();
+Subject SUBJECT_1 = new Subject();
+Subject SUBJECT_2 = new Subject();
+Subject SUBJECT_3 = new Subject();
+Subject SUBJECT_4 = new Subject();
+Subject SUBJECT_5 = new Subject();
+Subject SUBJECT_6 = new Subject();
+Subject SUBJECT_7 = new Subject();
+Subject SUBJECT_8 = new Subject();
+Subject SUBJECT_9 = new Subject();
+Subject SUBJECT_10 = new Subject();
+Subject SUBJECT_11 = new Subject();
+Subject SUBJECT_12 = new Subject();
+Subject SUBJECT_13 = new Subject();
+Subject SUBJECT_14 = new Subject();
+Subject SUBJECT_15 = new Subject();
+
+System system = new System();
+ContainerObj Containers = new ContainerObj();
+
+close();

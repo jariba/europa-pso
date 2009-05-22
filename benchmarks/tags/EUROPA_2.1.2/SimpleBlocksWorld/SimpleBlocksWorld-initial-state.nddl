@@ -1,0 +1,44 @@
+#include "SimpleBlocksWorld-model.nddl"
+
+// Create a planner configuration instance in PLASMA.
+// Horizon Start, Horizon End, MaxPlannerSteps, MaxPlannerDepth
+PlannerConfig plannerConfiguration = new PlannerConfig(0, 100, 500, +inf);
+
+// Sample object
+Block A = new Block();
+Block B = new Block();
+Block C = new Block();
+
+close();
+
+// Initial state (C on A, and B by itself)
+goal(A.under aStart);
+eq(aStart.block, C);
+
+goal(B.uncovered bStart);
+
+goal(C.uncovered cStart);
+
+aStart.start.specify(0);
+bStart.start.specify(0);
+cStart.start.specify(0);
+
+// Goal (A on B on C)
+goal(B.under bFinish);
+goal(C.under cFinish);
+
+eq(bFinish.block, A);
+eq(cFinish.block, B);
+
+// Force things to happen within horizon:
+leq(0, bFinish.start);
+leq(0, cFinish.start);
+
+leq(bFinish.end, plannerConfiguration.m_horizonEnd);
+leq(cFinish.end, plannerConfiguration.m_horizonEnd);
+
+// Force end position (otherwise we could have A on B at a different time than
+// B on C, which doesn't count!)
+eq(bFinish.end, cFinish.end);
+
+// The planner should take it form here!
