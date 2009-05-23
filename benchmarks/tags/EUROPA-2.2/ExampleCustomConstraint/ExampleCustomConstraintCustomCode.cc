@@ -1,0 +1,37 @@
+#include "ExampleCustomConstraintCustomCode.hh"
+
+#include "ConstraintEngine.hh"
+#include "ConstrainedVariable.hh"
+#include "Utils.hh"
+#include "Debug.hh"
+
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+ExampleConstraint::ExampleConstraint(const LabelStr& name,
+				   const LabelStr& propagatorName,
+				   const ConstraintEngineId& constraintEngine,
+				   const vector<ConstrainedVariableId>& variables)
+  : Constraint(name, propagatorName, constraintEngine, variables)
+{
+	check_error(variables.size() == (unsigned int) ARG_COUNT);
+}
+
+/**
+ * @brief Restrict interval bounds to be integer values
+ */
+void ExampleConstraint::handleExecute() {
+  check_error(isActive());
+
+  IntervalDomain& dom = static_cast<IntervalDomain&>(getCurrentDomain(m_variables[X]));
+
+  // Discontinue if either domain is open.
+  if (dom.isOpen())
+    return;
+
+  double min = ceil(dom.getLowerBound());
+  double max = floor(dom.getUpperBound());
+  dom.intersect(min, max);
+}

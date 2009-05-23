@@ -1,0 +1,177 @@
+// ResourceViolations.bsh
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import javax.swing.JInternalFrame;
+import org.ops.ui.PSDesktop;
+import org.ops.ui.mouse.*;
+import org.ops.ui.gantt.*;
+import org.ops.ui.chart.*;
+import org.ops.ui.util.Util;
+import psengine.*;
+
+int month = GregorianCalendar.SEPTEMBER, day = 11; 
+GregorianCalendar start = new GregorianCalendar(2006,month,day,0,0);
+GregorianCalendar end = new GregorianCalendar(2006,month,day,0,200);
+
+void initPSEngine()
+{
+	psengine.setAllowViolations(true);
+    String nddlModel = bsh.cwd+"/ResourceViolations-initial-state.nddl";
+    psengine.executeScript("nddl",nddlModel,true/*isFile*/);
+}
+
+PSGantt gantt;
+JInternalFrame ganttFrame;
+
+void setupDesktop()
+    throws Exception
+{
+    ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
+    ActionViolationsPanel vp = (ActionViolationsPanel)desktop.makeViolationsFrame().getContentPane().getComponent(0);
+
+    ganttFrame = desktop.makeResourceGanttFrame("CapacityResource",start,end);
+    ganttFrame.setLocation(0,0);
+    ganttFrame.setSize(700,300);
+    gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
+    gantt.addMouseListener(dp);    
+    gantt.addMouseListener(vp);      
+}
+
+void showResourceTokens()
+{
+    desktop.showTokens(psengine.getObjectsByType("CapacityResource").get(0));	
+}
+
+void showResourceLevels()
+{
+    resourceFrame = desktop.makeResourcesFrame("CapacityResource",start);
+    resourceFrame.setLocation(0,180);
+    resourceFrame.setSize(500,300);    	
+}
+
+String getBounds(PSToken t)
+{
+    StringBuffer buf = new StringBuffer();
+    
+    buf.append(t.getParameter("start"))
+       .append("\n ")
+       .append(t.getParameter("end"))
+       .append("\n");
+    
+    return buf.toString();
+}
+
+
+initPSEngine();
+desktop.makeNddlConsole();
+solver = desktop.makeSolver(
+    "PlannerConfig.xml" // config
+	, 0                 // startHorizon
+	, 100               // endHorizon
+);
+
+PSObject act_obj1,act_obj2,act_obj3;
+PSToken t1,t2,act1,act2,act3,act4;
+PSVariable s1,s2,s3,s4,e1,e2,e3,e4;
+
+void findTokens()
+{
+	res = psengine.getObjectsByType("CapacityResource").get(0);
+	t1 = res.getTokens().get(0);
+	t2 = res.getTokens().get(1);
+
+	activities = psengine.getObjectsByType("Activity"); 
+	act_obj1 = activities.get(0);
+	act_obj2 = activities.get(1);
+	act_obj3 = activities.get(2);
+
+	act1 = act_obj1.getTokens().get(0);
+	act2 = act_obj2.getTokens().get(0);	
+	act3 = act_obj3.getTokens().get(0);	
+	act4 = act_obj3.getTokens().get(1);
+	
+	s1 = act1.getParameter("start");  e1 = act1.getParameter("end");
+	s2 = act2.getParameter("start");  e2 = act2.getParameter("end");
+	s3 = act3.getParameter("start");  e3 = act3.getParameter("end");
+	s4 = act4.getParameter("start");  e4 = act4.getParameter("end");
+}
+
+String toString (PSStringList l)
+{
+    StringBuffer buf = new StringBuffer();
+    
+    for (int i;i<l.size();i++)
+        buf.append(l.get(i)).append("\n");
+    
+    return buf.toString();    
+}
+
+String toString (PSTokenList l)
+{
+    StringBuffer buf = new StringBuffer();
+    
+    for (int i;i<l.size();i++) {
+        PSToken act = l.get(i); 
+        buf.append(act.getParameter("act_id")).append(" ")
+           .append(act.getParameter("start")).append(",")
+           .append(act.getParameter("end")).append(",")
+           .append("\n");
+    }
+    
+    return buf.toString();    
+}
+
+void setStart(PSVarValue a1, PSVarValue a2, 
+              PSVarValue b1, PSVarValue b2,
+              PSVarValue c1, PSVarValue c2
+             )
+{
+    psengine.setAutoPropagation(false);
+	s1.specifyValue(a1);e1.specifyValue(a2);
+	s2.specifyValue(b1);e2.specifyValue(b2);
+	s3.specifyValue(c1);e3.specifyValue(c2);
+    psengine.setAutoPropagation(true);
+	print(psengine.getViolation() + " : " + toString(psengine.getViolationExpl()));	
+	gantt.refresh();	
+	ganttFrame.setSize(ganttFrame.getSize());
+}
+
+void setStart(int a, int b, int c)
+{
+    setStart(PSVarValue.getInstance(a),PSVarValue.getInstance(a+5),
+             PSVarValue.getInstance(b),PSVarValue.getInstance(b+6),
+             PSVarValue.getInstance(c),PSVarValue.getInstance(c+7)
+    );	
+}
+
+String acts()
+{
+    StringBuffer buf = new StringBuffer();
+    
+    PSObjectList acts = psengine.getObjectsByType("Activity");
+    for (int i=0;i<acts.size();i++)
+        buf.append(toString(acts.get(i).getTokens()));    
+    
+    return buf.toString();
+}
+
+//desktop.makeSolverDialog(solver);
+setupDesktop();
+findTokens();
+
+/*
+
+// Cause Violation
+setStart(5,8,16); 
+setStart(6,11,20); 
+setStart(5,10,3); 
+
+// Remove Violation
+setStart(5,10,16); 
+ 
+*/
+
+
+
+
