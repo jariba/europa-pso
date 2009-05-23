@@ -1,0 +1,42 @@
+#!/usr/bin/python
+import re
+import sys
+import os
+import stat
+
+#
+# Author: Mark Roberts
+#
+
+cppUnitVersion = "cppunit-1.12.1"
+cppUnitDir = os.path.join( ".", cppUnitVersion )
+cppUnitMakefile = os.path.join( ".", cppUnitVersion, "Makefile" )
+cppUnitSrcDir = os.path.join( ".", cppUnitVersion, "src" )
+cppUnitLibfile = os.path.join( ".", cppUnitVersion, "src", "cppunit", "libcppunit.la" )
+
+if not os.path.exists( cppUnitDir ) :
+  #cmd = "tar jxvf " + cppUnitVersion + ".tar.bz2"
+  cmd = "bunzip2 -c " + cppUnitVersion + ".tar.bz2 | tar xv"
+  print "----------------------------------------"
+  print "Running cmd: " + cmd
+  os.system( cmd )
+
+if not os.path.exists( cppUnitMakefile ) :
+  cmd = "cd " + cppUnitDir + "; ./configure"
+  print "----------------------------------------"
+  print "Running cmd: " + cmd
+  os.system( cmd )
+
+if not os.path.exists( cppUnitLibfile ) :
+  cmd = "cd " + cppUnitSrcDir + "; make"
+  print "----------------------------------------"
+  print "Running cmd: " + cmd
+  os.system( cmd )
+
+if not os.environ['USER'] == "root" :
+  print "Error: You must run as root to install this program"
+  print "  (or you will need to change the install directories for this package"
+  sys.exit(1)
+
+cmd = "cd " + cppUnitSrcDir + "; make install"
+os.system( cmd )
