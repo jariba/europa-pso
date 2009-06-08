@@ -27,10 +27,10 @@
       </view>
       <view
             category="org.ops.ui"
-            class="org.ops.ui.filemanager.swt.FileManager"
-            icon="icons/sample.gif"
-            id="org.ops.ui.filemanager.swt.FileManager"
-            name="File Manager">
+            class="org.ops.ui.solver.swt.SolverView"
+            icon="icons/run_nddl.png"
+            id="org.ops.ui.solver.swt.SolverView"
+            name="Solver">
       </view>
    </extension>
    <extension
@@ -45,6 +45,61 @@
                contentTypeId="EuropaPlugin.nddlType">
          </contentTypeBinding>
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.ops.ui.main.swt.NddlLauncher"
+            delegateName="NDDL model launcher"
+            id="EuropaPlugin.launch.nddl.configurationType"
+            modes="run"
+            name="NDDL model"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.ops.ui.main.swt.NddlLauncherTabs"
+            id="EuropaPlugin.launchConfigurationTabGroupNDDL"
+            type="EuropaPlugin.launch.nddl.configurationType">
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="org.ops.ui.main.swt.NddlLaunchShortcut"
+            description="Blah"
+            icon="icons/run_nddl.png"
+            id="EuropaPlugin.launch.nddl.shortcut"
+            label="NDDL model"
+            modes="run">
+         <configurationType
+               id="EuropaPlugin.launch.nddl.configurationType">
+         </configurationType>
+         <contextualLaunch>
+         	<enablement>
+            	<with variable="selection">
+               		<count value="1" />
+               		<iterate>
+                 		<or>
+                 			<test property="org.eclipse.debug.ui.matchesPattern"
+                 				value="*.nddl" />
+                 		</or>
+               		</iterate>
+            	</with>
+         	</enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.ops.ui.main.swt.NddlRunPerspective"
+            icon="icons/run_nddl.png"
+            id="org.ops.ui.main.swt.NddlRunPerspective"
+            name="Run NDDL model">
+      </perspective>
    </extension>
 
 </plugin>

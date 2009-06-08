@@ -65,6 +65,8 @@ public class SchemaContentProvider implements ITreeContentProvider {
 	/** Recompute the whole tree from the model */
 	public void initialize() {
 		rootNode.clear();
+		if (!model.isInitialized())
+			return;
 		rootNode.add(model.getPredicatesNode());
 	}
 }

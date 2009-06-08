@@ -1,7 +1,9 @@
 package org.ops.ui.editor.swt;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -14,6 +16,7 @@ public class NddlEditor extends TextEditor {
 
 	private ColorManager colorManager;
 	private NddlOutlinePage outlinePage;
+
 	// private NddlDocumentModel documentModel;
 
 	public NddlEditor() {
@@ -24,7 +27,7 @@ public class NddlEditor extends TextEditor {
 		// setEditorContextMenuId("org.ops.ui.NddlEditorScope");
 		// this.documentModel = new NddlDocumentModel(this);
 	}
-	
+
 	/**
 	 * Create the part control.
 	 * 
@@ -33,20 +36,20 @@ public class NddlEditor extends TextEditor {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-//		this.getDocumentProvider().getDocument(getEditorInput())
-//				.addDocumentListener(this.documentListener);
-//		this.documentModel.initializeModel();
-//		this.documentModel.updateNow();
+		// this.getDocumentProvider().getDocument(getEditorInput())
+		// .addDocumentListener(this.documentListener);
+		// this.documentModel.initializeModel();
+		// this.documentModel.updateNow();
 	}
-	
+
 	@Override
 	public void dispose() {
 		colorManager.dispose();
-//		this.getDocumentProvider().getDocument(getEditorInput())
-//			.removeDocumentListener(this.documentListener);
+		// this.getDocumentProvider().getDocument(getEditorInput())
+		// .removeDocumentListener(this.documentListener);
 		super.dispose();
 	}
-	
+
 	/**
 	 * Used by platform to get the OutlinePage and ProjectionSupport adapter.
 	 * 
@@ -68,11 +71,16 @@ public class NddlEditor extends TextEditor {
 	public NddlOutlinePage getOutlinePage() {
 		return outlinePage;
 	}
-	
+
 	/**
 	 * @return The source viewer of this editor
 	 */
 	public ISourceViewer getViewer() {
 		return getSourceViewer();
+	}
+
+	public IFile getFile() {
+		IFileEditorInput input = (IFileEditorInput) this.getEditorInput();
+		return input.getFile();
 	}
 }

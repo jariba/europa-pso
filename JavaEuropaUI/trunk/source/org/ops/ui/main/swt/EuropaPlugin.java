@@ -4,10 +4,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.ops.ui.filemanager.model.FileModel;
+import org.ops.ui.solver.model.SolverModel;
 import org.osgi.framework.BundleContext;
 
-import psengine.PSEngine;
 import psengine.PSUtil;
 
 /**
@@ -23,11 +22,11 @@ public class EuropaPlugin extends AbstractUIPlugin {
 	/** The shared instance */
 	private static EuropaPlugin plugin;
 
-	/** Wrapper/access point for Europa engine */
-	private PSEngine engine;
-
-	/** Model that keeps track of loaded files */
-	private FileModel fileModel;
+	/**
+	 * Solver execution model. Should be one per plugin. Creates engine instance
+	 * inside
+	 */
+	private SolverModel solverModel;
 
 	/**
 	 * The constructor
@@ -96,32 +95,27 @@ public class EuropaPlugin extends AbstractUIPlugin {
 					+ "(or PATH for Windows)\n" + e.getLocalizedMessage());
 			throw e;
 		}
-
-		engine = PSEngine.makeInstance();
-		engine.start();
-
-		System.out.println("Engine started");
 	}
 
 	public void logError(String message) {
 		this.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, message));
 	}
 
+	public void logError(String message, Throwable exception) {
+		this.getLog().log(
+				new Status(IStatus.ERROR, PLUGIN_ID, message, exception));
+	}
+
 	/** Shutdown and release engine. Save any state if necessary */
 	protected void releaseEngine() {
-		engine.shutdown();
-		engine.delete();
-		engine = null;
+		if (solverModel != null)
+			solverModel.shutdown();
+		solverModel = null;
 	}
 
-	/** Give access to the engine */
-	public PSEngine getEngine() {
-		return engine;
-	}
-
-	public FileModel getFileModel() {
-		if (fileModel == null)
-			fileModel = new FileModel(engine);
-		return fileModel;
+	public SolverModel getSolverModel() {
+		if (solverModel == null)
+			solverModel = new SolverModel();
+		return solverModel;
 	}
 }
