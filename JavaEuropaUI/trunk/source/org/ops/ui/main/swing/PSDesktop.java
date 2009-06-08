@@ -19,24 +19,27 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.ops.ui.filemanager.model.FileModel;
 import org.ops.ui.schemabrowser.swing.SchemaView;
+import org.ops.ui.solver.model.SolverModel;
+import org.ops.ui.solver.swing.OpenDecisionsView;
+import org.ops.ui.solver.swing.PSSolverDialog;
 
-import psengine.PSEngine;
 import psengine.PSUtil;
 
 public class PSDesktop extends JFrame {
 
 	private JDesktopPane desktop;
 	private Logger log = Logger.getLogger(getClass().getName());
-	private PSEngine engine;
-	private FileModel fileModel;
 
+	// Solver model. It has engine inside
+	private SolverModel solverModel;
+
+	// Viewer
 	private SchemaView schemaBrowser;
+	private PSSolverDialog solverDialog;
+	private OpenDecisionsView openDecisions;
 
-	private String fileName;
-
-	private PSDesktop() {
+	private PSDesktop(File dataFile, File solverConfig) {
 		this.desktop = new JDesktopPane();
 		this.add(this.desktop);
 
@@ -52,20 +55,26 @@ public class PSDesktop extends JFrame {
 		// Hook up engine
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
-				if (engine != null)
-					releaseEngine();
+				releaseEngine();
 			}
 		}));
 
-		hookupEngine();
+		hookupEngine(dataFile, solverConfig);
 
 		// Build views
-		this.schemaBrowser = new SchemaView(this.engine, this.fileModel);
-		this.schemaBrowser.setVisible(true);
+		this.schemaBrowser = new SchemaView(this.solverModel);
 		this.desktop.add(this.schemaBrowser);
+
+		this.solverDialog = new PSSolverDialog(this.solverModel);
+		this.solverDialog.setVisible(true);
+		this.desktop.add(this.solverDialog);
+		
+		this.openDecisions = new OpenDecisionsView(this.solverModel);
+		this.desktop.add(this.openDecisions);
 
 		// Finish up
 		buildMenu();
+		updateTitle(dataFile);
 		this.setSize(600, 700);
 	}
 
@@ -83,15 +92,7 @@ public class PSDesktop extends JFrame {
 
 		menu = new JMenu("File");
 		bar.add(menu);
-		JMenuItem item = new JMenuItem("Load");
-		menu.add(item);
-		item.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadFile(fileName);
-			}
-		});
-		menu.addSeparator();
-		item = new JMenuItem("Exit");
+		JMenuItem item = new JMenuItem("Exit");
 		menu.add(item);
 		item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -102,53 +103,47 @@ public class PSDesktop extends JFrame {
 		menu = new JMenu("Windows");
 		bar.add(menu);
 		menu.add(this.schemaBrowser.getToggleMenuItem());
+		menu.add(this.solverDialog.getToggleMenuItem());
+		menu.add(this.openDecisions.getToggleMenuItem());
 	}
 
-	private void updateTitle() {
+	private void updateTitle(File dataFile) {
 		final String prefix = "Europa desktop";
-		// Add file name(s)
-		StringBuffer b = new StringBuffer(prefix);
-		int count = 0;
-		for (File f : fileModel) {
-			if (count++ == 0)
-				b.append(": ");
-			else
-				b.append(", ");
-			b.append(f.getName());
-		}
-		this.setTitle(b.toString());
-	}
-
-	/** Load the file into the model and update title */
-	private void loadFile(String fileName) {
-		File file = new File(fileName);
-		if (!file.exists()) {
-			JOptionPane.showMessageDialog(this, "File " + file
-					+ " does not exist");
-		} else {
-			fileModel.removeFile(file);
-			fileModel.addFile(file);
-		}
-		updateTitle();
+		this.setTitle(prefix + ": " + dataFile);
 	}
 
 	/**
 	 * Pops up a file chooser dialog to open .nddl file. @return full path to
 	 * the chosen file, or null
 	 */
-	private String askForNddlFile() {
+	private static File askForNddlFile() {
 		JFileChooser chooser = new JFileChooser();
 		chooser.addChoosableFileFilter(new FileNameExtensionFilter(
 				"NDDL files", "nddl"));
-		int res = chooser.showOpenDialog(this);
+		int res = chooser.showOpenDialog(null);
 		if (res != JFileChooser.APPROVE_OPTION)
 			return null;
 		File file = chooser.getSelectedFile();
-		return file.getAbsolutePath();
+		return file;
+	}
+
+	/**
+	 * Pops up a file chooser dialog to open .xml file. @return full path to the
+	 * chosen file, or null
+	 */
+	private static File askForXmlFile(String title) {
+		JFileChooser chooser = new JFileChooser(title);
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("XML files",
+				"xml"));
+		int res = chooser.showOpenDialog(null);
+		if (res != JFileChooser.APPROVE_OPTION)
+			return null;
+		File file = chooser.getSelectedFile();
+		return file;
 	}
 
 	/** Create and connect PSEngine */
-	protected void hookupEngine() {
+	protected void hookupEngine(File data, File solverConfig) {
 		String debugMode = "g";
 		try {
 			PSUtil.loadLibraries(debugMode);
@@ -162,20 +157,19 @@ public class PSDesktop extends JFrame {
 			System.exit(1);
 		}
 
-		engine = PSEngine.makeInstance();
-		engine.start();
-		fileModel = new FileModel(engine);
+		// loadFile(dataFile);
+		
+		solverModel = new SolverModel();
+		solverModel.configure(data, solverConfig, 0, 100);
 
 		log.log(Level.INFO, "Engine started");
 	}
 
 	/** Shutdown and release engine. Save any state if necessary */
-	protected void releaseEngine() {
-		fileModel = null;
-		if (engine != null) {
-			engine.shutdown();
-			engine.delete();
-			engine = null;
+	protected synchronized void releaseEngine() {
+		if (solverModel != null) {
+			solverModel.shutdown();
+			solverModel = null;
 			log.log(Level.INFO, "Engine released");
 		}
 	}
@@ -190,21 +184,43 @@ public class PSDesktop extends JFrame {
 			System.out.println("Unable to load native look and feel");
 		}
 
-		PSDesktop me = new PSDesktop();
+		// Parse command line parameters to get data file and configs
+		File dataFile = null, solverConfig = null;
+		for (int i = 0; i < args.length; i++) {
+			if ("-config".equals(args[i])) {
+				File f = new File(args[++i]);
+				if (!f.exists())
+					System.err.println("Config file " + f + " is not found");
+				else
+					solverConfig = f;
+			} else {
+				File f = new File(args[i]);
+				if (!f.exists())
+					System.err.println("Nddl file " + f + " is not found");
+				else
+					dataFile = f;
+			}
+		}
 
-		// Load files or pop up dialog
-		String fname;
-		if (args.length == 0) {
-			fname = me.askForNddlFile();
-			if (fname == null) {
-				JOptionPane.showMessageDialog(me, "No file chosen. Exiting");
+		// Pop up dialogs if needed
+		if (dataFile == null) {
+			dataFile = askForNddlFile();
+			if (dataFile == null) {
+				JOptionPane.showMessageDialog(null,
+						"No NDDL file chosen. Exiting");
 				return;
 			}
-		} else
-			fname = args[0];
-		me.fileName = fname;
-		me.loadFile(fname);
+		}
+		if (solverConfig == null) {
+			solverConfig = askForXmlFile("blah");
+			if (solverConfig == null) {
+				JOptionPane.showMessageDialog(null,
+						"No solver config chosen. Exiting");
+				return;
+			}
+		}
 
+		PSDesktop me = new PSDesktop(dataFile, solverConfig);
 		me.setVisible(true);
 	}
 

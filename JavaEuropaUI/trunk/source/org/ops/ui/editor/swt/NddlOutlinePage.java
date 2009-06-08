@@ -108,7 +108,7 @@ public class NddlOutlinePage extends ContentOutlinePage {
 	}
 
 	public String getFileName() {
-		return editor.getEditorInput().getName();
+		return editor.getFile().getLocation().toString();
 	}
 
 	/**
