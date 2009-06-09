@@ -70,9 +70,6 @@ public class SolverView extends ViewPart implements SolverListener {
 	/** Start of N step run. Used to get statistics labels */
 	private long startOfRun;
 
-	/** Total running time, seconds */
-	private double totalTimeSec = 0;
-
 	/** Obtains the model from the Activator singleton */
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
@@ -172,9 +169,9 @@ public class SolverView extends ViewPart implements SolverListener {
 			}
 		});
 
-		// row = new Composite(parent, SWT.NONE);
-		// innerLayout = new RowLayout();
-		// row.setLayout(innerLayout);
+		row = new Composite(parent, SWT.NONE);
+		innerLayout = new RowLayout();
+		row.setLayout(innerLayout);
 		new Label(row, SWT.NONE).setText("Run for ");
 		runForStepsText = new Text(row, SWT.SINGLE | SWT.BORDER);
 		runForStepsText.setText("100");
@@ -215,14 +212,6 @@ public class SolverView extends ViewPart implements SolverListener {
 				- startOfRun));
 		int stepCnt = model.getStepCount();
 		stepCountLabel.setText(Integer.toString(stepCnt));
-		double secs = time / 1000.0;
-		totalTimeSec += secs;
-		// ArrayList<String> flaws = model.getFlawsAtStep(stepCnt);
-		// int decs = flaws == null ? 0 : flaws.size();
-		// TODO solverDepthSeries.add(stepCnt, model.getDepth());
-		// stepTimeSeries.add(stepCnt, secs);
-		// stepAvgTimeSeries.add(stepCnt, totalTimeSec / stepCnt);
-		// decisionCntSeries.add(stepCnt, decs);
 	}
 
 	public void afterStepping() {

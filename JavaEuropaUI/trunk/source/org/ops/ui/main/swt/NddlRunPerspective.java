@@ -6,7 +6,9 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.jdt.ui.JavaUI;
 import org.ops.ui.schemabrowser.swt.SchemaView;
+import org.ops.ui.solver.swt.DecisionsView;
 import org.ops.ui.solver.swt.SolverView;
+import org.ops.ui.solver.swt.StatisticsChartsView;
 
 /**
  * Perspective for running NDDL model. This is similar to PSDesktop.
@@ -36,11 +38,13 @@ public class NddlRunPerspective implements IPerspectiveFactory {
 	private void addViews() {
 		IFolderLayout bottom = factory.createFolder("bottomRight", // NON-NLS-1
 				IPageLayout.BOTTOM, 0.5f, factory.getEditorArea());
+		bottom.addView(StatisticsChartsView.VIEW_ID);
+		bottom.addView(DecisionsView.VIEW_ID);
 		bottom.addView(SchemaView.VIEW_ID);
 		bottom.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 
 		IFolderLayout topLeft = factory.createFolder("topLeft", // NON-NLS-1
-				IPageLayout.LEFT, 0.5f, factory.getEditorArea());
+				IPageLayout.LEFT, 0.3f, factory.getEditorArea());
 		topLeft.addView(SolverView.VIEW_ID);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 

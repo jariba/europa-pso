@@ -63,7 +63,7 @@ public class OpenDecisionsView extends EuropaInternalFrame {
 				assert (maxStep <= solver.getStepCount());
 				maxStep = solver.getStepCount();
 				displayStepData(maxStep);
-				availableSteps.setText("of " + solver.getStepCount());
+				availableSteps.setText("of " + maxStep);
 			}
 		});
 		displayStepData(0);

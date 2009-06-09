@@ -32,6 +32,20 @@
             id="org.ops.ui.solver.swt.SolverView"
             name="Solver">
       </view>
+      <view
+            category="org.ops.ui"
+            class="org.ops.ui.solver.swt.StatisticsChartsView"
+            id="org.ops.ui.solver.swt.StatisticsView"
+            name="Statistics"
+            restorable="true">
+      </view>
+      <view
+            category="org.ops.ui"
+            class="org.ops.ui.solver.swt.DecisionsView"
+            id="org.ops.ui.solver.swt.DecisionsView"
+            name="OpenDecisions"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
