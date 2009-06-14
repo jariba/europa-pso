@@ -11,10 +11,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -58,11 +57,9 @@ public class DecisionsView extends ViewPart implements SolverListener {
 	public void createPartControl(Composite parent) {
 		model = EuropaPlugin.getDefault().getSolverModel();
 		model.addSolverListener(this);
+		parent.setLayout(new FormLayout());
 
-		Composite controls = new Composite(parent, SWT.BORDER);
-		controls.setLayout(new RowLayout());
-
-		leftButton = new Button(controls, SWT.PUSH);
+		leftButton = new Button(parent, SWT.PUSH);
 		leftButton.setText("<<");
 		leftButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -70,7 +67,12 @@ public class DecisionsView extends ViewPart implements SolverListener {
 				displayStepData(currentStep - 1);
 			}
 		});
-		rightButton = new Button(controls, SWT.PUSH);
+		FormData data = new FormData();
+		data.left = new FormAttachment(0, 1);
+		data.top = new FormAttachment(0, 1);
+		leftButton.setLayoutData(data);
+
+		rightButton = new Button(parent, SWT.PUSH);
 		rightButton.setText(">>");
 		rightButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -78,7 +80,9 @@ public class DecisionsView extends ViewPart implements SolverListener {
 				displayStepData(currentStep + 1);
 			}
 		});
-		nstepButton = new Button(controls, SWT.PUSH);
+		rightButton.setLayoutData(rightOf(leftButton));
+
+		nstepButton = new Button(parent, SWT.PUSH);
 		nstepButton.setText("Go to step ");
 		nstepButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -92,24 +96,24 @@ public class DecisionsView extends ViewPart implements SolverListener {
 				}
 			}
 		});
-		stepField = new Text(controls, SWT.BORDER);
-		stepField.setLayoutData(new RowData(TEXT_WIDTH, SWT.DEFAULT));
-		availableSteps = new Label(controls, SWT.NONE);
-		availableSteps.setLayoutData(new RowData(TEXT_WIDTH, SWT.DEFAULT));
+		nstepButton.setLayoutData(rightOf(rightButton));
 
-		parent.setLayout(new FormLayout());
-		// Attach controls to left, top, and right
-		FormData data = new FormData();
-		data.left = new FormAttachment(0);
-		data.top = new FormAttachment(0);
-		data.right = new FormAttachment(100);
-		controls.setLayoutData(data);
+		stepField = new Text(parent, SWT.BORDER);
+		data = rightOf(nstepButton);
+		data.width = TEXT_WIDTH;
+		stepField.setLayoutData(data);
+
+		availableSteps = new Label(parent, SWT.NONE);
+		data = rightOf(stepField);
+		data.width = TEXT_WIDTH;
+		data.top = new FormAttachment(stepField, 0, SWT.CENTER);
+		availableSteps.setLayoutData(data);
 
 		Label curTitle = new Label(parent, SWT.NONE);
 		curTitle.setText("Last decision made");
 		data = new FormData();
 		data.left = new FormAttachment(0, 1);
-		data.top = new FormAttachment(controls);
+		data.top = new FormAttachment(leftButton);
 		data.right = new FormAttachment(50, -1);
 		curTitle.setLayoutData(data);
 
@@ -117,7 +121,7 @@ public class DecisionsView extends ViewPart implements SolverListener {
 		restTitle.setText("Open decisions");
 		data = new FormData();
 		data.left = new FormAttachment(50, 1);
-		data.top = new FormAttachment(controls);
+		data.top = new FormAttachment(leftButton);
 		data.right = new FormAttachment(100, -1);
 		restTitle.setLayoutData(data);
 
@@ -143,6 +147,14 @@ public class DecisionsView extends ViewPart implements SolverListener {
 		restTable.setLayoutData(data);
 
 		setAllEnabled(model.isConfigured());
+	}
+
+	private FormData rightOf(Control control) {
+		FormData data = new FormData();
+		data.left = new FormAttachment(control, 1, SWT.RIGHT);
+		data.bottom = new FormAttachment(control, 0, SWT.BOTTOM);
+		data.top = new FormAttachment(control, 0, SWT.TOP);
+		return data;
 	}
 
 	@Override

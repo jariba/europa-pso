@@ -3,6 +3,7 @@ package org.ops.ui.main.swt;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.ops.ui.solver.model.SolverModel;
 import org.osgi.framework.BundleContext;
@@ -99,6 +100,17 @@ public class EuropaPlugin extends AbstractUIPlugin {
 
 	public void logError(String message) {
 		this.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, message));
+	}
+
+	@Override
+	public void initializeImageRegistry(ImageRegistry reg) {
+		super.initializeImageRegistry(reg);
+		reg.put(CommonImages.IMAGE_EUROPA,
+				getImageDescriptor(CommonImages.IMAGE_EUROPA));
+		reg.put(CommonImages.IMAGE_RUN,
+				getImageDescriptor(CommonImages.IMAGE_RUN));
+		reg.put(CommonImages.IMAGE_HORIZON,
+				getImageDescriptor(CommonImages.IMAGE_HORIZON));
 	}
 
 	public void logError(String message, Throwable exception) {

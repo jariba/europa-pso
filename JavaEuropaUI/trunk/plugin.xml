@@ -21,7 +21,7 @@
       <view
             category="org.ops.ui"
             class="org.ops.ui.schemabrowser.swt.SchemaView"
-            icon="icons/sample.gif"
+            icon="icons/europa_empty.png"
             id="org.ops.ui.schemabrowser.swt.SchemaView"
             name="Schema Browser">
       </view>
@@ -35,6 +35,7 @@
       <view
             category="org.ops.ui"
             class="org.ops.ui.solver.swt.StatisticsChartsView"
+            icon="icons/europa_empty.png"
             id="org.ops.ui.solver.swt.StatisticsView"
             name="Statistics"
             restorable="true">
@@ -42,6 +43,7 @@
       <view
             category="org.ops.ui"
             class="org.ops.ui.solver.swt.DecisionsView"
+            icon="icons/europa_empty.png"
             id="org.ops.ui.solver.swt.DecisionsView"
             name="OpenDecisions"
             restorable="true">
