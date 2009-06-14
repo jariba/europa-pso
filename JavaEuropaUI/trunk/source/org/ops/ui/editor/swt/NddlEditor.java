@@ -17,15 +17,12 @@ public class NddlEditor extends TextEditor {
 	private ColorManager colorManager;
 	private NddlOutlinePage outlinePage;
 
-	// private NddlDocumentModel documentModel;
-
 	public NddlEditor() {
 		super();
 		colorManager = new ColorManager();
 		setSourceViewerConfiguration(new NddlConfiguration(colorManager));
 		setDocumentProvider(new NddlDocumentProvider());
 		// setEditorContextMenuId("org.ops.ui.NddlEditorScope");
-		// this.documentModel = new NddlDocumentModel(this);
 	}
 
 	/**
@@ -36,17 +33,11 @@ public class NddlEditor extends TextEditor {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		// this.getDocumentProvider().getDocument(getEditorInput())
-		// .addDocumentListener(this.documentListener);
-		// this.documentModel.initializeModel();
-		// this.documentModel.updateNow();
 	}
 
 	@Override
 	public void dispose() {
 		colorManager.dispose();
-		// this.getDocumentProvider().getDocument(getEditorInput())
-		// .removeDocumentListener(this.documentListener);
 		super.dispose();
 	}
 
@@ -60,8 +51,8 @@ public class NddlEditor extends TextEditor {
 	public Object getAdapter(Class required) {
 		if (IContentOutlinePage.class.equals(required)) {
 			if (this.outlinePage == null) {
+				// Outline updates itself on initialization
 				this.outlinePage = new NddlOutlinePage(this);
-				// TODO this.documentModel.updateOutline();
 			}
 			return outlinePage;
 		}
@@ -82,5 +73,13 @@ public class NddlEditor extends TextEditor {
 	public IFile getFile() {
 		IFileEditorInput input = (IFileEditorInput) this.getEditorInput();
 		return input.getFile();
+	}
+
+	/** Document has been modified. Update outline, error markers, etc */
+	@Override
+	protected void editorSaved() {
+		super.editorSaved();
+		if (outlinePage != null)
+			outlinePage.reload();
 	}
 }

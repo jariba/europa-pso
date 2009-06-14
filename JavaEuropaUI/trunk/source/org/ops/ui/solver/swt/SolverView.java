@@ -8,7 +8,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -18,6 +19,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.ops.ui.main.swt.CommonImages;
 import org.ops.ui.main.swt.EuropaPlugin;
 import org.ops.ui.main.swt.NddlConfigurationFields;
 import org.ops.ui.solver.model.SolverListener;
@@ -37,6 +39,11 @@ public class SolverView extends ViewPart implements SolverListener {
 	public static final String MEMENTO_CONFIG = "configFile";
 	public static final String MEMENTO_HOR_START = "horizonStart";
 	public static final String MEMENTO_HOR_END = "horizonEnd";
+
+	/** Message strings. Should probably move this into plugin resources */
+	private static final String TOOLTIP_START_ENGINE = "Start Europa engine";
+	private static final String TOOLTIP_STOP_ENGINE = "Stop Europa engine";
+
 	/** Minimum width of text fields */
 	private static final int TEXT_WIDTH = 50;
 
@@ -69,6 +76,9 @@ public class SolverView extends ViewPart implements SolverListener {
 
 	/** Start of N step run. Used to get statistics labels */
 	private long startOfRun;
+
+	/** Remember the parent widget so we can force layout when labels change */
+	private Composite widget;
 
 	/** Obtains the model from the Activator singleton */
 	@Override
@@ -117,15 +127,15 @@ public class SolverView extends ViewPart implements SolverListener {
 	/** Create and initialize the viewer */
 	@Override
 	public void createPartControl(Composite parent) {
-		RowLayout outerLayout = new RowLayout(SWT.VERTICAL);
-		outerLayout.fill = true;
-		parent.setLayout(outerLayout);
+		widget = parent;
+		parent.setLayout(new GridLayout(4, false));
 
-		Composite row = new Composite(parent, SWT.NONE);
-		RowLayout innerLayout = new RowLayout();
-		row.setLayout(innerLayout);
-		new Label(row, SWT.NONE).setText("File: ");
-		modelFileLabel = new Label(row, SWT.BOLD);
+		new Label(parent, SWT.NONE).setText("File: ");
+		modelFileLabel = new Label(parent, SWT.BOLD);
+		GridData data = new GridData();
+		data.horizontalSpan = 2;
+		data.grabExcessHorizontalSpace = true;
+		modelFileLabel.setLayoutData(data);
 
 		// Make bold font for labels
 		FontData[] fontData = modelFileLabel.getFont().getFontData();
@@ -135,8 +145,9 @@ public class SolverView extends ViewPart implements SolverListener {
 
 		modelFileLabel.setFont(boldFont);
 		modelFileLabel.setText("Fixme");
-		runEngineButton = new Button(row, SWT.TOGGLE);
-		runEngineButton.setText("Run");
+		runEngineButton = new Button(parent, SWT.TOGGLE);
+		runEngineButton.setImage(EuropaPlugin.getDefault().getImageRegistry()
+				.get(CommonImages.IMAGE_EUROPA));
 		runEngineButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
@@ -144,18 +155,25 @@ public class SolverView extends ViewPart implements SolverListener {
 			}
 		});
 
-		row = new Composite(parent, SWT.NONE);
-		innerLayout = new RowLayout();
-		row.setLayout(innerLayout);
-		new Label(row, SWT.NONE).setText("Horizon");
-		startHorizonText = new Text(row, SWT.SINGLE | SWT.BORDER);
+		new Label(parent, SWT.NONE).setText("Horizon");
+		startHorizonText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		startHorizonText.setText(horizonStart);
-		startHorizonText.setLayoutData(new RowData(TEXT_WIDTH, SWT.DEFAULT));
-		endHorizonText = new Text(row, SWT.SINGLE | SWT.BORDER);
+		data = new GridData();
+		data.minimumWidth = TEXT_WIDTH;
+		data.grabExcessHorizontalSpace = true;
+		data.horizontalAlignment = SWT.FILL;
+		startHorizonText.setLayoutData(data);
+		endHorizonText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		endHorizonText.setText(horizonEnd);
-		endHorizonText.setLayoutData(new RowData(TEXT_WIDTH, SWT.DEFAULT));
-		resetHorizonButton = new Button(row, SWT.PUSH);
-		resetHorizonButton.setText("Reset");
+		data = new GridData();
+		data.minimumWidth = TEXT_WIDTH;
+		data.grabExcessHorizontalSpace = true;
+		data.horizontalAlignment = SWT.FILL;
+		endHorizonText.setLayoutData(data);
+		resetHorizonButton = new Button(parent, SWT.PUSH);
+		resetHorizonButton.setImage(EuropaPlugin.getDefault()
+				.getImageRegistry().get(CommonImages.IMAGE_HORIZON));
+		resetHorizonButton.setToolTipText("Reset horizon");
 		resetHorizonButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
@@ -169,15 +187,19 @@ public class SolverView extends ViewPart implements SolverListener {
 			}
 		});
 
-		row = new Composite(parent, SWT.NONE);
-		innerLayout = new RowLayout();
-		row.setLayout(innerLayout);
-		new Label(row, SWT.NONE).setText("Run for ");
-		runForStepsText = new Text(row, SWT.SINGLE | SWT.BORDER);
+		new Label(parent, SWT.NONE).setText("Run for ");
+		runForStepsText = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		runForStepsText.setText("100");
-		runForStepsText.setLayoutData(new RowData(TEXT_WIDTH, SWT.DEFAULT));
-		runForStepsButton = new Button(row, SWT.PUSH);
-		runForStepsButton.setText("Run");
+		data = new GridData();
+		data.minimumWidth = TEXT_WIDTH;
+		data.grabExcessHorizontalSpace = true;
+		data.horizontalSpan = 2;
+		data.horizontalAlignment = SWT.FILL;
+		runForStepsText.setLayoutData(data);
+		runForStepsButton = new Button(parent, SWT.PUSH);
+		runForStepsButton.setImage(EuropaPlugin.getDefault().getImageRegistry()
+				.get(CommonImages.IMAGE_RUN));
+		runForStepsButton.setToolTipText("Run for N steps");
 		runForStepsButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
@@ -185,15 +207,24 @@ public class SolverView extends ViewPart implements SolverListener {
 			}
 		});
 
-		row = new Composite(parent, SWT.NONE);
-		innerLayout = new RowLayout();
-		row.setLayout(innerLayout);
+		Composite row = new Composite(parent, SWT.NONE);
+		row.setLayout(new RowLayout());
 		new Label(row, SWT.NONE).setText("Step count: ");
 		stepCountLabel = new Label(row, SWT.BOLD);
 		stepCountLabel.setFont(boldFont);
+		data = new GridData();
+		data.horizontalSpan = 2;
+		data.horizontalAlignment = SWT.CENTER;
+		row.setLayoutData(data);
+		row = new Composite(parent, SWT.NONE);
+		row.setLayout(new RowLayout());
 		new Label(row, SWT.NONE).setText("Run time: ");
 		timeSpentLabel = new Label(row, SWT.BOLD);
 		timeSpentLabel.setFont(boldFont);
+		data = new GridData();
+		data.horizontalSpan = 2;
+		data.horizontalAlignment = SWT.CENTER;
+		row.setLayoutData(data);
 
 		updateState();
 	}
@@ -216,6 +247,7 @@ public class SolverView extends ViewPart implements SolverListener {
 
 	public void afterStepping() {
 		runForStepsButton.setEnabled(true);
+		widget.layout();
 	}
 
 	public void beforeStepping() {
@@ -224,10 +256,12 @@ public class SolverView extends ViewPart implements SolverListener {
 
 	public void solverStarted() {
 		updateState();
+		widget.layout();
 	}
 
 	public void solverStopped() {
 		updateState();
+		widget.layout();
 	}
 
 	/** Update state of labels and buttons */
@@ -254,6 +288,10 @@ public class SolverView extends ViewPart implements SolverListener {
 			// Cannot start without a model
 			setEnabledFields(false);
 		}
+		if (EuropaPlugin.getDefault().getSolverModel().isConfigured())
+			runEngineButton.setToolTipText(TOOLTIP_STOP_ENGINE);
+		else
+			runEngineButton.setToolTipText(TOOLTIP_START_ENGINE);
 	}
 
 	/**

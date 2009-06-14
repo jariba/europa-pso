@@ -25,6 +25,7 @@ public abstract class FileModel {
 		engine.start();
 		String oldPath = engine.getConfig().getProperty(INCLUDE_PATH);
 		AstNode root = new AstNode();
+		String astString = null;
 		try {
 			File file = new File(fname);
 			if (!file.exists()) {
@@ -36,7 +37,7 @@ public abstract class FileModel {
 			if (oldPath != null)
 				newPath = newPath + ":" + oldPath;
 			engine.getConfig().setProperty(INCLUDE_PATH, newPath);
-			String astString = engine.executeScript("nddl-ast", fname, true);
+			astString = engine.executeScript("nddl-ast", fname, true);
 			// System.out.println(astString);
 			int offset = root.readTreeFrom(astString, 0);
 			// root.print(System.out, "");
@@ -44,7 +45,8 @@ public abstract class FileModel {
 
 			return root;
 		} catch (Exception e) {
-			System.err.println("Cannot parse NDDL file? " + e);
+			System.err.println("Cannot parse NDDL file?\nAST string: "
+					+ astString + "\n" + e);
 			root = null;
 		}
 		engine.shutdown();

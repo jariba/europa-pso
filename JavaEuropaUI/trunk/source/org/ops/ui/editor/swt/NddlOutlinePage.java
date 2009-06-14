@@ -55,6 +55,10 @@ public class NddlOutlinePage extends ContentOutlinePage {
 			provider.reload(getFileName());
 	}
 
+	public void reload() {
+		provider.reload(getFileName());
+	}
+	
 	class FileViewerFilter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
