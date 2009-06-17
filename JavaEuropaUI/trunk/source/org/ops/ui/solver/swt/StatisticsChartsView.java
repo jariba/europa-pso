@@ -12,6 +12,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.ops.ui.main.swt.EuropaPlugin;
 import org.ops.ui.solver.model.SolverListener;
 import org.ops.ui.solver.model.SolverModel;
+import org.ops.ui.solver.model.StepStatisticsRecord;
 
 /**
  * Statistics charts of the solver moved into a separate view.
@@ -61,6 +62,26 @@ public class StatisticsChartsView extends ViewPart implements SolverListener {
 		data.addSeries(this.solverDepthSeries);
 		new SolverChartComposite(parent, SWT.BORDER, lblDecsInPlan,
 				lblStepNumber, lblDecsInPlan, data, false);
+
+		// If the solver is already running, update the chart data
+		if (model.isConfigured())
+			updateChartData();
+	}
+
+	private void updateChartData() {
+		// Total step count
+		int stepCount = model.getStepCount();
+		for (int i = 1; i <= stepCount; i++) {
+			StepStatisticsRecord rec = model.getStepStatistics(i);
+			double secs = rec.getDurationMs() / 1000.0;
+			totalTimeSec += secs;
+			ArrayList<String> flaws = rec.getFlaws();
+			int decs = flaws == null ? 0 : flaws.size();
+			solverDepthSeries.add(i, rec.getDepth());
+			stepTimeSeries.add(i, secs);
+			stepAvgTimeSeries.add(i, totalTimeSec / i);
+			decisionCntSeries.add(i, decs);
+		}
 	}
 
 	@Override
@@ -78,9 +99,10 @@ public class StatisticsChartsView extends ViewPart implements SolverListener {
 		int stepCnt = model.getStepCount();
 		double secs = time / 1000.0;
 		totalTimeSec += secs;
-		ArrayList<String> flaws = model.getFlawsAtStep(stepCnt);
+		StepStatisticsRecord rec = model.getStepStatistics(stepCnt);
+		ArrayList<String> flaws = rec.getFlaws();
 		int decs = flaws == null ? 0 : flaws.size();
-		solverDepthSeries.add(stepCnt, model.getDepth());
+		solverDepthSeries.add(stepCnt, rec.getDepth());
 		stepTimeSeries.add(stepCnt, secs);
 		stepAvgTimeSeries.add(stepCnt, totalTimeSec / stepCnt);
 		decisionCntSeries.add(stepCnt, decs);

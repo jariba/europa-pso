@@ -23,6 +23,7 @@ import javax.swing.event.ListDataListener;
 import org.ops.ui.main.swing.EuropaInternalFrame;
 import org.ops.ui.solver.model.SolverAdapter;
 import org.ops.ui.solver.model.SolverModel;
+import org.ops.ui.solver.model.StepStatisticsRecord;
 
 /**
  * Panel for open decisions. This panel listens to SolverModel and gets all data
@@ -144,10 +145,11 @@ public class OpenDecisionsView extends EuropaInternalFrame {
 			step = currentStep;
 		currentStep = step;
 
-		StringBuffer buffer = solver.getDecisionAtStepAsHtml(step, null);
+		StepStatisticsRecord rec = solver.getStepStatistics(step);
+		StringBuffer buffer = rec.getDecisionAsHtml(null);
 		this.decisionMade.setText(buffer.toString());
 
-		ArrayList<String> open = solver.getFlawsAtStep(step);
+		ArrayList<String> open = rec.getFlaws();
 		this.openDecisions.setModel(new DecisionListModel(open));
 
 		stepFld.setText(String.valueOf(step));

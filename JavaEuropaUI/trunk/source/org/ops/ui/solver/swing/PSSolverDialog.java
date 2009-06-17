@@ -20,6 +20,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.ops.ui.main.swing.EuropaInternalFrame;
 import org.ops.ui.solver.model.SolverListener;
 import org.ops.ui.solver.model.SolverModel;
+import org.ops.ui.solver.model.StepStatisticsRecord;
 import org.ops.ui.solver.model.TimeFormatHelper;
 
 /**
@@ -187,9 +188,10 @@ public class PSSolverDialog extends EuropaInternalFrame implements
 		stepLabel.setText(Integer.toString(stepCnt));
 		double secs = time / 1000.0;
 		totalTimeSec += secs;
-		ArrayList<String> flaws = solver.getFlawsAtStep(stepCnt);
+		StepStatisticsRecord rec = solver.getStepStatistics(stepCnt);
+		ArrayList<String> flaws = rec.getFlaws();
 		int decs = flaws == null ? 0 : flaws.size();
-		solverDepthSeries.add(stepCnt, solver.getDepth());
+		solverDepthSeries.add(stepCnt, rec.getDepth());
 		stepTimeSeries.add(stepCnt, secs);
 		stepAvgTimeSeries.add(stepCnt, totalTimeSec / stepCnt);
 		decisionCntSeries.add(stepCnt, decs);
