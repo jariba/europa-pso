@@ -68,7 +68,7 @@ public class PSDesktop extends JFrame {
 		this.solverDialog = new PSSolverDialog(this.solverModel);
 		this.solverDialog.setVisible(true);
 		this.desktop.add(this.solverDialog);
-		
+
 		this.openDecisions = new OpenDecisionsView(this.solverModel);
 		this.desktop.add(this.openDecisions);
 
@@ -158,7 +158,7 @@ public class PSDesktop extends JFrame {
 		}
 
 		// loadFile(dataFile);
-		
+
 		solverModel = new SolverModel();
 		solverModel.configure(data, solverConfig, 0, 100);
 
@@ -172,6 +172,14 @@ public class PSDesktop extends JFrame {
 			solverModel = null;
 			log.log(Level.INFO, "Engine released");
 		}
+	}
+
+	private static File tryToSetFile(String kind, String name, File old) {
+		File f = new File(name);
+		if (f.exists())
+			return f;
+		System.err.println(kind + " file " + f + " is not found");
+		return old;
 	}
 
 	/**
@@ -188,17 +196,14 @@ public class PSDesktop extends JFrame {
 		File dataFile = null, solverConfig = null;
 		for (int i = 0; i < args.length; i++) {
 			if ("-config".equals(args[i])) {
-				File f = new File(args[++i]);
-				if (!f.exists())
-					System.err.println("Config file " + f + " is not found");
-				else
-					solverConfig = f;
+				solverConfig = tryToSetFile("Config", args[++i], solverConfig);
+			} else if ("-nddl".equals(args[i])) {
+				dataFile = tryToSetFile("NDDL", args[++i], dataFile);
 			} else {
-				File f = new File(args[i]);
-				if (!f.exists())
-					System.err.println("Nddl file " + f + " is not found");
+				if (dataFile == null)
+					dataFile = tryToSetFile("NDDL", args[i], dataFile);
 				else
-					dataFile = f;
+					solverConfig = tryToSetFile("Config", args[i], solverConfig);
 			}
 		}
 
