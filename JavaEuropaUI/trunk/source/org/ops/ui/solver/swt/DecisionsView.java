@@ -21,6 +21,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.ops.ui.main.swt.EuropaPlugin;
 import org.ops.ui.solver.model.SolverListener;
 import org.ops.ui.solver.model.SolverModel;
+import org.ops.ui.solver.model.StepStatisticsRecord;
 
 /**
  * SWT version of Open Decision dialog
@@ -210,12 +211,14 @@ public class DecisionsView extends ViewPart implements SolverListener {
 			step = currentStep;
 		currentStep = step;
 
+		StepStatisticsRecord rec = model.getStepStatistics(step);
+		
 		// Some widget to do HTML?
-		String buffer = model.getDecisionAtStepAsHtml(step, null).toString();
+		String buffer = rec.getDecisionAsHtml(null).toString();
 		buffer = buffer.replaceAll("<br/>", "");
 		decisionMade.setText(buffer);
 
-		ArrayList<String> open = model.getFlawsAtStep(step);
+		ArrayList<String> open = rec.getFlaws();
 		restViewer.setInput(open);
 
 		stepField.setText(String.valueOf(step));

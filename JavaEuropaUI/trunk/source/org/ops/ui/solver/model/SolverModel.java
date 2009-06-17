@@ -2,13 +2,11 @@ package org.ops.ui.solver.model;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import psengine.PSEngine;
 import psengine.PSSolver;
-import psengine.PSStringList;
 
 public class SolverModel {
 	/** Property name in the engine config: list of search paths for includes */
@@ -18,8 +16,8 @@ public class SolverModel {
 	private PSEngine engine = null;
 	private PSSolver solver = null;
 	private ArrayList<SolverListener> listeners = new ArrayList<SolverListener>();
-	private HashMap<Integer, String> decisionsMade = new HashMap<Integer, String>();
-	private HashMap<Integer, ArrayList<String>> flaws = new HashMap<Integer, ArrayList<String>>();
+
+	private ArrayList<StepStatisticsRecord> stepStatistics = new ArrayList<StepStatisticsRecord>();
 
 	public synchronized void configure(File file, File configFile,
 			int horizonStart, int horizonEnd) {
@@ -36,9 +34,8 @@ public class SolverModel {
 		this.setHorizon(horizonStart, horizonEnd);
 
 		// Initialize records
-		decisionsMade.clear();
-		flaws.clear();
-		saveStepInfo();
+		stepStatistics.clear();
+		stepStatistics.add(new StepStatisticsRecord(solver, 0));
 		for (SolverListener lnr : listeners)
 			lnr.solverStarted();
 	}
@@ -55,7 +52,7 @@ public class SolverModel {
 		for (SolverListener lnr : listeners)
 			lnr.solverStopped();
 	}
-	
+
 	/** @return true if the engine is up and running */
 	public boolean isConfigured() {
 		return engine != null;
@@ -111,20 +108,6 @@ public class SolverModel {
 		listeners.remove(lnr);
 	}
 
-	private void saveStepInfo() {
-		int step = solver.getStepCount();
-		String decision = solver.getLastExecutedDecision();
-		this.decisionsMade.put(step, decision);
-
-		ArrayList<String> list = new ArrayList<String>();
-		if (solver.hasFlaws()) {
-			PSStringList l = solver.getFlaws();
-			for (int j = 0; j < l.size(); j++)
-				list.add(l.get(j));
-		}
-		flaws.put(step, list);
-	}
-
 	/**
 	 * Make one step (assuming we can)
 	 * 
@@ -137,7 +120,9 @@ public class SolverModel {
 		long time = System.currentTimeMillis();
 		solver.step();
 		time -= System.currentTimeMillis();
-		saveStepInfo();
+		StepStatisticsRecord rec = new StepStatisticsRecord(solver, time);
+		assert (rec.getStep() == solver.getStepCount());
+		this.stepStatistics.add(rec);
 		for (SolverListener lnr : listeners)
 			lnr.afterStepping();
 		return time;
@@ -151,8 +136,10 @@ public class SolverModel {
 		while (canStep() && actual < times) {
 			long time = System.currentTimeMillis();
 			solver.step();
-			saveStepInfo();
 			time = System.currentTimeMillis() - time;
+			StepStatisticsRecord rec = new StepStatisticsRecord(solver, time);
+			assert (rec.getStep() == solver.getStepCount());
+			this.stepStatistics.add(rec);
 			actual++;
 			if (notifyEachStep)
 				for (SolverListener lnr : listeners)
@@ -163,34 +150,7 @@ public class SolverModel {
 		return actual;
 	}
 
-	public String getDecisionAtStep(int step) {
-		return this.decisionsMade.get(step);
-	}
-
-	public ArrayList<String> getFlawsAtStep(int step) {
-		return this.flaws.get(step);
-	}
-
-	public StringBuffer getDecisionAtStepAsHtml(int step, StringBuffer b) {
-		if (b == null)
-			b = new StringBuffer();
-		String decision = this.getDecisionAtStep(step);
-		if (decision == null || "".equals(decision)) {
-			b.append("No decision");
-			return b;
-		}
-
-		// Pull it apart
-		String[] parts = decision.split(":");
-
-		// Some better way to format it?
-		for (String s : parts)
-			b.append(s).append("<br/>\n");
-
-		return b;
-	}
-
-	public int getDepth() {
-		return solver.getDepth();
+	public StepStatisticsRecord getStepStatistics(int step) {
+		return this.stepStatistics.get(step);
 	}
 }
