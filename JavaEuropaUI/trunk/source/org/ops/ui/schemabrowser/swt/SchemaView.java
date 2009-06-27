@@ -26,11 +26,21 @@ public class SchemaView extends ViewPart {
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		// Parent class ignores memento, but can set some defaults
 		super.init(site);
+
 		SolverModel smodel = EuropaPlugin.getDefault().getSolverModel();
 		model = new SchemaSource(smodel.getEngine());
+
+		// For now reload schema only on engine start/stop. If schema changes as
+		// a result of stepping, will also need to update then. Not doing it
+		// now, because too lazy to restore tree expansion
 		smodel.addSolverListener(new SolverAdapter() {
 			@Override
 			public void solverStarted() {
+				reloadView();
+			}
+
+			@Override
+			public void solverStopped() {
 				reloadView();
 			}
 		});
@@ -41,7 +51,7 @@ public class SchemaView extends ViewPart {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		SchemaContentProvider cProvider = new SchemaContentProvider(model);
 		viewer.setContentProvider(cProvider);
-		viewer.setLabelProvider(new SchemaLabelProvider());
+		viewer.setLabelProvider(new SchemaLabelProvider(parent.getFont()));
 		viewer.setInput(cProvider.getRootNode());
 	}
 

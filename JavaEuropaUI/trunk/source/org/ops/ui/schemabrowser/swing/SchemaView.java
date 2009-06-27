@@ -32,6 +32,7 @@ public class SchemaView extends EuropaInternalFrame {
 		this.tree = new JTree(treeModel);
 		this.add(new JScrollPane(tree));
 		this.tree.setRootVisible(false);
+		this.tree.setCellRenderer(new SchemaNodeCellRenderer());
 	}
 
 	public void databaseReloaded() {
