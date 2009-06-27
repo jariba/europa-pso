@@ -1,8 +1,11 @@
 package org.ops.ui.schemabrowser.swing;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
+import java.util.ArrayList;
+
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 import org.ops.ui.schemabrowser.model.SchemaNode;
 import org.ops.ui.schemabrowser.model.SchemaSource;
@@ -12,28 +15,61 @@ import org.ops.ui.schemabrowser.model.SchemaSource;
  * 
  * @author Tatiana Kichkaylo
  */
-public class SchemaTreeModel extends DefaultTreeModel {
+public class SchemaTreeModel implements TreeModel {
 	private SchemaSource model;
+	private SchemaNode rootNode = new SchemaNode(SchemaNode.Type.CATEGORY,
+			"Root");
+	private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
 	public SchemaTreeModel(SchemaSource model) {
-		super(new DefaultMutableTreeNode("Root"));
 		this.model = model;
 		reloadFromSchema();
 	}
 
 	public void reloadFromSchema() {
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode) this.getRoot();
-		root.removeAllChildren();
+		rootNode.clear();
 
-		root.add(convertNode(model.getPredicatesNode()));
-		this.nodeStructureChanged(root);
+		rootNode.add(model.getObjectTypesNode());
+		TreeModelEvent event = new TreeModelEvent(this,
+				new Object[] { rootNode });
+		for (TreeModelListener lnr : this.listeners)
+			lnr.treeStructureChanged(event);
 	}
 
-	private MutableTreeNode convertNode(SchemaNode snode) {
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(snode
-				.getText());
-		for (SchemaNode child : snode.getChildren())
-			node.add(convertNode(child));
-		return node;
+	public SchemaNode getRoot() {
+		return rootNode;
+	}
+
+	public void addTreeModelListener(TreeModelListener lnr) {
+		if (!this.listeners.contains(lnr))
+			this.listeners.add(lnr);
+	}
+
+	public void removeTreeModelListener(TreeModelListener lnr) {
+		this.listeners.remove(lnr);
+	}
+
+	public SchemaNode getChild(Object node, int index) {
+		SchemaNode n = (SchemaNode) node;
+		return n.getChildren().get(index);
+	}
+
+	public int getChildCount(Object node) {
+		SchemaNode n = (SchemaNode) node;
+		return n.getChildren().size();
+	}
+
+	public int getIndexOfChild(Object parent, Object child) {
+		SchemaNode n = (SchemaNode) parent;
+		return n.getChildren().indexOf(child);
+	}
+
+	public boolean isLeaf(Object node) {
+		SchemaNode n = (SchemaNode) node;
+		return n.getChildren().isEmpty();
+	}
+
+	public void valueForPathChanged(TreePath path, Object newValue) {
+		// Should not be called for this model
 	}
 }

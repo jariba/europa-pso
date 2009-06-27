@@ -20,7 +20,7 @@ public class SchemaContentProvider implements ITreeContentProvider {
 
 	public SchemaContentProvider(SchemaSource model) {
 		this.model = model;
-		this.rootNode = new SchemaNode("Schema Root");
+		this.rootNode = new SchemaNode(SchemaNode.Type.CATEGORY, "Schema Root");
 	}
 
 	public void dispose() {
@@ -67,6 +67,6 @@ public class SchemaContentProvider implements ITreeContentProvider {
 		rootNode.clear();
 		if (!model.isInitialized())
 			return;
-		rootNode.add(model.getPredicatesNode());
+		rootNode.add(model.getObjectTypesNode());
 	}
 }
