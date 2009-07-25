@@ -15,6 +15,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 public class NddlEditor extends TextEditor {
 
 	private ColorManager colorManager;
+	private NddlContentProvider provider;
 	private NddlOutlinePage outlinePage;
 
 	public NddlEditor() {
@@ -22,6 +23,7 @@ public class NddlEditor extends TextEditor {
 		colorManager = new ColorManager();
 		setSourceViewerConfiguration(new NddlConfiguration(colorManager));
 		setDocumentProvider(new NddlDocumentProvider());
+		provider = new NddlContentProvider(this);
 		// setEditorContextMenuId("org.ops.ui.NddlEditorScope");
 	}
 
@@ -58,6 +60,10 @@ public class NddlEditor extends TextEditor {
 		}
 		return super.getAdapter(required);
 	}
+	
+	public NddlContentProvider getNddlContentProvider() {
+		return provider;
+	}
 
 	public NddlOutlinePage getOutlinePage() {
 		return outlinePage;
@@ -79,7 +85,6 @@ public class NddlEditor extends TextEditor {
 	@Override
 	protected void editorSaved() {
 		super.editorSaved();
-		if (outlinePage != null)
-			outlinePage.reload();
+		provider.reload(getFile());
 	}
 }

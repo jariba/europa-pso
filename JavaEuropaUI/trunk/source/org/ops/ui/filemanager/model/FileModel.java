@@ -1,6 +1,7 @@
 package org.ops.ui.filemanager.model;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import psengine.PSEngine;
 
@@ -11,20 +12,27 @@ import psengine.PSEngine;
  * 
  * @author Tatiana Kichkaylo
  */
-public abstract class FileModel {
+public class FileModel {
 	/** Property name in the engine config: list of search paths for includes */
 	private static final String INCLUDE_PATH = "nddl.includePath";
 
+	/** List of errors */
+	private ArrayList<ErrorRecord> errors = new ArrayList<ErrorRecord>();
+
+	/** Root AST node */
+	private AstNode rootNode;
+
 	/** Make this file purely abstract */
 	private FileModel() {
+		rootNode = new AstNode();
 	}
 
 	/** AST parser does not actually load data into the database */
-	public static AstNode getAstTree(String fname) {
+	public static FileModel getModel(String fname) {
 		PSEngine engine = PSEngine.makeInstance();
 		engine.start();
 		String oldPath = engine.getConfig().getProperty(INCLUDE_PATH);
-		AstNode root = new AstNode();
+		FileModel model = new FileModel();
 		String astString = null;
 		try {
 			File file = new File(fname);
@@ -39,18 +47,65 @@ public abstract class FileModel {
 			engine.getConfig().setProperty(INCLUDE_PATH, newPath);
 			astString = engine.executeScript("nddl-ast", fname, true);
 			// System.out.println(astString);
-			int offset = root.readTreeFrom(astString, 0);
+
+			// Pick out error messages and stuff
+			int offset = 0;
+			while (offset < astString.length()
+					&& (astString.charAt(offset) == 'L' || astString
+							.charAt(offset) == 'P')) {
+				offset = model.readError(astString, offset + 1);
+			}
+
+			// Should be looking at AST now
+			String tmp = astString.substring(offset, offset + 4);
+			assert ("AST ".equals(tmp));
+			offset += 4;
+			offset = model.rootNode.readTreeFrom(astString, offset);
 			// root.print(System.out, "");
 			assert (offset == astString.length());
-
-			return root;
 		} catch (Exception e) {
 			System.err.println("Cannot parse NDDL file?\nAST string: "
 					+ astString + "\n" + e);
-			root = null;
+			model = null;
 		}
 		engine.shutdown();
 		engine.delete();
-		return root;
+		return model;
+	}
+
+	/** Looking at the error structure right after the marker */
+	private int readError(String string, int offset) {
+		if (string.charAt(offset) != '\"')
+			throw new IllegalStateException("At " + offset
+					+ " expected \", got " + string.charAt(offset));
+
+		int end = string.indexOf("\":", offset + 1);
+		String fileName = string.substring(offset + 1, end);
+		offset = end + 2;
+
+		end = string.indexOf(":", offset);
+		int line = new Integer(string.substring(offset, end));
+		offset = end + 1;
+		end = string.indexOf(":", offset);
+		int off = new Integer(string.substring(offset, end));
+		offset = end + 1;
+		end = string.indexOf(" ", offset);
+		int len = new Integer(string.substring(offset, end));
+		offset = end + 1;
+
+		end = string.indexOf("$\n", offset + 1);
+		String message = string.substring(offset, end);
+		offset = end + 2;
+
+		this.errors.add(new ErrorRecord(fileName, line, off, len, message));
+		return offset;
+	}
+
+	public AstNode getAST() {
+		return rootNode;
+	}
+
+	public ArrayList<ErrorRecord> getErrors() {
+		return errors;
 	}
 }

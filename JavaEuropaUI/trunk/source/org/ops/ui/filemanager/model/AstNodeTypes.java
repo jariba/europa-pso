@@ -12,6 +12,7 @@ public interface AstNodeTypes {
 	public static final int VARIABLE = 11;
 	public static final int CONSTRUCTOR = 5;
 	public static final int PREDICATE_KEYWORD = 46;
+	public static final int PREDICATE_INSTANCE = 9;
 	public static final int CONSTRAINT_INSTANTIATION = 4;
 	public static final int LBRACE = 29;
 	public static final int LPAREN = 37;
@@ -21,6 +22,9 @@ public interface AstNodeTypes {
 	public static final int FACT_KEYWORD = 54;
 	public static final int ACTIVATE_KEYWORD = 95;
 	public static final int CLOSE_KEYWORD = 99;
+	public static final int EQUAL_CHAR = 39; // '='
+	public static final int DOT_CHAR = 42; // '.'
+	public static final int STRING = 13; // all literals, including numbers
 
 	/*
 	EXPONENT=24
@@ -28,7 +32,6 @@ public interface AstNodeTypes {
 	CONSTRUCTOR_INVOCATION=6
 	OCTAL_ESC=20
 	INCLUDE=17
-	PREDICATE_INSTANCE=9
 	COMMENT=26
 	LINE_COMMENT=27
 	INT=14
@@ -41,7 +44,6 @@ public interface AstNodeTypes {
 	DIGIT=22
 	UNICODE_ESC=19
 	HEX_DIGIT=21
-	STRING=13
 	'contained_by'=64
 	'paralleled_by'=78
 	'=='=59
@@ -55,7 +57,6 @@ public interface AstNodeTypes {
 	'ends_after'=69
 	'+'=84
 	'specify'=91
-	'.'=42
 	'starts'=79
 	'rejectable'=52
 	'contains'=65
@@ -86,7 +87,6 @@ public interface AstNodeTypes {
 	'meets'=75
 	'merge'=96
 	'-inff'=88
-	'='=39
 	'constraint'=100
 	'ends_after_start'=70
 	'bool'=50

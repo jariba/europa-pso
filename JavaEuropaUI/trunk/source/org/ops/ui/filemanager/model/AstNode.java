@@ -42,7 +42,7 @@ public class AstNode {
 		// Token type
 		checkChar(astString, end + 1, ':');
 		offset = end + 2; // skip :
-		end = nextStop(astString, offset, ':', ' ');
+		end = nextStop(astString, offset, ':', ' ', ')');
 		type = new Integer(astString.substring(offset, end));
 
 		// If it was not :, we are done
@@ -74,14 +74,14 @@ public class AstNode {
 	}
 
 	/** Minimum of the two positions, unless one of them is -1 */
-	public int nextStop(String str, int offset, char c1, char c2) {
-		int p1 = str.indexOf(c1, offset);
-		int p2 = str.indexOf(c2, offset);
-		if (p1 < 0)
-			p1 = str.length() - 1;
-		if (p2 < 0)
-			return p1;
-		return (p1 < p2) ? p1 : p2;
+	public int nextStop(String str, int offset, char... cs) {
+		int p = str.length() - 1;
+		for (char c : cs) {
+			int p1 = str.indexOf(c, offset);
+			if (p1 >=0 && p1 < p)
+				p = p1;
+		}
+		return p;
 	}
 
 	public int readTreeFrom(String astString, int offset) {
