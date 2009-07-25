@@ -15,12 +15,12 @@ public class NddlScanner extends BufferedRuleBasedScanner {
 			"int", "float", "boolean", "bool", "string", "true", "false",
 			"inf", "inff", "constraint", "extends", "numeric", "class",
 			"predicate", "this", "rejectable", "goal", "super", "if", "else",
-			"foreach", "in", "new", "filter",
+			"foreach", "in", "new", "filter", "fact",
 
 			"specify", "free", "constrain", "merge", "activate", "reset",
 			"reject", "cancel", "close" };
 
-	// "fact", "Operator"};
+	// "Operator"};
 
 	/*
 	 * temporalRelation: "any" | "ends" | "starts" | "equals" | "equal" |

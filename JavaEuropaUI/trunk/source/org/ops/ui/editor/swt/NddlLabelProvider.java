@@ -17,7 +17,7 @@ public class NddlLabelProvider extends LabelProvider {
 
 	private final String[] names = { "class.png", "class_forward.png",
 			"enum.png", "var.png", "pred.png", "cons.png", "fact.png",
-			"constr.png", "service.png" };
+			"constr.png", "goal.png" };
 
 	private Image[] images = null;
 
@@ -27,19 +27,29 @@ public class NddlLabelProvider extends LabelProvider {
 		AstNode node = (AstNode) object;
 		AstNode child = null;
 		if (!node.getChildren().isEmpty())
-			child = node.getChildren().get(0);
+			child = node.getSafe(0);
 		AstNode second = null;
 
 		switch (node.getType()) {
 		case AstNodeTypes.ENUM_KEYWORD:
 		case AstNodeTypes.CLASS_KEYWORD:
-		case AstNodeTypes.VARIABLE:
-			// For variable 2nd child is type, 3rd child is modifiers - use it
 			assert (child != null) : "No name?";
 			assert (child.getType() == AstNodeTypes.IDENT);
 			return child.getText();
+		case AstNodeTypes.VARIABLE:
+			assert (child != null) : "No variable name?";
+			// First child gives type
+			assert (child.getType() == AstNodeTypes.IDENT);
+			// The second child may be an identifier, or =. In the latter case
+			// the variable name is the first child of = (the 2nd is the 
+			// expression)
+			second = node.getSafe(1);
+			if (second.getType() == AstNodeTypes.EQUAL_CHAR)
+				second = second.getSafe(0);
+			assert (second.getType() == 0 || second.getType() == AstNodeTypes.IDENT);
+			return child.getText() + " " + second.getText();
 		case AstNodeTypes.DCOLON:
-			second = node.getChildren().get(1);
+			second = node.getSafe(1);
 			assert (child.getType() == AstNodeTypes.IDENT);
 			assert (second.getType() == AstNodeTypes.IDENT);
 			return child.getText() + "::" + second.getText();
@@ -50,13 +60,18 @@ public class NddlLabelProvider extends LabelProvider {
 			// node.getChildren().get(1));
 		case AstNodeTypes.CLOSE_KEYWORD:
 			return "close";
-		case AstNodeTypes.GOAL_KEYWORD:
-			return "goal" + buildFunctionArgs(node, 0);
 		case AstNodeTypes.ACTIVATE_KEYWORD:
 			return child.getText() + ".activate()";
+		case AstNodeTypes.GOAL_KEYWORD:
+			// return "goal" + buildFunctionArgs(node, 0);
 		case AstNodeTypes.FACT_KEYWORD:
-			second = child.getChildren().get(0);
-			return second.getText() + second.getChildren().get(0).getText();
+			// the only child is (, it's only child is PREDICATE_INSTANCE,
+			// which has two children: a . and a token name
+			assert (child.getType() == AstNodeTypes.LPAREN);
+			second = child.getSafe(0);
+			assert (second.getType() == AstNodeTypes.PREDICATE_INSTANCE);
+			assert (second.getChildren().size() == 2);
+			return argText(second.getSafe(0)) + " " + second.getSafe(1).getText();
 		default:
 			return node.getType() + " " + node.toString();
 		}
@@ -75,16 +90,28 @@ public class NddlLabelProvider extends LabelProvider {
 			index = 0;
 			child = parent.getSafe(index);
 			if (child != null) {
-				b.append(child.getText());
+				b.append(argText(child));
 				child = parent.getSafe(++index);
 			}
 			while (child != null) {
-				b.append(", ").append(child.getText());
+				b.append(", ").append(argText(child));
 				child = parent.getSafe(++index);
 			}
 		}
 		b.append(")");
 		return b.toString();
+	}
+
+	private String argText(AstNode node) {
+		if (node.getType() == AstNodeTypes.DOT_CHAR) {
+			// The first child is token name, the second is the field
+			return node.getSafe(0).getText() + "." + node.getSafe(1).getText();
+		}
+		if (node.getType() == AstNodeTypes.VARIABLE)
+			return getText(node);
+		assert (node.getType() == AstNodeTypes.STRING) : "Unexpected arg node type "
+				+ node.getType();
+		return node.getText();
 	}
 
 	private void loadImages() {

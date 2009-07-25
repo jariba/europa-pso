@@ -18,13 +18,10 @@ public class NddlOutlinePage extends ContentOutlinePage {
 
 	private NddlEditor editor;
 
-	private NddlContentProvider provider;
-
 	private AstNode input = null;
 
 	public NddlOutlinePage(NddlEditor nddlEditor) {
 		this.editor = nddlEditor;
-		this.provider = new NddlContentProvider(this);
 	}
 
 	/**
@@ -38,7 +35,8 @@ public class NddlOutlinePage extends ContentOutlinePage {
 	@Override
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-
+		NddlContentProvider provider = editor.getNddlContentProvider();
+		
 		// initialize the tree viewers
 		TreeViewer viewer = getTreeViewer();
 		viewer.setContentProvider(provider);
@@ -52,21 +50,18 @@ public class NddlOutlinePage extends ContentOutlinePage {
 		if (this.input != null)
 			viewer.setInput(this.input);
 		else
-			provider.reload(getFileName());
+			provider.reload(editor.getFile());
 	}
 
-	public void reload() {
-		provider.reload(getFileName());
-	}
-	
 	class FileViewerFilter extends ViewerFilter {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
 			if (element instanceof AstNode) {
 				AstNode n = (AstNode) element;
+				// No file name is either error (type=0) or something like NDDL
 				if (n.getFileName() == null)
-					return true;
+					return n.getType() != 0;
 				return n.getFileName().endsWith(getFileName());
 			}
 			return false;
@@ -111,7 +106,7 @@ public class NddlOutlinePage extends ContentOutlinePage {
 		}
 	}
 
-	public String getFileName() {
+	private String getFileName() {
 		return editor.getFile().getLocation().toString();
 	}
 

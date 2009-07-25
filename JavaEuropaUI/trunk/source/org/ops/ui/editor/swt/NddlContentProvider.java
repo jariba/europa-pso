@@ -1,23 +1,33 @@
 package org.ops.ui.editor.swt;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.ops.ui.filemanager.model.AstNode;
 import org.ops.ui.filemanager.model.AstNodeTypes;
+import org.ops.ui.filemanager.model.ErrorRecord;
 import org.ops.ui.filemanager.model.FileModel;
+import org.ops.ui.main.swt.EuropaPlugin;
 
 public class NddlContentProvider implements IStructuredContentProvider,
 		ITreeContentProvider {
 
 	private HashSet<Integer> leafTypes = new HashSet<Integer>();
 
-	private NddlOutlinePage outlinePage;
+	private NddlEditor editor;
 
-	public NddlContentProvider(NddlOutlinePage nddlOutlinePage) {
-		this.outlinePage = nddlOutlinePage;
+	public NddlContentProvider(NddlEditor nddlEditor) {
+		this.editor = nddlEditor;
 
 		leafTypes.add(AstNodeTypes.ENUM_KEYWORD);
 		leafTypes.add(AstNodeTypes.DCOLON); // operator definition
@@ -56,30 +66,19 @@ public class NddlContentProvider implements IStructuredContentProvider,
 		if (leafTypes.contains(p.getType()))
 			return new Object[0];
 
-		// File name filtering happens in filter on the outline
-//		if (!filename.equals(p.getFileName()))
-//			return new Object[0];
-
 		// Forward class mention is a leaf, but not a definition
 		if (p.getType() == AstNodeTypes.CLASS_KEYWORD) {
 			if (p.getChildren().get(1).getType() == AstNodeTypes.SEMICOLON)
 				return new Object[0];
 			// Roll until hit {, which starts all members
-			for (int i = 2; i < p.getChildren().size(); i++) 
+			for (int i = 2; i < p.getChildren().size(); i++)
 				if (p.getChildren().get(i).getType() == AstNodeTypes.LBRACE) {
 					// Skip one level, go straight to children in {}
 					p = p.getChildren().get(i);
 					break;
-			}
+				}
 		}
 
-		// Filtering by file happens outside
-//		ArrayList<AstNode> children = new ArrayList<AstNode>();
-//		for (AstNode child : p.getChildren()) {
-//			if (filename.equals(child.getFileName()))
-//				children.add(child);
-//		}
-//		return children.toArray();
 		return p.getChildren().toArray();
 	}
 
@@ -89,8 +88,84 @@ public class NddlContentProvider implements IStructuredContentProvider,
 		return getChildren(parent).length > 0;
 	}
 
-	public void reload(String fileName) {
-		AstNode root = FileModel.getAstTree(fileName);
-		outlinePage.update(root);		
+	public void reload(IFile file) {
+		String fileName = file.getLocation().toString();
+		FileModel fm = FileModel.getModel(fileName);
+
+		// Update outline, if any
+		if (editor.getOutlinePage() != null)
+			editor.getOutlinePage().update(fm.getAST());
+
+		// Update error markers on the editor
+		IResource resource = (IResource) editor.getEditorInput().getAdapter(
+				IResource.class);
+		if (resource != null) {
+			IDocument document = editor.getDocumentProvider().getDocument(
+					editor.getEditorInput());
+			clearMarkers(resource);
+
+			// Report our own records as is, accumulate counters for includes
+			HashMap<String, Integer> parents = new HashMap<String, Integer>();
+			for (ErrorRecord rec : fm.getErrors()) {
+				String fname = rec.getFileName();
+				if (fileName.equals(fname))
+					createErrorMarker(resource, document, rec);
+				else if (fname != null) {
+					Integer count = parents.get(fname);
+					if (count == null)
+						count = 1;
+					else
+						count = count + 1;
+					parents.put(fname, count);
+				}
+			}
+
+			// Report included errors as one per file
+			for (String name : parents.keySet())
+				try {
+					Map<String, ? super Object> map = new HashMap<String, Object>();
+					map.put(IMarker.MESSAGE, parents.get(name)
+							+ " error in included file " + name);
+					map.put(IMarker.SEVERITY, Integer
+							.valueOf(IMarker.SEVERITY_ERROR));
+					MarkerUtilities
+							.createMarker(resource, map, IMarker.PROBLEM);
+				} catch (Exception ce) {
+					EuropaPlugin.getDefault().logError("Creating marker", ce);
+				}
+		}
 	}
+
+	private void clearMarkers(IResource resource) {
+		try {
+			resource.deleteMarkers(IMarker.PROBLEM, false,
+					IResource.DEPTH_INFINITE);
+		} catch (CoreException e) {
+			EuropaPlugin.getDefault().logError("Deleting error markers", e);
+		}
+	}
+
+	private void createErrorMarker(IResource resource, IDocument document,
+			ErrorRecord record) {
+		try {
+			Map<String, ? super Object> map = new HashMap<String, Object>();
+			map.put(IMarker.LINE_NUMBER, record.getLine());
+			map.put(IMarker.MESSAGE, record.getMessage());
+
+			int off = document.getLineOffset(record.getLine() - 1);
+			off += record.getOffset(); // offset in line
+			int len = record.getLength();
+			if (len == 0)
+				len = 1;
+			map.put(IMarker.CHAR_START, off);
+			map.put(IMarker.CHAR_END, off + len);
+
+			map.put(IMarker.SEVERITY, Integer.valueOf(IMarker.SEVERITY_ERROR));
+
+			MarkerUtilities.createMarker(resource, map, IMarker.PROBLEM);
+		} catch (Exception ce) {
+			EuropaPlugin.getDefault().logError("Creating marker", ce);
+		}
+	}
+
 }
