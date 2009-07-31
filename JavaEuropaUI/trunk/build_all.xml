@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="EuropaJavaUI" default="build.site" basedir=".">
+	
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<!-- Better way to get to Europa? -->
+	    	<pathelement location="${basedir}/../Europa/ext/ant/lib/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+
+	<property file="${basedir}/build.properties" />
+	<property file="${basedir}/plugin.properties" />
+	<property name="srcdir" value="${basedir}/source" />
+	<!-- Output directory for the distribution, also works as update site -->
+	<property name="distdir" value="${basedir}/dist" />
+    <property name="tempdir" value="${basedir}/build.temp" />
+	<property name="site.source" value="${basedir}/site.source" />
+	<property name="basename" value="org.ops.ui.europaplugin" />
+	<property name="swingname" value="org.ops.ui.europaswing" />
+	
+	<target name="build.site" 
+		depends="clean.site, build.update.jar, build.swing, build.feature"
+		description="Prepare exportable update site">
+		<delete dir="${tempdir}" />
+		<copy todir="${distdir}">
+			<fileset dir="${site.source}">
+				<include name="index.html"/>
+				<include name="site.xml" />
+				<include name="web/*"/>
+			</fileset>
+		</copy>
+		<replaceregexp file="${distdir}/site.xml"
+            match="VERSION" replace="${bundle.version}" byline="true"/>
+	</target>
+
+	<target name="init" description="Get proper slash and Eclipse location for the platform. Needed to get to Eclipse jars">
+        <if>
+            <equals arg1="${file.separator}" arg2="/"/>
+          	<then>
+            	<property name="safe.slash" value="/"/>
+          	</then>
+        </if>
+		<property name="safe.slash" value="\\" />
+		<!-- For some reason, ant.core.lib is set even when eclipse.home is not -->
+		<propertyregex property="eclipse.home" input="${ant.core.lib}"
+			regexp="(.*)${safe.slash}plugins${safe.slash}.*" replace="\1" />
+	</target>
+	
+	<target name="clean.site" description="Delete dist and temp directories">
+		<delete dir="${tempdir}" />
+		<delete dir="${distdir}"/>
+		<mkdir dir="${distdir}/plugins"/>
+		<mkdir dir="${distdir}/features"/>
+		<mkdir dir="${distdir}/swing"/>
+	</target>
+	
+
+	<target name="build.update.jar" depends="compile, copy.support" 
+		description="Build the plug-in jar for an update site.">
+		<replaceregexp 
+			file="${tempdir}/META-INF/MANIFEST.MF"
+            match="0\.0\.0\.0" replace="${bundle.version}" byline="true"/>
+		<jar destfile="${distdir}/plugins/${basename}_${bundle.version}.jar" 
+			basedir="${tempdir}" 
+			manifest="${tempdir}/META-INF/MANIFEST.MF">
+			<exclude name="**/swing/*" />
+			<exclude name="**/swing" />
+		</jar>
+	</target>
+
+	<target name="compile" depends="init"
+		description="Compile all source code into temp directory">
+		<delete dir="${tempdir}"/>
+		<mkdir dir="${tempdir}"/>
+		<fileset id="eclipse.plugins" dir="${eclipse.home}/plugins">
+			<include name="*.jar"/>
+		</fileset>
+		<echo message="Eclipse HOME = ${eclipse.home}" />
+		<path id="compile.classpath">
+			<fileset refid="eclipse.plugins"/>
+			<fileset dir="lib">
+				<include name="*.jar"/>
+			</fileset>
+		</path>
+		<!-- compile the source code -->
+		<javac destdir="${tempdir}" includeAntRuntime="no" 
+			source="1.5" target="1.5">
+				<classpath refid="compile.classpath" />
+				<src path="${srcdir}"/>
+		</javac>
+		<!-- Copy necessary resources -->
+		<copy todir="${tempdir}" failonerror="true" overwrite="false">
+			<fileset dir="${srcdir}">
+				<!-- If sources are not wanted, uncomment the following line -->
+				<!-- exclude name="**/*.java"/ -->
+				<exclude name="**/package.htm*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copy.support" description="Copy supporting files into temp dir">
+		<copy todir="${tempdir}" failonerror="true" overwrite="false">
+			<fileset dir="${basedir}">
+				<include name="plugin.xml"/>
+				<include name="plugin.properties"/>
+				<include name="META-INF/"/>
+				<include name="icons/"/>
+				<include name="lib/*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="build.feature">
+		<copy todir="${tempdir}">
+			<fileset dir="${site.source}">
+				<include name="feature.xml"/>
+			</fileset>
+		</copy>
+		<replaceregexp file="${tempdir}/feature.xml"
+            match="VERSION" replace="${bundle.version}" byline="true"/>
+		<jar destfile="${distdir}/features/${basename}_${bundle.version}.jar" 
+			basedir="${tempdir}">
+			<include name="feature.xml"/>
+		</jar>
+	</target>
+	
+	<target name="build.swing" depends="compile" description="Create Swing JAR">
+		<jar destfile="${distdir}/swing/${swingname}_${bundle.version}.jar" 
+			basedir="${tempdir}">
+			<include name="**/model/*"/>
+			<include name="**/swing/*"/>
+		</jar>
+	</target>
+	
+</project>
