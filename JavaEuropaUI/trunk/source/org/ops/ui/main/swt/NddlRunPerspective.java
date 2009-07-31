@@ -4,7 +4,6 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.jdt.ui.JavaUI;
 import org.ops.ui.schemabrowser.swt.SchemaView;
 import org.ops.ui.solver.swt.DecisionsView;
 import org.ops.ui.solver.swt.SolverView;
@@ -59,7 +58,6 @@ public class NddlRunPerspective implements IPerspectiveFactory {
 	}
 
 	private void addPerspectiveShortcuts() {
-		factory.addPerspectiveShortcut(JavaUI.ID_PERSPECTIVE);
 		factory
 				.addPerspectiveShortcut("org.eclipse.team.ui.TeamSynchronizingPerspective"); // NON-NLS-1
 		factory
