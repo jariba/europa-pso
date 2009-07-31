@@ -22,9 +22,16 @@ The root package is *org.ops.ui*. I got this name from the Java code in Europa. 
 
 The next level after the root says what the package is about. The last level is one of *model* (common UI-free code), *swing*, *swt*. In most cases, all three will be present. 
 
-== Running it ==
+== Building it and installing it ==
 
-Eventually I will add a *build.xml* file to nicely jar the standalone Swing code and the plugin. The current absence of this file should send the message that the code is pre-alpha, and if you are adventurous enough to run it blame yourself for any negative consequences. 
+In the root of the project there is *build_all.xml*. The name is changed from the standard *build.xml* to avoid collision with Eclipse PDE. The default target in this Ant build file is *build.site*. It produces a directory called *dist* in the root of the project (added to svn:ignore). This directory contains the structure of an update site for Eclipse with an additional folder for the Swing jar. You can point your Eclipse Update Manager to this local directory to install the plug-in.
+
+*Note*: the plug-in expects *EUROPA_HOME* to be set and Europa shared libraries to be in *LD_LIBRARY_PATH* or *PATH* (for Windows). 
+
+Since the Java UI is dependent on Europa runtime, the following versioning schema is used. Release of the JavaUI will have the same version number as Europa proper. Intermediate releases include the number the most recent Europa release followed by the build number with which the Java code was tested. The Java code should work with all later versions of the Europa runtime, at least in theory. The only place where the version is mentioned is *build.properties* (bundle.version). The build script substitutes this number to all necessary places, including file names and contents of the manifest.
+
+When we are ready to release, we can include just jars or use the directory structure for the update site. The only problem with the latter approach that I see is that Eclipse update manager will not force update of the Europa runtime. 
+
 
 === Swing version ===
 
