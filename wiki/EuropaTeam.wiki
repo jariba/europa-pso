@@ -2,7 +2,7 @@
 
 = EUROPA Team =
 
-EUROPA is the result of many years of research and development, many people have made significant contributions to EUROPA over the years as detailed [wiki:WhatIsEuropa#Acknowledgements here].
+EUROPA is the result of many years of research and development, many people have made significant contributions to EUROPA over the years as detailed [WhatIsEuropa#Acknowledgements here].
 
 The current EUROPA team at NASA Ames consists of : 
  * [http://ti.arc.nasa.gov/people/javier Javier Barreiro]
