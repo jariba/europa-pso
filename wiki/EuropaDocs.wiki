@@ -1,0 +1,58 @@
+#summary One-sentence summary of this page.
+
+= EUROPA Documentation =
+This page provides in-depth documentation on understanding and using EUROPA. If you don't know where to start, or just want a quick overview of how to use EUROPA, take a look at the [QuickStart EUROPA Quick Start].  You can also find an overview of the EUROPA framework and philosophy at [EuropaBackground Europa Background].
+
+=== Architecture ===
+ * [ArchitectureOverview Overview]
+ * Propagation Services
+ * Plan Database Services
+ * Modeling Services
+ * Problem Solving Services
+ * Ancillary Modules
+
+=== EUROPA Components ===
+ * NDDL:
+   * [NDDLReference NDDL Language Reference]
+   * [NddlCheatSheet NDDL CheatSheet]
+   * [NDDLGrammar Complete NDDL Grammar]
+   * [NDDLParser NDDL Parser/Compiler]
+ * Constraints:
+   * [ConstraintLibraryReference Constraint Library Reference]
+   * [CustomConstraints Example: Adding a Constraint]
+ * Resources:
+   * [EuropaResources How to Use and Configure Resources]
+   * [ResourceSearchNotes Notes on Using Resource Search Operators]
+   * [StateResourceExample Example: Customizing Profile to Fake a Unary State Resource]
+ * Solver:
+   * [SolverReference Built-in Solver Description]
+   * [PlannerCfg Built-in Solver Configuration]
+   * [SolverExtensions Extending the built-in Solver]
+   * [BuildingOwnSolver Building your own Solver]
+ * API
+   * [PSEngine] is the Client API and the recommended way to embed EUROPA into and application.  This interface is also available in Java (we use [http://www.swig.org SWIG] to do the mapping automatically).
+   * Doxygen documentation for all the EUROPA classes can be found [https://babelfish.arc.nasa.gov/trac/europa/doxygen/ here]. 
+ * Listener
+    * Adding a Listener
+ * [CwithJava Calling your custom C++ code from Java]
+
+=== Development Tools ===
+ * [EmbeddingEUROPA How to embed EUROPA in an application] 
+ * [makeproject]:  Automatically create all the pieces for a new project.
+ * High-level visualization and debugging:
+   * [PSUIDocs PSDesktop]:  Java app to drive (and visualize) EUROPA interactively.
+   * !PlanWorks:  Java app to visualize plan details over time. ''!PlanWorks has been deprecated as of EUROPA-2.2''
+     * [PlanworksTutorial PlanWorks Tutorial]
+     * [PlanWorksCfg PlanWorks.cfg Reference]
+ * Low-level debugging:
+   * [DebugOutputManagement Debug Output Management]
+   * Timelines
+   * The Token Network
+   * The Constraint Network
+   * Metric Resources
+   * Common Debugging Scenarios 
+
+=== Miscellaneous ===
+ * [DocGlossary Glossary]
+ * [DocReferences References] 
+ * [EuropaPublications EUROPA Publications]
