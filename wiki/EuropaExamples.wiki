@@ -1,0 +1,17 @@
+#summary Examples
+
+= EUROPA Examples =
+
+A simple EUROPA example is described on the [QuickStart Quick Start] page.  Here are some more advanced examples that can serve as starting points for your own model, or just to learn more about what EUROPA can do in different domains.  Some of these examples are described in depth; the code for all of these and other examples can be found under the $EUROPA_HOME/examples directory. You can also browse them online at the EUROPA repository, [source:/PLASMA/trunk/examples here]. You can build them and run them yourself just by running 'ant' (to run the Java version) or 'make' (to run the C++ version) in the corresponding directory.
+
+=== Constraint Programming ===
+    * *NQueens* : One of the [http://en.wikipedia.org/wiki/Eight_queens_puzzle workhorses] of constraint programming. This problem consists of placing N queens on a chessboard in such a way that they don't attack each other. [ExampleNQueens More...]
+
+=== Scheduling ===
+    * *RCPSP* (Resource Constrained Project Scheduling Problem) : A well known problem in the OR community that consists of scheduling a set of activities with temporal and resource constraints.  [ExampleRCPSP More...]
+
+=== Planning ===
+   * *Shopping*:  One way to implement the shopping example discussed in Russel and Norvig's AI textbook ([DocReferences Russel/Norvig 1995]).  They describe the problem as "Get a quart of milk and a bunch of bananas and a variable-speed cordless drill" and refer to it throughout chapter 11 (Planning). [ExampleShopping More...]
+   * *Blocks World* : One of the [http://en.wikipedia.org/wiki/Blocks_world workhorses] of early AI planners. This problem consists of building one or more vertical stacks of cubes (blocks) which sit on a table, using a robotic arm. [ExampleBlocksWorld More...]
+   * *Rover*: An in-depth tutorial describes how to design and implement a robotic (Mars Rover) planning problem.  Many of the example snippets on the [NDDLReference NDDL Reference] page originate in this example. [ExampleRover More...]
+  
