@@ -1,0 +1,29 @@
+#summary Automated Builds
+
+= Automated Builds =
+[http://bitten.edgewall.org/ Bitten] is our continuous integration server, whenever changes are committed to the EUROPA repository, a new build on the different platforms supported is kicked off.
+
+At a high level, here is what the autobuild does :
+  * Build the different variants (debug,optimized,profile) and library types (static,shared)
+  * Run all regresion tests
+  * Create binary distribution
+  * Install binary distribution
+  * Test makeproject tool and examples against binary distribution
+
+The results of the autobuild are displayed at all times on the [/build Build Status] tab above.
+
+=== Canon Systems ===
+|| ''' OS ''' || ''' OS Version ''' || ''' Machine Name ''' || ''' CPU ''' || ''' Memory ''' || ''' Avg Auto-Build Duration  (Includes tests and all variants) ''' || ''' OS Details ''' ||
+|| Linux || Red Hat Enterprise Linux WS release 4 (Nahant Update 7) || selene.arc.nasa.gov || Intel(R) Xeon(TM) 2 CPUs @ 3.40GHz each || 1024MB RAM || ~35 min || Linux selene.arc.nasa.gov 2.6.9-42.0.3.ELsmp !#1 SMP Mon Sep 25 [17:28:02 17:28:02] EDT 2006 i686 i686 i386 GNU/Linux ||
+|| Mac OS[[BR]] || Mac OS X Version 10.5.6 (9G55) || irock.arc.nasa.gov || PowerPC G5 (2.2) 2 CPUs @ 2 GHz each || 1536MB RAM || ~60 min || Darwin imagebot 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:39:01 PST 2008; root:xnu-1228.9.59~1/RELEASE_PPC Power Macintosh ||
+|| Solaris || Solaris 10 || farnsworth.arc.nasa.gov || UltraSPARC-III 2 CPUs @ 600Mhz each || 2048MB RAM || ~3 hours || SunOS farnsworth.arc.nasa.gov 5.10 Generic_118833-33 sun4u sparc SUNW,Sun-Blade-1000 ||
+||Windows||Windows XP SP2 + cygwin||flight.arc.nasa.gov||||||~110 min||||
+
+=== Creating A New Autobuild ===
+
+You'll need to set up a new bitten slave and ask Javier to register it with the bitten master.
+
+TODO: provide instructions and example config files for bitten slave.
+
+=== Doxygen docs ===
+Doxygen docs are available for tagged releases and generated daily for the trunk.  They are linked to the wiki (see the [/doxygen 'Doxygen'] tab above) using this [http://trac-hacks.org/wiki/DoxygenPlugin plug-in]. See this [wiki:DoxygenGeneration note] for more details.
