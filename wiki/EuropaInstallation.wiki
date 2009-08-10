@@ -3,7 +3,7 @@
 
 '''Note''' : Starting with EUROPA 2.1.2 (available since Sept 2, 2008),  EUROPA is provided in a binary distribution, to which this installation page applies.
 
-For older versions, you will have to build EUROPA yourself as described [wiki:BuildingEuropa here].
+For older versions, you will have to build EUROPA yourself as described [BuildingEuropa here].
 
 
 == Supported Platforms ==
@@ -17,7 +17,7 @@ EUROPA is currently supported on Linux, Mac OS, Windows and Solaris. A platform 
 
 == Installing Europa ==
 
-After downloading the appropriate EUROPA distribution for your system (available [wiki:EuropaDownload here]), just unzip and  set the EUROPA_HOME environment variable.
+After downloading the appropriate EUROPA distribution for your system (available [EuropaDownload here]), just unzip and  set the EUROPA_HOME environment variable.
 For example, assuming that you have the EUROPA distribution in your ~/tmp directory and want to install EUROPA in your ~/europa directory, using bash you would do (modify appropriately for your os+shell)  :
 
 {{{
@@ -29,13 +29,13 @@ For example, assuming that you have the EUROPA distribution in your ~/tmp direct
 }}}
 
 
-You are now ready to use EUROPA. If you are new to EUROPA, you are ready to create your first EUROPA project, as described in the [wiki:QuickStart Quick Start]
+You are now ready to use EUROPA. If you are new to EUROPA, you are ready to create your first EUROPA project, as described in the [QuickStart Quick Start]
 
 == Static Libraries ==
 
 The basic EUROPA distribution contains shared libraries only, static libraries are bundled in a separate zip file (they would otherwise more than double the size of the EUROPA distribution).
 
-If you want to use static libraries, get the appropriate zip file from the [wiki:EuropaDownload download page]  then unzip it under your $EUROPA_HOME directory, the libraries will be put in the $EUROPA_HOME/lib directory.
+If you want to use static libraries, get the appropriate zip file from the [EuropaDownload download page]  then unzip it under your $EUROPA_HOME directory, the libraries will be put in the $EUROPA_HOME/lib directory.
 
 To continue the example above, this is how you would add the corresponding static libraries to your EUROPA installation :
 
