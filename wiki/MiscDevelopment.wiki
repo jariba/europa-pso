@@ -1,0 +1,19 @@
+#summary Developer Notes
+
+= Miscellaneous Notes =
+ * [CommitProcedure Commit Procedure]
+ * See [CodingPractices Coding Practices] for a brief outline of common practices.  
+ * See [StudyGroup Study Group] for past and future topics for our EUROPA meetings.
+
+
+= Developer Pages =
+The area that follows is intended to be a sandbox for the EUROPA developers, where they can scribble notes, wish-lists, to-do lists, jot down feature or implementation ideas, etc.
+ * [NotebookJavierBarreiro Javier Barreiro]
+ * [NotebookMatthewBoyce Matthew Boyce]
+ * [NotebookMichaelIatauro Michael Iatauro]
+ * [NotebookTristanSmith Tristan Smith]
+ * [NotebookPengDai Peng Dai]
+ * [NotebookMarkRoberts Mark Roberts]
+
+----
+[DocImgs Images] (referenced throughout the documentation)
