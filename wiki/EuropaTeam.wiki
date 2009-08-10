@@ -1,0 +1,20 @@
+#summary About the EUROPA Team
+
+= EUROPA Team =
+
+EUROPA is the result of many years of research and development, many people have made significant contributions to EUROPA over the years as detailed [wiki:WhatIsEuropa#Acknowledgements here].
+
+The current EUROPA team at NASA Ames consists of : 
+ * [http://ti.arc.nasa.gov/people/javier Javier Barreiro]
+ * Matthew Boyce
+ * Michael Iatauro
+ * [http://ti.arc.nasa.gov/profile/tsmith/ Tristan Smith] 
+
+Current external contributors :
+ * [http://www.isi.edu/~tatiana Tatiana Kichkaylo]
+ * [http://www.willowgarage.com Conor McGann]
+ * [http://www.cs.colostate.edu/~mroberts Mark Roberts]
+
+If you would like to share your experience using EUROPA or have any suggestions for making the software or the documentation easier to use, feel free to contact us at:
+
+'''europa-users at googlegroups.com'''
