@@ -3,7 +3,7 @@
 
 '''Note''' : Starting with EUROPA 2.1.2 (available since Sept 2, 2008),  EUROPA is provided in a binary distribution, to which this installation page applies.
 
-For older versions, you will have to build EUROPA yourself as described [wiki:EuropaDevelopment here].
+For older versions, you will have to build EUROPA yourself as described [wiki:BuildingEuropa here].
 
 
 == Supported Platforms ==
@@ -43,4 +43,3 @@ To continue the example above, this is how you would add the corresponding stati
 % cd $EUROPA_HOME
 % unzip ~/tmp/europa-2.1.2-linux-static-libs.zip 
 }}}
-
