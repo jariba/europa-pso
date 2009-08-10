@@ -1,0 +1,11 @@
+#summary Background
+
+=== Background Concepts ===
+    * [BakPlanningScheduling Planning and Scheduling]
+    * [BakConstraintSatisfaction Constraint Satisfaction Problems]
+    * [BakSTP Simple Temporal Problems (Networks)]
+
+=== Europa Overview ===
+    * [BakClassical Comparison With Classical Planners]
+    * [PlanningApproach The Pieces: Plan Representation] 
+    * [BakProblemSolving Solving a Problem:  Automated Planning]
