@@ -1,7 +1,9 @@
+#summary EUROPA history and acknowledgements
 = What is EUROPA =
 
 == Overview ==
-EUROPA (Extensible Universal Remote Operations Planning Architecture) is a class library and tool set for building planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm. Constraint-based Temporal Planning^1^ (and Scheduling) is a paradigm of planning based on an explicit notion of time and a deep commitment to a constraint-based formulation of planning problems. [[BR]] This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications including :
+EUROPA (Extensible Universal Remote Operations Planning Architecture) is a class library and tool set for building planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm. Constraint-based Temporal Planning^1^ (and Scheduling) is a paradigm of planning based on an explicit notion of time and a deep commitment to a constraint-based formulation of planning problems. 
+This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications including :
 
  * Observation scheduling for the Hubble Telescope ([wiki:DocReferences Muscettola 1998])
  * Autonomous control of DS-1 ([wiki:DocReferences ??])
@@ -53,9 +55,9 @@ EUROPA is the result of many years of research, development and deployment of co
     * [http://www.ru.is/ari Ari Jonsson] led the implemenation of the first version of EUROPA. Ari's team included [http://ti.arc.nasa.gov/people/frank/ Jeremy Frank], Paul Morris and Will Edgington, who all made valuable contributions. 
     * [http://www.mbari.org/staff/cmcgann/ Conor McGann] led the implementation of EUROPA 2, which is a further evolution of this line of work, targeted mainly at making the technology easier to use, more efficient, easier to integrate and easier to extend. EUROPA 2's main contributors were Andrew Bachmann, Tania Bedrax-Weiss,  Matthew Boyce, Patrick Daley, Will Edgington, Jeremy Frank, Michael Iatauro, Peter Jarvis, Ari Jonsson, Paul Morris, Sailesh Ramakrishnan and Will Taylor.
     * [http://ti.arc.nasa.gov/people/javier/ Javier Barreiro] took over as the EUROPA team lead in the Fall of 2006 and has been working on it since then, improving EUROPA's technology and packaging. Javier's main in collaborators at NASA Ames are Michael Iatauro, Matthew Boyce,  [http://ti.arc.nasa.gov/profile/tsmith/ Tristan Smith] and [http://ti.arc.nasa.gov/people/de2smith/ David Smith].
-    * EUROPA was approved to be released under a NASA open source license in October of 2007.[[BR]] 
+    * EUROPA was approved to be released under a NASA open source license in October of 2007.
 
-Funding for this work has been provided by the NASA Intelligent Systems and Collaborative Decision Systems Programs. [[BR]] Much of this wiki documentation is derived from ''How to Solve It: Problem Solving in EUROPA 2.0'' by Conor !McGann, which in turn borrowed heavily from the EUROPA user guide written by Ari Jonsson an Jeremy Frank.
+Funding for this work has been provided by the NASA Intelligent Systems and Collaborative Decision Systems Programs.  Much of this wiki documentation is derived from ''How to Solve It: Problem Solving in EUROPA 2.0'' by Conor !McGann, which in turn borrowed heavily from the EUROPA user guide written by Ari Jonsson an Jeremy Frank.
 
 ----
 1. EUROPA can be used for planning and scheduling, and is typically used for both.  For convenience, we usually refer to planning exclusively, presuming it includes scheduling.
