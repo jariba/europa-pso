@@ -67,7 +67,15 @@ There are two choices to installing MinGW.  The first is in Cygwin by adding  th
 
 A cleaner way is to install the MinGW toolkit directly into c:/MinGW and then set the MinGW path before the Cygwin path (assuming you installed Cygwin as well for the toolset).  See the MinGW [http://www.mingw.org/wiki/FAQ FAQ] for details.  The relevant places to change the path are in the windows environment, the .bashrc, and possibly the .cshrc.
 
-_add more notes here about modifying paths and confirming that mingw is the default gcc_
+Change the window user environment PATH variable to include "c:\mingw\bin;c:\cygwin\bin".  The correct path can be verified by running a windows shell and typing 'which gcc'.  You should see that the gcc mingw is the default gcc.
+
+For the cygwin bash shell (the default shell for Europa scripts), you will need to modify /etc/profile such that:
+
+ * PATH=c:\mingw\bin:....:$PATH
+
+Verify the bash shell by running at the bash prompt 'which gcc'.  As before, you should see that the mingw gcc is being called.
+
+If you use an alternate shell (such as csh or tcsh) you may need to adjust the PATH appropriately.  
 
 Once the paths are correct, you can follow the instructions below for installing pthreads.   
 
