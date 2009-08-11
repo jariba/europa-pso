@@ -71,11 +71,16 @@ Change the window user environment PATH variable to include "c:\mingw\bin;c:\cyg
 
 For the cygwin bash shell (the default shell for Europa scripts), you will need to modify /etc/profile such that:
 
- * PATH=c:\mingw\bin:....:$PATH
+ * PATH=c:\MinGW\bin:....:$PATH
+
+and the path in your HOME\.bashrc equals
+
+ * export PATH=/cygdrive/c/MinGW/bin:$PATH
+ 
 
 Verify the bash shell by running at the bash prompt 'which gcc'.  As before, you should see that the mingw gcc is being called.
 
-If you use an alternate shell (such as csh or tcsh) you may need to adjust the PATH appropriately.  
+If you use an alternate shell (such as csh or tcsh) you may need to adjust the PATH appropriately.  Verify as before using 'which gcc'.
 
 Once the paths are correct, you can follow the instructions below for installing pthreads.   
 
