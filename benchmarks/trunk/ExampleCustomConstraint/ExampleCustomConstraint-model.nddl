@@ -1,7 +1,5 @@
 #include "Plasma.nddl"
 
- constraint example(x)  { x <: numeric }
-
 /**
  * @brief Place holder class with a single predicate
  */
