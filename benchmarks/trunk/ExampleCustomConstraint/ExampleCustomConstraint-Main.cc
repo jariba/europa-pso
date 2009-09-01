@@ -9,8 +9,6 @@
 #include "PSEngine.hh"
 #include "Debug.hh"
 #include "PlanDatabase.hh"
-#include "EuropaEngine.hh"
-#include "Rule.hh"
 
 #include "ModuleExampleCustomConstraint.hh"
 #include "ExampleCustomConstraintCustomCode.hh"
@@ -54,13 +52,14 @@ bool solve(const char* plannerConfig,
         PSEngine* engine = PSEngine::makeInstance();
         engine->start();
         engine->addModule((new ModuleExampleCustomConstraint()));
-        engine->executeScript("nddl-xml",txSource,true/*isFile*/);
+        engine->executeScript("nddl",txSource,true/*isFile*/);
 
         PSSolver* solver = engine->createSolver(plannerConfig);
         runSolver(solver,startHorizon,endHorizon,maxSteps);
 
-        std::cout << "x lower bound: " << engine->getVariableByName("x")->getLowerBound() << std::endl;
-  	    std::cout << "x upper bound: " << engine->getVariableByName("x")->getUpperBound() << std::endl;
+        PSVariable* v = engine->getVariableByName("x");
+        std::cout << "x lower bound: " << v->getLowerBound() << std::endl;
+        std::cout << "x upper bound: " << v->getUpperBound() << std::endl;
 
         delete solver;
 
