@@ -3,7 +3,7 @@
 using namespace std;
 
 // Put any C++ project-specific custom code here
-StateProfile::StateProfile(const PlanDatabaseId db, const SAVH::FVDetectorId flawDetector, const double initCapacityLb, const double initCapacityUb)
+StateProfile::StateProfile(const PlanDatabaseId db, const FVDetectorId flawDetector, const double initCapacityLb, const double initCapacityUb)
 : TimetableProfile(db, flawDetector, initCapacityLb, initCapacityUb) {}
 
 
