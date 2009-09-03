@@ -1,9 +1,6 @@
 #include "StringData.nddl"
 #include "Resources.nddl"
 
-// avoiding warnings:
-constraint LessThan(a, b) { a <: numeric && b <: numeric }
-
 /**
  *
  */

@@ -1,8 +1,8 @@
 #ifndef _H_ExampleStateResourceCustomCode
 #define _H_ExampleStateResourceCustomCode
 
-#include "SAVH_ResourceDefs.hh"
-#include "SAVH_TimetableProfile.hh"
+#include "ResourceDefs.hh"
+#include "TimetableProfile.hh"
 
 using namespace EUROPA;
 
@@ -27,9 +27,9 @@ using namespace EUROPA;
  */
 
 
-class StateProfile : public SAVH::TimetableProfile {
+class StateProfile : public TimetableProfile {
 public:
-	StateProfile(const PlanDatabaseId db, const SAVH::FVDetectorId flawDetector,
+	StateProfile(const PlanDatabaseId db, const FVDetectorId flawDetector,
 			const double initCapacityLb = 0, const double initCapacityUb = 0);
 
 protected:

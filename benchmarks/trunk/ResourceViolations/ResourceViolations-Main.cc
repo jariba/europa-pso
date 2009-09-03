@@ -9,8 +9,6 @@
 #include "PSEngine.hh"
 #include "Debug.hh"
 #include "PlanDatabase.hh"
-#include "EuropaEngine.hh"
-#include "Rule.hh"
 
 #include "ModuleResourceViolations.hh"
 #include "ResourceViolationsCustomCode.hh"
@@ -58,7 +56,7 @@ bool solve(const char* plannerConfig,
           engine->start();
           engine->addModule((new ModuleResourceViolations()));
           engine->setAllowViolations(true);
-          engine->executeScript("nddl-xml",txSource,true/*isFile*/);
+          engine->executeScript("nddl",txSource,true/*isFile*/);
 
           PSSolver* solver = engine->createSolver(plannerConfig);
           runSolver(solver,startHorizon,endHorizon,maxSteps);

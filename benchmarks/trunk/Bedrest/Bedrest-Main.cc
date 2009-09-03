@@ -9,8 +9,6 @@
 #include "PSEngine.hh"
 #include "Debug.hh"
 #include "PlanDatabase.hh"
-#include "EuropaEngine.hh"
-#include "Rule.hh"
 
 #include "ModuleBedrest.hh"
 #include "BedrestCustomCode.hh"
@@ -54,7 +52,7 @@ bool solve(const char* plannerConfig,
         PSEngine* engine = PSEngine::makeInstance();
         engine->start();
         engine->addModule((new ModuleBedrest()));
-        engine->executeScript("nddl-xml",txSource,true/*isFile*/);
+        engine->executeScript("nddl",txSource,true/*isFile*/);
 
         PSSolver* solver = engine->createSolver(plannerConfig);
         runSolver(solver,startHorizon,endHorizon,maxSteps);
