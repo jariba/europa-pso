@@ -12,13 +12,14 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.ops.ui.editor.model.OutlineNode;
 import org.ops.ui.filemanager.model.AstNode;
 
 public class NddlOutlinePage extends ContentOutlinePage {
 
 	private NddlEditor editor;
 
-	private AstNode input = null;
+	private OutlineNode input = null;
 
 	public NddlOutlinePage(NddlEditor nddlEditor) {
 		this.editor = nddlEditor;
@@ -57,18 +58,18 @@ public class NddlOutlinePage extends ContentOutlinePage {
 		@Override
 		public boolean select(Viewer viewer, Object parentElement,
 				Object element) {
-			if (element instanceof AstNode) {
-				AstNode n = (AstNode) element;
+			if (element instanceof OutlineNode) {
+				OutlineNode n = (OutlineNode) element;
 				// No file name is either error (type=0) or something like NDDL
 				if (n.getFileName() == null)
-					return n.getType() != 0;
+					return n.getType() != null;
 				return n.getFileName().endsWith(getFileName());
 			}
 			return false;
 		}
 	}
 
-	public void update(AstNode input) {
+	public void update(OutlineNode input) {
 		this.input = input;
 
 		TreeViewer viewer = getTreeViewer();
@@ -123,12 +124,12 @@ public class NddlOutlinePage extends ContentOutlinePage {
 		if (selection.isEmpty()) {
 			editor.resetHighlightRange();
 		} else {
-			AstNode node = (AstNode) ((IStructuredSelection) selection)
+			OutlineNode node = (OutlineNode) ((IStructuredSelection) selection)
 					.getFirstElement();
 			IDocument doc = editor.getDocumentProvider().getDocument(
 					editor.getEditorInput());
 
-			Position position = computePosition(node, doc);
+			Position position = computePosition(node.getAst(), doc);
 			if (position != null) {
 				try {
 					editor.setHighlightRange(position.getOffset(), position

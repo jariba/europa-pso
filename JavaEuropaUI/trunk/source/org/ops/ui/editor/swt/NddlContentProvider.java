@@ -1,7 +1,6 @@
 package org.ops.ui.editor.swt;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -13,8 +12,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.texteditor.MarkerUtilities;
+import org.ops.ui.editor.model.OutlineNode;
 import org.ops.ui.filemanager.model.AstNode;
-import org.ops.ui.filemanager.model.AstNodeTypes;
 import org.ops.ui.filemanager.model.ErrorRecord;
 import org.ops.ui.filemanager.model.FileModel;
 import org.ops.ui.main.swt.EuropaPlugin;
@@ -22,22 +21,10 @@ import org.ops.ui.main.swt.EuropaPlugin;
 public class NddlContentProvider implements IStructuredContentProvider,
 		ITreeContentProvider {
 
-	private HashSet<Integer> leafTypes = new HashSet<Integer>();
-
 	private NddlEditor editor;
 
 	public NddlContentProvider(NddlEditor nddlEditor) {
 		this.editor = nddlEditor;
-
-		leafTypes.add(AstNodeTypes.ENUM_KEYWORD);
-		leafTypes.add(AstNodeTypes.DCOLON); // operator definition
-		leafTypes.add(AstNodeTypes.VARIABLE);
-		leafTypes.add(AstNodeTypes.CONSTRUCTOR);
-		leafTypes.add(AstNodeTypes.PREDICATE_KEYWORD);
-		leafTypes.add(AstNodeTypes.GOAL_KEYWORD);
-		leafTypes.add(AstNodeTypes.CONSTRAINT_INSTANTIATION);
-		leafTypes.add(AstNodeTypes.ACTIVATE_KEYWORD);
-		leafTypes.add(AstNodeTypes.FACT_KEYWORD);
 	}
 
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -51,41 +38,22 @@ public class NddlContentProvider implements IStructuredContentProvider,
 	}
 
 	public AstNode getParent(Object child) {
-		if (child instanceof AstNode) {
-			System.out.println("getParent for AstNode " + child);
+		if (child instanceof OutlineNode) {
+			System.out.println("getParent for OutlineNode " + child);
 		}
 		return null;
 	}
 
 	public Object[] getChildren(Object parent) {
-		if (!(parent instanceof AstNode))
+		if (!(parent instanceof OutlineNode))
 			return new Object[0];
-		AstNode p = (AstNode) parent;
-
-		// Leaf-level nodes. Label provider may still dig deeper
-		if (leafTypes.contains(p.getType()))
-			return new Object[0];
-
-		// Forward class mention is a leaf, but not a definition
-		if (p.getType() == AstNodeTypes.CLASS_KEYWORD) {
-			if (p.getChildren().get(1).getType() == AstNodeTypes.SEMICOLON)
-				return new Object[0];
-			// Roll until hit {, which starts all members
-			for (int i = 2; i < p.getChildren().size(); i++)
-				if (p.getChildren().get(i).getType() == AstNodeTypes.LBRACE) {
-					// Skip one level, go straight to children in {}
-					p = p.getChildren().get(i);
-					break;
-				}
-		}
-
-		return p.getChildren().toArray();
+		return ((OutlineNode) parent).getChildren().toArray();
 	}
 
 	public boolean hasChildren(Object parent) {
-		if (!(parent instanceof AstNode))
+		if (!(parent instanceof OutlineNode))
 			return false;
-		return getChildren(parent).length > 0;
+		return !((OutlineNode) parent).getChildren().isEmpty();
 	}
 
 	public void reload(IFile file) {
@@ -94,7 +62,7 @@ public class NddlContentProvider implements IStructuredContentProvider,
 
 		// Update outline, if any
 		if (editor.getOutlinePage() != null)
-			editor.getOutlinePage().update(fm.getAST());
+			editor.getOutlinePage().update(OutlineNode.makeTree(fm.getAST()));
 
 		// Update error markers on the editor
 		IResource resource = (IResource) editor.getEditorInput().getAdapter(
@@ -167,5 +135,4 @@ public class NddlContentProvider implements IStructuredContentProvider,
 			EuropaPlugin.getDefault().logError("Creating marker", ce);
 		}
 	}
-
 }

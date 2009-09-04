@@ -37,6 +37,16 @@ public class AstNode {
 		int end = astString.indexOf('\"', offset);
 		if (end < 0)
 			throw new IllegalStateException("No closing \" after " + offset);
+
+		// Special case: string literals get double quotes
+		if (end == offset && astString.charAt(end + 1) != ':') {
+			end = astString.indexOf('\"', offset + 1);
+			if (end < 0)
+				throw new IllegalStateException("No closing \" after " + offset);
+			// Check for double quote at the end
+			if (astString.charAt(end + 1) == '\"')
+				end++;
+		}
 		text = astString.substring(offset, end);
 
 		// Token type
@@ -78,7 +88,7 @@ public class AstNode {
 		int p = str.length() - 1;
 		for (char c : cs) {
 			int p1 = str.indexOf(c, offset);
-			if (p1 >=0 && p1 < p)
+			if (p1 >= 0 && p1 < p)
 				p = p1;
 		}
 		return p;
@@ -102,7 +112,7 @@ public class AstNode {
 			offset++;
 
 		// if no children, this is it
-		if (!hasChildren) 
+		if (!hasChildren)
 			return offset;
 
 		// Read children
@@ -178,7 +188,9 @@ public class AstNode {
 
 	public void print(PrintStream out, String prefix) {
 		out.println(prefix + this);
+		if (!children.isEmpty())
+			prefix = prefix + "  ";
 		for (AstNode child : children)
-			child.print(out, prefix + "  ");
+			child.print(out, prefix);
 	}
 }
