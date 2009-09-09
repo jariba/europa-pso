@@ -2,21 +2,21 @@
 
 = Adding a Constraint to EUROPA =
 
-A new project automatically includes its own module that is loaded into the EUROPA engine and stub C++ files to hold custom code (see [wiki:makeproject]).  Therefore, extending EUROPA components simply requires C++ code be added to those existing files. Consider the Example project [source:/benchmarks/trunk/ExampleCustomConstraint here], which can be downloaded with:
+A new project automatically includes its own module that is loaded into the EUROPA engine and stub C++ files to hold custom code (see [wiki:makeproject]).  Therefore, extending EUROPA components simply requires C++ code be added to those existing files. Consider the Example project [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint here], which can be downloaded with:
 {{{
 svn co http://europa-pso.googlecode.com/svn/benchmarks/tags/EUROPA-2.2/ExampleCustomConstraint ExampleCustomConstraint
 }}}
 
 We have added an '!ExampleConstraint' that restricts a variable to have integer bounds.  To create and use the constraint involved these steps:
 
- 1. Declare and define the constraint in [source:/benchmarks/trunk/ExampleCustomConstraint/ExampleCustomConstraintCustomCode.cc ExampleCustomConstraintCustomCode.hh] and [source:/benchmarks/trunk/ExampleCustomConstraint/ExampleCustomConstraintCustomCode.cc ExampleCustomConstraintCustomCode.cc].
- 1. Register the constraint. In [source:/benchmarks/trunk/ExampleCustomConstraint/ModuleExampleCustomConstraint.cc ModuleExampleCustomConstraint.cc]:
+ 1. Declare and define the constraint in [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint/ExampleCustomConstraintCustomCode.hh ExampleCustomConstraintCustomCode.hh] and [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint/ExampleCustomConstraintCustomCode.cc ExampleCustomConstraintCustomCode.cc].
+ 1. Register the constraint. In [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint/ModuleExampleCustomConstraint.cc ModuleExampleCustomConstraint.cc]:
     {{{
 	  CESchema* schema = (CESchema*)engine->getComponent("CESchema");
 
 	  REGISTER_CONSTRAINT(schema, ExampleConstraint, "example", "Default");
     }}}
- 1. Use the constraint.  In [source:/benchmarks/trunk/ExampleCustomConstraint/ExampleCustomConstraint-initial-state.nddl ExampleCustomConstraint-initial-state.nddl]:
+ 1. Use the constraint.  In [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint/ExampleCustomConstraint-initial-state.nddl ExampleCustomConstraint-initial-state.nddl]:
     {{{
     float x = [0.5, 3.5];
     example(x);  // will be constrained to [1, 3];
