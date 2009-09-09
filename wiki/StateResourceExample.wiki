@@ -1,0 +1,55 @@
+#summary How to fake a binary state resource using custom code
+
+= Faking a State Resource in EUROPA =
+
+While we hope to get a truly generic version of state resources included in EUROPA (see Possible New Features at bottom of [wiki:EuropaResources this page]), this page describes:
+ a. How a unary resource can be faked easily using the existing framework, and
+ b. How profiles can be subclassed to get different behavior.
+
+== Overview ==
+
+For a description of how we fake a unary state resource (ie a resource that can be 'on' or 'off' and has certain things that can require it to be on), see the comments in [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResourceCustomCode.hh ExampleBooleanStateResourceCustomCode.hh].
+
+== Example Implementation ==
+
+A new project automatically includes its own module that is loaded into the EUROPA engine and stub C++ files to hold custom code (see [wiki:makeproject]).  Therefore, extending EUROPA components simply requires C++ code be added to those existing files. Consider the !ExampleBooleanStateResource project [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleBooleanStateResource here], which can be downloaded with:
+{{{
+svn co http://europa-pso.googlecode.com/svn/benchmarks/tags/EUROPA-2.2/ExampleBooleanStateResource ExampleBooleanStateResource
+}}}
+
+We have added an '!ExampleConstraint' that restricts a variable to have integer bounds.  To create and use the constraint involved these steps:
+
+ 1. Declare and define the '!StateProfile' in [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResourceCustomCode.hh ExampleBooleanStateResourceCustomCode.hh] and [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResourceCustomCode.cc ExampleBooleanStateResourceCustomCode.cc].
+ 1. Register the !StateProfile. In [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ModuleExampleBooleanStateResource.cc ModuleExampleBooleanStateResource.cc]:
+    {{{
+      FactoryMgr* pfm = (FactoryMgr*)engine->getComponent("ProfileFactoryMgr");
+      REGISTER_PROFILE(pfm, StateProfile, StateProfile);
+    }}}
+ 1. Create a !StateResource class in NDDL that extends Reservoir, and, most importantly, sets 'profileType' to '!StateProfile'.  In [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResource-model.nddl ExampleBooleanStateResource-model.nddl], notice:
+
+{{{
+   class StateResource extends Reservoir {
+	string profileType;
+
+	StateResource()
+	{
+		super(0.0 ,0.0, 10.0); // initial, lower_limit, upper_limit
+		profileType = "StateProfile";
+	}
+   } 
+}}}
+ 1.  Create a class that contains the !StateResource and has predicates to turn it off and on, as well as a predicate to indicate the state is required.  See [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResource-model.nddl ExampleBooleanStateResource-model.nddl].
+ 1.  Create an example initial state to illustrate the desired behavior.  See [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResource-initial-state.nddl ExampleBooleanStateResource-initial-state.nddl].
+
+NOTES:
+
+ 1.  To get the desired behavior, the quantity used for 'STATE_COND_TRUE' in  [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResourceCustomCode.cc ExampleBooleanStateResourceCustomCode.cc] must match the quantity consumed and produced by the turnOn and turnOff predicates in [https://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResource-model.nddl ExampleBooleanStateResource-model.nddl].  We use 10 for each to illustrate behavior, but in practice a much bigger number should be used; it must be larger than the total number of tokens at any given time that might require the state to be on.
+ 1.  To see the results of the above example, run 'ant.'  You will see the following profile, which shows:
+    a. The 'turnOn' at time 0 makes the level start at 10.
+    a. A second 'turnOn' at time 1 makes no difference.
+    a. Three 'require' tokens make the level dip below 10, while they require the state.
+    a. A 'turnOff' at time 10 makes the level drop to 0.  If there was still a 'require' at this point, there would be a flaw, and the solver would fail to find a solution.
+    a. A second 'turnOff' at time 12 makes no difference.
+    a. A final 'turnOn' at time 14 sets the level back to 10.
+
+http://europa-pso.googlecode.com/svn/wiki/images/LaunchConfiguration.png
