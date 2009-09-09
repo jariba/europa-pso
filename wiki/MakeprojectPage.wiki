@@ -50,4 +50,4 @@ To run the C++ project :
 % more RUN_MyProject-planner_g_rt.MyProject-initial-state.xml.PlannerConfig.xml.output
 }}}
 
-You can run an optimized version by using the -sVARIANTS=OPTIMIZED option for jam, or specify any of the other build options described [BuildingEuropa#BuildOptions here].
+You can run an optimized version by using the -sVARIANTS=OPTIMIZED option for jam, or specify any of the other build options described [BuildingEuropa#Build_Options here].
