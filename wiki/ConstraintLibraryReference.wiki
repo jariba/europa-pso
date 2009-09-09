@@ -95,12 +95,12 @@ These constraints are likely to be used for set comparisons etc.  Note, however,
  * *Test Constraints*:  The value of one variable (usually _a_) can flip the constraint enforced among remaining variables.
 
 || * Constraint* || *Syntax* || * Description * || *Variable Types* ||
-|| cond!AllDiff || cond!AllDiff(a,b,c,...)|| If a, then b != c && b != d && c != d && ... [[BR]]If not a, then !(b != c && b != d && c != d && ...)|| a bool, the rest comparable ||
-|| condEq || condEq(a,b,c,...) || If a, then b == c && b == d && c == d && ... [[BR]]If not a, then !(b == c && b == d && c == d && ...)|| a bool, the rest comparable ||
-|| !CondEqualSum || cond!EqualSum(a,b,c,d,...) || If a is true, then b = c + d ... [[BR]] If a is false, b != c + d ...|| Numeric intervals ||
-|| testEQ || testEQ(a,b,c) || If a, then b == c [[BR]]If not a, then b != c || a numeric, b and c comparable ||
-|| testLEQ || testLEQ(a,b,c) || If a, then b <= c [[BR]]If not a, then b > c || Numeric ||
-|| !TestLessThan || !TestLessThan(a,b,c) || If a, then b < c [[BR]]If not a, then b >= c || Numeric ||
+|| cond!AllDiff || cond!AllDiff(a,b,c,...)|| If a, then b != c && b != d && c != d && ... If not a, then !(b != c && b != d && c != d && ...)|| a bool, the rest comparable ||
+|| condEq || condEq(a,b,c,...) || If a, then b == c && b == d && c == d && ... If not a, then !(b == c && b == d && c == d && ...)|| a bool, the rest comparable ||
+|| !CondEqualSum || cond!EqualSum(a,b,c,d,...) || If a is true, then b = c + d ...  If a is false, b != c + d ...|| Numeric intervals ||
+|| testEQ || testEQ(a,b,c) || If a, then b == c If not a, then b != c || a numeric, b and c comparable ||
+|| testLEQ || testLEQ(a,b,c) || If a, then b <= c If not a, then b > c || Numeric ||
+|| !TestLessThan || !TestLessThan(a,b,c) || If a, then b < c If not a, then b >= c || Numeric ||
 
 == Object Hierarchy Constraints ==
 *NOTE*:  Unlike most constraints on this page, which are imposed on variables, these constraints are imposed on objects and tokens.
@@ -124,7 +124,7 @@ This ensures that the Navigator object used for the At token and the Instrument 
 
 == Miscellaneous Constraints ==
 || * Constraint* || *Syntax* || * Description * || *Variable Types* ||
-|| UNARY ||NA ||Restrict a variable's domain:  given a variable and a domain, intersect them.[[BR]]Note that this constraint is only available internally and not exposed in nddl.[[BR]] || Anything ||
+|| UNARY ||NA ||Restrict a variable's domain:  given a variable and a domain, intersect them.Note that this constraint is only available internally and not exposed in nddl. || Anything ||
 || neg || neg(a,b) || a >=0, b<=0, a+b==0 || Numeric intervals ||
 || or || or(a,b,...) || At least one of the variables must be true || Numeric ||
 || absVal || absVal(a,b) || a.lb >= 0, a.ub = max(abs(b.lb), abs(b.ub)), b.lb >= -a.lb, b.ub <= a.ub || Numeric ||
