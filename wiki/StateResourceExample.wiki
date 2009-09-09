@@ -1,14 +1,14 @@
 #summary How to fake a binary state resource using custom code
 
-= Faking a State Resource in EUROPA =
+= Faking a Binary State Resource in EUROPA =
 
 While we hope to get a truly generic version of state resources included in EUROPA (see Possible New Features at bottom of [EuropaResources this page]), this page describes:
- a. How a unary resource can be faked easily using the existing framework, and
+ a. How a binary resource (ie something that can be on/off) can be faked easily using the existing framework, and
  b. How profiles can be subclassed to get different behavior.
 
 == Overview ==
 
-For a description of how we fake a unary state resource (ie a resource that can be 'on' or 'off' and has certain things that can require it to be on), see the comments in [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResourceCustomCode.hh ExampleBooleanStateResourceCustomCode.hh].
+For a description of how we fake a binary state resource (ie a resource that can be 'on' or 'off' and has certain things that can require it to be on), see the comments in [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleBooleanStateResource/ExampleBooleanStateResourceCustomCode.hh ExampleBooleanStateResourceCustomCode.hh].
 
 == Example Implementation ==
 
