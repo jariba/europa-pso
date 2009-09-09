@@ -1,5 +1,4 @@
 #summary Overview of constraints in NDDL
-[[PageOutline(1-3,Constraint Library Reference,pullout)]]
 
 = Constraints in NDDL =
 The table that follows overviews the built-in constraints, available in NDDL or through the programmatic API.  Note that:
