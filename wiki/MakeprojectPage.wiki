@@ -1,0 +1,53 @@
+#summary Description of makeproject script for starting a new EUROPA project.
+
+= makeproject =
+
+The makeproject script (found [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/bin/makeproject here]) will generate C++ and Java projects that embed EUROPA, along with simple NDDL model and initial-state files that you can then modify for your own purposes.
+
+
+makeproject takes as arguments the name of the new project and optionally, the parent directory for the new project. If you don't specify the parent directory, the new project will be created as a sibling to $PLASMA_HOME.
+
+
+For instance, to create a project called !MyProject under your home directory you would do :
+
+
+{{{
+% cd $PLASMA_HOME/bin
+% ./makeproject MyProject ~
+}}}
+
+
+This will create the following files :
+
+
+|| *File* || *Description* ||
+|| `<`project`>`-model.nddl || NDDL model file, you will want to replace the contents with your own NDDL model ||
+|| `<`project`>`-initial-state.nddl || NDDL initial state file, you will want to replace the contents with your own NDDL initial state ||
+|| `<`project`>`-Main.cc || Main C++ program that embeds EUROPA and will load your model, the initial state and will run the planner in batch mode ||
+|| java/`<`project`>`/Main.java || Main Java program that embeds EUROPA and will load your model, the initial state and will allow you to run the planner interactively ||
+|| `<`project`>`.bsh || [http://www.beanshell.org BeanShell] script that will be executed by the Java main program || 
+|| [PlannerCfg PlannerConfig.xml] || Solver configuration file || 
+|| [DebugCfg Debug.cfg] || Logging configuration file ||
+|| [NddlCfg NDDL.cfg] || NDDL parser configuration file ||
+|| [PlanWorksCfg PlanWorks.cfg] || !PlanWorks output configuration file ||
+|| Jamfile, Jamrules || Build files for C++ project ||
+|| build.xml, build.properties || Build files for Java project ||
+
+
+To run the Java project :
+{{{
+% cd ~/MyProject
+% ant
+}}}
+
+To run the C++ project :
+
+{{{
+% cd ~/MyProject
+% make
+
+# Look at the results from the planner:
+% more RUN_MyProject-planner_g_rt.MyProject-initial-state.xml.PlannerConfig.xml.output
+}}}
+
+You can run an optimized version by using the -sVARIANTS=OPTIMIZED option for jam, or specify any of the other build options described [BuildingEuropa#BuildOptions here].
