@@ -2,7 +2,7 @@
 
 = Faking a State Resource in EUROPA =
 
-While we hope to get a truly generic version of state resources included in EUROPA (see Possible New Features at bottom of [wiki:EuropaResources this page]), this page describes:
+While we hope to get a truly generic version of state resources included in EUROPA (see Possible New Features at bottom of [EuropaResources this page]), this page describes:
  a. How a unary resource can be faked easily using the existing framework, and
  b. How profiles can be subclassed to get different behavior.
 
