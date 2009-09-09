@@ -2,7 +2,7 @@
 
 = Adding a Constraint to EUROPA =
 
-A new project automatically includes its own module that is loaded into the EUROPA engine and stub C++ files to hold custom code (see [wiki:makeproject]).  Therefore, extending EUROPA components simply requires C++ code be added to those existing files. Consider the Example project [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint here], which can be downloaded with:
+A new project automatically includes its own module that is loaded into the EUROPA engine and stub C++ files to hold custom code (see [MakeprojectPage makeproject]).  Therefore, extending EUROPA components simply requires C++ code be added to those existing files. Consider the Example project [http://code.google.com/p/europa-pso/source/browse/benchmarks/trunk/ExampleCustomConstraint here], which can be downloaded with:
 {{{
 svn co http://europa-pso.googlecode.com/svn/benchmarks/tags/EUROPA-2.2/ExampleCustomConstraint ExampleCustomConstraint
 }}}
@@ -30,4 +30,4 @@ The result is that the global variable {{{x}}} will have range [1, 3] once EUROP
 }}}
 
 
-For many other examples of how to write EUROPA constraints, see [source:PLASMA/trunk/src/PLASMA/ConstraintEngine/component/Constraints.cc Constraints.cc].
+For many other examples of how to write EUROPA constraints, see [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/ConstraintEngine/base/Constraint.cc Constraints.cc].
