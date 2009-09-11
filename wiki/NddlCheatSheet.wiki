@@ -1,9 +1,7 @@
 #summary Cheat sheet for the NDDL programmer
-[[PageOutline(1-3,NDDL Reference,pullout)]] 
-
 = NDDL !CheatSheet = 
 
-Incomplete, minimally documented summary of common NDDL syntax.  Much of this code is stolen from the more complete [NDDLReference NDDL Reference].  See also the [NDDLGrammar NDDL grammar].
+Incomplete, minimally documented summary of common NDDL syntax.  Much of this code is stolen from the more complete [NDDLReference NDDL Reference].  See also the [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/base/antlr/NDDL3.g NDDL grammar].
 
 === Variables ===
 
