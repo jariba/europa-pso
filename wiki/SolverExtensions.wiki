@@ -104,7 +104,7 @@ Filtering and matching is done via the {{{FlawManager::staticMatch}}} and {{{Fla
 functions.  In the base class, these use the standard Solver matching
 methods, but sub-classes generally layer additional matching on top of
 these.  For example, the
-[source:PLASMA/trunk/src/PLASMA/Solvers/component/ThreatManager.hh ThreatManager] 
+[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/Solvers/component/ThreatManager.hh ThreatManager] 
 adds checking to determine if the potential flaw is a token as well as
 delegating to the base function.
 
