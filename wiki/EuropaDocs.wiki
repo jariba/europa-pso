@@ -16,7 +16,6 @@ This page provides in-depth documentation on understanding and using EUROPA. If 
    * [NDDLReference NDDL Language Reference]
    * [NddlCheatSheet NDDL CheatSheet]
    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/base/antlr/NDDL3.g Complete NDDL Grammar]
-   * [NDDLParser NDDL Parser/Compiler]
  * Constraints:
    * [ConstraintLibraryReference Constraint Library Reference]
    * [CustomConstraints Example: Adding a Constraint]
