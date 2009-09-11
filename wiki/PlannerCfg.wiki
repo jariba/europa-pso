@@ -38,7 +38,7 @@ The key things to note are:
 
  *  A nested structure for components. The planner will be passed the XML element which in this case is the root. The planner will iterate through the child nodes. Components names of _!UnboundVariableManager, !ThreatManager, SAVHThreatManager, !OpenConditionManager_ will be used to obtain a concrete factory. Such factories will be passed in the xml element, which will include child nodes. The allowable data in the child nodes can be completely customized to each component.
  *  In this example, the planner is configured with only one _Flaw Manager_. This planner is thus only capable of making variable binding decisions. It will not address any _Object Flaws_ or _Token Flaws_. No limit is placed on the number of _Flaw Managers_ that may be configured.
- *  The order of definition of a _Flaw Manager_ is the order in which they will be visited in the implementation of the function [SolverReference#Flaw Selection selectNextDecisionPoint].
+ *  The order of definition of a _Flaw Manager_ is the order in which they will be visited in the implementation of the function [SolverReference#Flaw_Selection selectNextDecisionPoint].
  *  A _Resolver_ binds to an instance of a _!DecisionPoint_ class. In the above example, resolvers are used for ordering and pruning. Such a role leaves the opportunity for incomplete search at the discretion of the application developer. Such details are encapsulated within a component.
 
 == Basic Elements ==
