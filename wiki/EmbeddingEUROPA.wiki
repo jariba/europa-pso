@@ -15,7 +15,7 @@ They both illustrate how you can perform the full application cycle :
 
 == Using the C++ API ==
 
-Take a look at the main() program that [wiki:makeproject] generates for the C++ project : [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/bin/.makeproject/Template-Main.cc Main.cc]
+Take a look at the main() program that [MakeprojectPage makeproject] generates for the C++ project : [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/bin/.makeproject/Template-Main.cc Main.cc]
 
 The [PSEngine] interface is the official interface for EUROPA clients, it is the recommended way to use EUROPA. This interface is very straightforward and allows you to run the entire application cycle described above. This abstraction layer will isolate your client code from most changes in the internals of the EUROPA implementation, it is also designed for easy mapping to other languages using [http://www.swig.org SWIG].
 
@@ -24,7 +24,7 @@ If you're planning to write your application in a language other than C++, the c
 == Using the JAVA API ==
 
 The [PSEngine] interface is automatically mapped to Java using [http://www.swig.org SWIG]
-Take a look at the main() program that [wiki:makeproject] generates for the Java project : [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/java/Light/Main.java Main.java]
+Take a look at the main() program that [MakeprojectPage makeproject] generates for the Java project : [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/java/Light/Main.java Main.java]
 [wiki:makeproject] uses a combination of Java and [http://www.beanshell.org BeanShell] scripting to achieve its goal, if you put everything together in a single Java program it would look something like this :
 
 {{{
