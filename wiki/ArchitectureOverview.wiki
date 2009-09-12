@@ -1,9 +1,9 @@
 #summary High-level architecture of EUROPA
 = Architecture Overview =
 
-Here is a brief presentation given in Feb-2008 at NASA Ames : [raw-attachment:Europa-ASR-Talk.ppt EUROPA ASR Talk]
+Here is a brief presentation given in Feb-2008 at NASA Ames : [http://europa-pso.googlecode.com/svn/wiki/documents/Europa-ASR-Talk.ppt EUROPA ASR Talk]
 
-The modules of EUROPA and their interdependencies are set out in Figure # EUROPA is a highly modular architecture and modules can be developed, tested and applied quite independently.
+The modules of EUROPA and their interdependencies are set out in Figure 1. EUROPA is a highly modular architecture and modules can be developed, tested and applied quite independently.
 
 http://europa-pso.googlecode.com/svn/wiki/images/guide.f9.gif 
 
