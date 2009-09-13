@@ -33,7 +33,7 @@ EUROPA has been used for a variety of missions, mission-oriented research, and d
  * [http://www.bedreststudy.com Bedrest] study at Johnson Space Center
  * [http://mars.jpl.nasa.gov/msl/ Mars ‘09? - MSL] : Support for planning and scheduling  for Mars Science Laboratory Science Operations
  * [http://www.nasa.gov/missions/shuttle/f_schedule.html Crew Planning] Research project on Planning and Scheduling for space missions
- * [http://www.mbari.org/autonomy/TREX/index.htm T-REX] automated planning for underwater autonomous vehicles at MBARI
+ * [http://code.google.com/p/trex-autonomy T-REX] A model based executive that integrates planning and execution for autonomous mobile robots and things that seem just like them. TREX has been deployed at sea on AUVs and on land for mobile manipulation.
  * MER Tactical Activity Planning. EUROPA is the core planning technology behind MAPGEN, a decision support tool for generating detailed activity plans on a daily basis for the MER robotic mission to Mars.
  * Mars ‘03: MER –Mars Exploration Rover Science Operations
  * On-board Planning and Plan Execution. EUROPA was the core planning technolgoy for deliberative and reactive planning on-board a variety of mobile robots. It has been fielded in the Atacama Desert and was the cornerstone of a 2005 milestone of human-robotic collaboration for the Collaborative Decision Systems program.
