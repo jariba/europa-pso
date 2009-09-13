@@ -1,4 +1,4 @@
-#summary Overview of constraints in NDDL
+#summary This page documents available constraints in the EUROPA constraint library.
 
 = Constraints in NDDL =
 The table that follows overviews the built-in constraints, available in NDDL or through the programmatic API.  Note that:
