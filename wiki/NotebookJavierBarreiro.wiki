@@ -1,0 +1,55 @@
+#summary Javier's page.
+
+
+= Benchmark problems to tackle with EUROPA = 
+
+*Constraint Programming*
+    * [http://www.csplib.org/ Constraint Programming Benchmark Library][[BR]]
+
+
+*Scheduling*
+    * [http://www.wior.uni-karlsruhe.de/LS_Neumann/Forschung/ProGenMax/?format=normal&lang=en ProGenMax] RCPSP problems
+    * [http://129.187.106.231/psplib/ PSLIB] Various Scheduling problems
+    * [http://www.ri.cmu.edu/pubs/pub_5866.html Scheduling Problems from ICAPS07] Benchmark Problems for Oversubscribed Scheduling[[BR]]
+
+
+*International Planning Competition *
+    * 2007 [ftp://ftp.cs.yale.edu/pub/mcdermott/aipscomp-results.html  paper] on comparing planners through their performance on these problems
+    * [http://zeus.ing.unibs.it/ipc-5/ IPC-5 (2006)]
+    * [http://ls5-web.cs.uni-dortmund.de/~edelkamp/ipc-4/ IPC-4 (2004)]
+    * [http://planning.cis.strath.ac.uk/competition/ IPC-3 (2002)]
+    * [http://www.cs.toronto.edu/aips2000/ IPC-2 (2000)]
+    * [ftp://ftp.cs.yale.edu/pub/mcdermott/aipscomp-results.html IPC-1 (1998)][[BR]]
+
+*Combinatorial Optimization*
+    * [http://www2.informs.org/Resources/Resources/Problem_Instances/ INFORMS links to OR problem instances]
+    * [http://people.brunel.ac.uk/~mastjjb/jeb/info.html J.E. Beasley's OR Library]
+    * [http://www.math.nsc.ru/AP/benchmarks/english.html Discrete Location Problems] at the Sobolev Institute of Mathematics
+    * [http://www.fernuni-hagen.de/WINF/touren/menuefrm/probinst.htm Solomon's VRPTW Instances]
+    * [http://www.tsp.gatech.edu The TSP site at Georgia Tech]
+
+*Games/Puzzles*
+    * [http://en.wikipedia.org/wiki/Sokoban Sokoban] 
+    * [http://www.cs.ualberta.ca/~games Games Group] at U of Alberta
+
+= Implementing a Native POCL solver for ANML =
+
+    * [http://www.tempastic.org/vhpop/ VHPOP]
+    * [http://www.cril.univ-artois.fr/%7Evidal/#cpt CPT]
+
+= Continuous integration server for EUROPA =
+    * [http://www.atlassian.com/software/bamboo Bamboo] Free for open source projects like us
+    * [http://bitten.edgewall.org/ Bitten] Integrated with Trac (see [http://bitten.edgewall.org/build/trunk example]). need to see if Java/Python slant is a problem for us.
+    * also, load EUROPA on [http://www.ohloh.net/ OhLoh]? to get their metrics/exposure
+
+= Complexity Sites =
+    * [http://qwiki.stanford.edu/wiki/Complexity_Zoo Complexity Zoo]
+    * [http://www.nada.kth.se/~viggo/wwwcompendium/wwwcompendium.html A compendium of NP optimization problems]
+
+= Related Systems =
+
+maybe we can have an intern perform a systematic comparison at some point :
+    * [http://eclipse-clp.org/ ECLiPSe]
+    * [http://www.comet-online.org Comet]
+    * [http://moya.bus.miami.edu/~tallys/simpl.php Simpl] : see also a [http://wpweb2.tepper.cmu.edu/jnh/simplAPmod.ppt presentation] on it
+    * [http://choco-solver.net Choco]
