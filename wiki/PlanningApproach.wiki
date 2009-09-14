@@ -59,6 +59,7 @@ It may be sufficient to maintain only a partial-order among tokens. However, it 
 For example, consider the tire-world domain. The tire was located in the trunk with the predicate _tireLocated(Trunk)_ and located on the ground with the predicate _tireLocated(Ground)_. Clearly, the same tire cannot be in both places at once. A _Timeline_ provides a simple method for aggregating the statements about a tire such that they are mutually exclusive.
 
 http://europa-pso.googlecode.com/svn/wiki/images/guide.f3.gif
+
 *Figure 1*:  A Timeline for a Tire
 
 Figure 1 illustrates how a _Timeline_ can be used to describe the whereabouts of a tire. The tire is an object in the tire-world represented as a timeline. It has predicates associated with it which can describe its states and actions over time. The predicate names need not contain the _tire_ prefix; this is now implicit since the tokens are _assigned_ to a specific tire instance (i.e. an instance of a _Timeline_).   While _Timelines_ are a useful element of the EUROPA planning paradigm, they are not essential. A more general notion of a system _Object_ can be used which does not impose restrictions of mutual-exclusion or non-zero duration. This can be important in supporting _partial-order_ planning.
@@ -70,6 +71,7 @@ For this example, the state of the tire is specified using 3 contiguous tokens. 
 In order for a plan to be valid, it must comply with all rules and regulations pertinent to the application domain in question. Rules govern the internal and external relationships of a token. For example, consider a parameterized predicate describing a transition from one location to another. Let the parameters be _from_ and _to_. The parameters are instantiated on a token as variables whose domain of values is the set of all locations in a given problem. A rule governing an _internal relationship_ among token variables might stipulate that a transition must involve a change in location. This can be easily expressed as a constraint on the definition of a predicate of the form: _from != to_. It is reasonable to further stipulate that one must be _Located_ somewhere before a transition can occur, and one must end up _Located_ somewhere when completed. This is an example of a rule governing an external relationship among tokens. It specifies a requirement that tokens of the predicate _Located_ precede and succeed tokens of the predicate _Moving_. 
 
 http://europa-pso.googlecode.com/svn/wiki/images/guide.f4.gif
+
 *Figure 2*:  Internal and external relationships from rules on _Moving_ 
  	 
 Figure 2 illustrates the entities and relations involved in specifying such a rule on a Moving predicate. The token on which the rule applies is referred to as the master. Each Located token required by the master is referred to as a slave. All variables are indicated by name and their domains are expressed as intervals in the case of temporal variables and as enumerations for the remainder. Application of a rule on a token can thus cause slave tokens, variables, and constraints to be introduced. 
@@ -81,11 +83,13 @@ The capability of a domain rule to cause a slave token to be created is a key ve
  	 1. The token is _merged_ with a matching token _already_ in the plan. Once a slave is merged, the requirement it represents are considered satisfied. The process of merging passes on all restrictions imposed on the slave to the active token upon which it is merged. Merging a token requires finding a target active token that is _compatible_ with the inactive token. For an active token and an inactive token to be compatible requires that they are instances of the same predicate and that no intersections between corresponding variables are empty. The effect of merging is illustrated in Figure 3. 
  	 
 http://europa-pso.googlecode.com/svn/wiki/images/guide.f5.gif
+
 *Figure 3*:  Merging an inactive token on an active token. Domain restrictions occur in highlighted variables of active token. 
 
 On creation of a token, where the commitment has not been made yet to _activate_ or _merge_ the token, the token is said to be _inactive_. There is a nuance to the state model for tokens which relate to the mode of its creation. If the token is allocated explicitly by an external actor, rather than internally through rule firing, it may include the state _rejected_ indicating the planner is permitted to _reject_ the token. A valid plan can include rejected tokens. This typically arises where the token represents a goal that is _preferable_ to achieve but not _mandatory_. This state is not reachable for slaves since that would imply selective adherence to the domain model. Figure 4 presents the state transition diagram for token states relevant for planning. The transitions are operations on a partial plan which can decide an outcome for an inactive token. As operations which may arise in search, they must be reversible during backtracking. The cancellation operations in each case are also shown.  	 
 
 http://europa-pso.googlecode.com/svn/wiki/images/guide.f6.gif
+
 *Figure 4*:  Token States and Transitions for Planning 
 
 The state of a token is embodied with a 5th and final built-in variable referred to as the _state_ variable. The planner states are values in the domain of this variable _{MERGED, ACTIVE, REJECTED}_. The _INACTIVE_ state is captured by the variable being unbound. If a value is removed from the domain, that state will not be reachable. For example, when a slave is created via a rule, the _REJECTED_ value is removed from its state variable. 
