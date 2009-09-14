@@ -4,13 +4,13 @@
 = Benchmark problems to tackle with EUROPA = 
 
 *Constraint Programming*
-    * [http://www.csplib.org/ Constraint Programming Benchmark Library][[BR]]
+    * [http://www.csplib.org/ Constraint Programming Benchmark Library]
 
 
 *Scheduling*
     * [http://www.wior.uni-karlsruhe.de/LS_Neumann/Forschung/ProGenMax/?format=normal&lang=en ProGenMax] RCPSP problems
     * [http://129.187.106.231/psplib/ PSLIB] Various Scheduling problems
-    * [http://www.ri.cmu.edu/pubs/pub_5866.html Scheduling Problems from ICAPS07] Benchmark Problems for Oversubscribed Scheduling[[BR]]
+    * [http://www.ri.cmu.edu/pubs/pub_5866.html Scheduling Problems from ICAPS07] Benchmark Problems for Oversubscribed Scheduling
 
 
 *International Planning Competition *
@@ -19,7 +19,7 @@
     * [http://ls5-web.cs.uni-dortmund.de/~edelkamp/ipc-4/ IPC-4 (2004)]
     * [http://planning.cis.strath.ac.uk/competition/ IPC-3 (2002)]
     * [http://www.cs.toronto.edu/aips2000/ IPC-2 (2000)]
-    * [ftp://ftp.cs.yale.edu/pub/mcdermott/aipscomp-results.html IPC-1 (1998)][[BR]]
+    * [ftp://ftp.cs.yale.edu/pub/mcdermott/aipscomp-results.html IPC-1 (1998)]
 
 *Combinatorial Optimization*
     * [http://www2.informs.org/Resources/Resources/Problem_Instances/ INFORMS links to OR problem instances]
