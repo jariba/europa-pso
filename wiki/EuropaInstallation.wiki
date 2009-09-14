@@ -1,14 +1,14 @@
 #summary Installation instructions for EUROPA
 
 
-'''Note''' : Starting with EUROPA 2.1.2 (available since Sept 2, 2008),  EUROPA is provided in a binary distribution, to which this installation page applies.
+*Note* : Starting with EUROPA 2.1.2 (available since Sept 2, 2008),  EUROPA is provided in a binary distribution, to which this installation page applies.
 
 For older versions, you will have to build EUROPA yourself as described [BuildingEuropa here].
 
 
 == Supported Platforms ==
 
-EUROPA is currently supported on Linux, Mac OS, Windows and Solaris. A platform is officially supported if and only if there is an automated build regularly scheduled for it. You can see the specs for the systems used to test the EUROPA releases [wiki:NightlyBuilds here].
+EUROPA is currently supported on Linux, Mac OS, Windows and Solaris. A platform is officially supported if and only if there is an automated build regularly scheduled for it. You can see the specs for the systems used to test the EUROPA releases [NightlyBuilds here].
 
 == Software Requirements ==
     * JRE 1.5
