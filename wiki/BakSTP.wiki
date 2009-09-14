@@ -1,0 +1,9 @@
+#summary What is an STN (simple temporal network)?
+
+= Simple Temporal Problems (Networks) =
+
+The notion of time is central to temporal planning. EUROPA uses _variables_ to explicitly represent _timepoints_ for plan activities and states. _Constraints_ among _timepoints_ provide a natural way to express domain axioms. For example, in order to state that activity _A_ must occur before activity _B_ we can say that the end _timepoint_ of _A_ is <= the start _timepoint_ of _B_. Dechter et al. ([DocReferences Dechter 1991]) proposed that _constraints_ among _timepoints_ can be grouped together to form a Simple Temporal Network (_STN_). Such a network can be transformed into a Distance Graph (_DG_) where the outward arc from a node represents the maximum distance from the source node to the target node. The diagram below illustrates a simple _STN_ with just 2 variables and a single constraint. It also shows the resulting _DG_.
+
+http://europa-pso.googlecode.com/svn/wiki/images/stn.png
+
+Dechter et al. ([DocReferences Dechter 1991]) also showed that shortest path algorithms could be used to propagate values in the network and discover a _negative cycle_. A _negative cycle_ is a path from a node to itself that has a path length less than 0. If such a cycle exists, the network is inconsistent. It was further shown that a single-source shortest path algorithm was sufficient to detect a negative cycle and provide sufficient propagation to yield a backtrack-free search. Thus we have an efficient and complete algorithm for propagating an _STN_. These results build on the already established notion of a _CSP_ and are naturally incorporated into the general representation and propagation scheme used in EUROPA.
