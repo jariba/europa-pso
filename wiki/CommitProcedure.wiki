@@ -1,0 +1,12 @@
+#summary Guidelines for submitting changes to EUROPA code.
+
+== Checklist for committing anything to the repository ==
+
+ # Get the latest from svn.
+ #  Go to $PLASMA_HOME. run "ant clean autobuild", which will run the entire autobuild procedure, or at a minimum "ant clean build test" which will make sure at least build tests pass for a specific variant. Breaking the build is never ok, so you should be pretty confident your changes won't break it if you take the shortcut
+ # Make sure all the tests passed
+ # Commit. Provide a meaningful comment, do separate commits for each feature/bug fix.
+ # Watch your email, bitten will email the person who committed and europa-build whenever a build fails. You should also check the [/build build page] to make sure your commit didn't break any of the automated builds, EUROPA is built on multiple platforms and with different variants so the fact that all tests passed on your particular platform/variant is no guarantee that it'll do the same for all others.
+
+
+
