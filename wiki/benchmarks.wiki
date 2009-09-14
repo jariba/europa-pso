@@ -2,7 +2,7 @@
 
 === Manufacturing ===
 
-The manufacturing domain was proposed by [1]. It is a scheduling problem. Consider a factory is producing a set of same products. A product has to go over the assembly line, so that a fixed number of attributes are assembled to the raw products. Consider the assembly line as a graph, where each vertice is a machine that can add certain attribute to a product. Each machine can be occupied by at most one product at every time step. Products have to be arranged and transported on this graph, so that certain product deadlines have to be met.
+The manufacturing domain was proposed by `[`1`]`. It is a scheduling problem. Consider a factory is producing a set of same products. A product has to go over the assembly line, so that a fixed number of attributes are assembled to the raw products. Consider the assembly line as a graph, where each vertice is a machine that can add certain attribute to a product. Each machine can be occupied by at most one product at every time step. Products have to be arranged and transported on this graph, so that certain product deadlines have to be met.
 
 === Currirulum ===
 
