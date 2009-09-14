@@ -1,8 +1,6 @@
 #summary EUROPA Quick Start
 
-
-
-This tutorial provides just enough information for you to create and run simple planning problems using EUROPA.  Once you're familiar with the basics, see the [wiki:EuropaDocs Documentation] page for more details.
+This tutorial provides just enough information for you to create and run simple planning problems using EUROPA.  Once you're familiar with the basics, see the [EuropaDocs Documentation] page for more details.
 
 EUROPA can be used to solve Constraint Programming, Scheduling and Planning problems. For the purposes of this Quick Start guide we will use a simple planning problem.
 
@@ -14,9 +12,9 @@ These are the typical steps a EUROPA user will follow to solve a problem :
  * Inspect the plan and possibly modify the problem, tune the solver and re-plan
  * When the model and the solver are working as expected, embed them into a larger application
 
-To try the steps below yourself, you must have already [wiki:EuropaDownload downloaded] and [wiki:EuropaInstallation installed] EUROPA.
+To try the steps below yourself, you must have already [EuropaDownload downloaded] and [EuropaInstallation installed] EUROPA.
 
-For our example, assume that we want a plan to turn a light bulb on and off.  Here are the steps to take (the files for this example can be found [source:/PLASMA/trunk/examples/Light here]):
+For our example, assume that we want a plan to turn a light bulb on and off.  Here are the steps to take (the files for this example can be found [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light here]):
 
 = Create a NDDL model for the domain =
 The New Domain Description Language (NDDL) is a simple but powerful language used to describe both problem domains and problem instances in EUROPA:
@@ -79,7 +77,7 @@ lt(0,goal1.start);
 lt(goal1.start,10);
 }}}
 = Instantiate and run a Solver =
-EUROPA comes with a simple script called [wiki:makeproject] which generates the minimal C++ and Java applications to run a planner on your model. You can then tailor those applications to your own purposes, or use them as an example to embed EUROPA into your own application. This will create a new project called Light in your ~/Light directory :
+EUROPA comes with a simple script called [makeproject] which generates the minimal C++ and Java applications to run a planner on your model. You can then tailor those applications to your own purposes, or use them as an example to embed EUROPA into your own application. This will create a new project called Light in your ~/Light directory :
 
 {{{
 % $EUROPA_HOME/bin/makeproject Light ~
@@ -122,14 +120,14 @@ run:
 }}}
 You should see the following window come up :
 
-[[Image(DocImgs:Examples-Light0.jpg)]]
+http://europa-pso.googlecode.com/svn/wiki/images/Examples-Light0.jpg
 
 In the "Solver" window, hit the "Go" button to have the solver run. The solver should finish after 7 steps, satisfying the goal that was specified in Light-initial-state.nddl (that is, to turn the light off by time=10).
 
 = Examine Results =
-You can now run the method showPlan() defined in [source:/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]. Just go into the "Console" window, type "showPlan()" then <enter>.
+You can now run the method showPlan() defined in [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]. Just go into the "Console" window, type "showPlan()" then <enter>.
 
-[[Image(DocImgs:Examples-Light1.jpg)]]
+http://europa-pso.googlecode.com/svn/wiki/images/Examples-Light1.jpg
 
 You can now see that the planner decided that :
 
@@ -139,13 +137,13 @@ You can now see that the planner decided that :
 The intervals mean that the action or state change could happen at any point in the interval, so for instance, "lightSwitch1 is turned off at time ![0,8]" means that lightSwitch1 could be turned off at time 0, or at time 1, ..., or at time 8. You can modify your model or EUROPA's configuration to generate grounded plans (where all the values are points, instead of intervals), if that's what you want for your particular application.
 
 = Embed your model into an application =
-Sometimes, what we have done so far is all you may want to do : create a model, a problem instance, generate a plan, visualize the results, and perhaps dump them to a file. In other cases you may want to embed this model as part of a bigger application. In that case, you will need to link in EUROPA as a library into your application and use the programmatic API (Java or C++) to perform the steps described above, you can see how this is done for this particular example in [source:/PLASMA/trunk/examples/Light/Light-Main.cc C++] and [source:/PLASMA/trunk/examples/Light/java/Light/Main.java Java] (the Java version uses scripting, so Main.java is complemented by [source:/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]).
+Sometimes, what we have done so far is all you may want to do : create a model, a problem instance, generate a plan, visualize the results, and perhaps dump them to a file. In other cases you may want to embed this model as part of a bigger application. In that case, you will need to link in EUROPA as a library into your application and use the programmatic API (Java or C++) to perform the steps described above, you can see how this is done for this particular example in [source:/PLASMA/trunk/examples/Light/Light-Main.cc C++] and [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/java/Light/Main.java Java] (the Java version uses scripting, so Main.java is complemented by [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]).
 
-The details of how to embed EUROPA into your application are provided [wiki:EmbeddingEUROPA here.]
+The details of how to embed EUROPA into your application are provided [EmbeddingEUROPA here.]
 
 = Next Steps =
- * See the [wiki:EuropaExamples Examples] page for more advanced examples that can serve as starting points for your own model, or just to learn more about what EUROPA can do.
- * Read a high-level overview of the [wiki:PlanningApproach planning components] in EUROPA.
- * Learn the [wiki:EuropaDocs details] about modeling in NDDL, configuring the built-in solver, extending EUROPA with custom constraints/solvers/etc and using EUROPA's debugging tools.
- * How to create your own [wiki:makeproject project.]
- * How to [wiki:EmbeddingEUROPA embed] your model into a C++ or Java application.
+ * See the [EuropaExamples Examples] page for more advanced examples that can serve as starting points for your own model, or just to learn more about what EUROPA can do.
+ * Read a high-level overview of the [PlanningApproach planning components] in EUROPA.
+ * Learn the [EuropaDocs details] about modeling in NDDL, configuring the built-in solver, extending EUROPA with custom constraints/solvers/etc and using EUROPA's debugging tools.
+ * How to create your own [makeproject project.]
+ * How to [EmbeddingEUROPA embed] your model into a C++ or Java application.
