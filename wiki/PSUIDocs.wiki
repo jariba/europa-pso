@@ -14,8 +14,8 @@ PSDesktop takes 2 arguments :
 
 There several ways to run PSDesktop (the last two have not been tested recently):
     
-    * run [MakeprojectPage makeproject] then go to the new project directory and run "ant"
-    * if you don't want to create a new project, copy [source:PLASMA/trunk/src/PLASMA/System/component/PSUI/.ant.psui.properties .ant.psui.properties] to your home directory, modify appropriately and run "ant" from [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI $EUROPA_HOME/../../src/PLASMA/System/component/PSUI]
+    * run [MakeprojectPage makeproject] then go to the new project directory and run "ant", or
+    * if you don't want to create a new project, copy [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/.ant.psui.properties .ant.psui.properties] to your home directory, modify appropriately and run "ant" from [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI $EUROPA_HOME/../../src/PLASMA/System/component/PSUI], or
     * create your own Java project from scratch and include nddl.jar,PSEngine.jar and PSUI.jar (all found under $EUROPA_HOME/dist/europa/lib) in your classpath. Also make sure that you LD_LIBRARY_PATH includes the library directory. You'll want to run org.ops.psui.PSDesktop.main()
 
 Once you run ant under any of these scenarios, you'll get the PSDesktop UI :
@@ -45,7 +45,7 @@ In the NDDL console you can type in NDDL statements that will be intrepreted as 
 = Variables exposed through !BeanShell =
 
 In the [http://www.beanshell.org BeanShell] console, you'll have access to the following variables :
-    * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/base/PSEngine.hh PSEngine]*: this will give you access to the EUROPA engine, you can create a solver, query the plan database, execute NDDL scripts, in general perform any task needed to drive EUROPA to load a model and create a plan. You can also use this interface to create your own custom solver, see for instance [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/NQueens/TSNQueensSolver.java TSNQueensSolver.java]
+    * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/base/PSEngine.hh PSEngine]*: this will give you access to the EUROPA engine, you can create a solver, query the plan database, execute NDDL scripts, in general perform any task needed to drive EUROPA to load a model and create a plan. You can also use this interface to create your own custom solver, see for instance [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/NQueens/java/NQueens/TSNQueensSolver.java TSNQueensSolver.java]
     * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/PSDesktop.java PSDesktop]*: this will give you access to many utility methods to create new desktop windows, display tables of tokens, create a solver, etc.
 
 
@@ -63,4 +63,3 @@ PLASMA/trunk/src/PLASMA/System/component
 You can see how all these components can be used together in the bsh files for the EUROPA [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples examples]. For instance, below is a screenshot of the UI that is set up in [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/UBO/UBO.bsh UBO.bsh] for a Resource Scheduling application. Using this component based approach it only took around 10 lines of code to set up all the components seen below : 
 
 http://europa-pso.googlecode.com/svn/wiki/images/Example-UBO0.jpg
-
