@@ -5,11 +5,19 @@ Get the file that corresponds to your platform below.
 EUROPA is packaged as set of shared libraries, which should satisfy most users' needs. Get the static libraries bundle only if you intend to use EUROPA that way.
 If your platform does not appear here, you can build EUROPA yourself as described [BuildingEuropa here]
 
-<wiki:comment>
 
-|| '''EUROPA-2.2''' [[BR]] [milestone:'EUROPA 2.2' See details]|| [raw-attachment:europa-2.2-linux.zip:wiki:Downloads Linux] [[BR]] [raw-attachment:europa-2.2-mac-ppc.zip:wiki:Downloads Mac-ppc] [[BR]] [raw-attachment:europa-2.2-mac-intel.zip:wiki:Downloads Mac-intel] [[BR]] [raw-attachment:europa-2.2-MinGW.zip:wiki:Downloads Windows] [[BR]] [raw-attachment:europa-2.2-solaris.zip:wiki:Downloads Solaris]  [[BR]] || [raw-attachment:europa-2.2-linux-static-libs.zip:wiki:Downloads Linux-static-libs] [[BR]] [raw-attachment:europa-2.2-mac-ppc-static-libs.zip:wiki:Downloads Mac-ppc-static-libs] [[BR]] [raw-attachment:europa-2.2-mac-intel-static-libs.zip:wiki:Downloads Mac-intel-static-libs] [[BR]] [raw-attachment:europa-2.2-MinGW-static-libs.zip:wiki:Downloads Windows-static-libs] [[BR]] [raw-attachment:europa-2.2-solaris-static-libs.zip:wiki:Downloads Solaris-static-libs] [[BR]] ||
+*EUROPA-2.2* ([http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2 See details])
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-linux.zip Linux] || [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-linux-static-libs.zip Linux-static-libs] ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-mac-ppc.zip Mac-ppc] ||   [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-mac-ppc-static-libs.zip Mac-ppc-static-libs]  ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-mac-intel.zip Mac-intel]  ||      [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-mac-intel-static-libs.zip Mac-intel-static-libs]  ||
+||  [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-MinGW.zip Windows]  ||     [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-MinGW-static-libs.zip Windows-static-libs]     ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-solaris.zip Solaris]  || [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.2-solaris-static-libs.zip Solaris-static-libs]   ||
 
-|| '''EUROPA-2.1.2''' [[BR]] [milestone:'EUROPA 2.1.2' See details] || [raw-attachment:europa-2.1.2-linux.zip:wiki:Downloads Linux] [[BR]] [raw-attachment:europa-2.1.2-mac-ppc.zip:wiki:Downloads Mac-ppc] [[BR]] [raw-attachment:europa-2.1.2-mac-intel.zip:wiki:Downloads Mac-intel] [[BR]] [raw-attachment:europa-2.1.2-windows.zip:wiki:Downloads Windows] [[BR]] [raw-attachment:europa-2.1.2-solaris.zip:wiki:Downloads Solaris] [[BR]] || [raw-attachment:europa-2.1.2-linux-static-libs.zip:wiki:Downloads Linux-static-libs] [[BR]] [raw-attachment:europa-2.1.2-mac-ppc-static-libs.zip:wiki:Downloads Mac-ppc-static-libs] [[BR]] [raw-attachment:europa-2.1.2-mac-intel-static-libs.zip:wiki:Downloads Mac-intel-static-libs] [[BR]] [raw-attachment:europa-2.1.2-windows-static-libs.zip:wiki:Downloads Windows-static-libs] [[BR]] [raw-attachment:europa-2.1.2-solaris-static-libs.zip:wiki:Downloads Solaris-static-libs] [[BR]] ||
 
+*EUROPA-2.1.2* ([http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.2 See details])
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-linux.zip Linux]  ||  [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-linux-static-libs.zip Linux-static-libs]  ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-mac-ppc.zip Mac-ppc]  ||  [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-mac-ppc-static-libs.zip Mac-ppc-static-libs] ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-mac-intel.zip Mac-intel]  || [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-mac-intel-static-libs.zip Mac-intel-static-libs]   ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-windows.zip Windows]  ||   [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-windows-static-libs.zip Windows-static-libs] ||
+|| [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-solaris.zip Solaris] ||  [http://europa-pso.googlecode.com/svn/wiki/downloads/europa-2.1.2-solaris-static-libs.zip Solaris-static-libs]   ||
 
-</wiki:comment>
