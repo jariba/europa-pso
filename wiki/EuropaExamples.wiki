@@ -2,7 +2,7 @@
 
 = EUROPA Examples =
 
-A simple EUROPA example is described on the [QuickStart Quick Start] page.  Here are some more advanced examples that can serve as starting points for your own model, or just to learn more about what EUROPA can do in different domains.  Some of these examples are described in depth; the code for all of these and other examples can be found under the $EUROPA_HOME/examples directory. You can also browse them online at the EUROPA repository, [source:/PLASMA/trunk/examples here]. You can build them and run them yourself just by running 'ant' (to run the Java version) or 'make' (to run the C++ version) in the corresponding directory.
+A simple EUROPA example is described on the [QuickStart Quick Start] page.  Here are some more advanced examples that can serve as starting points for your own model, or just to learn more about what EUROPA can do in different domains.  Some of these examples are described in depth; the code for all of these and other examples can be found under the $EUROPA_HOME/examples directory. You can also browse them online at the EUROPA repository, [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples here]. You can build them and run them yourself just by running 'ant' (to run the Java version) or 'make' (to run the C++ version) in the corresponding directory.
 
 === Constraint Programming ===
     * *NQueens* : One of the [http://en.wikipedia.org/wiki/Eight_queens_puzzle workhorses] of constraint programming. This problem consists of placing N queens on a chessboard in such a way that they don't attack each other. [ExampleNQueens More...]
