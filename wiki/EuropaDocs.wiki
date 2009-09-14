@@ -40,9 +40,6 @@ This page provides in-depth documentation on understanding and using EUROPA. If 
  * [MakeprojectPage makeproject]:  Automatically create all the pieces for a new project.
  * High-level visualization and debugging:
    * [PSUIDocs PSDesktop]:  Java app to drive (and visualize) EUROPA interactively.
-   * !PlanWorks:  Java app to visualize plan details over time. ''!PlanWorks has been deprecated as of EUROPA-2.2''
-     * [PlanworksTutorial PlanWorks Tutorial]
-     * [PlanWorksCfg PlanWorks.cfg Reference]
  * Low-level debugging:
    * [DebugOutputManagement Debug Output Management]
    * Timelines
