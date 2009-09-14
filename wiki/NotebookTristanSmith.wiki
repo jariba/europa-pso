@@ -18,7 +18,6 @@ Big pieces missing:
 
  * Various items in the EuropaDocs list still don't even have links
  * EuropaExtensions
- * NddlCfg
  * BuildingOwnSolver
  * ResourceSearchNotes
 
