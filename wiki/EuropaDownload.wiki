@@ -3,7 +3,7 @@
 Get the file that corresponds to your platform below. 
 
 EUROPA is packaged as set of shared libraries, which should satisfy most users' needs. Get the static libraries bundle only if you intend to use EUROPA that way.
-If your platform does not appear here, you can build EUROPA yourself as described [EuropaDevelopment here]
+If your platform does not appear here, you can build EUROPA yourself as described [BuildingEuropa here]
 
 <wiki:comment>
 
