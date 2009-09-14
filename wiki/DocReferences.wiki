@@ -1,0 +1,20 @@
+#summary Documents referenced throughout the wiki
+
+= References =
+
+ 1. J.F. Allen, _Maintaining Knowledge about Temporal Intervals_. Communications of the ACM, 26, 832-843, 1983.
+ 1. R. Dechter, I. Meiri and J. Pearl. "Temporal Constraint Networks", Artificial Intelligence, 49 (1991) pp. 61-95.
+ 1. S. Russel, P. Norvig.  Artificial Intelligence:  A Modern Approach, Prentice-Hall Inc., 1995.
+ 1. Zimmerman Foor, L., Asson, D. _Spike: A Dynamic Interactive Component In a Human-Computer Long-range Planning System_, Third International Workshop on Planning and Scheduling for Space, 2002.
+ 1. N. Muscettola, P. Nayak, B. Pell, B. Williams _Remote Agent: To Boldly Go Where No AI System Has Gone Before_ in Artificial Intelligence, 103(1/2), August 1998.
+ 1. M. Ai-Chang, J. Bresina, L. Charest, J. Hsu, A. K. Jonsson, B. Kanefsky, P. Maldague, P. Morris, K. Rajan, J. Yglesias. _MAPGEN: Mixed-initiative activity planning for the Mars Exploration Rover mission_
+ 1. D. Tran, S. Chien, R. Sherwood, R. Castaño, B. Cichy, A. Davies, G. Rabideau. _The Autonomous Sciencecraft Experiment Onboard the EO-1 Spacecraft_. AAAI 2004: 1040-1041
+ 1. M. Ghallab, H. Laruelle: Representation and Control in IxTeT, a Temporal Planner. AIPS 1994: 61-67.
+ 1. G. Rabideau, R. Knight, S. Chien, A. Fukunaga, A. Govindjee, _Iterative Repair Planning for Spacecraft Operations in the ASPEN System,_ International Symposium on Artificial Intelligence Robotics and Automation in Space (ISAIRAS), Noordwijk, The Netherlands, June 1999.
+ 1. J. Frank and A. Jonsson. _Constraint-Based Interval and Attribute Planning_. Journal of Constraints Special Issue on Constraints and Planning. October, 2003. Volume 8. Number 4.
+ 1. N. Muscettola. _HSTS: Integrating planning and scheduling._ In Mark Fox and Monte Zweben, editors, Intelligent Scheduling. Morgan Kaufmann, 1994
+ 1. N. Muscettola. '[http://ic.arc.nasa.gov/publications/pdf/2001-0308.pdf Computing the envelope for stepwise constant resource allocations]', 2001.
+ 1. N. Muscettola. '[http://www-rcf.usc.edu/~skoenig/icaps/icaps04/icapspapers/ICAPS04MuscettolaN.pdf Incremental Maximum Flows for Fast Envelope Computation]', ICAPS, 2004.
+ 1. Dechter, R.; Meiri, I.; and Pearl, J. _Temporal Constraint Networks_. Artificial Intelligence 49(1): 61--95, 1991. 13
+ 1. Nitin Chandrachoodan, Shuvra S. Bhattacharyya, K. J. Ray Liu. _Adaptive Negative Cycle Detection in Dynamic Graphs_. Proceedings of International Symposium on Circuits and Systems (ISCAS 2001)
+ 1. L. Michel, P. Van Hentenryck. _Iterative Relaxations for Iterative Flattening in Cumulative Scheduling_. ICAPS, 2004
