@@ -77,7 +77,7 @@ lt(0,goal1.start);
 lt(goal1.start,10);
 }}}
 = Instantiate and run a Solver =
-EUROPA comes with a simple script called [makeproject] which generates the minimal C++ and Java applications to run a planner on your model. You can then tailor those applications to your own purposes, or use them as an example to embed EUROPA into your own application. This will create a new project called Light in your ~/Light directory :
+EUROPA comes with a simple script called [MakeprojectPage makeproject] which generates the minimal C++ and Java applications to run a planner on your model. You can then tailor those applications to your own purposes, or use them as an example to embed EUROPA into your own application. This will create a new project called Light in your ~/Light directory :
 
 {{{
 % $EUROPA_HOME/bin/makeproject Light ~
@@ -125,14 +125,14 @@ http://europa-pso.googlecode.com/svn/wiki/images/Examples-Light0.jpg
 In the "Solver" window, hit the "Go" button to have the solver run. The solver should finish after 7 steps, satisfying the goal that was specified in Light-initial-state.nddl (that is, to turn the light off by time=10).
 
 = Examine Results =
-You can now run the method showPlan() defined in [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]. Just go into the "Console" window, type "showPlan()" then <enter>.
+You can now run the method showPlan() defined in [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]. Just go into the "Console" window, type "showPlan()" then `<`enter`>`.
 
 http://europa-pso.googlecode.com/svn/wiki/images/Examples-Light1.jpg
 
 You can now see that the planner decided that :
 
- * bulb1 is On from ![0] to ![1,9] and Off from ![1,9] to [infinity]
- * lightSwitch1 is turned off at time ![0,8]
+ * bulb1 is On from `[`0`]` to `[`1,9`]` and Off from `[`1,9`]` to `[`infinity`]`
+ * lightSwitch1 is turned off at time `[`0,8`]`
 
 The intervals mean that the action or state change could happen at any point in the interval, so for instance, "lightSwitch1 is turned off at time ![0,8]" means that lightSwitch1 could be turned off at time 0, or at time 1, ..., or at time 8. You can modify your model or EUROPA's configuration to generate grounded plans (where all the values are points, instead of intervals), if that's what you want for your particular application.
 
@@ -145,5 +145,5 @@ The details of how to embed EUROPA into your application are provided [Embedding
  * See the [EuropaExamples Examples] page for more advanced examples that can serve as starting points for your own model, or just to learn more about what EUROPA can do.
  * Read a high-level overview of the [PlanningApproach planning components] in EUROPA.
  * Learn the [EuropaDocs details] about modeling in NDDL, configuring the built-in solver, extending EUROPA with custom constraints/solvers/etc and using EUROPA's debugging tools.
- * How to create your own [makeproject project.]
+ * How to create your own [MakeprojectPage makeproject project.]
  * How to [EmbeddingEUROPA embed] your model into a C++ or Java application.
