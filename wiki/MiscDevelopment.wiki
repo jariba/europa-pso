@@ -14,6 +14,3 @@ The area that follows is intended to be a sandbox for the EUROPA developers, whe
  * [NotebookTristanSmith Tristan Smith]
  * [NotebookPengDai Peng Dai]
  * [NotebookMarkRoberts Mark Roberts]
-
-----
-[DocImgs Images] (referenced throughout the documentation)
