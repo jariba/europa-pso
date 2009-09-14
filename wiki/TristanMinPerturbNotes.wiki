@@ -1,0 +1,52 @@
+#summary Tristan's notes on min perturb heuristic used in Dynamic EUROPA
+
+*See DynamicEuropaNotes for a description of what they do.*
+
+Also, see http://europa-pso.googlecode.com/svn/wiki/documents/MAPGEN-ICAPS05.doc 
+
+== TODO ==
+ * Complete these notes
+ * See below question about Solver::reset
+ * See Paul's latest email - is that method called by code I'm looking at?
+ * Ask Paul how it is that the same solution won't be obtained even if it's a possible one
+ * Talk to Mike about how he might incorporate what DynamicEUROPA did into current architecture
+ * Get good example that exercises various capabilities of system so we can test anything we implement
+ * Overview of existing research (ask Paul and David if they know of any, for starters).  Javier is doing this
+ * Move the existing !DynamicEuropa implementation over (just move the code over - should be easy, ONCE I understand the code!)
+ * Try to implement a more generic or better version for the general case
+
+== Example Perturbations ==
+ * A variable range is further restricted (temporal variables are one example).
+ * A constraint is updated or added
+ * Goal is changed
+ * Initial state changes
+ * Resource information is updated
+ * Indirect results of perturbation could be:
+   * Don't need a token anymore
+   * Merge not possible anymore
+   * New merge is possible
+   * Optional goal now reachable (or now no longer reachable)
+
+== Brainstorming Notes ==
+ * I don't think we'll have access to any of the Solver pieces (for example the search tree), since we'll want this to work with built-in solvers too (?)
+ * There's some similarity to what Mike was recently talking about regarding saving all transactions so that SACE can start up again with previous plan!
+ * Start with easy steps, perhaps:
+   * Port over the DynamicEUROPA stuff, or
+   * Use my basic approach (record everything, then solve from scratch?)
+ * Note that a min perturb solver subsumes a solver that resolves conflicts - perhaps focus on the latter first (should be easier, but isn't obvious how to do even that).
+ * Generic minperturb involves three pieces (how does this generalize what Dynamic EUROPA does?):
+   * Unbound variables should be easy - use reference time to set as close as possible
+   * What to do about threats?
+   * Open condidtions - perhaps also just do what was done before
+ * QUESTION:  a) Unspecify everything but record, or b) local planning approach.  In other words, a) Use built-in solver or b) write new solver.
+ * Undoing decisions will result in new activity ids next time, so we can use them to store reference data (and if variable contains preference, it would be lost!)
+ * As DynamicEUROPA guys do, it is possible to restart the solver, without restarting the current state (reset eliminates decision stack! TODO:  Is this true, or does eliminating stack undo those things??? SOS
+ * How to distinguish between original and planner-imposed constraints?
+ * Why not simply take advantage of the ability to be in an inconsistent state and continue whatever search we're doing?  Either start in the previous state, or just load the previous state in, if necessary.
+ * A modification of existing search where:
+   * Each step does something that matches the final state in the old situation.  If it can't, do nothing and branch on a different variable (ie will make everything how it was as much as possible, before starting to set things as close as possible).
+   * Variable issues (what value to choose) are different than object issues (whether to activate, merge, etc)
+ * Save a backup copy of current plan database.  Then start from scratch.  Implement something like existing chronological search:
+   * At decision point, make choices to mimic what's in saved database
+   * If that makes things inconsistent, skip handling that flaw for now (ie recreate as much as possible that is identical)
+   * Once we get to a point where we must deviate in some way from previous plan, just start the usual search (or any other algorithm) from there
