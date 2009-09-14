@@ -1,0 +1,66 @@
+#summary Overview of using the PSUI tools.
+
+[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/PSDesktop.java PSDesktop] is a Java application that allows the user to drive EUROPA interactively by making use of the [PSEngine] client interface, and a number of prepackaged UI [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui components].
+
+= Command Line arguments =
+
+PSDesktop takes 2 arguments :
+
+    * Debug Mode : must be "g" to load the debug version of the EUROPA libraries, or "o" to load the optimized version.
+    * bsh file (optional) : filename of the [http://www.beanshell.org BeanShell] file that is executed upon start
+
+
+= Running PSDesktop =
+
+There several ways to run PSDesktop (the last two have not been tested recently):
+    
+    * run [MakeprojectPage makeproject] then go to the new project directory and run "ant"
+    * if you don't want to create a new project, copy [source:PLASMA/trunk/src/PLASMA/System/component/PSUI/.ant.psui.properties .ant.psui.properties] to your home directory, modify appropriately and run "ant" from [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI $EUROPA_HOME/../../src/PLASMA/System/component/PSUI]
+    * create your own Java project from scratch and include nddl.jar,PSEngine.jar and PSUI.jar (all found under $EUROPA_HOME/dist/europa/lib) in your classpath. Also make sure that you LD_LIBRARY_PATH includes the library directory. You'll want to run org.ops.psui.PSDesktop.main()
+
+Once you run ant under any of these scenarios, you'll get the PSDesktop UI :
+
+{{{
+% cd $EUROPA_HOME/examples/Light
+% ant
+Buildfile: build.xml
+
+init:
+
+compile:
+
+run:
+     [echo] Running Light project
+     [java]  autoWrite 0
+     [java] [XMLInterpreter:InterpretedObject]Initialized variable:bulb1.mySwitch_ to OBJECT-LightSwitch:CLOSED{switch1} in constructor
+}}}
+
+
+http://europa-pso.googlecode.com/svn/wiki/images/PSDesktop-1.jpg
+
+In the [http://www.beanshell.org BeanShell] console window you can type in Java statements that allow you to drive EUROPA interactively through its Java API (see below for the name of the exposed variables).
+
+In the NDDL console you can type in NDDL statements that will be intrepreted as soon as you complete a valid NDDL statement and hit enter.
+
+= Variables exposed through !BeanShell =
+
+In the [http://www.beanshell.org BeanShell] console, you'll have access to the following variables :
+    * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/base/PSEngine.hh PSEngine]*: this will give you access to the EUROPA engine, you can create a solver, query the plan database, execute NDDL scripts, in general perform any task needed to drive EUROPA to load a model and create a plan. You can also use this interface to create your own custom solver, see for instance [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/NQueens/TSNQueensSolver.java TSNQueensSolver.java]
+    * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/PSDesktop.java PSDesktop]*: this will give you access to many utility methods to create new desktop windows, display tables of tokens, create a solver, etc.
+
+
+    
+= PSUI Components =
+
+The package [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui here] contains a number of components that make it easy to visualize your plan and interact with EUROPA :
+PLASMA/trunk/src/PLASMA/System/component
+
+    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/gantt/PSGantt.java PSGantt] : allows you to see the tokens on a timeline as a gantt chart
+    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/chart/PSChart.java PSChart] : allows you to see resource profiles as charts
+    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/solver/PSSolverDialog.java PSSolverDialog] : allows you to drive a solver interactively and see its status as it tries to achieve the goals you specified for it
+    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/mouse ActionDetails and ActionViolation] : allows you to easily display violation and detail information about actions in your plan as you mouse over actions in other components (for instance a gantt chart)
+
+You can see how all these components can be used together in the bsh files for the EUROPA [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples examples]. For instance, below is a screenshot of the UI that is set up in [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/UBO/UBO.bsh UBO.bsh] for a Resource Scheduling application. Using this component based approach it only took around 10 lines of code to set up all the components seen below : 
+
+http://europa-pso.googlecode.com/svn/wiki/images/Example-UBO0.jpg
+
