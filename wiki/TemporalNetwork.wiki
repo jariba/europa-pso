@@ -1,0 +1,32 @@
+#summary EUROPA's temporal network.
+
+= Temporal Network Overview =
+
+The temporal network is responsible for efficiently ensuring consistency with temporal constraints. To use the temporal network, one instantiates a !TemporalPropagator, which will register itself with a supplied constraint engine. One can attach a listener to the temporal network in order to monitor events in the temporal network. There is also a special purpose temporal advisor defined for the [BakSTP STP] as part of the !TemporalNetwork module.
+
+== API ==
+
+The main class in the temporal network is the !TemporalPropagator. Instantiating the !TemporalPropagator will create a !TemporalNetwork. It will also associate the propagator with the given constraint engine.
+
+The temporal network can be monitored by adding a !TemporalNetworkListener to the !TemporalPropagator. The temporal network can be queried through four reader functions defined on !TemporalPropagator.
+
+Other key classes include the [ConstraintLibraryReference#Temporal_Constraints temporal constraints].
+
+== Using the Temporal Network API ==
+
+The "testTemporalPropagation" in the !TemporalNetwork module tests provides a good example of how to instantiate and use the !TemporalNetwork.
+
+The components of this module demonstrate how to augment system behavior through inheritance.
+
+    * STNTemporalAdvisor from !DefaultTemporalAdvisor
+    * !TemporalPropagator from Propagator
+    * !TemporalDistanceConstraint from !AddEqualConstraint
+
+== Class Diagrams ==  	 
+http://europa-pso.googlecode.com/svn/wiki/images/temporal-network-uml-class-diagram.jpg
+
+*Figure 1:* Distance Graph and Temporal Network. 
+
+http://europa-pso.googlecode.com/svn/wiki/images/temporal-network-collaborators.jpg
+
+*Figure 2:* Temporal Network Collaboration Diagram 
