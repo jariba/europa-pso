@@ -1,0 +1,13 @@
+#summary Example of accessing custom C++ code from Java.
+
+A new project automatically includes its own module that is loaded into the EUROPA engine and stub C++ files to hold custom code (see [MakeprojectPage makeproject]). How to easily extend EUROPA itself with C++ code is shown [CustomConstraints here].  However, we have also made it easy to access your custom C++ code from Java.  Consider the !ExampleCustomConstraint project [http://babelfish.arc.nasa.gov/trac/europa/browser/benchmarks/tags/EUROPA-2.2/ExampleCustomConstraint here], which can be downloaded with:
+{{{
+svn co http://europa-pso.googlecode.com/svn/benchmarks/tags/EUROPA-2.2/ExampleCustomConstraint ExampleCustomConstraint
+}}}
+
+We have added a simple 'Foo' class that is written in C++ and accessed in Java as follows:
+ # Define 'Foo' with method 'bar' in !ExampleCustomConstraint.hh.
+ # Add the signature to !ExampleCustomConstraint.i so that the method will be swig-wrapped.
+ # Call the method from !ExampleCustomConstraint.bsh.
+
+Note that we've also shown the same method called from the C++ side in !ExampleCustomConstraint-Main.cc.
