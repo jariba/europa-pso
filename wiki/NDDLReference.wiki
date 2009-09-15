@@ -1,6 +1,7 @@
 #summary NDDL Reference manual
 <wiki:toc max_depth="2" />
-= Modeling with NDDL = 
+
+= Introduction = 
 NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is based on a number of concepts described  [PlanningApproach here]. The reader is strongly advised to review that material prior to working through this chapter.
 
 NDDL is introduced here in something of a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [RoverExample Mars Rover example/tutorial].
@@ -17,6 +18,7 @@ Variables and constraints are the basic building blocks of EUROPA. They can be i
 
 In each of the above cases, the term _domain_ reflects the base set of values in the domain of the variable. The variable cannot contain any values not present in this initial domain unless the type of the variable is _open_.^2^ This domain is called the _base domain_.
 
+== Basic Declaration ==
 Figure 1 provides examples of different forms of variable declaration and restriction. Notice in particular the use of _enum_ and _typedef_ keywords which introduce user-defined types. Notice also that _int_ and _float_ types are restricted to intervals and that the decimal point is only used (and must be used) for _float_ values.
 
 {{{
@@ -41,8 +43,6 @@ INT_TEN v5;
 Figure 2 provides a NDDL specification of a simple _Constraint Satisfaction Problem_ or CSP. A CSP is given by a set of variables and a set of constraints. The problem is solved when all variables are assigned a value and all constraints are satisfied. In this case, the variables are the integer variables a, b, c, and d. Each is initialized with an initial domain of values. The solution to the problem is: a {5}, b{5}, c{15}, d {20}.
 
 {{{
-#include "Constraints.nddl"
-
 // Declare variables of type int.
 int a; // Declare a variable of type int. It's base domain = `[`-inf +inf`]`
 int b = `[`-inf +inf`]`; // Equivalent declaration but making the base domain explicit.
@@ -58,6 +58,25 @@ a == 5;
 }}}
 
 *Figure 2*: A simple _Constraint Satisfaction Problem_ in NDDL illustrating global variable declaration and constraint allocation.
+
+== Aritmetic Constraints ==
+NDDL supports explict use of the common relations (_==_, _<_, _<=_, _>_, _>=_, _!=_) and operators (_+_, _-_, _*_, _/_).
+For example, the following code fragment includes legal expressions:
+{{{
+a + b < 2 * c;
+a == c * d;
+a != e 
+}}}
+
+It is legal to include logical relations. For example, the following NDDL fragment restates the above constraints in a sinlge line:
+{{{
+a + b < 2 * c && a == c * d && a != e 
+}}}
+
+Disjunctions are also permitted:
+{{{
+a < 10 || a > 100;
+}}}
 
 = Classes =
 A class is a user-defined abstract data type that is used when either:
