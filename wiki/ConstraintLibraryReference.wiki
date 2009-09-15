@@ -1,7 +1,7 @@
 #summary This page documents available constraints in the EUROPA constraint library.
 
 = Constraints in NDDL =
-The table that follows overviews the built-in constraints, available in NDDL or through the programmatic API.  Note that:
+The tables that follow overviews built-in constraints and functions, available in NDDL or through the programmatic API.  Note that:
 
  * Many constraints can have a variable number of parameters;  we use letters (a,b,etc) to indicate required parameters, and '...' to indicate that subsequent parameters are optional.
  * In the _Variable Types_ column, we describe restrictions on the variable types as follows:
@@ -11,53 +11,6 @@ The table that follows overviews the built-in constraints, available in NDDL or 
  *  We use _lb_ and _ub_ to refer to the lower and upper bounds, respectively, of a variable's domain.
  * Maintainance of constraints means that for any value in the domain of any variable, there exists values in the domains of all other variables such that the desired property holds.  For example, eq(a,b) means that for any x in the domain of a, there is a y in the domain of b such that x == y (ie. it restricts the domains of a and b to be the intersection of those domains).
 
-== Temporal Constraints ==
-Note that temporal constraints will in most cases provide stronger propagation than similar constraints the follow since the Temporal Network will be used.  For example precedes(a,b) and leq(a,b) will enforce the same semantics; however, for the former, the Temporal Network will be able to do more propagation with other temporal constraints that involve variables a,b and detect conflicts earlier.
-
-|| * Constraint* || *Syntax* || * Description * || *Variable Types* ||
-|| temporalDistance || temporalDistance(a, b, c) || a+b=c || Numeric interval ||
-|| precedes || precedes(a,b) || a <= b || Numeric interval ||
-|| concurrent || concurrent(a,b) || a == b || Numeric interval ||
-
-In addition to the three basic temporal constraints, there are built-in temporal constraints for all Allen Relations ([wiki:DocReferences Allen, 1983]) among tokens.  Before listing those constraints, some distinctions are in order:
-
- * Like most constraints on this page, the three temporal constraints above are applied to variables. 
- * The temporal constraints below are applied to _Tokens_ (and implicitly invoke constraints between the _start_ and _end_ member variables of those Tokens).
- * The Allen temporal constraints here should not be confused with the Allen operators (with the same names, but different syntax) described in the [wiki:NDDLReference#SlaveAllocationandTemporalRelations NDDL Reference] (those Allen operators are different beast altogether because they can generate slave tokens etc.).
-
-|| *Constraint* || *Syntax* || *Implied Constraints* ||
-|| before || a before b || precedes(a.end, b.start); ||
-|| after || a after b || precedes(b.end, a.start); ||
-|| meets || a meets b || concurrent(a.end, b.start); ||
-|| met_by || a met_by b || concurrent(a.start, b.end); ||
-|| equals || a equal b || concurrent(a.start, b.start); concurrent(a.end, b.end); ||
-|| contains || a contains b || precedes(a.start, b.start); precedes(b.end, a.end); ||
-|| contained_by || a contained_by b || precedes(b.start, a.start); precedes(a.end, b.end); ||
-|| paralleled_by || a paralleled_by b || precedes(b.start, a.start); precedes(b.end, a.end); ||
-|| parallels || a parallels b || precedes(a.start, b.start); precedes(a.end, b.end); ||
-|| starts || a starts b || concurrent(a.start, b.start); ||
-|| ends || a ends b || concurrent(a.end, b.end); ||
-|| ends_after || a ends_after b || precedes(b.end, a.end); ||
-|| ends_before || a ends_before b || precedes(a.end, b.end); ||
-|| ends_after_start || a ends_after_start b || precedes(b.start, a.end); ||
-|| starts_before_end || a starts_before_end b || precedes(a.start, b.end); ||
-|| starts_during || a starts_during b || precedes(b.start, a.start); precedes(a.start, b.end); ||
-|| contains_start || a contains_start b || precedes(a.start, b.start); precedes(b.start, a.end); ||
-|| ends_during || a ends_during b || precedes(b.start, a.end); precedes(a.end, b.end); ||
-|| contains_end || a contains_end b || precedes(a.start, b.end); precedes(b.end, a.end); ||
-|| starts_after || a starts_after b || precedes(b.start, a.start); ||
-|| starts_before || a starts_before b || precedes(a.start, b.start); ||
-
-== Comparison Constraints ==
-These constraints enforce <, >, =, !=, etc.
-
-|| * Constraint* || *Syntax* || * Description * || *Variable Types* ||
-|| eq || eq(a,b,...)|| a == b == ... || Comparable ||
-|| neq || neq(a,b) || a != b || Comparable ||
-|| lessThan || lessThan(a,b) || a < b || Numeric ||
-|| leq || leq(a,b) || a <= b || Numeric ||
-|| withinBounds || withinBounds(a,b,c) || a.lb >= b.lb, a.ub <= c.ub and b <= c || Comparable ||
-
 == Calculation Constraints ==
 These constraints enforce that one variable (usually _a_) is constrained by a calculation done on the remaining variables. 
 
@@ -65,18 +18,9 @@ These constraints enforce that one variable (usually _a_) is constrained by a ca
 || distanceSquares || distanceSquares(a,b,c) || c = sqrt(a + b) if a and b are singleton || Numeric intervals ||
 || calcDistance || calcDistance(a,b,c,d,e) || a is the Euclidean distance between points (b,c) and (d,e) || Numeric intervals ||
 || sin || sin(a,b) || a = sin(b) || Numeric intervals ||
-|| addEq || addEq(a,b,c) || a+b=c || Numeric intervals ||
-|| mulEq || mulEq(a,b,c) || a*b=c || Numeric intervals ||
-|| add!MulEq || add!MulEq(a,b,c,d) || a + (b*c)=d || Numeric intervals ||
-|| !GreaterThanSum || !GreaterThanSum(a,b,c,...) || a > b + c + ... || Numeric ||
-|| !LessThanSum || !LessThanSum(a,b,c...) || a < b + c + ... || Numeric ||
-|| !GreaterOrEqThanSum || !GreaterOrEqThanSum(a,b,c,...) || a >= b + c + ... || Numeric ||
-|| !LessOrEqThanSum || !LessOrEqThanSum(a,b,c,...) || a <= b + c + ... || Numeric ||
 || allDiff || allDiff(a,b,...) || Restrict all domains so the intersection of any pair of domains is empty || Comparable ||
 || !EqualMaximum || !EqualMax(a,b,...) || a = max(b,...) || Numeric ||
 || !EqualMinimum || !EqualMin(a,b,...) || a = min(b,...) || Numeric ||
-|| !EqualProduct || !EqualProduct(a,b,c) || a = b * c || Numeric Intervals ||
-|| !EqualSum || !EqualSum(a,b,c) || a = b + c || Numeric Intervals ||
 || !CountZeros || !CountZeros(a,b,...) || a is the count of the rest that can be zero || Numeric ||
 || !CountNonZeros || !CountNonZeros(a,b,...) || a is the count of the rest that can be non-zero || Numeric ||
 || diffSquare || diffSquare(a,b,c) || c = (a - b)^2^ if a and b are singleton || Numeric intervals ||
@@ -89,18 +33,6 @@ These constraints are likely to be used for set comparisons etc.  Note, however,
 || subsetOf || subsetOf(a,b) || a is a subset of b || Comparable ||
 || memberImply || memberImply(a,b,c,d) ||If a is subset of b, then require that c is subset of d || a and b comparable, c and d comparable ||
 || Lock || Lock(a,b) || Restrict a's domain to be contained in b's domain || Comparable ||
-
-== Conditional and Test Constraints ==
- * *Conditional Constraints*: The value of one variable (usually _a_) determines if a constraint among remaining variable must be enforced.
- * *Test Constraints*:  The value of one variable (usually _a_) can flip the constraint enforced among remaining variables.
-
-|| * Constraint* || *Syntax* || * Description * || *Variable Types* ||
-|| cond!AllDiff || cond!AllDiff(a,b,c,...)|| If a, then b != c && b != d && c != d && ... If not a, then !(b != c && b != d && c != d && ...)|| a bool, the rest comparable ||
-|| condEq || condEq(a,b,c,...) || If a, then b == c && b == d && c == d && ... If not a, then !(b == c && b == d && c == d && ...)|| a bool, the rest comparable ||
-|| !CondEqualSum || cond!EqualSum(a,b,c,d,...) || If a is true, then b = c + d ...  If a is false, b != c + d ...|| Numeric intervals ||
-|| testEQ || testEQ(a,b,c) || If a, then b == c If not a, then b != c || a numeric, b and c comparable ||
-|| testLEQ || testLEQ(a,b,c) || If a, then b <= c If not a, then b > c || Numeric ||
-|| !TestLessThan || !TestLessThan(a,b,c) || If a, then b < c If not a, then b >= c || Numeric ||
 
 == Object Hierarchy Constraints ==
 *NOTE*:  Unlike most constraints on this page, which are imposed on variables, these constraints are imposed on objects and tokens.
@@ -125,36 +57,5 @@ This ensures that the Navigator object used for the At token and the Instrument 
 == Miscellaneous Constraints ==
 || * Constraint* || *Syntax* || * Description * || *Variable Types* ||
 || UNARY ||NA ||Restrict a variable's domain:  given a variable and a domain, intersect them.Note that this constraint is only available internally and not exposed in nddl. || Anything ||
-|| neg || neg(a,b) || a >=0, b<=0, a+b==0 || Numeric intervals ||
 || or || or(a,b,...) || At least one of the variables must be true || Numeric ||
 || absVal || absVal(a,b) || a.lb >= 0, a.ub = max(abs(b.lb), abs(b.ub)), b.lb >= -a.lb, b.ub <= a.ub || Numeric ||
-
-== Deprecated Constraint Names ==
-Historically, other names have been used for the above constraints.  The following lists alternatives that are now deprecated:
-
-|| *Constraint Kept* || *Deprecated Equivalents* ||
-|| eq || Equal, asame, fasame ||
-|| addEq || !AddEqual, addeq ||
-|| mulEq || multEq, !MultEqual ||
-|| add!MulEq || !AddMultEqual, addmuleq ||
-|| allDiff || !AllDiff, adiff, fadiff, fneq ||
-|| card || Cardinality ||
-|| condEq || !CondAllSame, condeq, condasame ||
-|| !CountNonZeros || cardeq ||
-|| !EqualMaximum || fallmax ||
-|| !EqualMinimum || fallmin ||
-|| !EqualProduct || product ||
-|| !EqualSum || sum ||
-|| leq || !LessThanEqual ||
-|| lessThan || !LessThan, lt ||
-|| !LessOrEqThanSum || leqsum ||
-|| !TestLessThan || condlt ||
-|| withinBounds || !WithinBounds ||
-|| testEQ || !TestEqual ||
-|| testLEQ || condleq ||
-|| !TestLessThan || condlt ||
-|| memberImply || !MemberImply ||
-|| neq || !NotEqual ||
-|| or || for, Or ||
-|| subsetOf || !SubsetOf, singleton ||
-|| temporalDistance || temporaldistance ||
