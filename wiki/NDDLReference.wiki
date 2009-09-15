@@ -4,7 +4,7 @@
 = Introduction = 
 NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is based on a number of concepts described  [PlanningApproach here]. The reader is strongly advised to review that material prior to working through this chapter.
 
-NDDL is introduced here in something of a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [RoverExample Mars Rover example/tutorial].
+NDDL is introduced here in a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL transaction language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [RoverExample Mars Rover example/tutorial].
 
 *NOTE:* This page discusses the NDDL language.  To understand the NDDL parser and how to use it, see [NDDLParser NDDL Parser].
 
@@ -78,7 +78,21 @@ Disjunctions are also permitted:
 a < 10 || a > 100;
 }}}
 
-== User-defined Constraints ==
+== User-defined Relations and Functions ==
+NDDL and EUROPA are highly extendible. NDDL permits user-defined relations and functions to be directly integrated, one they have been registered with the [ConstraintRegistration EUROPA constraint engine]. _Constraints_ refer to relationships that apply among variables without any particular return type. For example:
+{{{
+int a, b, c;
+some_constraint_name(a, b, c);
+some_constraint_name(a, [10, 14], c);
+another_constraint_name(a, 2 * b, [2 4]);
+}}}
+
+_Functions_ are special classes of relations that have a specific output variable, allowing them to be naturally embedded in other expressions. The example below assumes the existence of a _max_ and _sqrt_ functions.
+{{{
+int a, b, c, d;
+c == max(a, b, c);
+d == sqrt(a) + sqrt(c * 4);
+}}}
 
 = Classes =
 A class is a user-defined abstract data type that is used when either:
@@ -496,7 +510,7 @@ else{
 }
 }}}
 
-The above NDDL rule fragment includes a declaration of a local variable and then provides 2 guarded branches based on values of that variable. Any legal relation expression is
+The above NDDL rule fragment includes a declaration of a local variable and then provides 2 guarded branches based on values of that variable. Any legal relational expression is
 permitted within a guard statement.
 
 Conjunctions are permitted. For example:
