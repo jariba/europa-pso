@@ -419,15 +419,15 @@ Navigator::At{
    // Allocate a token for the going predicate as a slave.  Impose a met_by temporal relation such that this met_by slave
    met_by(object.Going predecessor);
    // Constrain the slave so that it is going to this location
-   eq(predecessor.to, location);
+   predecessor.to == location;
 }
 
 Navigator::Going{
    meets(object.At successor);
-   eq(successor.location, to);
+   successor.location == to;
 
    met_by(object.At predecessor);
-   eq(predecessor.location, from);
+   predecessor.location == from;
 }
 }}}
 *Figure 7*: Bridging the gap with domain rules.
@@ -459,7 +459,7 @@ In the above, _this_ is used to refer to the master token context and can be use
 {{{
 any(Foo.p); // Allocates a slave of a predicate p with no label on a class Foo.
 any(var.p); // Allocates a slave of a predicate p with no label on a class given by the type of var and assigned to an
-  // object in the domain of var, where var is an object variable.
+// object in the domain of var, where var is an object variable.
 Any(Foo.p t1); // Unconstrained slave t1
 Any(Foo.p t2); // Unconstrained slave t2
 t2 meets t1; // An Allen relation between 2 slaves 
@@ -469,30 +469,28 @@ this meets t2; // An Allen relation between the master and the slave
 The supported binary temporal relations^6^ are :
 
 || *Relationship* || *Implied Constraints* ||
-|| before || precedes(origin.End, target.Start); ||
-|| after || precedes(target.End, origin.Start); ||
-|| meets || concurrent(origin.End, target.Start); ||
-|| met_by || concurrent(origin.Start, target.End); ||
-|| equal or equals || concurrent(origin.Start, target.Start); concurrent(origin.End, target.End); ||
-|| contains || precedes(origin.Start, target.Start); precedes(target.End, origin.End); ||
-|| contained_by || precedes(target.Start, origin.Start); precedes(origin.End, target.End); ||
-|| paralleled_by || precedes(target.Start, origin.Start); precedes(target.End, origin.End); ||
-|| parallels || precedes(origin.Start, target.Start); precedes(origin.End, target.End); ||
-|| starts || concurrent(origin.Start, target.Start); ||
-|| ends || concurrent(origin.End, target.End); ||
-|| ends_after || precedes(target.Start, origin.End); ||
-|| ends_before || precedes(origin.End, target.Start); ||
-|| ends_after_start || precedes(target.Start, origin.End); ||
-|| starts_before_end || precedes(origin.Start, target.End); ||
-|| starts_during || precedes(target.Start, origin.Start); precedes(origin.Start, target.End); ||
-|| contains_start || precedes(origin.Start, target.Start); precedes(target.Start, origin.End); ||
-|| ends_during || precedes(target.Start, origin.End); precedes(origin.End, target.End); ||
-|| contains_end || precedes(origin.Start, target.End); precedes(target.End, origin.End); ||
-|| starts_after || precedes(target.Start, origin.Start); ||
-|| starts_before || precedes(origin.Start, target.Start); ||
+|| before || origin.end <= target.start ||
+|| after || target.end <= origin.start ||
+|| meets || origin.end == target.start ||
+|| met_by || origin.start == target.end ||
+|| equal or equals || origin.start == target.start && origin.end == target.end && origin.duration == target.duration ||
+|| contains || origin.start <= target.start && target.end <= origin.end && origin.duration >= target.duration ||
+|| contained_by || target.start <= origin.start && origin.end <= target.end && origin.duration <= target.duration ||
+|| paralleled_by || target.start <= origin.start && target.end <= origin.end ||
+|| parallels || origin.start <= target.start && origin.end <= target.end ||
+|| starts || origin.start == target.start ||
+|| ends || origin.end == target.end ||
+|| ends_after || target.start <= origin.end ||
+|| ends_before || origin.end <= target.start ||
+|| ends_after_start || target.start <= origin.end ||
+|| starts_before_end || origin.start <= target.end ||
+|| starts_during || target.start <= origin.start && origin.start <= target.end ||
+|| contains_start || origin.start <= target.start && target.start <= origin.end ||
+|| ends_during || target.start <= origin.end && origin.end <= target.end ||
+|| contains_end || origin.start <= target.end && target.end <= origin.end ||
+|| starts_after || target.start <= origin.start ||
+|| starts_before || origin.start <= target.start ||
 || any || None ||
-
-Note that the same keywords can be used to express Allen constraints using different syntax.  Such constraints do not involve slave tokens and are documented in the [ConstraintLibraryReference#TemporalConstraints Constraint Library Reference].
 
 == Variables and Constraints ==
 The material presented above for handling variables and constraints at the global level applies equally in the context of rules. All variables accessible in a rule context can be incorporated into constraints in precisely the same manner as seen earlier. This was been illustrated in Figure 16 where the equality constraint was used within rules for _At_ and _Going_ predicates. The scope for accessing variables in a rule includes:
@@ -510,7 +508,7 @@ class C{B b; C(){b = new AB();}}
 Given the above structure, any variable declared of type _C_ can be navigated to obtain a structurally related variable as follows:
 C c; // A local variable of type C. Could instead be a variable on a token, a global, etc.
 int j;
-eq(c.b.a.i, j); // Traverse the object structure to access a specific variable.
+c.b.a.i ==  j; // Traverse the object structure to access a specific variable.
 }}}
 
 == Guards ==
@@ -521,28 +519,17 @@ Bool b;
 if(b == true){
 	<rule statements>
 }
-if(b == false){
+else{
 	<rule statements>
 }
 }}}
 
-The above NDDL rule fragment includes a declaration of a local variable and then provides 2 guarded branches based on values of that variable. Guards are only evaluated when the variable in question is specified to a singleton. Only the test for equality is currently supported. Other common forms for expressing conditional statements such as _else_ or _switch/case_ combinations are not currently supported. One can also have:
+The above NDDL rule fragment includes a declaration of a local variable and then provides 2 guarded branches based on values of that variable. Any legal relation expression is
+permitted within a guard statement.
 
+Conjunctions are permitted. For example:
 {{{
-if(v){
-	<rule statements>
-}
-}}}
-
-This has the semantics of firing if and only if the variable v is specified to a singleton value.
-It is not possible to specify multiple conditions in a single guard statement at this time. Instead, guards can be nested. For example:
-
-{{{
-if(a==1){
-    if(b==2) {
-        if(c==3){..}
-    }
-}
+if(a == 1 && b == 2 && c == 3){..}
 }}}
 
 == Filtering ==
@@ -555,8 +542,8 @@ In NDDL this could be another rule, or an addendum to the prior rule.  As a new 
 {{{
 Navigator::Going{
 Path p;
-eq(p.from, from);
-eq(p.to, to);
+p.from == from;
+p.to == to;
 }
 }}}
 
