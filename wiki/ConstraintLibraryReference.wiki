@@ -9,7 +9,7 @@ The tables that follow overviews built-in constraints and functions, available i
    * *Numeric Intervals*:  Same as Numeric except that eumerated types (enumerated numeric types are possible) are disallowed.
    * *Comparable*:  Comparable variables must all be numeric, or must all be the same type.
  *  We use _lb_ and _ub_ to refer to the lower and upper bounds, respectively, of a variable's domain.
- * Maintainance of constraints means that for any value in the domain of any variable, there exists values in the domains of all other variables such that the desired property holds.  For example, eq(a,b) means that for any x in the domain of a, there is a y in the domain of b such that x == y (ie. it restricts the domains of a and b to be the intersection of those domains).
+ * Maintainance of constraints means that for any value in the domain of any variable, there exists values in the domains of all other variables such that the desired property holds.  For example, _a == b_ means that for any x in the domain of a, there is a y in the domain of b such that x == y (ie. it restricts the domains of a and b to be the intersection of those domains).
 
 == Calculation Constraints ==
 These constraints enforce that one variable (usually _a_) is constrained by a calculation done on the remaining variables. 
