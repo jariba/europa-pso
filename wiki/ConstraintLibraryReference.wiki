@@ -48,7 +48,7 @@ Here's a snippet of code showing the use of the commonAncestor constraint:
 {{{
 Instrument::TakeSample{
      contained_by(Navigator.At at);
-     eq(at.location, rock);
+     at.location == rock;
      Rover rovers;
      commonAncestor(at.object, this.object, rovers);
 }}}
