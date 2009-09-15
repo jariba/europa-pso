@@ -35,7 +35,7 @@ enum SPEED {SLOW, MEDIUM, FAST};
 SPEED v4;             // Declares a variable with an enumeration of values {SLOW, MEDIUM, FAST}
 
 // Use custom type definitions
-typedef int [1 10] INT_TEN;
+typedef int [1, 10] INT_TEN;
 INT_TEN v5;
 }}}
 *Figure 1*: Examples of different forms of variable declaration and restriction
@@ -47,7 +47,7 @@ Figure 2 provides a NDDL specification of a simple _Constraint Satisfaction Prob
 int a; // Declare a variable of type int. It's base domain = [-inf +inf]
 int b = [-inf +inf]; // Equivalent declaration but making the base domain explicit.
 int c = 15; // In place initialization to a singleton value. Base domain = 40.
-int d = [1 20]; // In place initialization to a finite interval. Base domain = [1 20].
+int d = [1, 20]; // In place initialization to a finite interval. Base domain = [1, 20].
 
 // Post constraints on variables
 a == b;
@@ -77,6 +77,8 @@ Disjunctions are also permitted:
 {{{
 a < 10 || a > 100;
 }}}
+
+== User-defined Constraints ==
 
 = Classes =
 A class is a user-defined abstract data type that is used when either:
@@ -502,11 +504,11 @@ The supported binary temporal relations^6^ are :
 || ends_before || origin.end <= target.start ||
 || ends_after_start || target.start <= origin.end ||
 || starts_before_end || origin.start <= target.end ||
-|| starts_during || target.start <= origin.start && origin.start <= target.end ||
-|| contains_start || origin.start <= target.start && target.start <= origin.end ||
-|| ends_during || target.start <= origin.end && origin.end <= target.end ||
-|| contains_end || origin.start <= target.end && target.end <= origin.end ||
-|| starts_after || target.start <= origin.start ||
+|| starts_during || origin.start >= target.start && origin.start < target.end ||
+|| contains_start || origin.start <= target.start && origin.end > target.start ||
+|| ends_during || origin.end > target.start && origin.end <= target.end ||
+|| contains_end || origin.start < target.end && origin.end >= target.end ||
+|| starts_after || origin.start >= target.start ||
 || starts_before || origin.start <= target.start ||
 || any || None ||
 
@@ -520,7 +522,7 @@ The material presented above for handling variables and constraints at the globa
 It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ operator.^7^ For example, suppose the following class structure:
 
 {{{
-class A{int i = [1 10];}
+class A{int i = [1, 10];}
 class B{A a; B(){a = new A();}}
 class C{B b; C(){b = new AB();}}
 Given the above structure, any variable declared of type _C_ can be navigated to obtain a structurally related variable as follows:
@@ -621,7 +623,7 @@ The NDDL transaction language has many applications. The most common one is the 
 
 We have already covered variable and constraint creation using the NDDL transaction language.  We showed:
  * Declaration of a variable with a default base domain - e.g.  {{{ int i; Colors colors; }}}
- * Declaration of a variable with an explicit and restricted base domain - e.g. {{{ int i = 6; int j = [10 40]; Colors colors = Blue; }}}
+ * Declaration of a variable with an explicit and restricted base domain - e.g. {{{ int i = 6; int j = [10, 40]; Colors colors = Blue; }}}
  * Declaration of an object variable and allocation of an object - e.g. {{{ Foo f = new Foo(); }}}
  * Declaration of one variable by assignment of the contents of another - e.g. {{{ Foo b = f; }}}
  * Allocation of a constraint - e.g. {{{ eq(i, j); neq(j, k); }}}
