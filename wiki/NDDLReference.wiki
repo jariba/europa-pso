@@ -12,7 +12,7 @@ NDDL is introduced here in something of a bottom up fashion, starting with varia
 
 Variables and constraints are the basic building blocks of EUROPA. They can be introduced in a number of ways, and in a range of scopes. The following basic forms for variable declaration are supported:
 
- * _type label_: Declares a variable of type _type_ with the name _label_ and allocates a default domain as the base domain based on the type. The available primitive types are: _int_, _float_, _bool_ and _string_. In addition, a type can be a user-defined enumeration or class. The default base domain for _int_ is _`[`-inf +inf`]`_, and for _float_ it is _`[`-inff +inff`]`_ i.e. from negative to positive infinity. Variables of type _bool_ have a base domain of _{false, true}_. Variables of type _string_ are a special case requiring a singleton value on declaration (see our [StringWarning warning]). 
+ * _type label_: Declares a variable of type _type_ with the name _label_ and allocates a default domain as the base domain based on the type. The available primitive types are: _int_, _float_, _bool_ and _string_. In addition, a type can be a user-defined enumeration or class. The default base domain for _int_ is _[-inf +inf]_, and for _float_ it is _[-inff +inff]_ i.e. from negative to positive infinity. Variables of type _bool_ have a base domain of _{false, true}_. Variables of type _string_ are a special case requiring a singleton value on declaration (see our [StringWarning warning]). 
  * _type label = value_: Declares a variable of type _type_ with the name _label_ and sets the base domain to the singleton value given by _value_.
  * _type label = domain_: Declares a variable of type _type_ with the name _label_ and sets the base domain to _domain_. For _int_ and _float_ the domain is described as an interval.
 
@@ -23,8 +23,8 @@ Figure 1 provides examples of different forms of variable declaration and restri
 
 {{{
 //Primitives with default base domains
-int v0;               // Declares an integer variable v0 with a domain `[`-inf +inf`]`
-float v1;             // Declares a float variable v1 with a domain `[`-inff +inff`]`
+int v0;               // Declares an integer variable v0 with a domain [-inf +inf]
+float v1;             // Declares a float variable v1 with a domain [-inff +inff]
 bool v2;              // Declares a bool variable v2 with a domain {false, true}
 
 // String requires explicit instantiation
@@ -44,10 +44,10 @@ Figure 2 provides a NDDL specification of a simple _Constraint Satisfaction Prob
 
 {{{
 // Declare variables of type int.
-int a; // Declare a variable of type int. It's base domain = `[`-inf +inf`]`
-int b = `[`-inf +inf`]`; // Equivalent declaration but making the base domain explicit.
+int a; // Declare a variable of type int. It's base domain = [-inf +inf]
+int b = [-inf +inf]; // Equivalent declaration but making the base domain explicit.
 int c = 15; // In place initialization to a singleton value. Base domain = 40.
-int d = `[`1 20`]`; // In place initialization to a finite interval. Base domain = `[`1 20`]`.
+int d = [1 20]; // In place initialization to a finite interval. Base domain = [1 20].
 
 // Post constraints on variables
 a == b;
@@ -59,8 +59,8 @@ a == 5;
 
 *Figure 2*: A simple _Constraint Satisfaction Problem_ in NDDL illustrating global variable declaration and constraint allocation.
 
-== Aritmetic Constraints ==
-NDDL supports explict use of the common relations (_==_, _<_, _<=_, _>_, _>=_, _!=_) and operators (_+_, _-_, _*_, _/_).
+== Arithmetic Constraints ==
+NDDL supports explict use of the common relations (_==_, _<_, _<=_, _>_, _>=_, _!=_) and operators (_+_, _-_, _`*`_, _/_).
 For example, the following code fragment includes legal expressions:
 {{{
 a + b < 2 * c;
