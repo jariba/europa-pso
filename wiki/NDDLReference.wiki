@@ -265,7 +265,6 @@ A number of items are worth noting:
  1. An instance of _Navigator_ is allocated prior to creating any token. If a token of the _Navigator_ class were created prior to allocation of an object, then the base domain of the built-in object variable would be empty. This would yield an inconsistent state and is not permitted for tokens.
  1. Unlike object member variables, token parameter variables are not initialized specially during allocation. Therefore, the base domain is derived from the defaults in the predicate declaration. Further restriction is possible using the assignment statement.
  1. A scoping operator is used to access variables of tokens. This example accesses built-in variables (e.g. _start_, _end_) as well as user-defined parameter variables (e.g. _location_).
- 1. The constraint _temporalPrecedence_^3^ is used to impose a temporal constraint between the time points of respective tokens.
 
 
 == Inheritance ==
