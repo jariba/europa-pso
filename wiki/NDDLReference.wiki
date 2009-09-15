@@ -370,56 +370,8 @@ Base v1;
 The above will result in 3 objects named _b1_, _b2_, and _b3_. It will also result in 5 variables. Variables _b1_, _b2_ and _b3_ will all have singleton domains. Variables _v0_ and _v1_ will have domains of _{b2}_ and _{b1, b2, b3}_ respectively.
 
 
-== Resources ==
-
-EUROPA has some pre-defined multi-capacity numeric resources from which it is often useful to inherit:
-
- * *Resource*: Represents any resource and has a single predicate, {{{change}}}, used to represent additions or subtractions from the resource.
- * *Reusable*: Represents a renewable/reusable resource such as labor.  Has a {{{uses}}} predicate whose {{{quantity}}} field indicates the amount of resource used; the resource is used for the duration of the {{{uses}}} token and then is available again.
- * *Reservoir*: Represents a consumable resource such as battery power.  Has {{{produce}}} and {{{consume}}} predicates to represent increases and decreases, respectively, of the resource.
- * *!UnaryResource*: A reusable, discrete, single-capacity resource and is efficiently supported using a timeline rather than independent consume and produce transactions.
-
-There are usually constraints on how resources can be used and produced.  The following member variables (all floats) represent those constraints and can be initialized in the class constructors or updated later:
-
- * _initialCapacity_:  The resource's starting level.
- * _levelLimitMin_:  The resource's minimum level.
- * _levelLimitMax_:  The resource's maximum level.
- * _productionRateMax_:  The resource's maximum production rate - the most that can be added per time unit. 
- * _productionMax_:  The resource's maximum production - the most that can be added at one time.
- * _consumptionRateMax_:  The resource's maximum consumption rate - the most that can be removed per time unit.
- * _consumptionMax_:  The resource's maximum consumption - the most that can be removed at one time.
-
-See [source:PLASMA/trunk/src/PLASMA/Resource/component/NDDL/Resources.nddl] for the complete NDDL specification of the resource classes. 
-
-Here is some code that shows a _Battery_ class that inherits from _Resource_ and sets the initial capacity and minimum and maximum levels in the constructor:
-
-{{{
-class Battery extends Resource {
-  Battery(float ic, float ll_min, float ll_max){ 
-    super(ic, ll_min, ll_max);
-  }
-}
-}}}
-
-Here is a predicate that consumes battery power:
-
-{{{
-Bulb::lightOn{ 
-   starts(Battery.change tx); 
-   tx.quantity == -600; // consume battery power
-}
-}}}
 
 Internally, EUROPA uses maximum flow and incremental maximum flow (the default) algorithms to compute resource envelopes.  These are documented in [http://ic.arc.nasa.gov/publications/pdf/2001-0308.pdf here] ([DocReferences Muscettola, 2001]) and [http://www-rcf.usc.edu/~skoenig/icaps/icaps04/icapspapers/ICAPS04MuscettolaN.pdf here] ([DocReferences Muscettola, 2004]).
-
-
-
-
-
-
-
-
-
 
 = Rules =
 This section describes the facilities in NDDL for describing internal and external relationships between tokens and between token variables. These relationships were described at a high-level in [PlanningApproach Planning Approach].
@@ -460,8 +412,7 @@ ClassName::PredicateName {<rule-body>}
 
 
 == Slave Allocation and Temporal Relations ==
-
-A slave token is most commonly introduced using a temporal relation. The set of all temporal relations is based on the Allen Relations of ([DocReferences Allen, 1983]) and were presented in Figure 2 on the [PlanningApproach Planning Approach] page. For example, the statement:
+A slave token is most commonly introduced using a _temporal relation_. The set of all temporal relations is based on the Allen Relations of ([DocReferences Allen, 1983]). For example, the statement:
 
 {{{
 meets(Going successor);
@@ -513,20 +464,21 @@ The supported binary temporal relations^6^ are :
 || any || None ||
 
 == Variables and Constraints ==
-The material presented above for handling variables and constraints at the global level applies equally in the context of rules. All variables accessible in a rule context can be incorporated into constraints in precisely the same manner as seen earlier. This was been illustrated in Figure 16 where the equality constraint was used within rules for _At_ and _Going_ predicates. The scope for accessing variables in a rule includes:
+The material presented above for handling variables and constraints at the global level applies equally in the context of rules. All variables accessible in a rule context can be incorporated into constraints in precisely the same manner as seen earlier. The scope for accessing variables in a rule includes:
  1. All token variables. All built-in and user-defined predicate parameters for the master token are accessible without qualification, or with explicit qualification using the keyword _this_.
  1. All global variables. All variables declared outside the scope of a class or predicate are considered global.
  1. All slave variables. All built-in and user-defined parameters on any slave token introduced in the rule and labeled. The label is required to reference a slave’s variables.
  1. Local variables. It is possible to declare local rule variables in the same way that one declares global variables. However, it is not permitted to use the _new_ operator within a rule. Local variable names must not conflict with global variable names or variable names already defined on the token.
 
-It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ operator.^7^ For example, suppose the following class structure:
-
+It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ operator.^7^ For example, below we define a composition structure::
 {{{
 class A{int i = [1, 10];}
 class B{A a; B(){a = new A();}}
 class C{B b; C(){b = new AB();}}
+}}}
 Given the above structure, any variable declared of type _C_ can be navigated to obtain a structurally related variable as follows:
-C c; // A local variable of type C. Could instead be a variable on a token, a global, etc.
+{{{
+C c; // A local variable of type C. Could also be a variable on a token, a global, etc.
 int j;
 c.b.a.i ==  j; // Traverse the object structure to access a specific variable.
 }}}
@@ -768,10 +720,8 @@ This chapter has presented the means of describing problem domains and partial p
 
  5.  Rules are not expanded until a token has been committed to the plan.  The reason for this is mainly practical since the process of merging tokens would be more convoluted and expensive in time and pace and the benefits of doing otherwise are not clear.  It is possible that rule expansion could be applied on inactive tokens in the future.
 
- 6.  If the master were explicit they are all binary relationsbetween tokens.
+ 6.  If the master were explicit they are all binary relations between tokens.
 
  7.  '.' is a _member accessor_ operator and can be applied to object variables and tokens.
 
  8.  In the current implementation, inconsistency is not an option whn processing transactions.  It is a limitation imposed by the procedure which processes NDDL transaction sequences that teplan database must be consistent after each step.  If an inconsistency is found, it will abort the program.
-
- 9.  The NDDL language described in this section is converted to an xml-based language.  It is not strictly necessary to use the NDDL syntax and one can work directly in XML if appropriate. 

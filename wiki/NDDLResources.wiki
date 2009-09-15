@@ -1,0 +1,43 @@
+
+== Resources ==
+<wiki:comment>
+This page is old and should either be deprecated or revisitied in the context of a proper description of working with resources.
+</wiki:comment>
+
+EUROPA has some pre-defined multi-capacity numeric resources from which it is often useful to inherit:
+
+ * *Resource*: Represents any resource and has a single predicate, {{{change}}}, used to represent additions or subtractions from the resource.
+ * *Reusable*: Represents a renewable/reusable resource such as labor.  Has a {{{uses}}} predicate whose {{{quantity}}} field indicates the amount of resource used; the resource is used for the duration of the {{{uses}}} token and then is available again.
+ * *Reservoir*: Represents a consumable resource such as battery power.  Has {{{produce}}} and {{{consume}}} predicates to represent increases and decreases, respectively, of the resource.
+ * *!UnaryResource*: A reusable, discrete, single-capacity resource and is efficiently supported using a timeline rather than independent consume and produce transactions.
+
+There are usually constraints on how resources can be used and produced.  The following member variables (all floats) represent those constraints and can be initialized in the class constructors or updated later:
+
+ * _initialCapacity_:  The resource's starting level.
+ * _levelLimitMin_:  The resource's minimum level.
+ * _levelLimitMax_:  The resource's maximum level.
+ * _productionRateMax_:  The resource's maximum production rate - the most that can be added per time unit. 
+ * _productionMax_:  The resource's maximum production - the most that can be added at one time.
+ * _consumptionRateMax_:  The resource's maximum consumption rate - the most that can be removed per time unit.
+ * _consumptionMax_:  The resource's maximum consumption - the most that can be removed at one time.
+
+See [source:PLASMA/trunk/src/PLASMA/Resource/component/NDDL/Resources.nddl] for the complete NDDL specification of the resource classes. 
+
+Here is some code that shows a _Battery_ class that inherits from _Resource_ and sets the initial capacity and minimum and maximum levels in the constructor:
+
+{{{
+class Battery extends Resource {
+  Battery(float ic, float ll_min, float ll_max){ 
+    super(ic, ll_min, ll_max);
+  }
+}
+}}}
+
+Here is a predicate that consumes battery power:
+
+{{{
+Bulb::lightOn{ 
+   starts(Battery.change tx); 
+   tx.quantity == -600; // consume battery power
+}
+}}}
