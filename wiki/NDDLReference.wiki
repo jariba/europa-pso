@@ -1,5 +1,5 @@
 #summary NDDL Reference manual
-
+<wiki:toc max_depth="2" />
 = Modeling with NDDL = 
 NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is based on a number of concepts described  [PlanningApproach here]. The reader is strongly advised to review that material prior to working through this chapter.
 
@@ -20,7 +20,7 @@ In each of the above cases, the term _domain_ reflects the base set of values in
 Figure 1 provides examples of different forms of variable declaration and restriction. Notice in particular the use of _enum_ and _typedef_ keywords which introduce user-defined types. Notice also that _int_ and _float_ types are restricted to intervals and that the decimal point is only used (and must be used) for _float_ values.
 
 {{{
-//Primitives with defaeult base domains
+//Primitives with default base domains
 int v0;               // Declares an integer variable v0 with a domain `[`-inf +inf`]`
 float v1;             // Declares a float variable v1 with a domain `[`-inff +inff`]`
 bool v2;              // Declares a bool variable v2 with a domain {false, true}
