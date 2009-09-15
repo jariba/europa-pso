@@ -16,7 +16,7 @@ Variables and constraints are the basic building blocks of EUROPA. They can be i
  * _type label = value_: Declares a variable of type _type_ with the name _label_ and sets the base domain to the singleton value given by _value_.
  * _type label = domain_: Declares a variable of type _type_ with the name _label_ and sets the base domain to _domain_. For _int_ and _float_ the domain is described as an interval.
 
-In each of the above cases, the term _domain_ reflects the base set of values in the domain of the variable. The variable cannot contain any values not present in this initial domain unless the type of the variable is _open_.^2^ This domain is called the _base domain_.
+In each of the above cases, the term _domain_ reflects the base set of values in the domain of the variable. The variable cannot contain any values not present in this initial domain unless the type of the variable is _open_.^1^ This domain is called the _base domain_.
 
 == Basic Declaration ==
 Figure 1 provides examples of different forms of variable declaration and restriction. Notice in particular the use of _enum_ and _typedef_ keywords which introduce user-defined types. Notice also that _int_ and _float_ types are restricted to intervals and that the decimal point is only used (and must be used) for _float_ values.
@@ -303,7 +303,7 @@ A number of items are worth noting:
 
 
 == Inheritance ==
-Inheritance is a second method of re-use in NDDL^4^ designed to make models more compact, and modeling less laborious and error-prone. The goal is that NDDL libraries may be developed that can be applied on many applications in a common domain (e.g. robotic control). The _Navigator_ example incorporated class inheritance using the _extends_ keyword (We saw an example already in Figure 4).  There are no scope qualifiers at this time so all member variables and predicates of a class are publicly available outside the class and by subclasses. The general pattern is:
+Inheritance is a second method of re-use in NDDL^2^ designed to make models more compact, and modeling less laborious and error-prone. The goal is that NDDL libraries may be developed that can be applied on many applications in a common domain (e.g. robotic control). The _Navigator_ example incorporated class inheritance using the _extends_ keyword (We saw an example already in Figure 4).  There are no scope qualifiers at this time so all member variables and predicates of a class are publicly available outside the class and by subclasses. The general pattern is:
 
 {{{
 class DerivedClass extends SuperClass { … }
@@ -418,7 +418,7 @@ Navigator::Going{
 }}}
 *Figure 7*: Bridging the gap with domain rules.
 
-Rules are written for a specific predicate, and are then applied to all tokens of that predicate that are ACTIVE^5^. There is no limit to the number of rules that can be defined on a predicate. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
+Rules are written for a specific predicate, and are then applied to all tokens of that predicate that are ACTIVE^3^. There is no limit to the number of rules that can be defined on a predicate. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
 
 {{{
 ClassName::PredicateName {<rule-body>}
@@ -451,7 +451,7 @@ t2 meets t1; // An Allen relation between 2 slaves
 this meets t2; // An Allen relation between the master and the slave
 }}}
 
-The supported binary temporal relations^6^ are :
+The supported binary temporal relations are :
 
 || *Relationship* || *Implied Constraints* ||
 || before || origin.end <= target.start ||
@@ -484,7 +484,7 @@ The material presented above for handling variables and constraints at the globa
  1. All slave variables. All built-in and user-defined parameters on any slave token introduced in the rule and labeled. The label is required to reference a slave’s variables.
  1. Local variables. It is possible to declare local rule variables in the same way that one declares global variables. However, it is not permitted to use the _new_ operator within a rule. Local variable names must not conflict with global variable names or variable names already defined on the token.
 
-It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ operator.^7^ For example, below we define a composition structure::
+It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ operator^5^. For example, below we define a composition structure::
 {{{
 class A{int i = [1, 10];}
 class B{A a; B(){a = new A();}}
@@ -566,7 +566,7 @@ A further complication arises since the semantics of universal quantification do
 Hatch hatches filterOnly;
 }}}
 
-= The NDDL Transaction Language^8,9^ =
+= The NDDL Transaction Language =
 
 NDDL includes procedural extensions, referred to as the _NDDL Transaction Language_, to operate on the plan database and thus initialize and/or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data. It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through the _!DbClient_ interface.
  
@@ -724,16 +724,12 @@ This chapter has presented the means of describing problem domains and partial p
 
 ----
 
- 1.  DDL was the domain description language introduced in ([DocReferences ??]) and applied on the remote agent experiment ([DocReferences ??]). 
+ 1.  Variables of primitive types, typedefs and enumerations are closed on construction.  Classes are the only types that may remain open - meaning that the set of instances of that type (i.e. that class) may not yet be fully defined.
 
- 2.  Variables of primitive types, typedefs and enumerations are closed on construction.  Classes are the only types that may remain open - meaning that the set of instances of that type (i.e. that class) may not yet be fully defined.
+ 2.  The first being composition.
 
- 4.  The first being composition.
+ 3.  Rules are not expanded until a token has been committed to the plan.  The reason for this is mainly practical since the process of merging tokens would be more convoluted and expensive in time and space and the benefits of doing otherwise are not clear.  It is possible that rule expansion could be applied on inactive tokens in the future.
 
- 5.  Rules are not expanded until a token has been committed to the plan.  The reason for this is mainly practical since the process of merging tokens would be more convoluted and expensive in time and pace and the benefits of doing otherwise are not clear.  It is possible that rule expansion could be applied on inactive tokens in the future.
+ 4.  If the master were explicit they are all binary relations between tokens.
 
- 6.  If the master were explicit they are all binary relations between tokens.
-
- 7.  '.' is a _member accessor_ operator and can be applied to object variables and tokens.
-
- 8.  In the current implementation, inconsistency is not an option whn processing transactions.  It is a limitation imposed by the procedure which processes NDDL transaction sequences that teplan database must be consistent after each step.  If an inconsistency is found, it will abort the program.
+ 5.  '.' is a _member accessor_ operator and can be applied to object variables and tokens.
