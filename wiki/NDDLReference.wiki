@@ -63,7 +63,7 @@ a == 5;
 A class is a user-defined abstract data type that is used when either:
  1. The instances of the type are problem specific. For example, the set of _speeds_ might be encoded in the model but the set of _locations_ might be problem specific. However, the model will reference _locations_ without knowledge or necessity of the instance details.
  1. The instances of the type have structure. For example, a _path_ might include a _source_, _destination_ and _cost_.
- 1. The instances of the type have state that temporally scoped (i.e. described by predicates).
+ 1. The instances of the type have state that is temporally scoped (i.e. described by predicates).
 
 == Basic Definition and Instantiation ==
 
@@ -93,7 +93,7 @@ As with any other variables, object variables can participate in constraints:
 {{{
 Foo f1;
 Foo f3;
-eq(f3, f1);
+f3 == f1;
 }}}
 
 It is possible that an object variable is declared before objects of the given type have been allocated. As long as the class is open, this is not a problem, since empty domains are permitted for variables of open types. However, if the class has been closed for a problem, indicating no further instances can be added, and no instances are present, then the variable will be empty on allocation and the system will be considered _inconsistent_. To illustrate this, consider the following NDDL model and problem description
@@ -205,7 +205,7 @@ class Navigator extends Timeline {
    predicate Going{
       Location from, to;
       // Intrinsic to the definition of this predicate is that we cannot go to where we are!
-      neq(from, to);
+      from !=  to;
    }
 }
 }}}
@@ -255,7 +255,7 @@ t1.start.specify(1000);
 
 // Impose a temporal distance of between 20 and 100 time units between the end of the first token
 // and the start of the second.
-temporalDistance(t0.end, [20 100], t1.start);
+t0.end +  [20 100] == t1.start;
 }}}
 *Figure 5*:  A partial plan for navigating from Rock to Lander
 
@@ -316,8 +316,6 @@ class Bar extends Foo {
    Bar(){
       // Must explicitly invokes superclass default constructor!
       super();
-      arg1 = [5 10];
-      eq(arg1, arg2); // XXX is this right?
       arg4 = "empty string";
    }
 
@@ -388,7 +386,7 @@ Here is a predicate that consumes battery power:
 {{{
 Bulb::lightOn{ 
    starts(Battery.change tx); 
-   eq(tx.quantity, -600); // consume battery power
+   tx.quantity == -600; // consume battery power
 }
 }}}
 
@@ -417,7 +415,7 @@ Navigator::At{
    // Allocate a token of the Going predicate as a slave.  Impose a meets temporal relation such that this meets slave
    meets(object.Going successor);
    // Constrain the slave so it is going from this location
-   eq(successor.from, location);
+   successor.from == location;
    // Allocate a token for the going predicate as a slave.  Impose a met_by temporal relation such that this met_by slave
    met_by(object.Going predecessor);
    // Constrain the slave so that it is going to this location
@@ -453,7 +451,7 @@ allocates a new slave token which will be referenced in the scope of the rule wi
 
 {{{
 any(Going successor);
-concurrent(this.end, successor.start);
+this.end == successor.start;
 }}}
 
 In the above, _this_ is used to refer to the master token context and can be used to disambiguate variable names. All Allen relations are turned into primitives in this way using general slave allocation and explicit constraints during model compilation. Other valid constructs for token allocation or specification of temporal relations between tokens are:
