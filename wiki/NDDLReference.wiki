@@ -714,8 +714,6 @@ This chapter has presented the means of describing problem domains and partial p
 
  2.  Variables of primitive types, typedefs and enumerations are closed on construction.  Classes are the only types that may remain open - meaning that the set of instances of that type (i.e. that class) may not yet be fully defined.
 
- 3.  This is equivalent to _addEq_ but is specifically used in cases where a temporal relationship is intended.  Similarly, the constraint concurrent(x, y) is a temporal constraint that is semantically equivalent to _eq_(x, y) but allows specialized global propagation.
-
  4.  The first being composition.
 
  5.  Rules are not expanded until a token has been committed to the plan.  The reason for this is mainly practical since the process of merging tokens would be more convoluted and expensive in time and pace and the benefits of doing otherwise are not clear.  It is possible that rule expansion could be applied on inactive tokens in the future.
