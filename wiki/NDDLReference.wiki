@@ -1,7 +1,7 @@
 #summary NDDL Reference manual
 
 = Modeling with NDDL = 
-NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is an object-oriented language designed to support expression of problem domain elements and axioms in a manner consistent with the paradigm outlined on the [PlanningApproach Plan Representation] page. The reader is strongly advised to review that material prior to working through this chapter.
+NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is based on a number of concepts described  [PlanningApproach here]. The reader is strongly advised to review that material prior to working through this chapter.
 
 NDDL is introduced here in something of a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [RoverExample Mars Rover example/tutorial].
 
