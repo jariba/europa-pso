@@ -4,9 +4,6 @@
 
 *NOTE!! EUROPA is available under [http://opensource.arc.nasa.gov/page/nosa-software-agreement NASA's Open Source Agreement (NOSA) ],  NOT under BSD license*
 
-* NOTE!! The EUROPA wiki is being ported to Google Code, please go to it's [http://babelfish.arc.nasa.gov/trac/europa/wiki current location] for now*
-
-
 Welcome!  EUROPA is a framework to model and tackle problems in Planning, Scheduling and Constraint Programming. EUROPA is typically embedded in a host application. It is designed to be expressive, efficient, extendable and configurable. It includes:
  
     * '''A Plan Database:''' The technology cornerstone of EUROPA for storage and manipulation of plans as they are initialized and refined. The EUROPA Plan Database integrates a rich representation for actions, states, objects and constraints with powerful algorithms for automated reasoning, propagation, querying and manipulation.
