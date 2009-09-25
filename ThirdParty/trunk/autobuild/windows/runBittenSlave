@@ -5,9 +5,10 @@ export JAVA_HOME="/cygdrive/c/Progra~1/Java/jdk1.6.0_12"
 for (( c=1; c>0; c++ ))
 do
   #make a backup of the bitten log
+  month=`ls -la bitten-slave.log |cut -d" " -f6`
   day=`ls -la bitten-slave.log |cut -d" " -f7`
   time=`ls -la bitten-slave.log |cut -d" " -f8 | sed s/:/""/`
-  target=bitten-slave.log.200904$day.$time 
+  target=bitten-slave.log.2009$month$day.$time 
   echo moving log to $target
   mv bitten-slave.log $target
  
