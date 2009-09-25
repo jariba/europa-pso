@@ -42,7 +42,7 @@ if not os.path.exists( cppUnitMakefile ) :
   winCppUnitDir = os.path.join( winCurrentDir, cppUnitVersion )
   libDir = os.path.join( winCppUnitDir, "lib" )
   includeDir = os.path.join( winCppUnitDir, "include.install" )
-  cmd = "cd " + cppUnitDir + "; ./configure --build=mingw32 --libdir=" + libDir + " --includedir=" + includeDir + " CFLAGS=-mno-cygwin CCFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin "
+  cmd = "cd " + cppUnitDir + "; ./configure --build=mingw32 --host=mingw32 --libdir=" + libDir + " --includedir=" + includeDir + " CFLAGS=-mno-cygwin CCFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin "
   print "----------------------------------------"
   print "Running cmd: " + cmd
   os.system( cmd )
