@@ -1,0 +1,46 @@
+#summary Tristan's attempt to
+
+I have divided this approach into two pieces:
+ 1.  Calculating profiles.  They're not really profiles anymore, but it's similar, at least philosophically, to resource profile calculations.
+ 1.  Using profiles to calculate flaws and violations.
+
+At Jeremy's suggestion, I have tried to get everything working without too much concern for efficiency.  For example, the above separation may make it harder to do things efficiently, but the two pieces can be mixed without messing up the approach, I believe.
+
+For notation, I use:
+ * SET(es) and SET(ls) for the earliest and latest starts for the SET transaction.
+ * REQ(es), REQ(ls), for the earliest and latest times for the REQ to begin.
+ * -REQ(es), and -REQ(ls) for the earliest and latest times for the REQ to end.
+
+= Calculating profiles =
+
+As we pass through time, we update 3 sets whenever we hit one of the above six classes of time points:
+ * *A:*  The set of possible SET instances that could be valid at this time.
+ * *B:*  The set of REQ tokens that _might_ occur at this time.
+ * *C:*  The set of REQ tokens that _must_ occur at this time.
+
+=== Building A ===
+
+To build A, we start with the empty set for simplicity (having an initial state, or set of states is no different).  Then:
+ * If we reach a SET(es), we add SET to A
+ * If we reach a SET(ls), we can remove any SET' for which SET'(ls) < SET(es)  (Mike, this is equivalent to the bar we talked about)
+
+=== Building B ===
+
+To build B, we start with the empty set.  Then:
+ * If we reach REQ(es), we add REQ
+ * If we reach -REQ(ls), we remove REQ
+
+=== Building C ===
+
+To build C, we start with the empty set.  Then:
+ * If we reach REQ(ls), we add REQ
+ * If we reach -REQ(es), we remove REQ
+
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
