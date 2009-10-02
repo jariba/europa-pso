@@ -13,7 +13,7 @@ Published: 08/27/08
 
 = 2007 = 
 
-[http://ase.arc.nasa.gov/publications/pdf/1369.pdf Active and Passive Constraint Enforcement for Activity Planning]
+[http://ase.arc.nasa.gov/publications/pdf/1369.pdf Active and Passive Constraint Enforcement for Activity Planning: Abstract]
 Author: Paul Morris, John Bresina
 Published: 7/31/2007
 
