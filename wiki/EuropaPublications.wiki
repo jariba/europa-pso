@@ -7,6 +7,10 @@ Published: 1/29/2009
 
 = 2008 = 
 
+[http://robotics.estec.esa.int/i-SAIRAS/isairas2008/Proceedings/SESSION%201/m120-Morris.pdf Active and Passive Constraint Enforcement for Activity Planning: Full Paper]
+Author: Paul Morris, John Bresina
+Published: 11/05/2008
+
 [http://ti.arc.nasa.gov/m/pub/144/144_Smith_T..pdf Athlete's Feet: Multi-Resolution Planning for a Hexapod Robot]
 Author: Tristan Smith, Javier Barreiro, David Smith, Vytas Sunspiral, Daniel Chavez
 Published: 08/27/08 
