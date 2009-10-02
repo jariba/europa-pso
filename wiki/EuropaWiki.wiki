@@ -6,9 +6,9 @@
 
 Welcome!  EUROPA is a framework to model and tackle problems in Planning, Scheduling and Constraint Programming. EUROPA is typically embedded in a host application. It is designed to be expressive, efficient, extendable and configurable. It includes:
  
-    * '''A Plan Database:''' The technology cornerstone of EUROPA for storage and manipulation of plans as they are initialized and refined. The EUROPA Plan Database integrates a rich representation for actions, states, objects and constraints with powerful algorithms for automated reasoning, propagation, querying and manipulation.
-    * '''A Problem Solver:''' A core solver to automatically find and fix flaws in the plan database. It can be configured to plan, schedule or both. It can be easily customized to integrate specialized heuristics and resolution operations.
-    * '''A Tool Box:''' Europa includes a debugger for instrumentation and visualization of applications. It also includes a very high-level, declarative modeling language for describing problem domains and partial-plans. 
+    * *A Plan Database:* The technology cornerstone of EUROPA for storage and manipulation of plans as they are initialized and refined. The EUROPA Plan Database integrates a rich representation for actions, states, objects and constraints with powerful algorithms for automated reasoning, propagation, querying and manipulation.
+    * *A Problem Solver:* A core solver to automatically find and fix flaws in the plan database. It can be configured to plan, schedule or both. It can be easily customized to integrate specialized heuristics and resolution operations.
+    * *A Tool Box:* Europa includes a debugger for instrumentation and visualization of applications. It also includes a very high-level, declarative modeling language for describing problem domains and partial-plans. 
 
 [WhatIsEuropa Learn more...]
 
