@@ -36,11 +36,43 @@ To build C, we start with the empty set.  Then:
  * If we reach REQ(ls), we add REQ
  * If we reach -REQ(es), we remove REQ
 
+Note that C is a subset of B.
+
+= Detection flaws and violations =
+
+This can be broken into a number of cases:
+
+ 1.  *FV detection just within A:*  For any pair SET and SET' in A:
+   1.  It is a violation if they both _must_ start at the same time and _must_ set the state to different values (assuming for now that the state can be set to the same thing  by multiple SETs at the same time).
+   1.  The same thing with _might_ and _must_ is a flaw:  It is a violation if they both _might_ start at the same time and _must_ set the state to different values (assuming for now that the state can be set to the same thing  by multiple SETs at the same time).
+   1.  The same thing with _must_ and _might_ is a flaw.
+   1.  The same things with _might_ and _might_ is a flaw.
+ 1.  *FV detection within B and C:*
+   1.  If C contains REQ1 and REQ2, and their values _must_ not intersect, it is a violation.
+   1.  If B contains REQ1 and REQ2, and their values _might_ not intersect, it is a flaw
+ 1.  *FV detection between A and B,C:*
+   1.  If C contains REQ, and there is no SET in A whose value might match that of REQ, it is a violation.
+   1.  If B contains REQ, and there is no SET in A whose value might match that of REQ, it is a flaw.
+   1.  If B contains REQ, and there is any SET in A whose value might not match that of REQ, it is a flaw.
 
 
-= Details =
+= Adding temporal constraints =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Most of the above ingores the fact that fewer flaws (and possibly more violations?) could be detecting by being aware of necessary (implicit or explicit) temporal constraints between SET, REQ, and -REQ.
+
+Although some of this could be handled when the A,B,C are calculated (in fact, notice that we've used one implicit temporal constraint to decide when a SET is removed from A), not all of it can be (eg:  even if there is an SET->SET' constraint, the domains for SET and SET' can overlap).  Therefore, I propose:
+
+ * Timetable-style FV detection does the above.
+ * Flow-profile-style FV detection that augments the above with 
+    * A precomputed all-pairs temporal constraint network (ie be able to quickly look up whether X is temporally constrained to be before Y)
+    * Update the above flaw/violation rules slightly.
+
+For example, consider the flaws/violations within B and C:
+
+   1.  If C contains REQ1 and REQ2, and their values _must_ not intersect, it is a violation (no change here because if we're in C, there must not be a temporal constraint between REQ1 and REQ2)
+   1.  If B contains REQ1 and REQ2, and their values _might_ not intersect *and there is no precedence constraint between them*, it is a flaw
+
+= Resolving flaws and violations =
+
+Haven't thought about this! :)  However, it feels like there will be some pretty good heuristics that will tend to guide search in the right direction.
+
