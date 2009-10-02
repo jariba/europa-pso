@@ -4,6 +4,7 @@
  * ResourceProfileImprovements
  * ResourceNotes
  * DynamicEuropaNotes
+ * StateResourceNotes
 
 == Misc Thoughts/Questions/Notes ==
  * Combine .cfg files that results from makeproject into one file?
