@@ -1,0 +1,38 @@
+<!--MER2PassiveSolver-->
+ <Solver name="MER2PassiveSolver">
+  <UnboundVariableManager defaultPriority="10">
+     <FlawFilter var-match="DISTANCE_VAR"/>
+     <FlawFilter var-match="duration" />
+     <FlawFilter var-match="quantity" />
+     <FlawFilter var-match="time" />
+     <FlawFilter var-match="start" />
+     <FlawFilter var-match="end" />
+     <FlawFilter var-match="container_id" />
+     <FlawFilter var-match="name" />
+     <FlawFilter var-match="Name" />
+     <!-- FlawHandler var-match="solved" predicate-match="Away_T1" priority="900" component="Max">
+    </FlawHandler>
+     <FlawHandler var-match="solved" predicate-match="Come_back_T1R" priority="901" component="Max">
+    </FlawHandler>
+     <FlawHandler var-match="solved" priority="1000" component="Max"/>
+     <FlawHandler var-match="object" priority="500" component="Max"/>
+     <FlawHandler component="Max"/ -->
+  </UnboundVariableManager>
+  <OpenConditionManager defaultPriority="15">
+    <!-- FlawHandler predicate-match="Come_back_T1R" priority="16" component="MinPerturbMerge">
+        <Guard name="state" value="MERGED"/>
+    </FlawHandler -->
+    <FlawHandler priority="14" component="StandardOpenConditionHandler">
+        <Guard name="state" value="ACTIVE"/>
+    </FlawHandler>
+    <!-- FlawHandler component="MinPerturbMerge"/ -->
+  </OpenConditionManager>
+  <ThreatManager defaultPriority="30">
+    <!-- FlawHandler class-match="Reusable" component="ResourceThreat"/ -->
+    <!-- FlawHandler priority="14" component="PriorityMinPerturb" class="Timeline">
+        <Guard name="state" value="ACTIVE"/>
+    </FlawHandler>
+    <FlawHandler component="PriorityMinPerturb" class="Timeline"/-->
+  </ThreatManager>
+ </Solver>
+<!--/MER2PassiveSolver-->
