@@ -1,7 +1,7 @@
 #summary Download instructions for EUROPA
 
 Download the file that corresponds to your platform:
- * The lastest release is available on the [http://code.google.com/p/europa-pso/ Project Home] tab.
+ * The lastest release is available as a featured download on the [http://code.google.com/p/europa-pso/ Project Home] tab.
  * All releases are available on the [http://code.google.com/p/europa-pso/downloads/list Downloads] tab.
 
 EUROPA is packaged as set of shared libraries, which should satisfy most users' needs. Get the static libraries bundle only if you intend to use EUROPA that way.
