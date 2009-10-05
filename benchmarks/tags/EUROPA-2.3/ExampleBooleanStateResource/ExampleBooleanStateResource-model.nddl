@@ -1,0 +1,47 @@
+#include "Plasma.nddl"
+#include "Resources.nddl"
+
+class StateResource extends Reservoir {
+	string profileType;
+
+	StateResource()
+	{
+		super(0.0 ,0.0, 10.0); // initial, lower_limit, upper_limit
+		profileType = "StateProfile";
+	}
+}
+
+class YourObject {
+	StateResource m_resource;
+
+	YourObject() { m_resource = new StateResource(); }
+
+	predicate turnOn{}
+	predicate turnOff{}
+	predicate require{}
+}
+
+
+// Produces '10':
+YourObject::turnOn{
+	starts(object.m_resource.produce p);
+	eq(p.quantity, 10);
+	eq(duration, 1);
+
+}
+
+// Uses '10':
+YourObject::turnOff{
+ starts(object.m_resource.consume c);
+  eq(c.quantity, 10);
+  eq(duration, 1);
+}
+
+// Like a reusable token, consumes '1' at the start and produces '1' at the end:
+YourObject::require{
+  starts(object.m_resource.consume c);
+  ends(object.m_resource.produce p);
+  eq(c.quantity, 1);
+  eq(p.quantity, 1);
+}
+
