@@ -23,7 +23,8 @@ If you're planning to write your application in a language other than C++, the c
 
 == Using the JAVA API ==
 
-The [PSEngine] interface is automatically mapped to Java using [http://www.swig.org SWIG]
+The [PSEngine] interface is automatically mapped to Java using [http://www.swig.org SWIG].
+
 Take a look at the main() program that [MakeprojectPage makeproject] generates for the Java project : [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/java/Light/Main.java Main.java]
 
 [MakeprojectPage makeproject] uses a combination of Java and [http://www.beanshell.org BeanShell] scripting to achieve its goal, if you put everything together in a single Java program it would look something like this :
