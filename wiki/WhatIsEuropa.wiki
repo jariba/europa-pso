@@ -5,12 +5,12 @@
 EUROPA (Extensible Universal Remote Operations Planning Architecture) is a class library and tool set for building planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm. Constraint-based Temporal Planning^1^ (and Scheduling) is a paradigm of planning based on an explicit notion of time and a deep commitment to a constraint-based formulation of planning problems. 
 This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications including :
 
- * Observation scheduling for the Hubble Telescope ([wiki:DocReferences Muscettola 1998])
- * Autonomous control of DS-1 ([wiki:DocReferences ??])
- * Ground-based activity planning for MER ([wiki:DocReferences Ai-Chang et al.])
- * Autonomous control of EO-1 ([wiki:DocReferences Tran et al. 2004])
+ * Observation scheduling for the Hubble Telescope ([DocReferences Muscettola 1998])
+ * Autonomous control of DS-1 ([DocReferences ref?])
+ * Ground-based activity planning for MER ([DocReferences Ai-Chang et al.])
+ * Autonomous control of EO-1 ([DocReferences Tran et al. 2004])
 
-EUROPA is now at version 2 and is the successor of the original EUROPA which in turn was based upon HSTS ([wiki:DocReferences Muscettola 1998]). EUROPA offers capabilities in 3 key areas of problem solving:
+EUROPA is now at version 2 and is the successor of the original EUROPA which in turn was based upon HSTS ([DocReferences Muscettola 1998]). EUROPA offers capabilities in 3 key areas of problem solving:
 
  1. *Representation:* EUROPA allows a rich representation for actions, states, resources and constraints that allows concise declarative descriptions of problem domains and powerful expressions of plan structure. This representation is supported with a high-level object-oriented modeling language for describing problem domains and data structures for instantiating and manipulating problem instances.
  1. *Reasoning:* Algorithms are provided which exploit the formal structure of problem representation to enforce domain rules and propagate consequences as updates are made to the problem state. These algorithms are based on logical inference and constraint-processing. In particular, specialized techniques are included for reasoning about temporal quantities and relations.
