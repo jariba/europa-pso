@@ -75,7 +75,7 @@ bool solve(PartialPlan p){
 
 The algorithm takes as input a partial plan p and returns true if a complete and consistent refinement of p could be found (or if p is initially complete and consistent), and false otherwise. This algorithm provides for a sound and complete search, assuming that no flaws or available refinement operators are pruned unnecessarily. Dead-ends in the search are discovered through constraint propagation. Constraint propagation is a vehicle for evaluating the consistency of a partial plan and also for filtering infeasible values from consideration prior to commitment, allowing in some cases a strong look-ahead capability which is essential for tractable search. Consistency testing is initiated by the _isConsistent_ procedure. The algorithm permits a heuristically controlled search by applying orderings for _chooseFlaw_ and _makeDecisionPoint_. It results in a chronologically-backtracking, search.
 
-'''Note''' It should be emphasized that while this algorithm is commonly employed, it is only one of many that could be implemented with EUROPA. For instance, take a look at the [ExampleNQueens NQueens] and [ExampleRCPSP RCPSP] examples to see how you can put implement your own search algorithm on top of the Plan Database in EUROPA.
+*Note* It should be emphasized that while this algorithm is commonly employed, it is only one of many that could be implemented with EUROPA. For instance, take a look at the [ExampleNQueens NQueens] and [ExampleRCPSP RCPSP] examples to see how you can put implement your own search algorithm on top of the Plan Database in EUROPA.
 
 ----
  #  Timeline instances are still objects, though they are objects of classes derived from a Timeline class.
