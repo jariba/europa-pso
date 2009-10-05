@@ -1,6 +1,6 @@
 #summary Overview of NQueens example
 
-The NDDL implementation provided [source:/PLASMA/trunk/examples/NQueens here] includes a UI where you can click on a chess board to move the the queens around and see the constraint violations that EUROPA computes by moving the mouse over each queen. It also provides a simple Tabu Search solver which briefly illustrates how you can build your own solver on top of EUROPA
+The NDDL implementation provided [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/NQueens here] includes a UI where you can click on a chess board to move the the queens around and see the constraint violations that EUROPA computes by moving the mouse over each queen. It also provides a simple Tabu Search solver which briefly illustrates how you can build your own solver on top of EUROPA
 
 
 Run the example
