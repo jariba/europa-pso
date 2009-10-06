@@ -14,7 +14,7 @@ A Constraint Satisfaction problem consists of a set of _Variables_.  For example
 
 and a set of _Constraints_:
 
-    * _C0_: speed == distance`*` time
+    * _C0_: speed == distance`/` time
     * _C1_: location1 + distance == location2
 
 A _Solution_ to a _constraint satisfaction problem (CSP)_ is a value for each variable such that all constraints are satisfied. For example, the following is a solution to the above _CSP_:
