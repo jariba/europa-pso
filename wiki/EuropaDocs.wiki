@@ -14,8 +14,7 @@ This page provides in-depth documentation on understanding and using EUROPA. If 
 === Development Tools ===
  * [EmbeddingEUROPA How to embed EUROPA in an application] 
  * [MakeprojectPage makeproject]:  Automatically create all the pieces for a new project.
- * High-level visualization and debugging:
-   * [PSUIDocs PSUI tools] include :
+ * [PSUIDocs PSUI tools] for visualization and debugging include :
      * PSDesktop : A Java app to drive (and visualize) EUROPA interactively.
      * UI Components : Java components that allow you to quickly assemble your own visualization or interactive application on top of EUROPA. Available components include : gantt chart for timelines, resource charts, interactive solver dialog. The list of available components is intended to grow over time. 
  * Low-level debugging:
