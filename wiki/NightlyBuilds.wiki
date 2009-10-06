@@ -10,7 +10,7 @@ At a high level, here is what the autobuild does :
   * Install binary distribution
   * Test makeproject tool and examples against binary distribution
 
-The results of the autobuild are displayed at all times on the [http://babelfish.arc.nasa.gov/trac/europa/build Build Status] tab above.
+The results of the autobuild are displayed at all times on the [http://babelfish.arc.nasa.gov/trac/europa/build Build Status page].
 
 === Canon Systems ===
 || * OS * || * OS Version * || * Machine Name * || * CPU * || * Memory * || * Avg Auto-Build Duration  (Includes tests and all variants) * || * OS Details * ||
@@ -23,4 +23,4 @@ The results of the autobuild are displayed at all times on the [http://babelfish
 
 You'll need to set up a new bitten slave and ask Javier to register it with the bitten master.
 
-TODO: provide instructions and example config files for bitten slave.
+The slave config files for the current autobuild machines can be found [http://code.google.com/p/europa-pso/source/browse/ThirdParty/trunk/autobuild here]
