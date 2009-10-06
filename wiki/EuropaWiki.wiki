@@ -24,7 +24,3 @@ EUROPA was developed at NASA's Ames Research Center and is available under NASA'
 </wiki:comment>
 
 For questions, please use the [http://groups.google.com/group/europa-users europa-users] google group.
-
-
-----
-We thank NASA Ames' [http://technology.arc.nasa.gov Technology Partnerships Division] and [http://www.mbari.org MBARI]  for their help in getting  EUROPA released under NOSA. 
