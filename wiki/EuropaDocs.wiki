@@ -11,7 +11,26 @@ This page provides in-depth documentation on understanding and using EUROPA. If 
  * Problem Solving Services
  * Ancillary Modules
 
+=== Development Tools ===
+ * [EmbeddingEUROPA How to embed EUROPA in an application] 
+ * [MakeprojectPage makeproject]:  Automatically create all the pieces for a new project.
+ * High-level visualization and debugging:
+   * [PSUIDocs PSDesktop]:  Java app to drive (and visualize) EUROPA interactively.
+ * Low-level debugging:
+   * [DebugOutputManagement EUROPA Logging]
+   * Timelines
+   * The Token Network
+   * The Constraint Network
+   * Metric Resources
+   * Common Debugging Scenarios 
+
 === EUROPA Components ===
+ * API
+   * [PSEngine] is the Client API and the recommended way to embed EUROPA into and application.  This interface is also available in Java (we use [http://www.swig.org SWIG] to do the mapping automatically).
+   * Listeners
+     * Adding a Listener
+   * [CwithJava Calling your custom C++ code from Java]
+   * Doxygen documentation for all the EUROPA classes can be found [https://babelfish.arc.nasa.gov/trac/europa/doxygen/ here]. 
  * NDDL:
    * [NDDLReference NDDL Language Reference]
    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/base/antlr/NDDL3.g Complete NDDL Grammar]
@@ -27,25 +46,7 @@ This page provides in-depth documentation on understanding and using EUROPA. If 
    * [PlannerCfg Built-in Solver Configuration]
    * [SolverExtensions Extending the built-in Solver]
    * [BuildingOwnSolver Building your own Solver]
- * API
-   * [PSEngine] is the Client API and the recommended way to embed EUROPA into and application.  This interface is also available in Java (we use [http://www.swig.org SWIG] to do the mapping automatically).
-   * Doxygen documentation for all the EUROPA classes can be found [https://babelfish.arc.nasa.gov/trac/europa/doxygen/ here]. 
- * Listener
-    * Adding a Listener
- * [CwithJava Calling your custom C++ code from Java]
 
-=== Development Tools ===
- * [EmbeddingEUROPA How to embed EUROPA in an application] 
- * [MakeprojectPage makeproject]:  Automatically create all the pieces for a new project.
- * High-level visualization and debugging:
-   * [PSUIDocs PSDesktop]:  Java app to drive (and visualize) EUROPA interactively.
- * Low-level debugging:
-   * [DebugOutputManagement Debug Output Management]
-   * Timelines
-   * The Token Network
-   * The Constraint Network
-   * Metric Resources
-   * Common Debugging Scenarios 
 
 === Miscellaneous ===
  * [DocGlossary Glossary]
