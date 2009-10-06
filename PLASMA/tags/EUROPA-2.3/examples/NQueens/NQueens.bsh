@@ -1,7 +1,0 @@
-// NQueens.bsh
-
-source("Common.bsh");
-
-loadModel();
-initQueens();
-showQueens();

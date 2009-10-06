@@ -1,1 +1,0 @@
-../../bin/.makeproject/platforms.mk
