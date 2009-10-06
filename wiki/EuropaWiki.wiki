@@ -18,7 +18,7 @@ EUROPA was developed at NASA's Ames Research Center and is available under NASA'
 || [EuropaDownload Download] || [EuropaBackground Background/Overview] || [BuildingEuropa Building EUROPA] ||
 || [EuropaInstallation Installation] || [EuropaDocs User Documentation] || [NightlyBuilds Automated Builds] ||
 || [QuickStart Quick Start] ||  [EuropaExamples Examples] || [MiscDevelopment Developer Notes] ||
-|| || [EuropaPublications Publications] ||   [https://babelfish.arc.nasa.gov/trac/europa/roadmap Product Roadmap] ||
+|| || [EuropaPublications Publications] ||   [EuropaRoadmap Product Roadmap] ||
 || || || [EuropaTeam People]||
 <wiki:comment>
 </wiki:comment>
