@@ -83,8 +83,7 @@
 			</fileset>
 		</path>
 		<!-- compile the source code -->
-		<javac destdir="${tempdir}" includeAntRuntime="no" 
-			source="1.5" target="1.5">
+		<javac destdir="${tempdir}" includeAntRuntime="no">
 				<classpath refid="compile.classpath" />
 				<src path="${srcdir}"/>
 		</javac>
