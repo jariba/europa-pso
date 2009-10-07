@@ -55,6 +55,17 @@ We have provided a perl script that automates the install of the log4cxx library
 > sudo makeCppUnit
 }}}
 
+== Install ANTLR-C ==
+First, unzip libantlr3c-3.1.3.tar.bz2 
+{{{
+> cd plasma.ThirdParty/libantlr3c-3.1.3
+> ./configure ; make
+> sudo make install
+}}}
+
+if you install ANTLR-C in a location other than the standard, you can pass that information along to the EUROPA ant file by using the variables antlr.lib and antlr.include which specify the antlr lib and include directories.
+
+TODO!: 3.1.3 still needs a manual patch to work on 64-bit, specify it here.
 = Building EUROPA =
 == Check out the source code ==
 EUROPA's source code is kept on a  [http://subversion.tigris.org/ subversion] code repository.
