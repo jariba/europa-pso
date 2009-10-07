@@ -1,0 +1,46 @@
+#summary Items to be incorporated in future EUROPA releases
+
+=== Architecture ===
+ * Consolidate configuration in a single XML file. Provide simple, internal API to access it.
+ * Make PSEngine runtime configuration (what modules to be instanciated, wiring between modules, etc) completely data-driven. This seems to be possible only through the use of dynamic libraries. Find alternatives for static libs.
+ * Streamline and cleanup PSEngine interface. make sure all extension points and event notifications are reachable through it.
+ * allow EUROPA extensions (constraints, propagators, decision points, etc.) to be written in other languages (java/python)
+
+=== Search Support ===
+ * Re-factor Solver, make it easier to extend built-in solver, write solver from scratch or by composition of solvers.
+ * Add explicit support for relaxations?
+ * Add Dave & Sara's work on domain independent heuristics
+ * Add min-perturbation heuristic solver from Dynamic Europa
+ * incorporate and expose classical approaches from CP (variable ordering, back-jumping, etc).
+ * research :
+      * Support for automatic interleaving of multiple solvers
+      * Machine learning applications to improve search (see Mark Roberts paper on benchmark problems should be useful here).
+      * Mixing classical planning and CP,LS,Math programming search approaches
+
+=== Modeling Language Support ===
+ * NDDL
+      * provide support for soft constraints (specify penalty values) and violation explanation
+      * provide procedural elements for :
+          * creating problem instances through iteration, branching, etc.
+          * loading data from a database
+          * creating/extending/running solvers
+          * dumping Plan Database/ Schema information
+      * provide API to obtain structural information (predicate relationships, grounded instances, etc) about the model
+ * provide full ANML support
+ * provide PDDL support : #106
+ * provide POCL planner for PDDL/ANML
+
+=== Visualization/Debugging tools ===
+ * Provide schema browser : #38
+ * Improve gantt chart : #39,#40
+ * Improve Solver Dialog : #41
+
+=== Automated Build ===
+ * Test with benchmark problems from CP, Scheduling and Planning
+
+=== Documentation ===
+ * Improve Solver docs : #127
+ * Improve EUROPA extensions docs
+
+=== Bug Fixes ===
+ 
