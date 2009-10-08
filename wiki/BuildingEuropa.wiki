@@ -63,9 +63,9 @@ First, unzip libantlr3c-3.1.3.tar.bz2
 > sudo make install
 }}}
 
-if you install ANTLR-C in a location other than the standard, you can pass that information along to the EUROPA ant file by using the variables antlr.lib and antlr.include which specify the antlr lib and include directories.
+If you install ANTLR-C in a location other than the standard one, you can pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.
 
-Note: If you have a 64bit OS, make sure to specify *--enable-64bit* flag for configure. 
+*Note* : If you have a 64bit OS, make sure to specify *--enable-64bit* flag for configure. 
 
 = Building EUROPA =
 == Check out the source code ==
@@ -79,20 +79,21 @@ svn co http://europa-pso.googlecode.com/svn/PLASMA/tags/<release_tag> PLASMA
 }}}
 Tags for official EUROPA releases :
 
-||''Tag''||''Date''||
-||EUROPA-2.2 [milestone:'EUROPA 2.2' details]||2009/06/10||
-||EUROPA-2.1.2 [milestone:'EUROPA 2.1.2' details]||2008/08/12||
-||EUROPA-2.1.1 [milestone:'EUROPA 2.1.1' details]||2008/01/11||
-||EUROPA-2.1.0 [milestone:'EUROPA 2.1.0' details]||2007/11/05||
+||*Tag*||*Date*||
+|| [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2 Europa-2.3] ||2009/10/06||
+|| [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2 Europa-2.2] ||2009/06/10||
+|| [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.2 Europa-2.1.2] ||2008/08/12||
+|| [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.1 Europa-2.1.1] ||2008/01/11||
+|| [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.0 Europa-2.1.0] ||2007/11/05||
 
 === The Bleeding Edge ===
-To get the most recent version of the code, run :[[BR]]
+To get the most recent version of the code, run :
 
 {{{
 svn co http://europa-pso.googlecode.com/svn/PLASMA/trunk PLASMA
 }}}
 
-'''Note''' : If you're a authorized to commit to the EUROPA repository, you must checkout your code using https instead of http or you will not be able to commit.  You'll be asked for you googlecode credentials before the checkout operation can proceed.  If you don't happen to know your password (which is automatically generated and different from your gmail password), then you should sign into your gmail account and visit http://code.google.com/hosting.  Then select your profile and click the settings tab.
+*Note* : If you're a authorized to commit to the EUROPA repository, you must checkout your code using https instead of http or you will not be able to commit.  You'll be asked for you googlecode credentials before the checkout operation can proceed.  If you don't happen to know your password (which is automatically generated and different from your gmail password), then you should sign into your gmail account and visit http://code.google.com/hosting.  Then select your profile and click the settings tab.
 
 == Configure your environment ==
 The following environment variables are needed to build and run EUROPA (shown here added to `~/.bashrc`, assuming that PLASMA was checked out in the $HOME/svn directory):
@@ -143,7 +144,7 @@ will tell jam to use two shells for processing.  Jam will take care of dependenc
 == Common Targets ==
 Here are the most common ant targets to build/test EUROPA components (all are available in $PLASMA_HOME/build.xml):
 
-||''Target''||''Description''||
+||*Target*||*Description*||
 ||build||Builds all the EUROPA modules||
 ||test||Runs all the regression tests||
 ||dist||Gathers all the elements of a EUROPA distribution under $PLASMA_HOME/dist/europa||
@@ -168,9 +169,9 @@ For example, to build using optimized compiler settings :
 }}}
 The output files are named differently for each variant, which makes it possible to build different variants at the same time. It is also not necessary to clean the tree when switching variants. Here are the naming patterns for each of the main variants:
 
- * DEV = <filename>_g<ext>
- * OPTIMIZED = <filename>_o<ext>
- * PROFILE = <filename>_p<ext>
+ * DEV = {filename}`_`g{ext}
+ * OPTIMIZED = {filename}`_`o{ext}
+ * PROFILE = {filename}`_`p{ext}
 
 The fourth variant, CUSTOM is a special variant that examines some environment variables to determine the compilation flags. These environment variables are:
 
@@ -187,9 +188,9 @@ The default variant is DEV, which includes EUROPA_DEBUG_MESSAGE.
 == Configuring Build Libraries ==
 The EUROPA build supports building modules as different kinds of libraries. The building of modules as different kinds of libraries is also controlled through environment variables or parameters to jam. EUROPA supports building 1 or more library kinds at the same time. The valid library kinds are:
 
- * STATIC - using static compile time linking (*.a)
- * NONE - avoid using libraries (link *.o directly) ''(This option is no longer officially supported, although it should still function)''
- * SHARED - using shared compile time linking (*.so) (dyanic libraries on OS X)
+ * STATIC - using static compile time linking (`*`.a)
+ * NONE - avoid using libraries (link `*`.o directly) *(This option is no longer officially supported, although it should still function)*
+ * SHARED - using shared compile time linking (`*`.so) (dyanic libraries on OS X)
  * NONE - Compile without generating libraries at all, all code is linked into executables.
 
 For example, to build without using libraries :
@@ -200,25 +201,25 @@ For example, to build without using libraries :
 }}}
   When building shared libraries, it is necessary to build using position independent code.  As a result, the object files are named differently in this case:
 
- * SHARED = <variant>_pic.o
- * STATIC/NONE = <variant>.o
+ * SHARED = {variant}`_`pic.o
+ * STATIC/NONE = {variant}.o
 
   Also, depending on which kind of libraries are used, the target executable names are also different.
 
- * STATIC = <filename>.exe
- * NONE = <filename>_no.exe
- * SHARED = <filename>_rt.exe
+ * STATIC = {filename}.exe
+ * NONE = {filename}`_`no.exe
+ * SHARED = {filename}`_`rt.exe
 
-  The default library kind is SHARED. The library kind NONE is only recommended for situations where cyclic dependencies exist between modules. The library kind SHARED is often the most space efficient. When running with SHARED it is required to add the EUROPA shared library directory to your library search path. The relevant variable depends on your platform, and the way to set it depends on your shell. Here is an example for the sh and bash shells: % LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib % export LD_LIBRARY_PATH where you should replace '/home/me' with the full path to the directory containing your EUROPA checkout from SVN. For csh and tcsh and similar shells: % setenv LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib
+The default library kind is SHARED. The library kind NONE is only recommended for situations where cyclic dependencies exist between modules. The library kind SHARED is often the most space efficient. When running with SHARED it is required to add the EUROPA shared library directory to your library search path. The relevant variable depends on your platform, and the way to set it depends on your shell. Here is an example for the sh and bash shells: % LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib % export LD_LIBRARY_PATH where you should replace '/home/me' with the full path to the directory containing your EUROPA checkout from SVN. For csh and tcsh and similar shells: % setenv LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib
 
-== Analyzing Code Coverage (''Linux platform only'') ==
+== Analyzing Code Coverage (Linux platform only) ==
 EUROPA's code coverage tool (based on gcov) is used to identify the percentage of the code base that is exercised by the module tests. This is an important quality metric as the higher the percentage of the code base tested the more likely it is that bugs will be detected.
 
 Go to the PLASMA/bin directory and invoke the coverage script to generate the coverage data. The script will run for approximatly 30 mins as it builds a coverage variant of the EUROPA system and runs all the module tests before generating the gcov code coverage data. The script produces the following files in the PLASMA directory.
 
  * coverage-results.txt lists the percentage of each source file executed by Europa's system tests.
  * A filename.cc.gcov or filename.hh.gcov file is provide for each source file in the system. It lists the code within the file annotated with the number of times each line has been run. Mulitple pound signs (#) indicate that a line was not executed.
- * *.bb, *.bbg, *.da are working files prouced by gcov. They are of no interest to the human reader.
+ * `*`.bb, `*`.bbg, `*`.da are working files prouced by gcov. They are of no interest to the human reader.
 
 == Examples ==
 To build an optimized version with static libraries
