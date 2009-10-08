@@ -13,6 +13,7 @@ To begin with, you will need the following software installed on your system:
 
 The following software is required and tested versions are provided in the !ThirdParty section of the EUROPA repository (see 'Building !ThirdParty Libraries' below for details).
 
+ * [http://www.antlr.org/api/C/main.html ANTLR-C] - The C runtime for ANTLR, the parser generator.
  * [http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page CppUnit] - A C++ unit testing framework (you may need to rerun ldconfig to get this library installed properly)
  * [http://logging.apache.org/log4cxx/download.html Log4cxx] - A C++ logging package that emulates the popular Log4j system.  Note that log4cxx requires the Apache Runtime Library (called APR).  For RHEL users, the most recent versions of log4cxx and APR require RHEL 5 or better.  
 
