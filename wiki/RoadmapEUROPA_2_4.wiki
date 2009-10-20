@@ -4,44 +4,27 @@
  * NDDL
    * Add method invocation for predicate definition
    * add nicer error reporting for parser, verify line numbers are not lost.
-   * better AST support
-   * Use [http://valgrind.org Valgrind] to ensure new C++ parser doesn't leak memory
-
- * ANML
-   * Move ANML parser to antlr3, reconnect ANML module to build
-   * Merge with [http://code.google.com/p/anml/ latest ANML grammar] written by Will Cushing and Dave Smith. Involve Will?  
+   * Add [http://valgrind.org Valgrind] output and checks to regression tests
 
 === Search Support ===
- * Incorporate domain-independent heuristics developed by Sara Bernardini and Dave Smith
-   * Capture required metadata and expose through Schema API 
-   * Add new solver that incorporates heuristics
- * Make sure built-in solver functionality can be reused as a building block for custom solvers
-   * it works in the presence of constraint violations (until it finds the next one, or ideally, until it breaks a violation threshold, that way upper bounds can be used)
-   * choice of next decision and next value can be easily customized from Java or other languages that can use EUROPA through SWIG.
    * Add visualization tool for search tree (see decisions made in compressed format, zoom, etc).
  
 === Architecture enhancements/re-factoring/cleanup ===
+ * Consolidate configuration in a single XML file. Provide simple, internal API to access it.
  * Drop architectural assumption that Constraint Engine stops computation at first constraint violation
    * Remove this assumption from built-in solver, propagators, etc.
    * Modify Constraint Engine API?
  * Make constraint violation reporting robust : #216,#173,#204,#205, and a bunch of A4O tickets.
    * Make sure Timelines can be substituted with Unary resources under the covers so that timeline overload is reported as a violation, not as a flaw
+ * Systematically expose listeners through PSEngine
  * Support 64-bit numeric data types : #225 
- * Resources
-   * Measure performance of constrained-based resources vs token-based ones (migrate UBO benchmarks). Drop token-based approach? 
-   * Implement more efficient alternatives to Incremental Flow profile? (see #217). Measure performance of Grounded profile. Make sure default profile is fast.
-   * Implement fast profile for Unaries so that they're competitive with Timelines
- * PSEngine
-   * Systematic review
-   * PSVarValue is a very simplified view of a Domain, should be improved
-   * Decide what to do with !DbClient interface, it is redundant
-   * Improve PSList
-
+ * Add State resource class
 
 === Visualization/Debugging tools ===
  * Provide logging api for standard (log4j) logging behavior. Support with our home-grown logging class first, also possibly with log4cxx : #142
- * !PlanWorks has in effect been deprecated. Come up with a plan to migrate/re-implement any functionality that we maybe missing in PSDesktop tools or Tatiana's new UI tools
  * Come up with a plan to integrate Tatiana's UI work into distribution
+ * Provide schema browser : #38
+ * Improve gantt chart : #39,#40
 
 === Automated Build ===
  * Report test failures correctly on windows : #252
