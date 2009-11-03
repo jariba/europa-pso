@@ -179,7 +179,7 @@
 		</jar>
 	</target>
 
-	<target name="unittests" description="Run model unittests" depends="init,clean.temp,compile.model">
+	<target name="test" description="Run model unittests" depends="init,clean.temp,compile.model">
 		<!-- Copy test files to the target dir -->
 		<copy todir="${tempdir}">
 			<fileset dir="${srcdir}">
