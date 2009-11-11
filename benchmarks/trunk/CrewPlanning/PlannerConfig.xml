@@ -3,9 +3,6 @@
 
   <ResourceThreatManager order="most,earliest,lower" defaultPriority="1">
     <FlawHandler component="ResourceThreatHandler" filter="both" />    
-    <!--FlawHandler component="ResourceThreatHandler" class="Timeline" filter="both" constraint="precedesOnly"/-->
-    <!--FlawFilter class-match="Timeline"/-->
-    <!--FlawHandler component="ResourceThreatHandler" master-class="Crew" order="late" priority="1"/-->
   </ResourceThreatManager>
 
   <ThreatManager defaultPriority="1">
@@ -14,22 +11,13 @@
     <FlawHandler component="StandardThreatHandler" predicate="medical_conference" order="late" priority="2"/>
     <FlawHandler component="StandardThreatHandler" predicate="payload_activity" order="late" priority="3"/>
     <FlawHandler component="StandardThreatHandler" predicate="comm_payload_activity" order="late" priority="3"/>
-    <FlawHandler component="StandardThreatHandler" predicate="restraint_payload_activity" order="late" priority="3"/>
-    
-    <!--FlawHandler component="ResourceThreatDecisionPoint" predicate="uses" order="late" priority="1"/-->
-    
-    <!--FlawHandler component="ResourceThreat"/>
-    <FlawHandler component="ResourceThreat" predicate="change_filter" order="late" priority="2"/>
-    <FlawHandler component="ResourceThreat" predicate="medical_conference" order="late" priority="2"/>
-    <FlawHandler component="ResourceThreat" predicate="payload_activity" order="late" priority="3"/>
-    <FlawHandler component="ResourceThreat" predicate="comm_payload_activity" order="late" priority="3"/>
-    <FlawHandler component="ResourceThreat" predicate="restraint_payload_activity" order="late" priority="3"/-->    
+    <FlawHandler component="StandardThreatHandler" predicate="restraint_payload_activity" order="late" priority="3"/>    
   </ThreatManager>
 
   <OpenConditionManager defaultPriority="1">
     <FlawHandler component="StandardOpenConditionHandler"/>
-    <FlawHandler component="StandardOpenConditionHandler" predicate="notfasting" order="early" choice="activateOnly" priority="6"/>
-    <FlawHandler component="StandardOpenConditionHandler" predicate="fasting" order="early" priority="6"/>
+    <FlawHandler component="StandardOpenConditionHandler" predicate="notfasting" order="early" choice="activateOnly" priority="0"/>
+    <FlawHandler component="StandardOpenConditionHandler" predicate="fasting" order="early" priority="0"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="daily_routine" order="early" priority="0"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="change_filter" order="late" priority="2"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="medical_conference" order="late" priority="2"/>
