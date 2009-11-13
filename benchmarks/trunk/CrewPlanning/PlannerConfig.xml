@@ -7,19 +7,19 @@
 
   <ThreatManager defaultPriority="1">
     <FlawHandler component="StandardThreatHandler"/>
-    <FlawHandler component="StandardThreatHandler" predicate="change_filter" order="late" priority="2"/>
+    <FlawHandler component="StandardThreatHandler" predicate="change_filter" order="late" priority="3"/>
     <FlawHandler component="StandardThreatHandler" predicate="medical_conference" order="late" priority="2"/>
     <FlawHandler component="StandardThreatHandler" predicate="payload_activity" order="late" priority="3"/>
     <FlawHandler component="StandardThreatHandler" predicate="comm_payload_activity" order="late" priority="3"/>
-    <FlawHandler component="StandardThreatHandler" predicate="restraint_payload_activity" order="late" priority="3"/>    
+    <FlawHandler component="StandardThreatHandler" predicate="restraint_payload_activity" order="late" priority="3"/>
   </ThreatManager>
 
   <OpenConditionManager defaultPriority="1">
     <FlawHandler component="StandardOpenConditionHandler"/>
-    <FlawHandler component="StandardOpenConditionHandler" predicate="notfasting" order="early" choice="activateOnly" priority="0"/>
-    <FlawHandler component="StandardOpenConditionHandler" predicate="fasting" order="early" priority="0"/>
+    <FlawHandler component="StandardOpenConditionHandler" predicate="notfasting" order="early" choice="activateOnly" priority="1"/>
+    <FlawHandler component="StandardOpenConditionHandler" predicate="fasting" order="early" priority="1"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="daily_routine" order="early" priority="0"/>
-    <FlawHandler component="StandardOpenConditionHandler" predicate="change_filter" order="late" priority="2"/>
+    <FlawHandler component="StandardOpenConditionHandler" predicate="change_filter" order="late" priority="3"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="medical_conference" order="late" priority="2"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="payload_activity" order="late" priority="4"/>
     <FlawHandler component="StandardOpenConditionHandler" predicate="comm_payload_activity" order="late" priority="4"/>
@@ -39,6 +39,8 @@
     <FlawFilter var-match="end"/>
     <FlawFilter var-match="duration"/>
     <FlawFilter var-match="lb"/>
+    <FlawFilter var-match="earliestNextEnd"/>
+    <FlawFilter var-match="latestNextEnd"/>
     <FlawFilter component="InfiniteDynamicFilter"/>
     <FlawHandler component="StandardVariableHandler"/>
   </UnboundVariableManager>
