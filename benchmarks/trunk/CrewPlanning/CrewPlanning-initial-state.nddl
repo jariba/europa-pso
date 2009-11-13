@@ -45,11 +45,16 @@ goal(p3.daily_routine dr3); dr3.start = 0;
 
 // Change filter in the first day, this will spawn subsequent filter changes
 goal(CrewMember.change_filter cf); leq(cf.end,2880);
+cf.activate();
 
 // Same with medical conferences
 goal(crewMember1.medical_conference mc1); leq(mc1.end,2880);
 goal(crewMember2.medical_conference mc2); leq(mc2.end,2880);
 goal(crewMember3.medical_conference mc3); leq(mc3.end,2880);
+
+mc1.activate();
+mc2.activate();
+mc3.activate();
 
 // Payload activities
 goal(CrewMember.restraint_payload_activity cpa1);
@@ -81,6 +86,19 @@ cpa8.id  =  8; cpa8.desc  = cpa8Desc;  cpa8.duration  = 45; cpa8.priority  = 1; 
 cpa9.id  =  9; cpa9.desc  = cpa9Desc;  cpa9.duration  = 75; cpa9.priority  = 1; cpa9.dueDate = 5760;
 cpa10.id = 10; cpa10.desc = cpa10Desc; cpa10.duration = 30;  cpa10.priority = 1; cpa10.dueDate = 5760;
 cpa11.id = 11; cpa11.desc = cpa11Desc; cpa11.duration = 90;  cpa11.priority = 1; cpa11.dueDate = 5760;
+
+cpa1.activate();
+cpa2.activate();
+cpa3.activate();
+cpa4.activate();
+cpa5.activate();
+cpa6.activate();
+cpa7.activate();
+cpa8.activate();
+cpa9.activate();
+cpa10.activate();
+cpa11.activate();
+
 
 // Power activities
 
