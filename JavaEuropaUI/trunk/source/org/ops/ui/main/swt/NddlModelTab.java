@@ -7,6 +7,8 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -20,7 +22,7 @@ import org.eclipse.swt.widgets.Text;
 
 /** Tab in a launch configuration dialog */
 public class NddlModelTab extends AbstractLaunchConfigurationTab implements
-		NddlConfigurationFields {
+		NddlConfigurationFields, ModifyListener {
 	private Text fDirText;
 	private Button fDirButton;
 	private Text fNddlModelText;
@@ -40,6 +42,7 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 
 		new Label(comp, SWT.NONE).setText("Root directory");
 		fDirText = createSingleText(comp, 1);
+		fDirText.addModifyListener(this);
 		fDirButton = createPushButton(comp, "Browse", null);
 		fDirButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -50,6 +53,7 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 		});
 		new Label(comp, SWT.NONE).setText("Nddl model file");
 		fNddlModelText = createSingleText(comp, 1);
+		fNddlModelText.addModifyListener(this);
 		fNddlModelButton = createPushButton(comp, "Browse", null);
 		fNddlModelButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -60,6 +64,7 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 		});
 		new Label(comp, SWT.NONE).setText("Planner config");
 		fPlannerConfigText = createSingleText(comp, 1);
+		fPlannerConfigText.addModifyListener(this);
 		fPlannerConfigButton = createPushButton(comp, "Browse", null);
 		fPlannerConfigButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -70,10 +75,16 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 		});
 		new Label(comp, SWT.NONE).setText("Horizon start");
 		fHorizonStart = createSingleText(comp, 2);
+		fHorizonStart.addModifyListener(this);
 		new Label(comp, SWT.NONE).setText("Horizon end");
 		fHorizonEnd = createSingleText(comp, 2);
+		fHorizonEnd.addModifyListener(this);
 	}
-
+	
+	public void modifyText(ModifyEvent e) {
+		this.updateLaunchConfigurationDialog();
+	}
+	
 	private Text createSingleText(Composite parent, int hspan) {
 		Text t = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		t.setFont(parent.getFont());
@@ -122,8 +133,10 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 			fNddlModelText.setText(configuration.getAttribute(MODEL_NAME, ""));
 			fPlannerConfigText.setText(configuration.getAttribute(CONFIG_NAME,
 					""));
-			fHorizonStart.setText(String.valueOf(configuration.getAttribute(HORIZON_START, DEF_HORIZON_START)));
-			fHorizonEnd.setText(String.valueOf(configuration.getAttribute(HORIZON_END, DEF_HORIZON_END)));
+			fHorizonStart.setText(String.valueOf(configuration.getAttribute(
+					HORIZON_START, DEF_HORIZON_START)));
+			fHorizonEnd.setText(String.valueOf(configuration.getAttribute(
+					HORIZON_END, DEF_HORIZON_END)));
 		} catch (CoreException e) {
 			EuropaPlugin.getDefault().logError(
 					"Cannot initialize nddl model tab", e);
@@ -135,11 +148,13 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 		configuration.setAttribute(DIR_NAME, fDirText.getText());
 		configuration.setAttribute(MODEL_NAME, fNddlModelText.getText());
 		configuration.setAttribute(CONFIG_NAME, fPlannerConfigText.getText());
-		
-		configuration.setAttribute(HORIZON_START, makeInt(fHorizonStart, DEF_HORIZON_START));
-		configuration.setAttribute(HORIZON_END, makeInt(fHorizonEnd, DEF_HORIZON_END));
+
+		configuration.setAttribute(HORIZON_START, makeInt(fHorizonStart,
+				DEF_HORIZON_START));
+		configuration.setAttribute(HORIZON_END, makeInt(fHorizonEnd,
+				DEF_HORIZON_END));
 	}
-	
+
 	private int makeInt(Text field, int def) {
 		try {
 			return new Integer(field.getText());
@@ -180,6 +195,27 @@ public class NddlModelTab extends AbstractLaunchConfigurationTab implements
 		file = new File(dir, name);
 		if (!file.exists()) {
 			setErrorMessage("Planner config " + name + " does not exist");
+			return false;
+		}
+
+		// Horizon bounds
+		int start, end;
+		name = fHorizonStart.getText();
+		try {
+			start = new Integer(name);
+		} catch (NumberFormatException ex) {
+			setErrorMessage("Horizon start should be an integer");
+			return false;
+		}
+		name = fHorizonEnd.getText();
+		try {
+			end = new Integer(name);
+		} catch (NumberFormatException ex) {
+			setErrorMessage("Horizon end should be an integer");
+			return false;
+		}
+		if (start >= end) {
+			setErrorMessage("Horizon end should be greater than horizon start");
 			return false;
 		}
 
