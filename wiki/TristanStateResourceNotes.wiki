@@ -64,7 +64,7 @@ This can be broken into a number of cases:
 
 Most of the above ingores the fact that fewer flaws (and possibly more violations?) could be detecting by being aware of necessary (implicit or explicit) temporal constraints between SET, REQ, and -REQ.
 
-Some of this could be handled when A,B,C are calculated.  In fact, notice that we've used temporal information to decide when a ST is removed from A.  However, it is not possible to handle all constraints during the construction of A,B,C, I think.  For example, even if there is an SET->SET' temporal constraint, the domains for SET and SET' can overlap).  Therefore, I propose:
+Some of this could be handled when A,B,C are calculated.  In fact, notice that we've used temporal information to decide when a SET is removed from A.  However, it is not possible to handle all constraints during the construction of A,B,C, I think.  For example, even if there is an SET->SET' temporal constraint, the domains for SET and SET' can overlap).  Therefore, I propose:
 
  * Timetable-style FV detection does the above.
  * Flow-profile-style FV detection that augments the above with 
