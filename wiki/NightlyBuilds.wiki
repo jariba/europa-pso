@@ -24,3 +24,18 @@ The results of the autobuild are displayed at all times on the [http://babelfish
 You'll need to set up a new bitten slave and ask Javier to register it with the bitten master.
 
 The slave config files for the current autobuild machines can be found [http://code.google.com/p/europa-pso/source/browse/ThirdParty/trunk/autobuild here]
+
+=== Trac mirror for bitten ===
+
+The googlecode repository is mirrored at the machine babelfish at Ames so that the bitten builds can run.
+In case the job that keeps the mirror up to date is down, here are the 2 commands that you need to issue to update it manually :
+
+{{{
+svn pdel --revprop -r 0 svn:sync-lock https://babelfish.arc.nasa.gov/svn/europa 
+svnsync sync https://babelfish.arc.nasa.gov/svn/europa 
+}}}
+
+Only people with babelfish accounts will be able to run these commands succesfully.
+The first line drops any locks on the repository that may have been left there by incomplete svnsyncs.
+The second line performs the update.
+If you're forced to do this, notify Javier so that the autosync job is brought back up, don't set up your one, since there should only be one active at any time.
