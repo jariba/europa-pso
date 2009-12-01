@@ -38,4 +38,4 @@ svnsync sync https://babelfish.arc.nasa.gov/svn/europa
 Only people with babelfish accounts will be able to run these commands succesfully.
 The first line drops any locks on the repository that may have been left there by incomplete svnsyncs.
 The second line performs the update.
-If you're forced to do this, notify Javier so that the autosync job is brought back up, don't set up your one, since there should only be one active at any time.
+If you're forced to do this, notify Javier so that the autosync job is brought back up, don't set up your own one. Because of access restrictions on babelfish,  there can only be one active automated job at any time.
