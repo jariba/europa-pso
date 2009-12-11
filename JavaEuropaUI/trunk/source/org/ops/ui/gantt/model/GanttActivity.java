@@ -8,7 +8,7 @@ import psengine.PSToken;
  */
 public class GanttActivity {
 	protected PSToken token;
-	protected int startMin, startMax, endMin, endMax;
+	protected int startMin, startMax, endMin, endMax, durMin, durMax;
 
 	public GanttActivity(PSToken token, int horStart, int horEnd) {
 		this.token = token;
@@ -26,6 +26,8 @@ public class GanttActivity {
 			startMax = horStart;
 		}
 		// Should we truncate to the upper bound as well?
+		durMin = (int) Math.floor(token.getDuration().getLowerBound());
+		durMax = (int) Math.floor(token.getDuration().getUpperBound());
 	}
 
 	public boolean hasViolation() {
@@ -48,8 +50,16 @@ public class GanttActivity {
 		return endMax;
 	}
 
+	public int getDurMin() {
+		return durMin;
+	}
+
+	public int getDurMax() {
+		return durMax;
+	}
+
 	public int getKey() {
-		return token.getKey();
+		return token.getEntityKey();
 	}
 
 	public String getText() {

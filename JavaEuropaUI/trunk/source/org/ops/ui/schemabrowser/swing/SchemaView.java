@@ -35,9 +35,6 @@ public class SchemaView extends EuropaInternalFrame {
 		this.tree.setCellRenderer(new SchemaNodeCellRenderer());
 	}
 
-	public void databaseReloaded() {
-	}
-
 	@Override
 	public Dimension getFavoriteSize() {
 		return new Dimension(200, 400);

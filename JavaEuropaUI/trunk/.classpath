@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/egantt-ext.jar" sourcepath="/home/tatiana/WorkSpace/EGantt_0.5.3a/src/extensions/Java"/>
 	<classpathentry kind="lib" path="lib/egantt-core.jar" sourcepath="/home/tatiana/WorkSpace/EGantt_0.5.3a/src/core/Java"/>
 	<classpathentry kind="lib" path="lib/egantt-resources.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.nebula.widgets.ganttchart_1.0.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
