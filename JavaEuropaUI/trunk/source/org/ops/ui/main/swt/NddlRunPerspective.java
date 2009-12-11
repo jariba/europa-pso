@@ -4,6 +4,7 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
+import org.ops.ui.gantt.swt.GanttView;
 import org.ops.ui.schemabrowser.swt.SchemaView;
 import org.ops.ui.solver.swt.DecisionsView;
 import org.ops.ui.solver.swt.SolverView;
@@ -40,6 +41,7 @@ public class NddlRunPerspective implements IPerspectiveFactory {
 		bottom.addView(StatisticsChartsView.VIEW_ID);
 		bottom.addView(DecisionsView.VIEW_ID);
 		bottom.addView(SchemaView.VIEW_ID);
+		bottom.addView(GanttView.VIEW_ID);
 		bottom.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 
 		IFolderLayout topLeft = factory.createFolder("topLeft", // NON-NLS-1
