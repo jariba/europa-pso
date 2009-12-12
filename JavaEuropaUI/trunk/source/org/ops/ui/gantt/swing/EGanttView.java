@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.ops.ui.solver.model.SolverAdapter;
 import org.ops.ui.solver.model.SolverModel;
 
 import com.egantt.model.drawing.ContextResources;
+import com.egantt.model.drawing.DrawingContext;
 import com.egantt.model.drawing.DrawingState;
 import com.egantt.model.drawing.part.ListDrawingPart;
 import com.egantt.model.drawing.state.BasicDrawingState;
@@ -26,11 +28,14 @@ import com.egantt.swing.cell.CellState;
 import com.egantt.swing.component.ComponentResources;
 import com.egantt.swing.component.context.BasicComponentContext;
 import com.egantt.swing.component.tooltip.ToolTipState;
+import com.egantt.swing.graphics.GraphicsResources;
 import com.egantt.swing.table.list.BasicJTableList;
 
 import ext.egantt.drawing.module.BasicPainterModule;
+import ext.egantt.drawing.module.CalendarDrawingModule;
 import ext.egantt.drawing.module.GradientColorModule;
 import ext.egantt.drawing.painter.context.BasicPainterContext;
+import ext.egantt.drawing.painter.context.compound.BasicCompoundContext;
 import ext.egantt.swing.GanttDrawingPartHelper;
 import ext.egantt.swing.GanttEntryHelper;
 import ext.egantt.swing.GanttTable;
@@ -39,7 +44,7 @@ import ext.egantt.swing.GanttToolBar;
 /**
  * Adaptation of the original PSUI Gantt chart based on EGantt library
  * 
- * @author tatiana
+ * @author Tatiana Kichkaylo
  */
 public class EGanttView extends EuropaInternalFrame {
 
@@ -60,9 +65,14 @@ public class EGanttView extends EuropaInternalFrame {
 	private BasicPainterContext textPainter = new BasicPainterContext();
 	private BasicJTableList tableList = new BasicJTableList();
 
+	private Calendar baseCalendar;
+
 	public EGanttView(SolverModel solverModel) {
 		super("Gantt chart");
 		this.solverModel = solverModel;
+
+		this.baseCalendar = Calendar.getInstance();
+		baseCalendar.set(0, 0, 0, 0, 0, 0);
 
 		textPainter.setPaint(Color.WHITE);
 		textPainter.put(TEXT_PAINTER, new Font(null, Font.BOLD, 10));
@@ -141,20 +151,42 @@ public class EGanttView extends EuropaInternalFrame {
 		this.add(gantt, BorderLayout.CENTER);
 		this.add(new GanttToolBar(gantt.getViewManager(GanttTable.TIME_AXIS)),
 				BorderLayout.SOUTH);
-		
+
 		this.gantt.setTimeRange(wrap(0), wrap(model.getEnd() - offset));
-//		{
-//        	DrawingContext context = gantt.getDrawingContext();
-//        	BasicCompoundContext gc = (BasicCompoundContext) context.get(CalendarDrawingModule.TIMELINE_TOP + CalendarDrawingModule.TEXT_PAINTER, ContextResources.GRAPHICS_CONTEXT);
-//        	gc.put("Granularity", new StepGranularity());
-//        	// gc.put(PainterResources.FORMAT, new Integer(Calendar.YEAR), new SimpleDateFormat("MMM 'TST1'"));
-//        	// gc.put(PainterResources.FORMAT, new Integer(Calendar.MONTH), new SimpleDateFormat("MMM 'TST2'"));
-//        }	
+		{
+			DrawingContext context = gantt.getDrawingContext();
+			BasicCompoundContext gc = (BasicCompoundContext) context.get(
+					CalendarDrawingModule.TIMELINE_TOP
+							+ CalendarDrawingModule.TEXT_PAINTER,
+					ContextResources.GRAPHICS_CONTEXT);
+			cleanFormats(gc);
+			gc = (BasicCompoundContext) context.get(
+					CalendarDrawingModule.TIMELINE_BOTTOM
+							+ CalendarDrawingModule.TEXT_PAINTER,
+					ContextResources.GRAPHICS_CONTEXT);
+			cleanFormats(gc);
+		}
+	}
+
+	private void cleanFormats(BasicCompoundContext gc) {
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.MINUTE),
+				new SimpleDateFormat(" m"));
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.HOUR),
+				new SimpleDateFormat(" 'hour' H"));
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.DAY_OF_MONTH),
+				new SimpleDateFormat(" day D")); // day of year
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.WEEK_OF_MONTH),
+				new SimpleDateFormat(" day D"));
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.WEEK_OF_YEAR),
+				new SimpleDateFormat(" day D"));
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.MONTH),
+				new SimpleDateFormat(" day D"));
+		gc.put(GraphicsResources.FORMAT, new Integer(Calendar.YEAR),
+				new SimpleDateFormat(" day D"));
 	}
 
 	private Date wrap(int value) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date(0));
+		Calendar cal = (Calendar) baseCalendar.clone();
 		cal.add(Calendar.MINUTE, value);
 		return cal.getTime();
 	}
