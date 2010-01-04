@@ -4,7 +4,7 @@
  * ResourceProfileImprovements
  * ResourceNotes
  * DynamicEuropaNotes
- * TristanStateResourceNotes (Note that Mike also has thoughts [StateResourceNotes here])
+ * TristanStateResourceNotes, TristanStateResourceNotesWithDeletedPreconditions (Note that Mike also has thoughts [StateResourceNotes here])
 
 
 == Misc Thoughts/Questions/Notes ==
