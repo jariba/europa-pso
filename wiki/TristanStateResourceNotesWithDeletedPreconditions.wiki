@@ -13,6 +13,8 @@ Here are the transactions involved:
 
 For each 'es' and 'ls' represent earliest and latest starts.  So, for example, -REQ(ls) is the latest time the -REQ (ie the end of the requirement) could occur.
 
+NOTE:  In addition to a requirement on the previous state, a deleted precondition usually refers to change of state as well.  However, we ignore that here, since it is equivalent to a PRE and a SET together.
+
 = Calculating profiles =
 
 As we pass through time, we update 4 sets whenever we hit one of the above six classes of time points:
@@ -20,6 +22,7 @@ As we pass through time, we update 4 sets whenever we hit one of the above six c
  * *B:*  The set of REQ tokens that _might_ be underway at this time.
  * *C:*  The set of REQ tokens that _must_ be underway at this time.
  * *D:*  The set of PRE instances that could be valid at this time.
+
 
 === Building A ===
 
@@ -67,7 +70,22 @@ This can be broken into a number of cases:
    1.  If B contains REQ, and there is no SET in A whose value might match that of REQ, it is a flaw.
    1.  If B contains REQ, and there is any SET in A whose value might not match that of REQ, it is a flaw.
  1.  *FV detection just within D: *  For any pair PRE and PRE' in D:
-    1.  It is a violation if they both _must_ start at the same time and 
+    1.  It is a violation if they both _must_ start at the same time and their precondition states _must_ be different values.
+    1.  The same thing with _might_ and _must_ is a flaw:  It is a flaw if they both _might_ start at the same time and their precondition states _must_ be different values.
+    1.  The same thing with _must_ and _might_ is a flaw.
+    1.  The same thing with _might_ and _might_ is a flaw.
+ 1.  *FV detection between D and A', where A' is the set A for the _preceding instant_:*  
+    1.  If D contains PRE, and PRE _must_ occur here and there is no SET in A' whose value might match that of PRE, it is a violation.
+    1.  If D contains PRE and there is no SET in A' whose value might match that of PRE, it is a flaw.
+    1.  If D contains PRE and there is any SET in A' whose value might not match that of REQ, it is a flaw.
+ 1.  *FV detection between D and B',C', where B'/C' is the set B/C for the _preceding instant_ :*
+    1.  If D contains PRE, and PRE _must_ occur here, and C' contains REQ and there is no overlap between the state values of PRE and REQ, it is a violation.
+    1.  If D contains PRE, and B' contains REQ, unless the state values for PRE and REQ are both singleton and equal, it is a flaw.
+
+NOTE:  I think that comparing D with B',C' is not strictly necessary.  For example, if there is a flaw between D and B', there should also be a flaw between D and A' and/or a flaw between B and A', and resolving that flaw will either remove the flaw between D and B' or add a flaw between either D and A' or B' and A'.  Ok, that's confusing, but I think the idea is intuitive. 
+
+The obvious example where this extra detection is warranted is the case where there is a violation between D and B' (or C') but only flaws between D and A' and between B' (or C') and A.  It would be nice to notice the violation right away instead of needing some number of flaw resolutions before the violation is noticed!
+
 
 = Adding temporal constraints =
 
