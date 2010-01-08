@@ -3,13 +3,13 @@
 	<description>
 		Europa plugin update site
 	</description>
-	<feature url="features/org.ops.ui.europaplugin_VERSION.jar" id="EuropaPluginFeature" 
+	<feature url="features/org.ops.ui.europaplugin_VERSION.jar" id="org.ops.ui.europaplugin.feature" 
 		version="VERSION" label="Europa plugin">
 		<category name="Europa"/>
 	</feature>
 	<category-def name="Europa" label="Europa plugin">
 		<description>
-			Europa plugin as a single JAR file
+			Europa plugin
 		</description>
 	</category-def>
 </site>
