@@ -1,0 +1,32 @@
+#!/bin/sh
+export JAVA_HOME="/cygdrive/c/Progra~1/Java/jdk1.6.0_12"
+
+#put in an infinite loop in case the build fails
+for (( c=1; c>0; c++ ))
+do
+  #make a backup of the bitten log
+  month=`ls -la bitten-slave.log |cut -d" " -f6`
+  day=`ls -la bitten-slave.log |cut -d" " -f7`
+  time=`ls -la bitten-slave.log |cut -d" " -f8 | sed s/:/""/`
+  target=bitten-slave.log.2009$month$day.$time 
+  echo moving log to $target
+  mv bitten-slave.log $target
+ 
+  echo running iteration $c >> bitten-slave.log
+
+  #
+  #debug dry run in tmp directory
+  #
+  #nohup /usr/bin/bitten-slave --dry-run --verbose --config="bitten-slave.ini" --log="bitten-slave.log" http://babelfish.arc.nasa.gov/trac/europa/builds
+ 
+  #
+  #debug dry run in work-dir
+  #
+  #nohup /usr/bin/bitten-slave --dry-run --verbose --config="bitten-slave.ini" --log="bitten-slave.log" --work-dir="/cygdrive/e/plasma.autobuild" http://babelfish.arc.nasa.gov/trac/europa/builds
+  
+  #
+  #full run
+  #
+  nohup /usr/bin/bitten-slave            --verbose --config="bitten-slave.ini" --log="bitten-slave.log" --work-dir="/cygdrive/e/plasma.autobuild" http://babelfish.arc.nasa.gov/trac/europa/builds
+
+done
