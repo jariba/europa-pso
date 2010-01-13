@@ -1,0 +1,21 @@
+This directory is intended to hold:
+
+A:  Benchmark problems
+----------------------
+
+- various problem domains
+- instances from those problem domains
+- EUROPA models and solvers to handle those problem domains
+
+In other words, a location to test EUROPA, improve its performance, work on
+algorithms and compare EUROPA with state-of-the-art approaches in planning,
+scheduling, and constraint satisfaction.
+
+B:  Example EUROPA Customizations
+---------------------------------
+
+- advanced examples we don't want to distribute with core EUROPA
+
+a) ExampleCustomConstraint shows how to write your own custom constraint.
+b) ExampleStateResource shows how to subclass profiles to get your own behavior, in this case to mimick a unary state resource.
+

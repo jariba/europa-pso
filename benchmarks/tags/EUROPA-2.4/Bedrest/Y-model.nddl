@@ -1,0 +1,1800 @@
+#include "Y-objects.nddl"
+
+Subject::Sleep {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Other {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+}
+
+Subject::Response_to_Tilt_CT1 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Cardio_Team.Claim tok6);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(tok7.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok8);
+  temporaldistance(tok8.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok9);
+  temporaldistance(tok9.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Response_to_Tilt_CT2 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  equals(sys.UCR_Level1.Claim tok4);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok6);
+  equals(sys.UCR_Operator_Cardio_Team.Claim tok7);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok8);
+  temporaldistance(tok8.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok9);
+  temporaldistance(tok9.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok10);
+  temporaldistance(tok10.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+}
+
+Subject::Vascular_Function_CV1 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Cardio_Team.Claim tok6);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(tok7.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok8);
+  temporaldistance(tok8.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok9);
+  temporaldistance(tok9.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Vascular_Function_CV2 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  equals(sys.UCR_Level1.Claim tok4);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok6);
+  equals(sys.UCR_Operator_Cardio_Team.Claim tok7);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok8);
+  temporaldistance(tok8.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok9);
+  temporaldistance(tok9.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok10);
+  temporaldistance(tok10.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+}
+
+Subject::Plasma_Volume_CP1 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Cardio_Team.Claim tok6);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(tok7.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok8);
+  temporaldistance(tok8.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok9);
+  temporaldistance(tok9.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Cardiac_Function_Echo_CE1 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Cardio_Team.Claim tok6);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(tok7.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok8);
+  temporaldistance(tok8.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok9);
+  temporaldistance(tok9.start, 3600, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok10);
+  temporaldistance(tok10.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+}
+
+Subject::PE_Nitroprusside_CPX1 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  equals(sys.UCR_Level1.Claim tok4);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok6);
+  equals(sys.UCR_Operator_Meck.Claim tok7);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Require tok8);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok9);
+  temporaldistance(tok9.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok10);
+  temporaldistance(tok10.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok11);
+  temporaldistance(tok11.start, 82800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Prevent tok12);
+  temporaldistance(end, 28800, tok12.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+}
+
+Subject::Dorsal_Foot_Vein_CPX2 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Meck.Claim tok6);
+  equals(object.SC_This_Subject_May_Not_Be_Subjected_To_Sore_Foot.Require tok7);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Require tok8);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok9);
+  temporaldistance(tok9.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok10);
+  temporaldistance(tok10.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok11);
+  temporaldistance(tok11.start, 82800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Prevent tok12);
+  temporaldistance(end, 28800, tok12.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+}
+
+Subject::Dorsal_Hand_Vein_CPX3 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Meck.Claim tok6);
+  equals(object.SC_This_Subject_May_Not_Be_Subjected_To_Sore_Foot.Require tok7);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Require tok8);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok9);
+  temporaldistance(tok9.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok10);
+  temporaldistance(tok10.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok11);
+  temporaldistance(tok11.start, 82800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Prevent tok12);
+  temporaldistance(end, 28800, tok12.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+}
+
+Subject::Leg_Compliance_CPX4 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Cardio.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Cardio.Claim tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Meck.Claim tok6);
+  equals(object.SC_This_Subject_May_Not_Be_Subjected_To_Sore_Foot.Require tok7);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Require tok8);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok9);
+  temporaldistance(tok9.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok10);
+  temporaldistance(tok10.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok11);
+  temporaldistance(tok11.start, 82800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_CPX.Prevent tok12);
+  temporaldistance(end, 28800, tok12.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+}
+
+Subject::Cycle_Ergometer_EC1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Level1.Claim tok3);
+  equals(sys.UCR_Operator_Hagan.Claim tok4);
+  equals(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Require tok5);
+  equals(object.SC_This_Subject_Allowed_To_Exercise.Require tok6);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(tok7.start, 7200, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok8);
+  temporaldistance(tok8.start, 7200, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok9);
+  temporaldistance(tok9.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok10);
+  temporaldistance(tok10.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+}
+
+Subject::Functional_Fitness_EF1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok3);
+  equals(sys.UCR_Operator_Hagan.Claim tok4);
+  equals(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Require tok5);
+  equals(object.SC_This_Subject_Allowed_To_Exercise.Require tok6);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(tok7.start, 5400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok8);
+  temporaldistance(tok8.start, 5400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok9);
+  temporaldistance(tok9.start, 14400, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Isokinetic_EK1 {
+  System sys;
+
+  equals(sys.SC_First_Floor_can_be_setup_for_Isokinetic.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Isokinetic.Claim tok4);
+  temporaldistance(tok4.start, 900, start);
+
+  equals(sys.UCR_Continuable_Room_First_Floor.Claim tok5);
+  equals(sys.UCR_Operator_Baldwin.Claim tok6);
+  equals(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Require tok7);
+  equals(object.SC_This_Subject_Allowed_To_Exercise.Require tok8);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Vibe.Prevent tok9);
+  temporaldistance(tok9.start, 2700, start);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Neuro.Prevent tok10);
+  temporaldistance(tok10.start, 2700, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok11);
+  temporaldistance(tok11.start, 7200, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok12);
+  temporaldistance(tok12.start, 7200, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok13);
+  temporaldistance(tok13.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok14);
+  temporaldistance(tok14.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+  eq(tok13.subsolved, subsolved);
+  eq(tok14.subsolved, subsolved);
+}
+
+Subject::Isokinetic_EK2 {
+  System sys;
+
+  equals(sys.SC_First_Floor_can_be_setup_for_Isokinetic.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Isokinetic.Claim tok4);
+  temporaldistance(tok4.start, 900, start);
+
+  equals(sys.UCR_Continuable_Room_First_Floor.Claim tok5);
+  equals(sys.UCR_Operator_Baldwin.Claim tok6);
+  equals(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Require tok7);
+  equals(object.SC_This_Subject_Allowed_To_Exercise.Require tok8);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Vibe.Prevent tok9);
+  temporaldistance(tok9.start, 2700, start);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Neuro.Prevent tok10);
+  temporaldistance(tok10.start, 2700, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok11);
+  temporaldistance(tok11.start, 7200, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok12);
+  temporaldistance(tok12.start, 7200, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok13);
+  temporaldistance(tok13.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok14);
+  temporaldistance(tok14.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+  eq(tok13.subsolved, subsolved);
+  eq(tok14.subsolved, subsolved);
+}
+
+Subject::Serum_Preg___Blood_PS1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::DEXA_BD1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_LeBlanc.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::pQCT_BP1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_LeBlanc.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Clinical_Nutritional_Assessment_NN1 {
+  System sys;
+
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok1);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok2);
+  temporaldistance(tok2.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Clinical_Laboratory_Assessment_NL1 {
+  System sys;
+
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok1);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok2);
+  temporaldistance(tok2.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Sublingual_Scrape_NSS1 {
+  System sys;
+
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok1);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok2);
+  temporaldistance(tok2.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Stress_Measures_SM1 {
+  System sys;
+
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok1);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok2);
+  temporaldistance(tok2.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Saliva_Sample_SS1 {
+  System sys;
+
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok1);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok2);
+  temporaldistance(tok2.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Saliva_Briefing_SB1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Functional_Stretch_Reflex_NS1 {
+  System sys;
+
+  equals(sys.SC_First_Floor_can_be_setup_for_Neuro.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok3);
+  ends(sys.UCR_Continuable_Equipment_Neuro.Claim tok4);
+  temporaldistance(tok4.start, 900, start);
+
+  equals(sys.UCR_Continuable_Room_First_Floor.Claim tok5);
+  equals(sys.UCR_Operator_Taylor.Claim tok6);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Vibe.Prevent tok7);
+  temporaldistance(tok7.start, 2700, start);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Isokinetic.Prevent tok8);
+  temporaldistance(tok8.start, 2700, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok9);
+  temporaldistance(tok9.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok10);
+  temporaldistance(tok10.start, 82800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+}
+
+Subject::Balance_Control_NB1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  ends(sys.UCR_Continuable_Equipment_Neuro.Claim tok3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Require tok4);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(tok7.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(tok8.start, 28800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Prevent tok9);
+  temporaldistance(end, 28800, tok9.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Balance_Control_NB2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  ends(sys.UCR_Continuable_Equipment_Neuro.Claim tok3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Require tok4);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(tok7.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(tok8.start, 28800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Prevent tok9);
+  temporaldistance(end, 28800, tok9.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Balance_Control_NB3 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  ends(sys.UCR_Continuable_Equipment_Neuro.Claim tok3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Require tok4);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(tok7.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(tok8.start, 28800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Prevent tok9);
+  temporaldistance(end, 28800, tok9.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Balance_Control_NB4 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Level1.Claim tok3);
+  ends(sys.UCR_Continuable_Equipment_Neuro.Claim tok4);
+  temporaldistance(tok4.start, 900, start);
+
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Require tok5);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok7);
+  temporaldistance(tok7.start, 1800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_NB.Prevent tok8);
+  temporaldistance(end, 28800, tok8.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+}
+
+Subject::Lactulose_Acetaminophen_Test_PL1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok3);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok4);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok5);
+  temporaldistance(tok5.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok6);
+  temporaldistance(tok6.start, 72000, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+}
+
+Subject::Lactulose_Post_5_PL2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok4);
+  temporaldistance(tok4.start, 72000, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+}
+
+Subject::Lactulose_Post_6_PL3 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok4);
+  temporaldistance(tok4.start, 72000, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+}
+
+Subject::Pharmacy_Briefing_PB1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::WinSCAT_PW1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Seaton.Claim tok3);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok4);
+  temporaldistance(tok4.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+}
+
+Subject::Quantitative_Ultrasound_Scan_RPX1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Posture_Study_RPX2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::QCT_Scan_RPX3 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::MRI_Lumbar_RPX4 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Serum_Pregnancy_Test_RPX5 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::DEXA_RPX6 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Vibration_RPX7 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Continuable_Equipment_Vibe.Claim tok3);
+  equals(sys.UCR_Operator_Rubin.Claim tok4);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+}
+
+Subject::Vibe_Echo_RPX8 {
+  System sys;
+
+  equals(sys.SC_Cardio_can_be_setup_for_Vibe.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok3);
+  equals(sys.UCR_Continuable_Equipment_Vibe.Claim tok4);
+  equals(sys.UCR_Continuable_Room_Cardio.Claim tok5);
+  equals(sys.UCR_Operator_Rubin.Claim tok6);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_vibration.Require tok7);
+
+  met_by(sys.SC_Cardio_can_be_setup_for_Cardio.Prevent tok8);
+  temporaldistance(tok8.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok9);
+  temporaldistance(tok9.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok10);
+  temporaldistance(tok10.start, 14400, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok11);
+  temporaldistance(tok11.start, 3600, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok12);
+  temporaldistance(tok12.start, 82800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_vibration.Prevent tok13);
+  temporaldistance(end, 28800, tok13.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+  eq(tok13.subsolved, subsolved);
+}
+
+Subject::Vibe_EMG_RPX9 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok2);
+  equals(sys.UCR_Continuable_Equipment_Vibe.Claim tok3);
+  equals(sys.UCR_Operator_Rubin.Claim tok4);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_vibration.Require tok5);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok7);
+  temporaldistance(tok7.start, 1800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_vibration.Prevent tok8);
+  temporaldistance(end, 28800, tok8.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+}
+
+Subject::Post_Vibration_FSR_RPX10 {
+  System sys;
+
+  equals(sys.SC_First_Floor_can_be_setup_for_Vibe.Require tok1);
+  equals(object.UCR_This_Subject_Availability.Claim tok2);
+  equals(object.SC_This_Subject_is_on_first_floor.Require tok3);
+  equals(sys.UCR_Continuable_Equipment_Vibe.Claim tok4);
+  equals(sys.UCR_Continuable_Room_First_Floor.Claim tok5);
+  equals(sys.UCR_Operator_Rubin.Claim tok6);
+  equals(object.SC_This_Subject_May_Not_Have_Science_Constraint_vibration.Require tok7);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Neuro.Prevent tok8);
+  temporaldistance(tok8.start, 900, start);
+
+  met_by(sys.SC_First_Floor_can_be_setup_for_Isokinetic.Prevent tok9);
+  temporaldistance(tok9.start, 900, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok10);
+  temporaldistance(tok10.start, 1800, start);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Prevent tok11);
+  temporaldistance(tok11.start, 1800, start);
+
+  meets(object.SC_This_Subject_May_Not_Have_Science_Constraint_vibration.Prevent tok12);
+  temporaldistance(end, 28800, tok12.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+  eq(tok10.subsolved, subsolved);
+  eq(tok11.subsolved, subsolved);
+  eq(tok12.subsolved, subsolved);
+}
+
+Subject::Vest_Fitting_RPX11 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Rubin.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Vitals_V1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Vitals_No_Meds_V2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Physiotherapy_WP1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_Operator_Therapist.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::AM_Stretching_WS1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::PM_Stretching_WS2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Stretch_FAM_WSF {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Reconditioning_WR1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+
+  met_by(object.SC_This_Subject_May_Not_Be_Subjected_To_Sore_Foot.Prevent tok3);
+  temporaldistance(tok3.start, 28800, start);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Away_T1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(sys.MCR_gurneys.Reserve tok2);
+  Active_gurneys tls2; eq(tok2.active, tls2);
+
+  meets(object.SC_This_Subject_is_on_sixth_floor.StartPrevent tok3);
+  meets(object.SC_This_Subject_is_on_first_floor.StartEnable tok4);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+}
+
+Subject::Come_back_T1R {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(sys.MCR_gurneys.Reserve tok2);
+  Active_gurneys tls2; eq(tok2.active, tls2);
+
+  ends(object.SC_This_Subject_is_on_first_floor.EndEnable tok3);
+  ends(object.SC_This_Subject_is_on_sixth_floor.EndPrevent tok4);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+}
+
+Subject::Go_to_JSC_T2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_van.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Return_from_JSC_T2R {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  equals(sys.UCR_van.Claim tok3);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+}
+
+Subject::Hygiene_H1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Admit_Physical_A1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Dimissal_A2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Subject_Briefing_A3 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Head_Down_A4 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+}
+
+Subject::Breakfast_B1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok5);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok6);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(end, 1800, tok8.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+}
+
+Subject::Light_Breakfast___Complex_Carbs_B2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok5);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok6);
+  temporaldistance(end, 1800, tok6.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+}
+
+Subject::Lunch_L1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok5);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok6);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(end, 1800, tok8.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+}
+
+Subject::Light_Lunch___Complex_Carbs_L2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok5);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok6);
+  temporaldistance(end, 1800, tok6.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+}
+
+Subject::Special_Lact_Light_Lunch___Complex_Carbs_L3 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok4);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok5);
+  temporaldistance(end, 1800, tok5.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok6);
+  temporaldistance(end, 1800, tok6.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+}
+
+Subject::Special_Lact_Lunch_L4 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok5);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok6);
+  temporaldistance(end, 1800, tok6.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+}
+
+Subject::Remaining_Meal_RM1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok5);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok6);
+  temporaldistance(tok6.start, 1800, start);
+
+  meets(object.SC_This_Subject_Allowed_To_Eat.Prevent tok7);
+  temporaldistance(end, 3600, tok7.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok8);
+  temporaldistance(end, 1800, tok8.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok9);
+  temporaldistance(end, 1800, tok9.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+  eq(tok9.subsolved, subsolved);
+}
+
+Subject::Special_Lact_Remaining_Meal_RM2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok4);
+
+  met_by(object.SC_This_Subject_Allowed_To_Eat.Prevent tok5);
+  temporaldistance(tok5.start, 1800, start);
+
+  meets(object.SC_This_Subject_Allowed_To_Eat.Prevent tok6);
+  temporaldistance(end, 3600, tok6.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(end, 1800, tok8.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+}
+
+Subject::Dinner_D1 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat_Non_Special_Food.Require tok5);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok6);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok8);
+  temporaldistance(end, 1800, tok8.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+  eq(tok8.subsolved, subsolved);
+}
+
+Subject::Special_Lact_Dinner_D2 {
+  System sys;
+
+  equals(object.UCR_This_Subject_Availability.Claim tok1);
+  equals(object.SC_This_Subject_is_on_sixth_floor.Require tok2);
+  met_by(sys.MCR_kitchen_staff.Reserve tok3);
+  Active_kitchen_staff tls3; eq(tok3.active, tls3);
+  temporaldistance(tok3.start, 900, start);
+
+  equals(object.SC_This_Subject_Allowed_To_Eat_Regular_Food.Require tok4);
+  equals(object.SC_This_Subject_Allowed_To_Eat.Require tok5);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise.Prevent tok6);
+  temporaldistance(end, 1800, tok6.end);
+
+  meets(object.SC_This_Subject_Allowed_To_Exercise_Maximally.Prevent tok7);
+  temporaldistance(end, 1800, tok7.end);
+
+  bool subsolved;
+  if (enforce == true) {if (solved == true) {eq(subsolved, true);}}
+
+  eq(tok1.subsolved, subsolved);
+  eq(tok2.subsolved, subsolved);
+  eq(tok3.subsolved, subsolved);
+  eq(tok4.subsolved, subsolved);
+  eq(tok5.subsolved, subsolved);
+  eq(tok6.subsolved, subsolved);
+  eq(tok7.subsolved, subsolved);
+}
