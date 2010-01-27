@@ -64,7 +64,7 @@ First, unzip libantlr3c-3.1.3.tar.bz2
 > sudo make install
 }}}
 
-If you install ANTLR-C in a location other than the standard one, you can pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.
+If you install ANTLR-C in a location other than the standard one, you can pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.  See Advanced Build Configurations for command execution.
 
 *Note* : If you have a 64bit OS, make sure to specify *--enable-64bit* flag for configure. 
 
@@ -141,6 +141,16 @@ Arguments to the jam exec can be passed through the jam.args variable.  This is 
   % ant -Djam.args="-j2"
 }}}
 will tell jam to use two shells for processing.  Jam will take care of dependencies for the compilation.  Warning -- do not use this if you are debugging dependency issues!
+
+== Running ant using alternative Antlr-3c library ==
+  If you defined the ANTLR-C library path as ANTLR_HOME, the following commands will build the EUROPA distribution: 
+% cd $PLASMA_HOME
+% $ANT_HOME/bin/ant -Dantlr.lib=$ANTLR_HOME/lib -Dantlr.include=$ANTLR_HOME/include
+
+== Debugging failed builds ==
+  If your build is not successful, you can create an verbose output log by directing output to a log file stored on $PLASMA_HOME.  This particular jam target will list why Jam failed.
+% cd $PLASMA_HOME
+% $ANT_HOME/bin/ant -v -Djam.args="-dc" > tmp.txt
 
 == Common Targets ==
 Here are the most common ant targets to build/test EUROPA components (all are available in $PLASMA_HOME/build.xml):
