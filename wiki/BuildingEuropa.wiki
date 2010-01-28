@@ -27,7 +27,7 @@ The following software is also required, but is likely already installed on your
    * mac users : if you download it from the swig site, make sure you get swig, not macswig, which is a very old version available from that site
    * version 1.3.29+ will work for everything except one small bug (see #169)
  * [http://www.cygwin.com/setup.exe Cygwin] - A POSIX environment for Microsoft Windows.
-
+   * See [http://code.google.com/p/europa-pso/wiki/Cygwininstall Europa Cygwin Install] - for Cygwin install help
 
 The following software is included in Europa, but you may wish to install your own version or already have your own version installed:
 
@@ -49,7 +49,7 @@ We have provided a perl script that automates the install of the log4cxx library
 > sudo makeLog4cxx
 }}}
 
-== Install CPPUnit ==
+== Install [http://code.google.com/p/europa-pso/wiki/cppunit CPPUnit] ==
 We have provided a perl script that automates the install of the CPPUnit framework, though you are free to run the script manually (all it does is ./configure, make, sudo make install).  Note that you will need to run the script as root.  If you want to change the default install directory (set by ./configure), then you will need to run the commands at the command line.
 {{{
 > cd plasma.ThirdParty
@@ -122,6 +122,9 @@ To see if you have the necessary software requirements, run (note that you must 
 % cd $PLASMA_HOME/bin
 % checkreqs
 }}}
+
+== Configuring a Windows Environment ==
+  Cygwin and MinGW users, please see [http://code.google.com/p/europa-pso/wiki/BuildingEuropaOnWindows Windows Build] for more information.
 
 == Build a EUROPA distribution ==
 To build EUROPA, simply run (Note that this will take a while since it'll build all the different variants and library types):
