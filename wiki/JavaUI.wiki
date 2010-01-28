@@ -37,7 +37,7 @@ When we are ready to release, we can include just jars or use the directory stru
 
 The main class is *org.ops.ui.main.swing.PSDesktop*. It expects *LD_LIBRARY_PATH* (or *PATH* on Windows) to include Europa shared libraries and prints a message to this end if it cannot load the library. 
 
-Command line arguments are optional. PSDesktop needs a NDDL file (for the initial state) and PlannerConfig.xml to run. If these are not provided from the command line, file open dialogs are shown. Command line arguments:
+Command line arguments are optional. PSDesktop needs a NDDL file (for the initial state) and [http://code.google.com/p/europa-pso/wiki/PlannerCfg PlannerConfig.xml] to run. If these are not provided from the command line, file open dialogs are shown. Command line arguments:
 
 {{{
   [-nddl initial_state.nddl] [-config PlannerConfig.xml] [-view user.package.ClassName]
