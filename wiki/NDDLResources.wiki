@@ -1,4 +1,3 @@
-
 == Resources ==
 <wiki:comment>
 This page is old and should either be deprecated or revisitied in the context of a proper description of working with resources.
@@ -21,7 +20,7 @@ There are usually constraints on how resources can be used and produced.  The fo
  * _consumptionRateMax_:  The resource's maximum consumption rate - the most that can be removed per time unit.
  * _consumptionMax_:  The resource's maximum consumption - the most that can be removed at one time.
 
-See [source:PLASMA/trunk/src/PLASMA/Resource/component/NDDL/Resources.nddl] for the complete NDDL specification of the resource classes. 
+See [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/Resource/component/NDDL/Resources.nddl /PLASMA/trunk/src/PLASMA/Resource/component/NDDL/Resources.nddl] for the complete NDDL specification of the resource classes. 
 
 Here is some code that shows a _Battery_ class that inherits from _Resource_ and sets the initial capacity and minimum and maximum levels in the constructor:
 
