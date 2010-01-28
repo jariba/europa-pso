@@ -16,7 +16,7 @@ Europa uses MinGW to compile a windows executable because MinGW is not under the
 == Cygwin ==
 
 === Setting up Cygwin ===
-We assume you already have a working cygwin installation.  For details, see the[www.cygwin.com Cygwin] site.
+We assume you already have a working cygwin installation.  For details, see the[http://www.cygwin.com/ Cygwin] site.
 
 To install on cygwin, you will need to add the following packages using the cygwin setup:
 
