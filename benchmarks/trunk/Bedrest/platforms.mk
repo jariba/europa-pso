@@ -94,7 +94,6 @@ LOADLIBS += -lSystem$(BUILD_SUFFIX) \
             -lPlanDatabase$(BUILD_SUFFIX) \
             -lConstraintEngine$(BUILD_SUFFIX) \
             -lUtils$(BUILD_SUFFIX) \
-            -lAntlr3$(BUILD_SUFFIX) \
             -lTinyXml$(BUILD_SUFFIX)
 
 vpath %.dylib $(EUROPA_HOME)/lib
