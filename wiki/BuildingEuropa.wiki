@@ -133,9 +133,9 @@ To build EUROPA, simply run (Note that this will take a while since it'll build 
 % cd $PLASMA_HOME
 % ant release-dist
 }}}
-the EUROPA distribution will be available at $PLASMA_HOME/dist/europa.zip, you can then take the distribution and [wiki:EuropaInstallation install it]
+the EUROPA distribution will be available at $PLASMA_HOME/dist/europa.zip, you can then take the distribution and [EuropaInstallation install it]
 
-If desired, Doxygen API documentation can be run by following the directions [source:PLASMA/trunk/documentation/README here].[[BR]]
+If desired, Doxygen API documentation can be run by following the directions [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/documentation/README here].
 
 = Advanced Build Configuration =
 == Additional Arguments to Jam ==
@@ -169,7 +169,8 @@ Here are the most common ant targets to build/test EUROPA components (all are av
 TODO: document some of the jam targets as well?
 
 == Build Options ==
-EUROPA can be built using a few variations. The variations and parameters of the build can be configured through environment variables or parameters to jam. EUROPA supports building one or more "variants" at the same time. The valid variants are (see [source:PLASMA/trunk/src/PLASMA/VariantRules here] for implementation details):
+EUROPA can be built using a few variations. The variations and parameters of the build can be configured through environment variables or parameters to jam. EUROPA supports building one or more "variants" at the same time. The valid variants are (see [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules
+ here] for implementation details):
 
  * DEV - unoptimized, unprofiled, debug (all error detection on).   The default option, but not necessarily the best.
  * OPTIMIZED - optimized, unprofiled, no debug.  Error detection is disabled to improve runtime performance; compile times are somewhat slower.
@@ -197,7 +198,7 @@ The fourth variant, CUSTOM is a special variant that examines some environment v
  * EUROPA_PROFILE - use profiling
  * EUROPA_WARN - use additional warnings
 
-In the case of the CUSTOM variant, the five variables are used to construct the name by composition. E.g., the OPTIMIZED variant is identical to the CUSTOM EUROPA_OPTIMIZED variant. See [source:/PLASMA/trunk/src/PLASMA/VariantRules this file] for details.
+In the case of the CUSTOM variant, the five variables are used to construct the name by composition. E.g., the OPTIMIZED variant is identical to the CUSTOM EUROPA_OPTIMIZED variant. See [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules this file] for details.
 
 The default variant is DEV, which includes EUROPA_DEBUG_MESSAGE.
 
