@@ -9,7 +9,7 @@ This section introduces the concepts of partial and complete plans.  It presents
 
 === Partial and Complete Plans ===
 
-A domain model deals with the abstractions of classes, predicates and rules. In a _partial plan_ these are instantiated as [BakProblemSolving#FootNotes objects],^1^ tokens, and rule instances respectively. [BakProblemSolving#FootNotes Informally],^2^ a plan is complete if it has no inactive tokens and no unbound variables. While this is a sufficient requirement for completeness, it may not be necessary. For example, suppose that the consumer of a plan (i.e. an execution system) prefers to maintain flexibility in temporal variables. In this case a plan may be complete even if it includes unbound _start_, _end_ or _duration_ variables. It is also common, even necessary in order for planning to terminate in many cases, that the planner excludes inactive tokens from consideration if they are outside a _planning horizon_. 
+A domain model deals with the abstractions of classes, predicates and rules. In a _partial plan_ these are instantiated as [BakProblemSolving#Footnotes objects],^1^ tokens, and rule instances respectively. [BakProblemSolving#Footnotes Informally],^2^ a plan is complete if it has no inactive tokens and no unbound variables. While this is a sufficient requirement for completeness, it may not be necessary. For example, suppose that the consumer of a plan (i.e. an execution system) prefers to maintain flexibility in temporal variables. In this case a plan may be complete even if it includes unbound _start_, _end_ or _duration_ variables. It is also common, even necessary in order for planning to terminate in many cases, that the planner excludes inactive tokens from consideration if they are outside a _planning horizon_. 
 
 http://europa-pso.googlecode.com/svn/wiki/images/guide.f7.gif
 
@@ -78,6 +78,6 @@ The algorithm takes as input a partial plan p and returns true if a complete and
 *Note* It should be emphasized that while this algorithm is commonly employed, it is only one of many that could be implemented. For instance, take a look at the [ExampleNQueens NQueens] and [ExampleRCPSP RCPSP] examples to see how you can implement your own search algorithm on top of the Plan Database in EUROPA.
 
 ----
-== FootNotes ==
+= Footnotes =
  #  Timeline instances are still objects, though they are objects of classes derived from a Timeline class.
  #  A formal presentation of completeness is provided in ([DocReferences ??]).
