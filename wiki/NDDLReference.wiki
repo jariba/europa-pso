@@ -4,19 +4,17 @@
 = Introduction = 
 NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is based on a number of concepts described  [PlanningApproach here]. The reader is strongly advised to review that material prior to working through this chapter.
 
-NDDL is introduced here in a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL transaction language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [RoverExample Mars Rover example/tutorial].
-
-*NOTE:* This page discusses the NDDL language.  To understand the NDDL parser and how to use it, see [NDDLParser NDDL Parser].
+NDDL is introduced here in a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL transaction language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [ExampleRover Mars Rover example/tutorial].
 
 = Variables and Constraints =
 
 Variables and constraints are the basic building blocks of EUROPA. They can be introduced in a number of ways, and in a range of scopes. The following basic forms for variable declaration are supported:
 
- * _type label_: Declares a variable of type _type_ with the name _label_ and allocates a default domain as the base domain based on the type. The available primitive types are: _int_, _float_, _bool_ and _string_. In addition, a type can be a user-defined enumeration or class. The default base domain for _int_ is _[-inf +inf]_, and for _float_ it is _[-inff +inff]_ i.e. from negative to positive infinity. Variables of type _bool_ have a base domain of _{false, true}_. Variables of type _string_ are a special case requiring a singleton value on declaration (see our [StringWarning warning]). 
+ * _type label_: Declares a variable of type _type_ with the name _label_ and allocates a default domain as the base domain based on the type. The available primitive types are: _int_, _float_, _bool_ and _string_. In addition, a type can be a user-defined enumeration or class. The default base domain for _int_ is _`[-inf +inf]`_, and for _float_ it is _`[-inff +inff]`_ i.e. from negative to positive infinity. Variables of type _bool_ have a base domain of _{false, true}_. Variables of type _string_ are a special case requiring a singleton value on declaration (see our [StringWarning warning]). 
  * _type label = value_: Declares a variable of type _type_ with the name _label_ and sets the base domain to the singleton value given by _value_.
  * _type label = domain_: Declares a variable of type _type_ with the name _label_ and sets the base domain to _domain_. For _int_ and _float_ the domain is described as an interval.
 
-In each of the above cases, the term _domain_ reflects the base set of values in the domain of the variable. The variable cannot contain any values not present in this initial domain unless the type of the variable is _open_.^1^ This domain is called the _base domain_.
+In each of the above cases, the term _domain_ reflects the base set of values in the domain of the variable. The variable cannot contain any values not present in this initial domain unless the type of the variable is [NDDLReference#Summary open]^1^ This domain is called the _base domain_.
 
 == Basic Declaration ==
 Figure 1 provides examples of different forms of variable declaration and restriction. Notice in particular the use of _enum_ and _typedef_ keywords which introduce user-defined types. Notice also that _int_ and _float_ types are restricted to intervals and that the decimal point is only used (and must be used) for _float_ values.
@@ -535,7 +533,9 @@ p.to == to;
 
 Figure 8 illustrates the semantics in terms of variables and constraints for this seemingly simple construct. It shows a simple path network with 5 locations and 5 path links.
 
-[[Image(DocImgs:guide.nddl8.gif)]]  *Figure 8:* An illustration of the underlying semantics for existential quantification. 
+http://babelfish.arc.nasa.gov/trac/europa/raw-attachment/wiki/DocImgs/guide.nddl8.gif   
+
+*Figure 8:* An illustration of the underlying semantics for existential quantification. 
 
 A proxy variable is created for each referenced member of the path variable p (i.e. _p.from_ and _p.to_). Each proxy variable is populated with the union of respective member values over all paths. A special constraint is created to maintain synchronization as domains are restricted in both directions. It is the proxy variables which are actually used in the constraints explicitly defined in the model. In the example only an equality constraint was used. However, the proxy variable formulation allows any constraint to be used in filtering providing a powerful technique for expressing existential quantification constraints. Only members that are singletons or enumerations can be used for filtering.
 
@@ -607,7 +607,7 @@ Timeline.close(); // Close the database to new Timeline instances (and any subcl
 Any attempt to allocate an instance of a class that has been closed will result in an error. By default, all types remain _open_ until they are explicitly closed. Unless you have specialized requirements for _Dynamic Objects_, you should always insert a {{{close();}}} statement before creating any tokens. There is no operation to open a class once it has been closed.
 
 == Creating Tokens ==
-There are 2 ways to introduce a token into the plan database using NDDL transactions. The first employs the _goal_ keyword. It has the form _goal(objectScope.predicate [label]);_ where _objectScope_ designates the set of objects to which this token can be assigned and predicate designates the particular predicate to be created. A label is optionally used if later NDDL statements wish to refer to the instance to be allocated. For example, consider the statement:
+There are 2 ways to introduce a token into the plan database using NDDL transactions. The first employs the _goal_ keyword. It has the form _goal(objectScope.predicate `[label]`);_ where _objectScope_ designates the set of objects to which this token can be assigned and predicate designates the particular predicate to be created. A label is optionally used if later NDDL statements wish to refer to the instance to be allocated. For example, consider the statement:
 {{{goal(Navigator.At); // Allocates an anonymous active token which can be assigned to any instance of Navigator}}}
 This statement results in a new token in the plan database which will be in the _active_ state. The object variable of the new token will be populated with the set of all instances in the _Navigator_ class present in the database at the time of token creation. Other examples include:
 {{{
@@ -621,7 +621,7 @@ The second method uses the _rejectable_ keyword. The keyword _rejectable_ is ide
 
 We have seen many example statements where the domain of values of a variable was restricted:
  * On construction it is restricted to the set of all values in the default base domain for the type e.g. int i;
- * On construction it is restricted to an explicit domain e.g. int i = [0 100];
+ * On construction it is restricted to an explicit domain e.g. int i = `[0 100]`;
  * On construction it is restricted to a singleton value e.g. int i = 10;
  * A constraint is posted on the variable relating it to another variable, domain or value. 
 
