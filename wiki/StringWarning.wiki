@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary A warning about the NDDL string type.
 
 = A warning about the NDDL string type =
 
