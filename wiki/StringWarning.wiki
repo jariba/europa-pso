@@ -13,6 +13,6 @@ Strings can therefore be appropriate for id-type member variables that will be s
 string x = {"lions","tigers", "bears"};
     }}}
     * Write custom code to update the domains when necessary.
-    * Use the [trac/europa/browser/PLASMA/trunk/src/PLASMA/NDDL/base/StringData.nddl StringData] class or a sub-class of it to get the base-domain updating behavior of open object types. 
+    * Use the [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/base/StringData.nddl StringData] class or a sub-class of it to get the base-domain updating behavior of open object types. 
 
 *NOTE*: We plan to update string to behave as expected, but this is a significant undertaking, and we don't want to make promises about when it will be done.
