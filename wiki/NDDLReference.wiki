@@ -301,7 +301,7 @@ A number of items are worth noting:
 
 
 == Inheritance ==
-Inheritance is a second method of re-use in NDDL^2^ designed to make models more compact, and modeling less laborious and error-prone. The goal is that NDDL libraries may be developed that can be applied on many applications in a common domain (e.g. robotic control). The _Navigator_ example incorporated class inheritance using the _extends_ keyword (We saw an example already in Figure 4).  There are no scope qualifiers at this time so all member variables and predicates of a class are publicly available outside the class and by subclasses. The general pattern is:
+Inheritance is a second method of re-use in [NDDLReference#Summary NDDL]^2^ designed to make models more compact, and modeling less laborious and error-prone. The goal is that NDDL libraries may be developed that can be applied on many applications in a common domain (e.g. robotic control). The _Navigator_ example incorporated class inheritance using the _extends_ keyword (We saw an example already in Figure 4).  There are no scope qualifiers at this time so all member variables and predicates of a class are publicly available outside the class and by subclasses. The general pattern is:
 
 {{{
 class DerivedClass extends SuperClass { … }
@@ -416,7 +416,7 @@ Navigator::Going{
 }}}
 *Figure 7*: Bridging the gap with domain rules.
 
-Rules are written for a specific predicate, and are then applied to all tokens of that predicate that are ACTIVE^3^. There is no limit to the number of rules that can be defined on a predicate. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
+Rules are written for a specific predicate, and are then applied to all tokens of that predicate that are [NDDLReference#Summary ACTIVE]^3^. There is no limit to the number of rules that can be defined on a predicate. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
 
 {{{
 ClassName::PredicateName {<rule-body>}
@@ -482,7 +482,7 @@ The material presented above for handling variables and constraints at the globa
  1. All slave variables. All built-in and user-defined parameters on any slave token introduced in the rule and labeled. The label is required to reference a slave’s variables.
  1. Local variables. It is possible to declare local rule variables in the same way that one declares global variables. However, it is not permitted to use the _new_ operator within a rule. Local variable names must not conflict with global variable names or variable names already defined on the token.
 
-It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ operator^5^. For example, below we define a composition structure::
+It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ [NDDLReference#Summary operator]^5^. For example, below we define a composition structure::
 {{{
 class A{int i = [1, 10];}
 class B{A a; B(){a = new A();}}
