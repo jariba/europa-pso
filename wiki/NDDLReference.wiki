@@ -533,7 +533,7 @@ p.to == to;
 
 Figure 8 illustrates the semantics in terms of variables and constraints for this seemingly simple construct. It shows a simple path network with 5 locations and 5 path links.
 
-http://babelfish.arc.nasa.gov/trac/europa/raw-attachment/wiki/DocImgs/guide.nddl8.gif   
+http://europa-pso.googlecode.com/svn/wiki/images/guide.nddl8.gif   
 
 *Figure 8:* An illustration of the underlying semantics for existential quantification. 
 
