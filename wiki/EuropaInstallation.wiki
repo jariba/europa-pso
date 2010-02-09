@@ -13,6 +13,7 @@ EUROPA is currently supported on Linux, Mac OS, Windows and Solaris. A platform 
 == Software Requirements ==
     * JRE 1.5
     * Python
+    * [http://code.google.com/p/europa-pso/wiki/BuildingEuropa#Install libantlr3c]
     * [http://ant.apache.org/bindownload.cgi Ant]
 
 == Installing Europa ==
@@ -25,7 +26,8 @@ For example, assuming that you have the EUROPA distribution in your ~/tmp direct
 % cd ~/europa
 % unzip ~/tmp/europa-2.1.2-linux.zip 
 % export EUROPA_HOME=~/europa
-% export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EUROPA_HOME/lib
+% export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EUROPA_HOME/lib      # DYLD_LIBRARY_PATH on a Mac
+% export DYLD_BIND_AT_LAUNCH=YES                                  # Only needed on Mac OS X
 }}}
 
 
