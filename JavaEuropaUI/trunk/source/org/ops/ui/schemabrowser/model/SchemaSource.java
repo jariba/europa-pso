@@ -35,13 +35,13 @@ public class SchemaSource {
 		for (int i = 0; i < types.size(); i++) {
 			PSObjectType type = types.get(i);
 			SchemaNode typeNode = new SchemaNode(Type.OBJECT_TYPE, type
-					.getName(), type.getParentName());
+					.getNameString(), type.getParentName());
 			node.add(typeNode);
 
 			PSStringList members = type.getMemberNames();
 			for (int j = 0; j < members.size(); j++) {
 				String name = members.get(j);
-				PSDataType mtype = type.getMemberType(name);
+				PSDataType mtype = type.getMemberTypeRef(name);
 				typeNode.add(new SchemaNode(Type.OBJECT_TYPE_MEMBER, name,
 						mtype));
 			}

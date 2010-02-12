@@ -62,7 +62,7 @@ public class SchemaNode {
 		switch (type) {
 		case OBJECT_TYPE_MEMBER:
 		case TOKEN_TYPE_PARAMETER:
-			this.text = dtype.getName() + " " + name;
+			this.text = dtype.getNameString() + " " + name;
 			break;
 		default:
 			throw new UnsupportedOperationException(
