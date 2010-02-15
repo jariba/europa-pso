@@ -113,7 +113,8 @@ The cppunit installed above for cygwin clashes with the MinGW setup.  You will n
 
 === Setting up Log4cxx ===
 
-For Cygwin, you can include the liblog4cxx library.
+For Cygwin, you can include the liblog4cxx library.  
+* CAUTION: if you use Cygwin for packages wish to use MinGW to compile, make sure you install Log4cxx prior to configuring Log4cxx or you may run into a compilation error from MinGW gcc compiler.
 
 For MinGW, performing this task requires getting APR, APR-util, and APR-iconf, Log4cxx (an possibly other libraries) to compile under MinGW.  We are still working on getting this suite to compile for MinGW.  Some hints along the way:
   * APR
