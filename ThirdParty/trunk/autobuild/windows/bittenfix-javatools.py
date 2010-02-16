@@ -38,7 +38,7 @@ def ant(ctxt, file_=None, target=None, keep_going=False, args=None):
     executable = 'ant'
     ant_home = ctxt.config.get_dirpath('ant.home')
     if ant_home:
-        executable = os.path.join(ant_home, 'bin', 'ant')
+        executable = posixpath.join(ant_home, 'bin', 'ant')
 
     java_home = ctxt.config.get_dirpath('java.home')
     if java_home:
