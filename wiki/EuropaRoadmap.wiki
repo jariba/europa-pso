@@ -3,12 +3,13 @@
 = Upcoming Releases =
 
 || *Release* ||  *Date* ||
-|| [RoadmapEUROPA_2_4 Europa-2.4]  || 12/15/2009 ||
+|| [RoadmapEUROPA_2_5 Europa-2.5]  || 5/15/2010 ||
 || [RoadmapEUROPA_X Europa-X]  (Union of future releases) || ||
 
 = Previous Releases =
 
 || *Release* || *Date* ||
+|| [RoadmapEUROPA_2_4 Europa-2.4]  || 2/5/2010 ||
 || [RoadmapEUROPA_2_3 Europa-2.3] || 10/6/2009 ||
 || [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2 Europa-2.2]   || 5/22/2009 ||
 || [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.2 Europa-2.1.2]  ||  8/15/2008 ||
