@@ -12,15 +12,19 @@
     * *Plan Horizon*: the temporal extent of the plan.
     * *Inactive Token*: A token which has been created in the plan database, either explicitly through an invocation by an external client, or implicitly through execution of a model rule instance. However, such a token has not yet been activated, merged or rejected. See the token state transition diagram for further details.
     * *Interval Token*: A token which has a duration of at least 1 time unit. All tokens on a class derived from Timeline are interval tokens.
+    * *Lower limit*: Minimum boundary of a resource where the assumption is to produce early and consume late.
     * *Master Token*: An active token that has generated subgoals through rule instance execution.
     * *Merged Token*: A token which has been merged with an active token in the partial plan. See the token state transition diagram for further details.
     * *Orphan Token*: Any token that has been created by explicit request from a client external to the plan database. Such a token has no master.
     * *Parameter Constraint*: A constraint declared in the body of a NDDL predicate declaration. It can only apply to the immediate context of the predicate (i.e. built-in varaibles and user-defined predicate parameters). Parameter constraints apply to inactive and active tokens.
     * *Partial Plan* : a plan which is incomplete.
     * *Plan Database*: an object responsible for management of all entities in a partial plan. It provides operations for legal restrictions and relaxations to the partial plan and co-ordinates automated reasoning services to propagate consequences of such operations according to the domain-model and rules of inference of EUROPA.
+    * *Resource*: A quantity which changes over time
     * *Rejected Token*: A token which has been rejected from the partial plan. See the token state transition diagram for further details.
     * *Rule Instance*: an instance of a model rule, scoped to a particular token and its subgoals.
     * *Run-time Data*: those elements of a problem specification that are created or deleted during the lifetime of a plan database. See the batch-solver process overview for further clarification.
     * *Slave Token*: Any token that has been created through rule instance execution.
     * *Solver*: A problem solving agent which conducts refinements to a partial plan until it is completed, has exhausted all possibilities, or has exhausted all its allocated time. For more information see solvers.
     * *Specified Domain*: indicates a subset of the base domain of a variable to which it has been specified by an external client.
+    * *Transaction*: the act of producing or consuming a resource
+    * *Upper limit*: Maximum bound of a resource where the assumption is to produce late and consume early.
