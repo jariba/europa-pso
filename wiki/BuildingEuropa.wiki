@@ -155,7 +155,7 @@ The following table describes the properties that can be associated with a build
 line using -D or in a special properties file in $HOME/.ant.plasma.properties:
 
 ||*Property||*Description*||*Values*||*Default*||
-||[jam.libraries#Build_Options]||Type of libraries to build (static, dynamic, none)||STATIC, DYNAMIC, NONE||DYNAMIC||
+||[jam.libraries#_Build_Options_]||Type of libraries to build (static, dynamic, none)||STATIC, DYNAMIC, NONE||DYNAMIC||
 ||[jam.variant#Build_Options|| Compilation variant (debugging, optimized, profiling)||DEV, OPTIMIZED, PROFILE||DEV||
 ||jam.64bit||Flag indicating a 64-bit platform||1,0||Platform dependent||
 ||jam.num.cores||The number of compilation processes to run simultaneously||A positive integer||1||
