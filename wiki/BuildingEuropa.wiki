@@ -81,6 +81,7 @@ svn co http://europa-pso.googlecode.com/svn/PLASMA/tags/<release_tag> PLASMA
 Tags for official EUROPA releases :
 
 ||*Tag*||*Date*||
+|| [http://europa-pso.googlecode.com/svn/PLASMA/tags/EUROPA-2.4 Europa-2.4] ||2010/02/05||
 || [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2 Europa-2.3] ||2009/10/06||
 || [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2 Europa-2.2] ||2009/06/10||
 || [http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.2 Europa-2.1.2] ||2008/08/12||
@@ -138,25 +139,6 @@ the EUROPA distribution will be available at $PLASMA_HOME/dist/europa.zip, you c
 If desired, Doxygen API documentation can be run by following the directions [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/documentation/README here].
 
 = Advanced Build Configuration =
-== Additional Arguments to Jam ==
-Arguments to the jam exec can be passed through the jam.args variable.  This is useful to enable SMP support on multiprocessor machines; for example:
-{{{
-  % ant -Djam.args="-j2"
-}}}
-will tell jam to use two shells for processing.  Jam will take care of dependencies for the compilation.  Warning -- do not use this if you are debugging dependency issues!
-
-== Running Ant using alternative Antlr-3c library ==
-  If you defined the ANTLR-C library path as ANTLR_HOME, the following commands will build the EUROPA distribution: 
-{{{
-% cd $PLASMA_HOME
-% $ANT_HOME/bin/ant -Dantlr.lib=$ANTLR_HOME/lib -Dantlr.include=$ANTLR_HOME/include
-}}}
-== Debugging failed builds ==
-  If your build is not successful, you can create an verbose output log by directing output to a log file stored on $PLASMA_HOME.  This particular jam target will list why Jam failed.
-{{{
-% cd $PLASMA_HOME
-% $ANT_HOME/bin/ant -v -Djam.args="-dc" > tmp.txt
-}}}
 == Common Targets ==
 Here are the most common ant targets to build/test EUROPA components (all are available in $PLASMA_HOME/build.xml):
 
@@ -167,6 +149,38 @@ Here are the most common ant targets to build/test EUROPA components (all are av
 ||zip-dist||Same as ''dist'' then puts the distribution directory in a zip file||
 
 TODO: document some of the jam targets as well?
+
+== Build Properties ==
+The following table describes the properties that can be associated with a build.  They can be specified on the command
+line using -D or in a special properties file in $HOME/.ant.plasma.properties:
+
+||*Property||*Description*||*Values*||*Default*||
+||[jam.libraries#Build_Options]||Type of libraries to build (static, dynamic, none)||STATIC, DYNAMIC, NONE||DYNAMIC||
+||[jam.variant#Build_Options|| Compilation variant (debugging, optimized, profiling)||DEV, OPTIMIZED, PROFILE||DEV||
+||jam.64bit||Flag indicating a 64-bit platform||1,0||Platform dependent||
+||jam.num.cores||The number of compilation processes to run simultaneously||A positive integer||1||
+||jam.log.type||The logging facility Europa should use||USE_EUROPA_LOGGER, ALL_LOGGING_DISABLED, "" ||USE_EUROPA_LOGGER||
+||jam.args||Additional user args to pass to jam||A string of Jam arguments||empty||
+||[antlr.lib#Running_Ant_using_alternative_Antlr-3c-library]||The directory containing libantlr3c||A filesystem path||empty||
+||[antlr.include#Running_Ant_using_alternative_Antlr-3c-library]||The directory containing antlr header files||A filesystem path||empty||
+
+
+== Additional Arguments to Jam ==
+Arguments to the jam exec can be passed through the jam.args variable.  This is useful to enable cacheing for repeated
+builds.  For example:
+{{{
+  % ant -Djam.args="-sGCC_PREFIX=ccache"
+}}}
+will tell jam to use the ccache compiler caching program.
+
+Todo: expand this so there's more documentation about what you can pass to Jam.
+
+== Running Ant using alternative Antlr-3c library ==
+  If you defined the ANTLR-C library path as ANTLR_HOME, the following commands will build the EUROPA distribution: 
+{{{
+% cd $PLASMA_HOME
+% $ANT_HOME/bin/ant -Dantlr.lib=$ANTLR_HOME/lib -Dantlr.include=$ANTLR_HOME/include
+}}}
 
 == Build Options ==
 EUROPA can be built using a few variations. The variations and parameters of the build can be configured through environment variables or parameters to jam. EUROPA supports building one or more "variants" at the same time. The valid variants are (see [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules here] for implementation details):
@@ -236,6 +250,15 @@ Go to the PLASMA/bin directory and invoke the coverage script to generate the co
  * coverage-results.txt lists the percentage of each source file executed by Europa's system tests.
  * A filename.cc.gcov or filename.hh.gcov file is provide for each source file in the system. It lists the code within the file annotated with the number of times each line has been run. Mulitple pound signs (#) indicate that a line was not executed.
  * `*`.bb, `*`.bbg, `*`.da are working files prouced by gcov. They are of no interest to the human reader.
+
+== Debugging failed builds ==
+  If your build is not successful, you can create an verbose output log by directing output to a log file stored on $PLASMA_HOME.  This particular jam target will list why Jam failed.
+{{{
+% cd $PLASMA_HOME
+% $ANT_HOME/bin/ant print-env > tmp.txt
+% $ANT_HOME/bin/ant -v -Djam.args="-dc" >> tmp.txt
+}}}
+
 
 == Examples ==
 To build an optimized version with static libraries
