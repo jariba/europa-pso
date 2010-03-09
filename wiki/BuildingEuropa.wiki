@@ -156,14 +156,63 @@ line using -D or in a special properties file in $HOME/.ant.plasma.properties:
 
 ||*Property||*Description*||*Values*||*Default*||
 ||[#Build_Options jam.libraries]||Type of libraries to build (static, dynamic, none)||STATIC, DYNAMIC, NONE||DYNAMIC||
-||[jam.variant#Build_Options|| Compilation variant (debugging, optimized, profiling)||DEV, OPTIMIZED, PROFILE||DEV||
+||[#Build_Options jam.variant]|| Compilation variant (debugging, optimized, profiling)||DEV, OPTIMIZED, PROFILE||DEV||
 ||jam.64bit||Flag indicating a 64-bit platform||1,0||Platform dependent||
 ||jam.num.cores||The number of compilation processes to run simultaneously||A positive integer||1||
 ||jam.log.type||The logging facility Europa should use||USE_EUROPA_LOGGER, ALL_LOGGING_DISABLED, "" ||USE_EUROPA_LOGGER||
-||jam.args||Additional user args to pass to jam||A string of Jam arguments||empty||
-||[antlr.lib#Running_Ant_using_alternative_Antlr-3c-library]||The directory containing libantlr3c||A filesystem path||empty||
-||[antlr.include#Running_Ant_using_alternative_Antlr-3c-library]||The directory containing antlr header files||A filesystem path||empty||
+||[#Additional_Arguments_to_Jam jam.args]||Additional user args to pass to jam||A string of Jam arguments||empty||
+||[#Running_Ant_using_alternative_Antlr-3c-library antlr.lib]||The directory containing libantlr3c||A filesystem path||empty||
+||[#Running_Ant_using_alternative_Antlr-3c-library antlr.include]||The directory containing antlr header files||A filesystem path||empty||
 
+
+== Build Options ==
+EUROPA can be built using a few variations. The variations and parameters of the build can be configured through
+parameters to ant or jam. The valid variants are (see [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules here] for implementation details):
+
+ * DEV - unoptimized, unprofiled, all error detection on.   The default option, but not necessarily the best.
+ * OPTIMIZED - optimized, unprofiled.  Error detection is reduced to improve runtime performance; compile times are somewhat slower.
+ * PROFILE - unoptimized, profiled.  Error detection is reduced.
+ * COVERAGE - compiles with the flags required by the gcov code coverage tool. See [#Analyzing_Code_Coverage Analyzing Code Coverage] below for more information.
+
+For example, to build using optimized compiler settings :
+
+{{{
+% cd $PLASMA_HOME
+% ant -Djam.variant=OPTIMIZED
+}}}
+The output files are named differently for each variant, which makes it possible to have different variants coexist on
+the filesystem. It is also not necessary to clean the tree when switching variants. Here are the naming patterns for each of the main variants:
+
+ * DEV = {filename}`_`g{ext}
+ * OPTIMIZED = {filename}`_`o{ext}
+ * PROFILE = {filename}`_`p{ext}
+
+The default variant is DEV.
+
+== Configuring Build Libraries ==
+The EUROPA build supports building modules as different kinds of libraries. The building of modules as different kinds
+of libraries is also controlled through parameters to ant or jam.  The valid library kinds are:
+
+ * STATIC - using static compile time linking (`*`.a)
+ * SHARED - using shared compile time linking (`*`.so) (`*`.dylib on OS X)
+ * NONE - avoid using libraries (link `*`.o directly) *(This option is no longer officially supported, although it should still function)*
+
+
+For example, to build using static libraries :
+
+{{{
+% cd $PLASMA_HOME
+% ant -Djam.libraries=STATIC
+}}}
+
+ Depending on which kind of libraries are used, the target executable names are also different.
+
+ * STATIC = {filename}.exe
+ * NONE = {filename}`_`no.exe
+ * SHARED = {filename}`_`rt.exe
+
+The default library kind is SHARED. The library kind NONE is only recommended for situations where cyclic dependencies
+exist between modules or for platforms that don't support libraries or which limit library sizes below what EUROPA requires. The library kind SHARED is often the most space efficient. When running with SHARED it is required to add the EUROPA shared library directory to your library search path. The relevant variable depends on your platform, and the way to set it depends on your shell. Here is an example for the sh and bash shells: % LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib % export LD_LIBRARY_PATH where you should replace '/home/me' with the full path to the directory containing your EUROPA checkout from SVN. For csh and tcsh and similar shells: % setenv LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib
 
 == Additional Arguments to Jam ==
 Arguments to the jam exec can be passed through the jam.args variable.  This is useful to enable cacheing for repeated
@@ -182,65 +231,6 @@ Todo: expand this so there's more documentation about what you can pass to Jam.
 % $ANT_HOME/bin/ant -Dantlr.lib=$ANTLR_HOME/lib -Dantlr.include=$ANTLR_HOME/include
 }}}
 
-== Build Options ==
-EUROPA can be built using a few variations. The variations and parameters of the build can be configured through environment variables or parameters to jam. EUROPA supports building one or more "variants" at the same time. The valid variants are (see [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules here] for implementation details):
-
- * DEV - unoptimized, unprofiled, debug (all error detection on).   The default option, but not necessarily the best.
- * OPTIMIZED - optimized, unprofiled, no debug.  Error detection is disabled to improve runtime performance; compile times are somewhat slower.
- * PROFILE - unoptimized, profiled, no debug.  Error detection is disabled.
- * COVERAGE - compiles with the flags required by the gcov code coverage tool. See Analyzing Code Coverage below for more information.
- * CUSTOM - special variant that examins some environment variables to set the compilation flags.
-
-For example, to build using optimized compiler settings :
-
-{{{
-% cd $PLASMA_HOME
-% ant -Djam.variant=OPTIMIZED
-}}}
-The output files are named differently for each variant, which makes it possible to build different variants at the same time. It is also not necessary to clean the tree when switching variants. Here are the naming patterns for each of the main variants:
-
- * DEV = {filename}`_`g{ext}
- * OPTIMIZED = {filename}`_`o{ext}
- * PROFILE = {filename}`_`p{ext}
-
-The fourth variant, CUSTOM is a special variant that examines some environment variables to determine the compilation flags. These environment variables are:
-
- * EUROPA_DEBUG - use debugging
- * EUROPA_DEBUG_MESSAGE - enable !DebugMsg
- * EUROPA_OPTIMIZED - use optimization
- * EUROPA_PROFILE - use profiling
- * EUROPA_WARN - use additional warnings
-
-In the case of the CUSTOM variant, the five variables are used to construct the name by composition. E.g., the OPTIMIZED variant is identical to the CUSTOM EUROPA_OPTIMIZED variant. See [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules this file] for details.
-
-The default variant is DEV, which includes EUROPA_DEBUG_MESSAGE.
-
-== Configuring Build Libraries ==
-The EUROPA build supports building modules as different kinds of libraries. The building of modules as different kinds of libraries is also controlled through environment variables or parameters to jam. EUROPA supports building 1 or more library kinds at the same time. The valid library kinds are:
-
- * STATIC - using static compile time linking (`*`.a)
- * NONE - avoid using libraries (link `*`.o directly) *(This option is no longer officially supported, although it should still function)*
- * SHARED - using shared compile time linking (`*`.so) (dyanic libraries on OS X)
- * NONE - Compile without generating libraries at all, all code is linked into executables.
-
-For example, to build without using libraries :
-
-{{{
-% cd $PLASMA_HOME
-% ant -Djam.libraries=NONE
-}}}
-  When building shared libraries, it is necessary to build using position independent code.  As a result, the object files are named differently in this case:
-
- * SHARED = {variant}`_`pic.o
- * STATIC/NONE = {variant}.o
-
-  Also, depending on which kind of libraries are used, the target executable names are also different.
-
- * STATIC = {filename}.exe
- * NONE = {filename}`_`no.exe
- * SHARED = {filename}`_`rt.exe
-
-The default library kind is SHARED. The library kind NONE is only recommended for situations where cyclic dependencies exist between modules. The library kind SHARED is often the most space efficient. When running with SHARED it is required to add the EUROPA shared library directory to your library search path. The relevant variable depends on your platform, and the way to set it depends on your shell. Here is an example for the sh and bash shells: % LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib % export LD_LIBRARY_PATH where you should replace '/home/me' with the full path to the directory containing your EUROPA checkout from SVN. For csh and tcsh and similar shells: % setenv LD_LIBRARY_PATH="$LD_LIBRARY_PATH":/home/me/PLASMA/lib
 
 == Analyzing Code Coverage (Linux platform only) ==
 EUROPA's code coverage tool (based on gcov) is used to identify the percentage of the code base that is exercised by the module tests. This is an important quality metric as the higher the percentage of the code base tested the more likely it is that bugs will be detected.
@@ -273,3 +263,8 @@ To build a debug version with shared libraries
 % cd $PLASMA_HOME
 % ant -Djam.variant=DEV -Djam.libraries=SHARED
 }}}
+To build a debug version with static libraries and ANTLR3 installed in /sw
+
+{{{
+% cd $PLASMA_HOME
+% ant -Djam.variant=DEV -Djam.libraries=STATIC -Dantlr.include=/sw/include -Dantlr.lib=/sw/lib
