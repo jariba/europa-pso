@@ -1,9 +1,8 @@
 #summary Installation instructions for EUROPA
 
 
-*Note* : Starting with EUROPA 2.1.2 (available since Sept 2, 2008),  EUROPA is provided in a binary distribution, to which this installation page applies.
-
-For older versions, you will have to build EUROPA yourself as described [BuildingEuropa here].
+*Note* : Starting with EUROPA 2.1.2 (available since Sept 2, 2008),  EUROPA is provided in a binary distribution, to
+ which this installation page applies.  To build and EUROPA from source, see BuildingEuropa.
 
 
 == Supported Platforms ==
