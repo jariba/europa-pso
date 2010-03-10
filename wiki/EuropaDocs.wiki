@@ -1,7 +1,7 @@
-#summary One-sentence summary of this page.
+#summary This page provides in-depth documentation on understanding and using EUROPA.
 
 = EUROPA Documentation =
-This page provides in-depth documentation on understanding and using EUROPA. If you don't know where to start, or just want a quick overview of how to use EUROPA, take a look at the [QuickStart EUROPA Quick Start].  You can also find an overview of the EUROPA framework and philosophy at [EuropaBackground Europa Background].
+If you don't know where to start, or just want a quick overview of how to use EUROPA, take a look at the [QuickStart EUROPA Quick Start].  You can also find an overview of the EUROPA framework and philosophy at [EuropaBackground Europa Background].
 
 === Architecture ===
  * [ArchitectureOverview Overview]
