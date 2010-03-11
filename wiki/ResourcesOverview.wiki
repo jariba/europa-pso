@@ -1,5 +1,7 @@
 #summary High level overview of Resources
 
+<wiki:toc max_depth="3" />
+
 = Resources =
 
 For the purposes of using Europa, resources are quantities which change over
@@ -58,7 +60,7 @@ resources are assumed to consume late and produce early.  The converse of the ab
 limits.
 
 <wiki:comment>
-== Proprogation ==
+
 Proprogation occurs when a resource object notifies the planner there is a problem.  The planner is notified to
 fix the problem by searching through the available values for a solution.
 
