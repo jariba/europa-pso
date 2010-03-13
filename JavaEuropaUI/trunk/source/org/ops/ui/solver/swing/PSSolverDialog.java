@@ -81,6 +81,7 @@ public class PSSolverDialog extends EuropaInternalFrame implements
 					startOfRun = System.currentTimeMillis();
 					solver.stepN(steps, true);
 				} catch (Exception e) {
+					e.printStackTrace();
 					JOptionPane.showMessageDialog(PSSolverDialog.this, e
 							.getMessage());
 				} finally {
