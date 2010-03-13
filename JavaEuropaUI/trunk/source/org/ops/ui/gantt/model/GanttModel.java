@@ -21,15 +21,20 @@ public class GanttModel {
 
 	public GanttModel(SolverModel solverModel, String objectsTypes) {
 		this.resources = solverModel.getEngine().getObjectsByType(objectsTypes);
+		int[] hor = solverModel.getHorizon();
 
-		// Compute start and end of the time line
+		// Compute start and end of the time line, truncate at horizon
 		boolean first = true;
 		for (int r = 0; r < resources.size(); r++) {
 			PSTokenList tokens = resources.get(r).getTokens();
 			for (int i = 0; i < tokens.size(); i++) {
 				PSToken token = tokens.get(i);
 				int s = (int) (token.getStart().getLowerBound());
-				int e = (int) (token.getEnd().getLowerBound());
+				if (s < hor[0])
+					s = hor[0];
+				int e = (int) (token.getEnd().getUpperBound());
+				if (e > hor[1])
+					e = hor[1];
 				if (first) {
 					start = s;
 					end = e;
