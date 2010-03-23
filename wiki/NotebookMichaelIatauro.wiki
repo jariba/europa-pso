@@ -21,3 +21,5 @@ parameters start at x + 7
 Note that x + 4 is the [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/PlanDatabase/base/ObjectTokenRelation.hh ObjectTokenRelation] constraint.
 
 First notes on [StateResourceNotes state resources].
+
+Thoughts on [MJIResourceRefactor resource refactoring].
