@@ -1,10 +1,6 @@
 package org.ops.ui.gantt.swing;
 
-import java.awt.Color;
 import java.util.ArrayList;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  * Single resource time line, may include multiple rows of tokens. Rows are
@@ -12,7 +8,7 @@ import javax.swing.JPanel;
  * 
  * @author Tatiana Kichkaylo
  */
-public class TimelinePanel extends JPanel {
+public class TimelinePanel extends LinePanel {
 	/**
 	 * Whether or not we have a three line token representation - with duration
 	 * in the middle
@@ -26,33 +22,11 @@ public class TimelinePanel extends JPanel {
 	private static int lineHeight = TokenWidget.halfHeight
 			* (6 + (showDurationLine ? 1 : 0));
 
-	private String name;
-
-	private JLabel labelWidget;
-
 	ArrayList<ArrayList<TokenWidget>> lines = new ArrayList<ArrayList<TokenWidget>>();
 
 	public TimelinePanel(String resourceName) {
-		this.name = resourceName;
+		super(resourceName);
 		this.lines.add(new ArrayList<TokenWidget>());
-		this.labelWidget = new JLabel(" " + resourceName);
-		labelWidget.setOpaque(true);
-	}
-
-	@Override
-	public void setBackground(Color color) {
-		super.setBackground(color);
-		// It looks like this method is called from super constructor, so we
-		// need to check that labelWidget has been initialized already
-		if (labelWidget != null)
-			labelWidget.setBackground(color);
-	}
-
-	@Override
-	public void setBounds(int x, int y, int width, int height) {
-		super.setBounds(x, y, width, height);
-		if (labelWidget != null)
-			labelWidget.setBounds(0, y, labelWidget.getBounds().width, height);
 	}
 
 	@Override
@@ -99,10 +73,6 @@ public class TimelinePanel extends JPanel {
 	}
 
 	@Override
-	public void doLayout() {
-		// Noop
-	}
-
 	public void layout(int stepSize, int[] hor) {
 		for (int l = 0; l < lines.size(); l++) {
 			ArrayList<TokenWidget> line = lines.get(l);
@@ -110,14 +80,5 @@ public class TimelinePanel extends JPanel {
 			for (TokenWidget tok : line)
 				tok.place(y, GanttView.stepSizePx, hor);
 		}
-	}
-
-	@Override
-	public String toString() {
-		return name + getBounds();
-	}
-
-	public JLabel getLabel() {
-		return labelWidget;
 	}
 }

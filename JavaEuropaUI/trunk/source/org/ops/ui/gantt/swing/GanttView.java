@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ import javax.swing.JViewport;
 
 import org.ops.ui.gantt.model.GanttActivity;
 import org.ops.ui.gantt.model.GanttModel;
+import org.ops.ui.gantt.model.GanttResource;
 import org.ops.ui.main.swing.EuropaInternalFrame;
 import org.ops.ui.solver.model.SolverAdapter;
 import org.ops.ui.solver.model.SolverModel;
@@ -47,10 +49,10 @@ public class GanttView extends EuropaInternalFrame {
 
 	/** Odd and even background colors */
 	protected static final Color oddBg = new Color(250, 255, 250),
-			evenBg = new Color(250, 250, 100), boldGrid = Color.gray,
+			evenBg = new Color(250, 250, 150), boldGrid = Color.gray,
 			smallGrid = new Color(200, 200, 200);
 
-	private ArrayList<TimelinePanel> lines = new ArrayList<TimelinePanel>();
+	private ArrayList<LinePanel> lines = new ArrayList<LinePanel>();
 
 	public GanttView(SolverModel solverModel) {
 		super("Gantt chart 2");
@@ -118,25 +120,37 @@ public class GanttView extends EuropaInternalFrame {
 		tokenPanel.removeAll();
 		labelPanel.removeAll();
 
+		int index = 0;
 		for (int i = 0; i < model.getResourceCount(); i++) {
-			TimelinePanel line = new TimelinePanel(model.getResourceName(i));
-			if (i % 2 == 0)
+			GanttResource r = model.getResource(i);
+			LinePanel line;
+			if (r != null) {
+				// Can resource timeline also have tokens?
+				line = new ResourcePanel(r);				
+//				. TODO
+			} else {
+				TimelinePanel tline = new TimelinePanel(model.getResourceName(i));
+				// Skip timeline (non-resource) lines with no tokens
+				List<GanttActivity> all = model.getActivities(i);
+				if (all.isEmpty())
+					continue;
+				for (GanttActivity act : all) {
+					tline.addToken(new TokenWidget(act, TokenWidget.DEFAULT_COLOR));
+				}
+				line = tline;
+			}
+			if (index++ % 2 == 0)
 				line.setBackground(evenBg);
 			else
 				line.setBackground(oddBg);
 			lines.add(line);
 			tokenPanel.add(line);
 			labelPanel.add(line.getLabel());
-
-			for (GanttActivity act : model.getActivities(i)) {
-				line.addToken(new TokenWidget(act, TokenWidget.DEFAULT_COLOR));
-			}
 		}
 		
-//		Point p =new Point(0,0);
-//		timeHeader.setViewPosition(p);
-//		labelVPort.setViewPosition(p);
-//		. TODO
+		Point p = new Point(0,0);
+		timeHeader.setViewPosition(p);
+		labelVPort.setViewPosition(p);
 		this.validate();
 	}
 
@@ -150,7 +164,7 @@ public class GanttView extends EuropaInternalFrame {
 		@Override
 		public void setBounds(int x, int y, int width, int height) {
 			super.setBounds(x, y, width, height);
-			for (TimelinePanel tl : lines)
+			for (LinePanel tl : lines)
 				if (tl.getLabel() != null) {
 					Rectangle bnd = tl.getLabel().getBounds();
 					bnd.width = width;
@@ -162,7 +176,7 @@ public class GanttView extends EuropaInternalFrame {
 		public Dimension getPreferredSize() {
 			Dimension res = super.getPreferredSize();
 			int total = 0;
-			for (TimelinePanel l : lines)
+			for (LinePanel l : lines)
 				total += l.getHeight();
 			res.height = total;
 			return res;
@@ -174,7 +188,7 @@ public class GanttView extends EuropaInternalFrame {
 		@Override
 		public Dimension getPreferredSize() {
 			int total = 0;
-			for (TimelinePanel l : lines)
+			for (LinePanel l : lines)
 				total += l.getHeight();
 			return new Dimension((stepCount - 1) * stepSizePx, total);
 		}
@@ -184,7 +198,7 @@ public class GanttView extends EuropaInternalFrame {
 			int width = stepCount * stepSizePx;
 			int[] hor = solverModel.getHorizon();
 			int y = 0;
-			for (TimelinePanel l : lines) {
+			for (LinePanel l : lines) {
 				l.setBounds(0, y, width, l.getHeight());
 				l.layout(stepSizePx, hor);
 				y += l.getHeight();
