@@ -6,6 +6,7 @@ import java.util.List;
 import org.ops.ui.solver.model.SolverModel;
 
 import psengine.PSObjectList;
+import psengine.PSResource;
 import psengine.PSToken;
 import psengine.PSTokenList;
 
@@ -65,6 +66,13 @@ public class GanttModel {
 		}
 
 		return acts;
+	}
+
+	public GanttResource getResource(int resource) {
+		PSResource r = PSResource.asPSResource(resources.get(resource));
+		if (r == null)
+			return null;
+		return new GanttResource(r);
 	}
 
 	public int getStart() {
