@@ -55,7 +55,7 @@ public class GanttView extends EuropaInternalFrame {
 	private ArrayList<LinePanel> lines = new ArrayList<LinePanel>();
 
 	public GanttView(SolverModel solverModel) {
-		super("Gantt chart 2");
+		super("Gantt chart");
 		this.solverModel = solverModel;
 
 		splitPane = new JSplitPane();
