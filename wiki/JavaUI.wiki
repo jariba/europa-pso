@@ -55,6 +55,8 @@ The main visible difference from the original PSDesktop is the Window menu, whic
 
 http://europa-pso.googlecode.com/svn/wiki/images/SwingScreenshot.png
 
+http://europa-pso.googlecode.com/svn/wiki/images/SwingGantt2.png
+
 = Eclipse plug-in =
 
 The Eclipse plugin has two major components: an editor and an execution perspective. 
