@@ -19,7 +19,8 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.ops.ui.gantt.swing.EGanttView;
+// Old version import org.ops.ui.gantt.swing.EGanttView;
+import org.ops.ui.gantt.swing.GanttView;
 import org.ops.ui.schemabrowser.swing.SchemaView;
 import org.ops.ui.solver.model.SolverModel;
 import org.ops.ui.solver.swing.OpenDecisionsView;
@@ -39,7 +40,8 @@ public class PSDesktop extends JFrame {
 	private SchemaView schemaBrowser;
 	private PSSolverDialog solverDialog;
 	private OpenDecisionsView openDecisions;
-	private EGanttView ganttView;
+	// private EGanttView ganttView;
+	private GanttView ganttView;
 
 	private PSDesktop(File dataFile, File solverConfig) {
 		this.desktop = new JDesktopPane();
@@ -74,7 +76,8 @@ public class PSDesktop extends JFrame {
 		this.openDecisions = new OpenDecisionsView(this.solverModel);
 		this.desktop.add(this.openDecisions);
 
-		this.ganttView = new EGanttView(this.solverModel);
+		// this.ganttView = new EGanttView(this.solverModel);
+		this.ganttView = new GanttView(this.solverModel);
 		this.desktop.add(this.ganttView);
 		
 		// Finish up
