@@ -109,7 +109,7 @@ These changes make implementing state resources substantially easier.  First of 
 code above the level of constraints and profile computation, since references to the representation of a resource will
 use ConstrainedVariable rather than the numeric (or symbolic) components of the value.  Second, some of the features of
 state resources are easily represented as secondary symbolic fluents with constraints between them and the value
-fluent.  The primary example is the "req" constraint.  Complete details are available [here TristanStateResources],
+fluent.  The primary example is the "req" constraint.  Complete details are available [TristanStateResourceNotes here],
 but a "req" on a state resource is essentially a constraint that the state resource have a particular value over an
 interval.  Note that it doesn't alter the value of the resource, it simply causes flaws or violations to be reported if
 it's outside the required domain or if overlapping reqs may conflict.  Tristan and I have come up with a couple of
