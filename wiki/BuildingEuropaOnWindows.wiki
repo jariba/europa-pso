@@ -69,6 +69,12 @@ A cleaner way is to install the MinGW toolkit directly into c:/MinGW and then se
 
 Change the window user environment PATH variable to include "c:\mingw\bin;c:\cygwin\bin".  The correct path can be verified by running a windows shell and typing 'which gcc'.  You should see that the gcc mingw is the default gcc.
 
+You may have to set TEMP, TMP, TMPDIR to avoid 
+{{{
+This application has requested the Runtime to terminate it in an unusual way.
+Please contact the application's support team for more information.
+}}}
+
 For the cygwin bash shell (the default shell for Europa scripts), you will need to modify /etc/profile such that:
 
  * PATH=c:\MinGW\bin:....:$PATH
