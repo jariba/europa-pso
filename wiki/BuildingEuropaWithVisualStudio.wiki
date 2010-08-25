@@ -1,4 +1,9 @@
-[http://code.google.com/p/europa-pso/source/browse/ThirdParty/trunk/visualStudio/screenshots/solution%20explorer.png Solution Explorer]
+http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/solution%20explorer.png
+
+http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Solution%20Explorer%20with%20Utils%20files.png
+
+http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Static%20Libs%20dependencies.png
+
 
 #summary One-sentence summary of this page.
 
