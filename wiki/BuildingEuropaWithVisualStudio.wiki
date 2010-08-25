@@ -1,3 +1,5 @@
+[http://code.google.com/p/europa-pso/source/browse/ThirdParty/trunk/visualStudio/screenshots/solution%20explorer.png Solution Explorer]
+
 #summary One-sentence summary of this page.
 
 = Introduction =
