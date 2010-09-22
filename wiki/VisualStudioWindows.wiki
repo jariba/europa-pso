@@ -7,11 +7,17 @@
 Microsoft Visual Studio 2008 (Standard or Express)
 Microsoft .Net framework 3.5
 
-= Initialization =
+= Additional Required Initialization =
 unpack thirdparty\visualstudio 
 create a PLASMA_THIRD_PARTY environment variable pointing to where you checked out plasma.ThirdParty
 Start VS2008 (or VS2008 express)
 Open the Europa.sln in PLASMA_HOME (in express you may get some message about the solution file .. just ignore it)
+Set PATH variable to point to libraries
+Set JAVA_HOME, JAVA_INCLUDE, and JAVA_BIN
+{{{
+PATH=%PATH%;%PLASMA_THIRD_PARTY%\pthreads-w32-2-8-0-release\lib;%PLASMA_HOME%\bin;%PLASMA_HOME%\build\lib\debug;%PLASMA_HOME%\build\lib;
+}}}
+Note: if you are receiving a missing dll error while building, make sure this setting is correct.  Use absolute path names if necessary.
 
 = Building =
 Build->Build Solution (F7)
@@ -38,3 +44,6 @@ release-dist
 Windows builds current support the following arguments to ant:
 
 -Dbuild.libraries="DYNAMIC"
+
+= Developing on Visual Studio =
+For more information of how Visual Studio is setup for Europa see [http://code.google.com/p/europa-pso/wiki/BuildingEuropaWithVisualStudio VisualStudio]
