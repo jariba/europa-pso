@@ -8,12 +8,13 @@ Microsoft Visual Studio 2008 (Standard or Express)
 Microsoft .Net framework 3.5
 
 = Additional Required Initialization =
-unpack thirdparty\visualstudio 
-create a PLASMA_THIRD_PARTY environment variable pointing to where you checked out plasma.ThirdParty
-Start VS2008 (or VS2008 express)
-Open the Europa.sln in PLASMA_HOME (in express you may get some message about the solution file .. just ignore it)
-Set PATH variable to point to libraries
-Set JAVA_HOME, JAVA_INCLUDE, and JAVA_BIN
+ * unpack thirdparty\visualstudio 
+ * create a PLASMA_THIRD_PARTY environment variable pointing to where you checked out plasma.ThirdParty
+ * Start VS2008 (or VS2008 express)
+ * Open the Europa.sln in PLASMA_HOME (in express you may get some message about the solution file .. just ignore it)
+ * Set PATH variable to point to libraries
+ * Set JAVA_HOME, JAVA_INCLUDE, and JAVA_BIN
+ * set ANT_HOME to %PLASMA_HOME%\ext\ant
 {{{
 PATH=%PATH%;%PLASMA_THIRD_PARTY%\pthreads-w32-2-8-0-release\lib;%PLASMA_HOME%\bin;%PLASMA_HOME%\build\lib\debug;%PLASMA_HOME%\build\lib;
 }}}
