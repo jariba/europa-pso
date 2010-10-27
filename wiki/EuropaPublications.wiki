@@ -11,7 +11,7 @@ Published: 1/29/2009
 Author: Paul Morris, John Bresina
 Published: 11/05/2008
 
-[http://ti.arc.nasa.gov/m/pub/144/144_Smith_T..pdf Athlete's Feet: Multi-Resolution Planning for a Hexapod Robot]
+[http://ti.arc.nasa.gov/m/pub/144/144_Smith_T.pdf Athlete's Feet: Multi-Resolution Planning for a Hexapod Robot]
 Author: Tristan Smith, Javier Barreiro, David Smith, Vytas Sunspiral, Daniel Chavez
 Published: 08/27/08 
 
