@@ -11,41 +11,41 @@ Published: 1/29/2009
 Author: Paul Morris, John Bresina
 Published: 11/05/2008
 
-[http://ti.arc.nasa.gov/m/pub/144/144_Smith_T.pdf Athlete's Feet: Multi-Resolution Planning for a Hexapod Robot]
+[http://ti.arc.nasa.gov/m/pub/144/144_Smith_T..pdf Athlete's Feet: Multi-Resolution Planning for a Hexapod Robot]
 Author: Tristan Smith, Javier Barreiro, David Smith, Vytas Sunspiral, Daniel Chavez
 Published: 08/27/08 
 
 = 2007 = 
 
-[http://ase.arc.nasa.gov/publications/pdf/1369.pdf Active and Passive Constraint Enforcement for Activity Planning: Abstract]
+[http://ti.arc.nasa.gov/m/pub/1369h/1369%20(Morris).pdf Active and Passive Constraint Enforcement for Activity Planning: Abstract]
 Author: Paul Morris, John Bresina
 Published: 7/31/2007
 
-[http://ase.arc.nasa.gov/publications/pdf/1364.pdf Developing Domain-Independent Search Control for Europa2]
+[http://ti.arc.nasa.gov/m/pub/1364h/1364%20(Smith,%20D).pdf Developing Domain-Independent Search Control for Europa2]
 Author(s): Sarah Bernardini, David Smith
 Published: 7/12/2007
 
 = 2006 =
 
-[http://ase.arc.nasa.gov/publications/pdf/1211.pdf Mission Operations Planning with Preferences: An Empirical Study]
+[http://ti.arc.nasa.gov/m/pub/1211h/1211%20(Bresina).pdf Mission Operations Planning with Preferences: An Empirical Study]
 Author: John Bresina, Lina Khatib, Conor !McGann
 Published: 6/05/2006
 
-[http://ase.arc.nasa.gov/publications/pdf/1213.pdf The Future of AI in Space]
+[http://ti.arc.nasa.gov/m/pub/1213h/1213%20Jonsson The Future of AI in Space]
 Author: Steve Chien, Richard Doyle, Ari Jonsson, Ashley Davies, Ralph Lorenz
 Published: 6/05/2006
 
 = 2005 = 
 
-[http://ase.arc.nasa.gov/publications/pdf/1061.pdf Approximation Algorithms and Heuristics for Classical Planning]
+[http://ti.arc.nasa.gov/m/pub/1061h/1061%20(Frank).pdf Approximation Algorithms and Heuristics for Classical Planning]
 Author: Jeremy Frank, Ari Jonsson
 Published: 8/19/2005
 
-[http://ase.arc.nasa.gov/publications/pdf/1007.pdf Inspection & Verification of Domain Models with Planworks & Aver]
+[http://ti.arc.nasa.gov/m/pub/1007h/1007%20(Bedrax-Weiss).pdf Inspection & Verification of Domain Models with Planworks & Aver]
 Author: Tania Bedrax-Weiss, Jeremy Frank, Michael Iatauro, Conor !McGann
 Published: 5/11/2005
 
-[http://ase.arc.nasa.gov/publications/pdf/0964.pdf PlanWorks: A Debugging Environment for Constraint Based Planning Systems]
+[http://ti.arc.nasa.gov/m/pub/964h/0964%20(Frank).pdf PlanWorks: A Debugging Environment for Constraint Based Planning Systems]
 Author: Patrick Daley, Jeremy Frank, Michael Iatauro, Conor !McGann, Will Taylor
 Published: 3/22/2005
 
@@ -53,11 +53,11 @@ Published: 3/22/2005
 Author: John Bresina, Ari Jonsson, Paul Morris, Kanna Rajan
 Published: 3/18/2005
 
-[http://ase.arc.nasa.gov/publications/pdf/0951.pdf Autonomy Software Architecture for LORAX (Life On ice Robotic Antarctic eXplorer)]
+[http://ti.arc.nasa.gov/m/pub/951h/0951%20(Jonsson).pdf Autonomy Software Architecture for LORAX (Life On ice Robotic Antarctic eXplorer)]
 Author: Ari Jonsson, Conor !McGann, Liam Pedersen, Michael Iatauro, Srikanth Rajagopalan
 Published: 3/01/2005
 
-[http://ase.arc.nasa.gov/publications/pdf/0944.pdf Mixed-Initiative Activity Planning for Mars Rovers]
+[http://ti.arc.nasa.gov/m/pub/944h/0944%20(Bresina).pdf Mixed-Initiative Activity Planning for Mars Rovers]
 Author: John Bresina, Ari Jonsson, Paul Morris, Kanna Rajan
 Published: 3/01/2005
 
@@ -70,38 +70,38 @@ Published: 11/24/2004
 
 = 2003 =
 
-[http://ase.arc.nasa.gov/publications/pdf/0628.pdf Scoping Planning Agents with Shared Models]
+[http://ti.arc.nasa.gov/m/pub/628h/0628%20(Bedrax-Weiss).pdf Scoping Planning Agents with Shared Models]
 Author: Tania Bedrax-Weiss, Jeremy Frank, Ari Jonsson, Conor !McGann
 Published: 10/28/2003
 
-[http://ase.arc.nasa.gov/publications/pdf/0586.pdf Constraint Maintenance with Preferences and Underlying Flexible Solution]
+[http://ti.arc.nasa.gov/m/pub/586h/0586%20(Bresina).pdf Constraint Maintenance with Preferences and Underlying Flexible Solution]
 Author: John Bresina, Ari Jonsson, Paul Morris, Kanna Rajan
 Published: 7/22/2003
 
-[http://ase.arc.nasa.gov/publications/pdf/0542.pdf MAPGEN Planner: Mixed-Initiative activity planning for the Mars Exploration Rover mission]
+[http://ti.arc.nasa.gov/m/pub/542h/0542%20(Ai-Chang)%20v3.pdf MAPGEN Planner: Mixed-Initiative activity planning for the Mars Exploration Rover mission]
 Author: Mitch Ai-Chang, John Bresina, Leonard Charest, Jennifer Hsu, Ari Jonsson, Bob Kanefsky, Pierre Maldague, Paul Morris, Kanna Rajan, Jeffrey Yglesias
 Published: 4/29/2003
 
-[http://ase.arc.nasa.gov/publications/pdf/0519.pdf Identifying Executable Plans]
+[http://ti.arc.nasa.gov/m/pub/519h/0519%20(Bedrax-Weiss).pdf Identifying Executable Plans]
 Author: Tania Bedrax-Weiss, Jeremy Frank, Ari Jonsson, Conor !McGann
 Published: 3/28/2003
 
-[http://ase.arc.nasa.gov/publications/pdf/0508.pdf Formalizing Resources For Planning]
+[http://ti.arc.nasa.gov/m/pub/508h/0508%20(Bedrax).pdf Formalizing Resources For Planning]
 Author: Tania Bedrax-Weiss, Conor !McGann, Sailesh Ramakrishan
 Published: 3/18/2003
 
 = 2001 = 
 
-[http://ase.arc.nasa.gov/publications/pdf/0313.pdf A Constraint-Based Planner with Attributes]
+[http://ti.arc.nasa.gov/m/pub/313h/0313%20(Frank).pdf A Constraint-Based Planner with Attributes]
 Author: Jeremy Frank, Ari Jonsson
 Published: 9/24/2001
 
 = 2000 =
 
-[http://ase.arc.nasa.gov/publications/pdf/0167.pdf On Reformulating Planning As Dynamic Constraint Satisfaction]
+[http://ti.arc.nasa.gov/m/pub/167h/0167%20(Frank).pdf On Reformulating Planning As Dynamic Constraint Satisfaction]
 Author: Jeremy Frank, Ari Jonsson, Paul Morris
 Published: 5/25/2000
 
-[http://ase.arc.nasa.gov/publications/pdf/0141.pdf Bridging the Gap Between Planning and Scheduling]
+[http://ti.arc.nasa.gov/m/pub/141h/0141%20(Smith).pdf Bridging the Gap Between Planning and Scheduling]
 Author: David Smith, Jeremy Frank, Ari Jonsson
 Published: 1/12/2000
