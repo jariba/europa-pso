@@ -3,7 +3,7 @@
 = Upcoming Releases =
 
 || *Release* ||  *Date* ||
-|| [RoadmapEUROPA_2_5 Europa-2.5]  || 5/15/2010 ||
+|| [RoadmapEUROPA_2_5 Europa-2.5]  || 12/15/2010 ||
 || [RoadmapEUROPA_X Europa-X]  (Union of future releases) || ||
 
 = Previous Releases =
