@@ -41,6 +41,7 @@ http://europa-pso.googlecode.com/svn/wiki/images/PSDesktop-1.jpg
 In the [http://www.beanshell.org BeanShell] console window you can type in Java statements that allow you to drive EUROPA interactively through its Java API (see below for the name of the exposed variables).
 
 In the NDDL console you can type in NDDL statements that will be intrepreted as soon as you complete a valid NDDL statement and hit enter.
+*Note* : the NDDL console has been temporarily disabled, we plan to bring it back at some point soon. In the mean time, you can still use the _PSEngine.executeScript(language,script,isFile)_ method from the !BeanShell console and obtain the same results.
 
 = Variables exposed through !BeanShell =
 
