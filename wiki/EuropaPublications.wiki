@@ -21,6 +21,10 @@ Published: 08/27/08
 Author: Paul Morris, John Bresina
 Published: 7/31/2007
 
+[http://www.aaai.org/Papers/ICAPS/2007/ICAPS07-018.pdf Bounding the Resource Availability of Activities with Linear Impact]
+Author: Jeremy Frank, Paul Morris
+Published: 9/2007
+
 [http://ti.arc.nasa.gov/m/pub/1364h/1364%20(Smith,%20D).pdf Developing Domain-Independent Search Control for Europa2]
 Author(s): Sarah Bernardini, David Smith
 Published: 7/12/2007
