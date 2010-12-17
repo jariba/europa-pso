@@ -7,29 +7,25 @@
 = Software Requirements =
 To begin with, you will need the following software installed on your system:
 
- * [ftp://anonymous@ftp.perforce.com/jam/jam-2.5.zip Jam 2.5] - An automated build system ''(replacement for'' `make`'')''
+ * [ftp://anonymous@ftp.perforce.com/jam/jam-2.5.zip Jam 2.5] - An automated build system _(replacement for'' `make`'')_
  * [http://java.sun.com/javase/downloads/ Java 1.5] - A platform independent programming language and runtime.
- * [http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc Doxygen] - An automated documentation generator. ''(required only to generate API documentation)''
+ * [http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc Doxygen] - An automated documentation generator. _(required only if you want to generate API documentation)_
 
 The following software is required and tested versions are provided in the !ThirdParty section of the EUROPA repository (see 'Building !ThirdParty Libraries' below for details).
 
  * [http://www.antlr.org/api/C/main.html ANTLR-C] - The C runtime for ANTLR, the parser generator.
- * [http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page CppUnit] - A C++ unit testing framework (you may need to rerun ldconfig to get this library installed properly)
- * [http://logging.apache.org/log4cxx/download.html Log4cxx] - A C++ logging package that emulates the popular Log4j system.  Note that log4cxx requires the Apache Runtime Library (called APR).  For RHEL users, the most recent versions of log4cxx and APR require RHEL 5 or better.  
+ * [http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page CppUnit] - A C++ unit testing framework (you may need to rerun ldconfig to get this library installed properly). This is not required to generate a EUROPA distribution, it is only required if you need to run regression tests in the development environment.
 
 
 The following software is also required, but is likely already installed on your system:
 
+ * [http://ant.apache.org/ Ant 1.7+] - The top-level build tool for Europa
  * [http://subversion.tigris.org/project_packages.html Subversion] - version control system.
  * [http://gcc.gnu.org/mirrors.html GCC 3.3+] - GNU Compiler Collection.
  * [http://www.python.org Python] - A general purpose programming language, used for some utility scripts in PLASMA. ''(not required to build PLASMA)''
  * [http://www.swig.org/ SWIG 1.3.36+] - Tool that allows us to expose C++ interfaces in Java and other languages.
    * mac users : if you download it from the swig site, make sure you get swig, not macswig, which is a very old version available from that site
    * version 1.3.29+ will work for everything except one small bug (see #169)
-
-The following software is included in Europa, but you may wish to install your own version or already have your own version installed:
-
-  * [http://ant.apache.org/ ANT] - The top-level build tool for Europa
 
 = Building !ThirdParty Libraries =
 This section describes how you can install the supported versions of Log4cxx and CPPUnit.  Using the !ThirdParty repository from Europa is optional if you already have these packages installed.  
@@ -40,38 +36,37 @@ EUROPA's !ThirdParty source code is kept on a  [http://subversion.tigris.org/ su
 svn co http://europa-pso.googlecode.com/svn/ThirdParty/trunk plasma.ThirdParty
 }}}
 
-== Install Log4cxx ==
-We have provided a perl script that automates the install of the log4cxx library, though you are free to run the script manually (all it does is ./configure, make, sudo make install).  Note that you will need to run the script as root.  If you want to change the default install directory (set by ./configure), then you will need to run the commands at the command line.
-{{{
-> cd plasma.ThirdParty
-> sudo makeLog4cxx
-}}}
-
-== Install [http://code.google.com/p/europa-pso/wiki/cppunit CPPUnit] ==
-We have provided a perl script that automates the install of the CPPUnit framework, though you are free to run the script manually (all it does is ./configure, make, sudo make install).  Note that you will need to run the script as root.  If you want to change the default install directory (set by ./configure), then you will need to run the commands at the command line.
-{{{
-> cd plasma.ThirdParty
-> sudo makeCppUnit
-}}}
+In the instructions below, if you want to install any of the 3rd party packages in a custom location, specify the *--prefix=location* option to configure.
 
 == Install ANTLR-C ==
-First, unzip libantlr3c-3.1.3.tar.bz2 
+First, unzip libantlr3c-3.1.3.tar.bz2.
+
+64-bit systems : specify the *--enable-64bit* flag for configure.
+
 {{{
 > cd plasma.ThirdParty/libantlr3c-3.1.3
 > ./configure ; make
 > sudo make install
 }}}
 
-If you install ANTLR-C in a location other than the standard one, you can pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.  See Advanced Build Configurations for command execution.
+If you install ANTLR-C in a location other than the standard one, please specify the environment variable ANTLR_HOME to point to that location so that the EUROPA build files can find it.
 
-== 64bit Systems ==
+In addition to that, for the time being, you will have to pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.  See Advanced Build Configurations for command execution.
 
-    * ANTRL-C : specify the *--enable-64bit* flag for configure
-    * CPPUnit : specify CXX="g++ -m64" for configure
+== Install [http://code.google.com/p/europa-pso/wiki/cppunit CPPUnit] ==
+CPPUnit is not necessary if you are just creating a EUROPA distribution, it is necessary only if you plan to run the regression tests in the development environment.
 
-== Custom Location ==
+First, unzip cppunit-1.12.1.tar.bz2. 
 
-If you want to install any of the 3rd party packages in a custom location, specify the *--prefix=<location>* option to configure
+64-bit systems : specify CXX="g++ -m64" for configure.
+
+{{{
+> cd plasma.ThirdParty/cppunit-1.12.1
+> ./configure ; make
+> sudo make install
+}}}
+
+If you install CPPUnit in a location other than the standard one, please specify the environment variable CPPUNIT_HOME to point to that location so that the EUROPA build files can find it.
 
 == Example for custom configuration ==
 
@@ -80,13 +75,11 @@ The commands below set up the 3rd party packages for 64bit, under your home dire
 {{{
 > cd plasma.ThirdParty/libantlr3c-3.1.3
 > ./configure --prefix=~/dev/EUROPA/ThirdParty/ANTLRC-64 --enable-64bit
-> make
-> sudo make install
+> make ; make install
 
 > cd plasma.ThirdParty/cppunit-1.12.1
 > ./configure --prefix=~/dev/EUROPA/ThirdParty/CPPUNIT-64 CXX="g++ -m64"
-> make
-> sudo make install
+> make ; make install
 }}}
 
 = Building EUROPA =
