@@ -64,7 +64,30 @@ First, unzip libantlr3c-3.1.3.tar.bz2
 
 If you install ANTLR-C in a location other than the standard one, you can pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.  See Advanced Build Configurations for command execution.
 
-*Note* : If you have a 64bit OS, make sure to specify *--enable-64bit* flag for configure. 
+== 64bit Systems ==
+
+    * ANTRL-C : specify the *--enable-64bit* flag for configure
+    * CPPUnit : specify CXX="g++ -m64" for configure
+
+== Custom Location ==
+
+If you want to install any of the 3rd party packages in a custom location, specify the *--prefix=<location>* option to configure
+
+== Example for custom configuration ==
+
+The commands below set up the 3rd party packages for 64bit, under your home directory :
+
+{{{
+> cd plasma.ThirdParty/libantlr3c-3.1.3
+> ./configure --prefix=~/dev/EUROPA/ThirdParty/ANTLRC-64 --enable-64bit
+> make
+> sudo make install
+
+> cd plasma.ThirdParty/cppunit-1.12.1
+> ./configure --prefix=~/dev/EUROPA/ThirdParty/CPPUNIT-64 CXX="g++ -m64"
+> make
+> sudo make install
+}}}
 
 = Building EUROPA =
 == Check out the source code ==
