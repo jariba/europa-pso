@@ -1,4 +1,6 @@
-#summary Release Summary for EUROPA-2.5
+#summary Release Summary for EUROPA-2.6
+
+*NOTE* : work in progress, still migrating from 2.5 statement
 
 === Modeling ===
  * PDDL
