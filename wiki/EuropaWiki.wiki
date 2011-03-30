@@ -2,7 +2,7 @@
 
 = EUROPA =
 
-*NOTE!! EUROPA is available under [http://opensource.arc.nasa.gov/page/nosa-software-agreement NASA's Open Source Agreement (NOSA) ],  NOT under BSD license*
+*EUROPA is available under [http://opensource.arc.nasa.gov/page/nosa-software-agreement NASA's Open Source Agreement (NOSA) ]*
 
 Welcome!  EUROPA is a framework to model and tackle problems in Planning, Scheduling and Constraint Programming. EUROPA is typically embedded in a host application. It is designed to be expressive, efficient, extendable and configurable. It includes:
  
