@@ -42,4 +42,9 @@ In the root of the project there is *build.xml*. The default target in this Ant 
 
 Since the Java UI is dependent on Europa runtime, the following versioning schema is used. Release of the JavaUI will have the same version number as Europa proper. Intermediate releases include the number the most recent Europa release followed by the build number with which the Java code was tested. The Java code should work with all later versions of the Europa runtime, at least in theory. The only place where the version is mentioned is *build.properties* (bundle.version). The build script substitutes this number to all necessary places, including file names and contents of the manifest.
 
-When we are ready to release, we can include just jars or use the directory structure for the update site. The only problem with the latter approach that I see is that Eclipse update manager will not force update of the Europa runtime. 
+When we are ready to release, we can include just jars or use the directory structure for the update site. The only problem with the latter approach that I see is that Eclipse update manager will not force update of the Europa runtime.
+
+= Notes =
+
+ * Both the Swing version and Eclipse version require Europa libraries to be in the library path. 
+ * At this stage in development I highly recommend running the plugin in a nested Eclipse (as opposed to exporting and installing the plugin in your main Eclipse). Europa is called through JNI, and when Europa coredumps, it takes the JVM with it. It has not happened to me since we fixed the 64-bit Antlr3 problem, but better safe than sorry.
