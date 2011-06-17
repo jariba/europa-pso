@@ -294,7 +294,7 @@ t0.end +  [20 100] == t1.start;
 
 A number of items are worth noting:
  1. Commands are executed in the order they are defined.
- 1. A _goal_ keyword is used to introduce a token. Such a token is immediately _active._ Specifically, the base domain of its built-in _state variable_ will be restricted to ACTIVE, thus preventing _merge_ and _reject_ operations.
+ 1. A _goal_ keyword is used to introduce a token. The base domain of its built-in _state variable_ will be {ACTIVE, MERGED}.  The _fact_ keyword is currently identical to _goal_ (see issue 134).  Alternatively the _rejectable_ keyword results in {ACTIVE, MERGED, REJECTED} and can be used to specify a goal that is preferred but not required.
  1. An instance of _Navigator_ is allocated prior to creating any token. If a token of the _Navigator_ class were created prior to allocation of an object, then the base domain of the built-in object variable would be empty. This would yield an inconsistent state and is not permitted for tokens.
  1. Unlike object member variables, token parameter variables are not initialized specially during allocation. Therefore, the base domain is derived from the defaults in the predicate declaration. Further restriction is possible using the assignment statement.
  1. A scoping operator is used to access variables of tokens. This example accesses built-in variables (e.g. _start_, _end_) as well as user-defined parameter variables (e.g. _location_).
@@ -594,7 +594,7 @@ We have already covered variable and constraint creation using the NDDL transact
  * Declaration of one variable by assignment of the contents of another - e.g. {{{ Foo b = f; }}}
  * Allocation of a constraint - e.g. {{{ eq(i, j); neq(j, k); }}}
 
-We also introduced predicates, composition and inheritance and showed that constructors with arguments can be invoked explicitly, passing in values, domains or variable references - e.g.  {{{ Bar b = new Bar(f); }}}  We also showed that tokens can be created using the goal and mandatory keywords. This section revisits some of these operations and discusses some new material.
+We also introduced predicates, composition and inheritance and showed that constructors with arguments can be invoked explicitly, passing in values, domains or variable references - e.g.  {{{ Bar b = new Bar(f); }}}  We also showed that tokens can be created using the _goal_, _fact_ or _rejectable_ keywords. This section revisits some of these operations and discusses some new material.
 
 == Type Closure ==
 Most commonly, all objects are instantiated in the Plan Database before any tokens or constraints are added. Once all the objects are created, it is typical to indicate to the database that no more objects can be added. The most straightforward way to accomplish this is with the statement:
@@ -607,15 +607,17 @@ Timeline.close(); // Close the database to new Timeline instances (and any subcl
 Any attempt to allocate an instance of a class that has been closed will result in an error. By default, all types remain _open_ until they are explicitly closed. Unless you have specialized requirements for _Dynamic Objects_, you should always insert a {{{close();}}} statement before creating any tokens. There is no operation to open a class once it has been closed.
 
 == Creating Tokens ==
-There are 2 ways to introduce a token into the plan database using NDDL transactions. The first employs the _goal_ keyword. It has the form _goal(objectScope.predicate `[label]`);_ where _objectScope_ designates the set of objects to which this token can be assigned and predicate designates the particular predicate to be created. A label is optionally used if later NDDL statements wish to refer to the instance to be allocated. For example, consider the statement:
-{{{goal(Navigator.At); // Allocates an anonymous active token which can be assigned to any instance of Navigator}}}
-This statement results in a new token in the plan database which will be in the _active_ state. The object variable of the new token will be populated with the set of all instances in the _Navigator_ class present in the database at the time of token creation. Other examples include:
+There are 3 ways to introduce a token into the plan database using NDDL transactions:
+
+  # With the _goal_ keyword. It has the form _goal(objectScope.predicate `[label]`);_ where _objectScope_ designates the set of objects to which this token can be assigned and predicate designates the particular predicate to be created. A label is optionally used if later NDDL statements wish to refer to the instance to be allocated. For example, consider the statement:
+{{{goal(Navigator.At); // Allocates an anonymous active token which can be assigned to any instance of Navigator}}}.  The object variable of the new token will be populated with the set of all instances in the _Navigator_ class present in the database at the time of token creation. Other examples include:
 {{{
 goal(nav1.At); // Allocates an anonymous active token with a singleton object variable == nav1
 goal(nav1.At t0); // Allocates a labeled active token t1 with a singleton object variable == nav1
 }}}
-Upon execution of this command, the state variable of the new token={ACTIVE}. This means that the token cannot be MERGED or REJECTED.
-The second method uses the _rejectable_ keyword. The keyword _rejectable_ is identical in form to the goal keyword. The only difference is that the resulting token is in an _inactive_ state. Upon execution of this command, the state variable of the new token is _{ACTIVE, REJECTED}_. This means that we can _activate_, or _reject_ the token.
+Upon execution of this command, the state variable is INACTIVE and has domain={ACTIVE, MERGED}. This means that the token cannot be REJECTED.
+  # With the _fact_ keyword.  Currently identical to _goal_, the intention is that a _fact_ cannot be MERGED, and has state variable = {ACTIVE}.  See issue #134.
+  # With the _rejectable_ keyword. The keyword _rejectable_ is identical in form to the goal keyword. The only difference is that the resulting token is in an _inactive_ state. Upon execution of this command, the state variable of the new token is _{ACTIVE, MERGED, REJECTED}_. This means that we can _activate_, or _reject_ the token.
 
 == Specifying and Resetting Variables ==
 
@@ -652,7 +654,7 @@ color.specify(Red); // Specify to a singleton
 }}}
 
 == Operations on Tokens ==
-We have described the set of internal token states indicating their role and relevance in the plan database and the partial plan. It has been shown how tokens are introduced into the plan database using either _goal_ or _rejectable_ statements. The example below demonstrates the use of NDDL transactions to effect state changes in the token.
+We have described the set of internal token states indicating their role and relevance in the plan database and the partial plan. It has been shown how tokens are introduced into the plan database using _goal_, _fact_, or _rejectable_ statements. The example below demonstrates the use of NDDL transactions to effect state changes in the token.
 
 {{{
 // Declare a basic class with a simple predicate
