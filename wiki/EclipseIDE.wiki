@@ -1,0 +1,32 @@
+#summary Overview of Eclipse Plugin for EUROPA modeling, solving, and debugging.
+
+= Quick Start =
+
+_Option 1_:  Add plugin to existing Eclipse IDE.  Recommended.
+
+ # Make sure you have EUROPA installed and running.
+ # [http://code.google.com/p/europa-pso/downloads/list Download] the version of the Eclipse plugin that is compatible with your version of EUROPA.
+ # ??? 
+
+_Option 2_:  Build the plugin site yourself, and add plugin to existing Eclipse IDE.
+
+ # Make sure you have EUROPA checked out, built, and running.
+ # Build the Eclipse plugin:
+    # In 
+ # From Eclipse, point your update manager at.
+ 
+
+_Option 3_:  Run as a separate Eclipse Application (instead of updating your Eclipse IDE).
+  # Make sure you have EUROPA checked out, built, and running.
+
+
+
+If you are a EUROPA developer, and have the code checked out, you can also choose to run a separate Eclipse Application instead of adding the plugin to your existing Eclipse IDE:
+
+
+= Overview =
+
+
+= Details =
+
+See also [JavaUIDevelopperNotes Developer Notes] for the various EUROPA Java UI interfaces.
