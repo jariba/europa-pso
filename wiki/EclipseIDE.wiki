@@ -29,6 +29,17 @@ _Option 3_:  Run as a separate Eclipse Application (instead of updating your Ecl
 
 The Eclipse plugin has two major components: an editor and an execution perspective. 
 
+=== Components ===
+
+ * _NDDL Editor_:  Syntax highlighting, syntax errors reported, structure linked to standard Outline View.
+ * _Solver View_:  Start/stop the EUROPA engine, and configure and run a solver.
+ * _Statistics View_:  Graphs of solver stats.
+ * _Open Decision View_:  View of open decisions at each step of solving.
+ * _Schema Browser View_:  View the schema for the active NDDL model.
+ * _Gantt View_:  Once a solution is found, view the plan.
+ * _Details View_:  Click on a token in the Gantt View to see it's details in this view.
+ * _Run NDDL model_ perspective:  Includes all of the above components.
+
 == Editor ==
 
 Eclipse plugin registers a file type for ".nddl" and a default editor for it. The editor has syntax highlighting and an outline. The outline is updated every time an editor is saved. I am creating a brand new instance of the engine and deleting it after getting an AST tree. So far, if errors occur during parsing, the outline disappears. If/when we figure out some way to pass error messages to the Java side, I will add error markers to the editor.
@@ -52,6 +63,7 @@ http://europa-pso.googlecode.com/svn/wiki/images/LaunchConfiguration.png
 The Run as NDDL model perspective is the Eclipse version of the Swing PSDesktop user interface. The main difference is the new button that lets you start and stop the engine. There can be only one engine running at any given moment. The engines used to get an outline do not count. 
 
 http://europa-pso.googlecode.com/svn/wiki/images/EclipseRunPerspective.png
+
 = Details =
 
-See also [JavaUIDevelopperNotes Developer Notes] for the various EUROPA Java UI interfaces.
+See also [JavaUINotes Developer Notes] for the various EUROPA Java UI interfaces.
