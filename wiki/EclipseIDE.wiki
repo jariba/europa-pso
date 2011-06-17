@@ -26,7 +26,31 @@ If you are a EUROPA developer, and have the code checked out, you can also choos
 
 = Overview =
 
+The Eclipse plugin has two major components: an editor and an execution perspective. 
 
+== Editor ==
+
+Eclipse plugin registers a file type for ".nddl" and a default editor for it. The editor has syntax highlighting and an outline. The outline is updated every time an editor is saved. I am creating a brand new instance of the engine and deleting it after getting an AST tree. So far, if errors occur during parsing, the outline disappears. If/when we figure out some way to pass error messages to the Java side, I will add error markers to the editor.
+
+Clicking in the outline navigates in the editor. Folding, control-clicking, and code assist are in future plans.
+
+Note: I am not an artist, so complains about ugly icons will not be accepted. Better icons will be very much appreciated.
+
+http://europa-pso.googlecode.com/svn/wiki/images/EclipseNddlEditor.png
+
+There is a new "Run as" action that shows up for NDDL files, both in the editor and in the Package Explorer. It creates a launch configuration and switches the perspective to NDDL model execution.
+
+http://europa-pso.googlecode.com/svn/wiki/images/EclipseRunAs.png
+
+Like the Swing version, it takes a NDDL file and a planner configuration file to run. In Swing these were passed from the command line. In Eclipse plugin they are part of a launch configuration
+
+http://europa-pso.googlecode.com/svn/wiki/images/LaunchConfiguration.png
+
+== Run NDDL model perspective ==
+
+The Run as NDDL model perspective is the Eclipse version of the Swing PSDesktop user interface. The main difference is the new button that lets you start and stop the engine. There can be only one engine running at any given moment. The engines used to get an outline do not count. 
+
+http://europa-pso.googlecode.com/svn/wiki/images/EclipseRunPerspective.png
 = Details =
 
 See also [JavaUIDevelopperNotes Developer Notes] for the various EUROPA Java UI interfaces.
