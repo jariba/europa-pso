@@ -1,0 +1,34 @@
+#summary Developer notes for UI variants.
+
+= Introduction =
+
+This page is to serve as developer notes for the three variants of the Java UI.  For usage instructions, see instead these pages:
+ * [EclipseIDE Eclipse Plugin (SWT)]:  Edit NDDL, view schema, configure and run solver, and view solution details, all from within your Eclipse IDE.
+ * [JavaUI Java UI (Swing)]:  View schema, configure and run solver, interact with EUROPA, and view solution details from a plain Java UI.
+ * [PSUIDocs Java PSUI (Swing,deprecated)]: Earlier implementation of Java UI.
+
+= Original Design (Javier) =
+
+= New Design (Tatiana) = 
+
+== The "vision" ==
+
+Europa comes with a Java user interface package (PSDesktop). The purpose of the work described here is to create a new generation of PSDesktop. As before, 
+
+  * The user interface will consist of multiple views into Europa (open decisions, resource time lines, etc) 
+
+  * User applications can add new views to the standard set
+
+_New features_
+
+  * The biggest news is that now Java UI will come in two flavors: standalone Java application (Swing-based) and an Eclipse plugin. The plugin will include all the views of the Swing version plus have an editor for NDDL files with all the bells and whistles we love and expect in Eclipse
+
+  * To make the above easier, the original PSDesktop code is refactored to separate logic of dealing with the Europa engine from user interfaces. For now at least, the new refactored code sits in a separate project.
+
+  * Adding custom views to either Swing or Eclipse version will no longer require recompilation of the base code. The Swing version will have the ability to hook up new views through reflection. For Eclipse, user views will be organized as extension plugins.
+
+=== Package structure ===
+
+The root package is *org.ops.ui*. I got this name from the Java code in Europa. Let me know if I should use something else.
+
+The next level after the root says what the package is about. The last level is one of *model* (common UI-free code), *swing*, *swt*. In most cases, all three will be present. 
