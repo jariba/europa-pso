@@ -4,7 +4,7 @@
  * [CommitProcedure Commit Procedure]
  * See [CodingPractices Coding Practices] for a brief outline of common practices.  
  * See [StudyGroup Study Group] for past and future topics for our EUROPA meetings.
-
+ * Notes on [JavaUINotes Java UI] design for three UI variants.
 
 = Developer Pages =
 The area that follows is intended to be a sandbox for the EUROPA developers, where they can scribble notes, wish-lists, to-do lists, jot down feature or implementation ideas, etc.
