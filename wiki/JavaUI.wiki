@@ -1,41 +1,9 @@
 #summary Updated version of Java UI: Swing and SWT (Eclipse)
 
-= The "vision" =
 
-Europa comes with a Java user interface package (PSDesktop). The purpose of the work described here is to create a new generation of PSDesktop. As before, 
+= Quick Start = 
 
-  * The user interface will consist of multiple views into Europa (open decisions, resource time lines, etc) 
-
-  * User applications can add new views to the standard set
-
-New features
-
-  * The biggest news is that now Java UI will come in two flavors: standalone Java application (Swing-based) and an Eclipse plugin. The plugin will include all the views of the Swing version plus have an editor for NDDL files with all the bells and whistles we love and expect in Eclipse
-
-  * To make the above easier, the original PSDesktop code is refactored to separate logic of dealing with the Europa engine from user interfaces. For now at least, the new refactored code sits in a separate project.
-
-  * Adding custom views to either Swing or Eclipse version will no longer require recompilation of the base code. The Swing version will have the ability to hook up new views through reflection. For Eclipse, user views will be organized as extension plugins.
-
-== Package structure ==
-
-The root package is *org.ops.ui*. I got this name from the Java code in Europa. Let me know if I should use something else.
-
-The next level after the root says what the package is about. The last level is one of *model* (common UI-free code), *swing*, *swt*. In most cases, all three will be present. 
-
-== Building it and installing it ==
-
-In the root of the project there is *build_all.xml*. The name is changed from the standard *build.xml* to avoid collision with Eclipse PDE. The default target in this Ant build file is *build.site*. It produces a directory called *dist* in the root of the project (added to svn:ignore). This directory contains the structure of an update site for Eclipse with an additional folder for the Swing jar. You can point your Eclipse Update Manager to this local directory to install the plug-in.
-
-*Note*: the plug-in expects *EUROPA_HOME* to be set and Europa shared libraries to be in *LD_LIBRARY_PATH* or *PATH* (for Windows). 
-
-Since the Java UI is dependent on Europa runtime, the following versioning schema is used. Release of the JavaUI will have the same version number as Europa proper. Intermediate releases include the number the most recent Europa release followed by the build number with which the Java code was tested. The Java code should work with all later versions of the Europa runtime, at least in theory. The only place where the version is mentioned is *build.properties* (bundle.version). The build script substitutes this number to all necessary places, including file names and contents of the manifest.
-
-When we are ready to release, we can include just jars or use the directory structure for the update site. The only problem with the latter approach that I see is that Eclipse update manager will not force update of the Europa runtime. 
-
-
-=== Swing version ===
-
-The main class is *org.ops.ui.main.swing.PSDesktop*. It expects *LD_LIBRARY_PATH* (or *PATH* on Windows) to include Europa shared libraries and prints a message to this end if it cannot load the library. 
+TODO (probably some overlap from Eclipse quick start)
 
 Command line arguments are optional. PSDesktop needs a NDDL file (for the initial state) and [http://code.google.com/p/europa-pso/wiki/PlannerCfg PlannerConfig.xml] to run. If these are not provided from the command line, file open dialogs are shown. Command line arguments:
 
@@ -45,42 +13,12 @@ Command line arguments are optional. PSDesktop needs a NDDL file (for the initia
 
 Note, *-view* does not work yet.
 
-=== Eclipse plugin ===
+The main class is *org.ops.ui.main.swing.PSDesktop*. It expects *LD_LIBRARY_PATH* (or *PATH* on Windows) to include Europa shared libraries and prints a message to this end if it cannot load the library. 
 
-As with the Swing version, Europa libraries should be in the library path. At this stage in development I highly recommend running the plugin in a nested Eclipse (as opposed to exporting and installing the plugin in your main Eclipse). Europa is called through JNI, and when Europa coredumps, it takes the JVM with it. It has not happened to me since we fixed the 64-bit Antlr3 problem, but better safe than sorry.
+= Overview =
 
-= Swing version =
-
-The main visible difference from the original PSDesktop is the Window menu, which allows to open/close various views. Custom views picked up by reflection will also be added here. Note that in Swing version all views are created at the start up and destroyed on exit. The check boxes in the menu control only visibility.
+The main visible difference from the original [PSUIDocs PSDesktop] is the Window menu, which allows to open/close various views. Custom views picked up by reflection will also be added here. Note that in Swing version all views are created at the start up and destroyed on exit. The check boxes in the menu control only visibility.
 
 http://europa-pso.googlecode.com/svn/wiki/images/SwingScreenshot.png
 
 http://europa-pso.googlecode.com/svn/wiki/images/SwingGantt2.png
-
-= Eclipse plug-in =
-
-The Eclipse plugin has two major components: an editor and an execution perspective. 
-
-== Editor ==
-
-Eclipse plugin registers a file type for ".nddl" and a default editor for it. The editor has syntax highlighting and an outline. The outline is updated every time an editor is saved. I am creating a brand new instance of the engine and deleting it after getting an AST tree. So far, if errors occur during parsing, the outline disappears. If/when we figure out some way to pass error messages to the Java side, I will add error markers to the editor.
-
-Clicking in the outline navigates in the editor. Folding, control-clicking, and code assist are in future plans.
-
-Note: I am not an artist, so complains about ugly icons will not be accepted. Better icons will be very much appreciated.
-
-http://europa-pso.googlecode.com/svn/wiki/images/EclipseNddlEditor.png
-
-There is a new "Run as" action that shows up for NDDL files, both in the editor and in the Package Explorer. It creates a launch configuration and switches the perspective to NDDL model execution.
-
-http://europa-pso.googlecode.com/svn/wiki/images/EclipseRunAs.png
-
-Like the Swing version, it takes a NDDL file and a planner configuration file to run. In Swing these were passed from the command line. In Eclipse plugin they are part of a launch configuration
-
-http://europa-pso.googlecode.com/svn/wiki/images/LaunchConfiguration.png
-
-== Run NDDL model perspective ==
-
-The Run as NDDL model perspective is the Eclipse version of the Swing PSDesktop user interface. The main difference is the new button that lets you start and stop the engine. There can be only one engine running at any given moment. The engines used to get an outline do not count. 
-
-http://europa-pso.googlecode.com/svn/wiki/images/EclipseRunPerspective.png
