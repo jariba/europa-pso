@@ -22,3 +22,7 @@ The main visible difference from the original [PSUIDocs PSDesktop] is the Window
 http://europa-pso.googlecode.com/svn/wiki/images/SwingScreenshot.png
 
 http://europa-pso.googlecode.com/svn/wiki/images/SwingGantt2.png
+
+= Details =
+
+See also [JavaUINotes Developer Notes] for the various EUROPA Java UI interfaces.
