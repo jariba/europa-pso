@@ -11,18 +11,19 @@ _Option 1_:  Add plugin to existing Eclipse IDE.  Recommended.
 _Option 2_:  Build the plugin site yourself, and add plugin to existing Eclipse IDE.
 
  # Make sure you have EUROPA checked out, built, and running.
- # Build the Eclipse plugin:
-    # In 
- # From Eclipse, point your update manager at.
+ # Build the Eclipse plugin update site (is this necessary if EUROPA is built? ... perhaps just need 'ant dist'?):
+    # ???
+    # ???
+ # From Eclipse, point your update manager at ???
  
-
 _Option 3_:  Run as a separate Eclipse Application (instead of updating your Eclipse IDE).
   # Make sure you have EUROPA checked out, built, and running.
-
-
-
-If you are a EUROPA developer, and have the code checked out, you can also choose to run a separate Eclipse Application instead of adding the plugin to your existing Eclipse IDE:
-
+  * Make sure EUROPA_HOME is on your LD_LIBRARY_PATH (PATH for Windows).
+  # You need the plugin to be at the root level, in order for things to run correctly. So:
+   1. File->Import->Existing Projects Into Worspace
+   2. Choose 'PLASMA/src/Java/JavaUI' which will be the root directory (you now have two different 'views' into the same files in the workspace)
+   3. Use the default name for the new 'project', which is 'Europa.java'
+  # Copy PSEngine.jar from EUROPA (PLASMA/build/lib) into Europa.java/lib (NOTE: Whenever EUROPA gets updated, you'll need to redo this copy) 
 
 = Overview =
 
