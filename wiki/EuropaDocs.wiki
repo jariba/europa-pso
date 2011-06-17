@@ -14,9 +14,9 @@ If you don't know where to start, or just want a quick overview of how to use EU
 === Development Tools ===
  * [EmbeddingEUROPA How to embed EUROPA in an application] 
  * [MakeprojectPage makeproject]:  Automatically create all the pieces for a new project.
- * [PSUIDocs PSUI tools] for visualization and debugging include :
-     * PSDesktop : A Java app to drive (and visualize) EUROPA interactively.
-     * UI Components : Java components that allow you to quickly assemble your own visualization or interactive application on top of EUROPA. Available components include : gantt chart for timelines, resource charts, interactive solver dialog. The list of available components is intended to grow over time. 
+ * [EclipseIDE Eclipse Plugin (SWT)]:  Edit NDDL, view schema, configure and run solver, and view solution details, all from within your Eclipse IDE.
+ * [Java UI (Swing)]:  View schema, configure and run solver, interact with EUROPA, and view solution details from a plain Java UI.
+ * [PSUIDocs Java PSUI (Swing)](deprecated): Earlier implementation of Java UI.
  * Low-level debugging:
    * [DebugOutputManagement EUROPA Logging]
    * Timelines
