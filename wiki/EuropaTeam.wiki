@@ -5,7 +5,7 @@
 EUROPA is the result of many years of research and development, many people have made significant contributions to EUROPA over the years as detailed [WhatIsEuropa#Acknowledgements here].
 
 The current EUROPA team at NASA Ames consists of : 
- * [http://ti.arc.nasa.gov/people/javier Javier Barreiro]
+ * [http://ti.arc.nasa.gov/profile/javier Javier Barreiro]
  * Matthew Boyce
  * Michael Iatauro
  * [http://ti.arc.nasa.gov/profile/tsmith/ Tristan Smith] 
