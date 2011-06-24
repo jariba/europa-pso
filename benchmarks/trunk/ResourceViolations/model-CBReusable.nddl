@@ -1,8 +1,5 @@
-#include "Plasma.nddl"
-#include "Resources.nddl"
 
-class CapacityResource extends Reusable
-//class CapacityResource extends CBReusable
+class CapacityResource extends CBReusable
 {
     CapacityResource( float mincapacity, float maxcapacity )
     {
@@ -31,9 +28,7 @@ Activity::perform
     eq(act_id,object.id_);
     eq(duration,object.length_);
 
-    //uses(r,object.qty_,start,end);
-    equals( r.uses u );
-    eq(u.quantity, object.qty_ );
+    uses(r,object.qty_,start,end);
 }
 
 

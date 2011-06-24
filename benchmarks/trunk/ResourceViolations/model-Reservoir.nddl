@@ -1,0 +1,38 @@
+
+class CapacityResource extends Reservoir
+{
+    CapacityResource( float mincapacity, float maxcapacity )
+    {
+        super( maxcapacity, mincapacity, maxcapacity );
+    }
+}
+
+class Activity
+{
+    int id_;
+    int length_;
+    float qty_;
+
+    Activity(int id, int l, float q)
+    {
+        id_ = id;
+        length_ = l;
+        qty_ = q;
+    }
+
+    predicate perform {int act_id; CapacityResource r;}
+}
+
+Activity::perform
+{
+    eq(act_id,object.id_);
+    eq(duration,object.length_);
+
+    starts(r.consume c);
+    eq(c.quantity, object.qty_ );
+    
+    ends(r.produce p);
+    eq(p.quantity, object.qty_ );
+}
+
+

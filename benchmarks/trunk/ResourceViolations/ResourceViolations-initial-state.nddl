@@ -1,4 +1,6 @@
-#include "ResourceViolations-model.nddl"
+#include "model-CBReusable.nddl"
+//#include "model-Reusable.nddl"
+//#include "model-Reservoir.nddl"
 
 CapacityResource r1 = new CapacityResource(0.0,1.0);
 Activity act1 = new Activity(1,5,1.0);
