@@ -30,7 +30,8 @@ void setupDesktop()
     ActionDetailsPanel dp = (ActionDetailsPanel)desktop.makeDetailsFrame().getContentPane().getComponent(0);
     ActionViolationsPanel vp = (ActionViolationsPanel)desktop.makeViolationsFrame().getContentPane().getComponent(0);
 
-    ganttFrame = desktop.makeResourceGanttFrame("CapacityResource",start,end);
+    ganttFrame = desktop.makeResourceGanttFrame("Activity",start,end);
+    //ganttFrame = desktop.makeResourceGanttFrame("CapacityResource",start,end);
     ganttFrame.setLocation(0,0);
     ganttFrame.setSize(700,300);
     gantt = (PSGantt)ganttFrame.getContentPane().getComponent(0);
@@ -64,7 +65,7 @@ String getBounds(PSToken t)
 
 
 initPSEngine();
-desktop.makeNddlConsole();
+//desktop.makeNddlConsole();
 solver = desktop.makeSolver(
     "PlannerConfig.xml" // config
 	, 0                 // startHorizon
@@ -77,9 +78,9 @@ PSVariable s1,s2,s3,s4,e1,e2,e3,e4;
 
 void findTokens()
 {
-	res = psengine.getObjectsByType("CapacityResource").get(0);
-	t1 = res.getTokens().get(0);
-	t2 = res.getTokens().get(1);
+	//res = psengine.getObjectsByType("CapacityResource").get(0);
+	//t1 = res.getTokens().get(0);
+	//t2 = res.getTokens().get(1);
 
 	activities = psengine.getObjectsByType("Activity"); 
 	act_obj1 = activities.get(0);
@@ -122,6 +123,11 @@ String toString (PSTokenList l)
     return buf.toString();    
 }
 
+String violations()
+{
+    return psengine.getViolation() + " : " + toString(psengine.getViolationExpl());
+}
+
 void setStart(PSVarValue a1, PSVarValue a2, 
               PSVarValue b1, PSVarValue b2,
               PSVarValue c1, PSVarValue c2
@@ -132,7 +138,7 @@ void setStart(PSVarValue a1, PSVarValue a2,
 	s2.specifyValue(b1);e2.specifyValue(b2);
 	s3.specifyValue(c1);e3.specifyValue(c2);
     psengine.setAutoPropagation(true);
-	print(psengine.getViolation() + " : " + toString(psengine.getViolationExpl()));	
+	print(violations());	
 	gantt.refresh();	
 	ganttFrame.setSize(ganttFrame.getSize());
 }
