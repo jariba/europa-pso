@@ -5,20 +5,24 @@
 _Option 1_:  Add plugin to existing Eclipse IDE.  Recommended.
 
  # Make sure you have EUROPA installed and running.
+ # Make sure EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows) for Eclipse.
  # [http://code.google.com/p/europa-pso/downloads/list Download] the version of the Eclipse plugin that is compatible with your version of EUROPA.
- # ??? 
+ # Put the downloaded .jar file into your Eclipse dropins directory.
+ # [Re-]start Eclipse.
 
 _Option 2_:  Build the plugin site yourself, and add plugin to existing Eclipse IDE.
 
- # Make sure you have EUROPA checked out, built, and running.
- # Build the Eclipse plugin update site (is this necessary if EUROPA is built? ... perhaps just need 'ant dist'?):
-    # ???
-    # ???
- # From Eclipse, point your update manager at ???
+ # Make sure you have EUROPA installed, and running.
+ # Make sure EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows) for Eclipse.
+ # Check out EUROPA plugin code
+ # Build the Eclipse plugin update site (there is an ant target for that in build.xml)
+ # There are two options to install:
+   * Copy .jar from the produced update site structure into Eclipse's dropins directory and restart Eclipse
+   * From Eclipse, point your update manager at the directory produced by the ant script
  
 _Option 3_:  Run as a separate Eclipse Application (instead of updating your Eclipse IDE).
   # Make sure you have EUROPA checked out, built, and running.
-  * Make sure EUROPA_HOME is on your LD_LIBRARY_PATH (PATH for Windows).
+  # Make sure EUROPA_HOME is on your LD_LIBRARY_PATH (PATH for Windows).
   # You need the plugin to be at the root level, in order for things to run correctly. So:
    1. File->Import->Existing Projects Into Worspace
    2. Choose 'PLASMA/src/Java/JavaUI' which will be the root directory (you now have two different 'views' into the same files in the workspace)
@@ -42,11 +46,11 @@ The Eclipse plugin has two major components: an editor and an execution perspect
 
 == Editor ==
 
-Eclipse plugin registers a file type for ".nddl" and a default editor for it. The editor has syntax highlighting and an outline. The outline is updated every time an editor is saved. I am creating a brand new instance of the engine and deleting it after getting an AST tree. So far, if errors occur during parsing, the outline disappears. If/when we figure out some way to pass error messages to the Java side, I will add error markers to the editor.
+Eclipse plugin registers a file type for ".nddl" and a default editor for it. The editor has syntax highlighting and an outline. The outline is updated every time an editor is saved. I am creating a brand new instance of the engine and deleting it after getting an AST tree. If the parser detects any errors, they are displayed as error markers in the editor.
 
 Clicking in the outline navigates in the editor. Folding, control-clicking, and code assist are in future plans.
 
-Note: I am not an artist, so complains about ugly icons will not be accepted. Better icons will be very much appreciated.
+Note: I am not an artist, so complains about ugly icons will not be accepted. Better icons will be very much appreciated. (TODO Update images with new icons)
 
 http://europa-pso.googlecode.com/svn/wiki/images/EclipseNddlEditor.png
 
@@ -60,7 +64,7 @@ http://europa-pso.googlecode.com/svn/wiki/images/LaunchConfiguration.png
 
 == Run NDDL model perspective ==
 
-The Run as NDDL model perspective is the Eclipse version of the Swing PSDesktop user interface. The main difference is the new button that lets you start and stop the engine. There can be only one engine running at any given moment. The engines used to get an outline do not count. 
+The Run as NDDL model perspective is the Eclipse version of the Swing PSDesktop user interface. The main difference is the new button that lets you start and stop the engine. The plugin can run multiple NDDL sessions at the same time. You can switch between them using the pulldown list. EUROPA sessions are also visible in the Debug perspective and can be killed or restarted from there.
 
 http://europa-pso.googlecode.com/svn/wiki/images/EclipseRunPerspective.png
 
