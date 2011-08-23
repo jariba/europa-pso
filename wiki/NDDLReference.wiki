@@ -561,9 +561,13 @@ foreach(label in set){
 
 The set must be closed and its contents cannot be further restricted through plan refinement. This is a subtle but important prohibition. Since a rule statement within a single iteration might include allocation of a constraint or token, a restriction on the set over which the iteration applied would then imply that a constraint or token be removed. This is non-monotonic. Instead, a lock constraint is imposed when imposes a lock on the set over which the iteration occurs once it is fired.
 
-A further complication arises since the semantics of universal quantification do not require existence of an element over which the quantification holds i.e. if there were no hatch on the submarine the rule should still be satisfied. This is problematic since an empty variable typically indicates an inconsistency. To address this NDDL allows a variable declaration to be marked as a filter instead of a true variable of an underlying CSP. The semantics of this are that it cannot be decided by a solver and it can be emptied without implying an inconsistency. The marker keyword _filterOnly_ is added at the end of a variable declaration. For example:
+*Note*: If you are using europa's built-in solver, you will want the solver to ignore the variable used to denote the set, you can do that by adding a filter in the built-in solver's [PlannerCfg configuration file]. For example:
 {{{
-Hatch hatches filterOnly;
+<UnboundVariableManager>
+    ...
+    <FlawFilter var-match="hatches"/>
+    ...
+</UnboundVariableManager>
 }}}
 
 = The NDDL Transaction Language =
