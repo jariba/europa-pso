@@ -1,9 +1,6 @@
-#summary Updated version of Java UI: Swing and SWT (Eclipse)
-
+#summary Overview of Swing components for EUROPA modeling, solving, and debugging.
 
 = Quick Start = 
-
-TODO (probably some overlap from Eclipse quick start)
 
 Command line arguments are optional. PSDesktop needs a NDDL file (for the initial state) and [http://code.google.com/p/europa-pso/wiki/PlannerCfg PlannerConfig.xml] to run. If these are not provided from the command line, file open dialogs are shown. Command line arguments:
 
