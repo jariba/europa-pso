@@ -8,7 +8,7 @@ _Option 1_:  Add plugin to existing Eclipse IDE.  Recommended.
  # Make sure EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows) for Eclipse.
  # [http://code.google.com/p/europa-pso/downloads/list Download] the version of the Eclipse plugin that is compatible with your version of EUROPA.
  # Put the downloaded .jar file into your Eclipse dropins directory.
- # [Re-]start Eclipse.
+ # Restart Eclipse.
 
 _Option 2_:  Build the plugin site yourself, and add plugin to existing Eclipse IDE.
 
