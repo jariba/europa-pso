@@ -1,4 +1,4 @@
-#summary Overview of Eclipse Plugin for EUROPA modeling, solving, and debugging.
+#summary Overview of Eclipse Plugin (SWT) for EUROPA modeling, solving, and debugging.
 
 = Quick Start =
 
