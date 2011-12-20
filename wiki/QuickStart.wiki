@@ -22,38 +22,37 @@ The New Domain Description Language (NDDL) is a simple but powerful language use
 {{{
 // Light-model.nddl
 
-#include "Plasma.nddl"
-
-class LightSwitch extends Timeline
+class LightBulb extends Timeline
 {
-    predicate turnOn  { duration=1; } 
-    predicate turnOff { duration=1; }    
-}
-
-class LightBulb extends Timeline 
-{
-    LightSwitch mySwitch_;
-    
-    LightBulb(LightSwitch b)
-    {
-        mySwitch_ = b;
-    }
-
-    predicate On  {} 
+    predicate On  {}
     predicate Off {}
 }
 
-LightBulb::On
+class LightSwitch extends Timeline
 {
-    met_by(object.Off);              // Bulb must be Off to be turned On
-    met_by(object.mySwitch_.turnOn); // Must be turned on through the switch
+    LightBulb myBulb_;
+
+    LightSwitch(LightBulb b)
+    {
+        myBulb_ = b;
+    }
+
+    action turnOn  { duration=1; }
+    action turnOff { duration=1; }
 }
 
-LightBulb::Off
+LightSwitch::turnOn
 {
-    met_by(object.On);                // Bulb must be On to be turned Off
-    met_by(object.mySwitch_.turnOff); // Must be turned off through the switch
+    met_by(condition object.myBulb_.Off);  // Bulb must be Off to be turned On
+    meets(effect object.myBulb_.On);   // Must be turned on through the switch
 }
+
+LightSwitch::turnOff
+{
+    met_by(condition object.myBulb_.On);   // Bulb must be On to be turned Off
+    meets(effect object.myBulb_.Off);      // Must be turned off through the switch
+}
+
 }}}
 = Create a problem instance =
 {{{
@@ -61,11 +60,10 @@ LightBulb::Off
 
 #include "Light-model.nddl"
 
-// Problem instance : turning the light off
+// Problem instance: turning the light off
 
-// We have one bulb with its corresponding switch :
-LightSwitch switch1 = new LightSwitch();
-LightBulb bulb1 = new LightBulb(switch1);
+LightBulb bulb1 = new LightBulb();
+LightSwitch switch1 = new LightSwitch(bulb1);
 
 // At time 0, the bulb is on
 fact(bulb1.On initialCondition);
@@ -75,6 +73,7 @@ eq(initialCondition.start,0);
 goal(bulb1.Off goal1);
 lt(0,goal1.start);
 lt(goal1.start,10);
+
 }}}
 = Instantiate and run a Solver =
 EUROPA comes with a simple script called [MakeprojectPage makeproject] which generates the minimal C++ and Java applications to run a planner on your model. You can then tailor those applications to your own purposes, or use them as an example to embed EUROPA into your own application. This will create a new project called Light in your ~/Light directory :
