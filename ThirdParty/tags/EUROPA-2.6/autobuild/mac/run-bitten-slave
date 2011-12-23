@@ -1,0 +1,4 @@
+export PATH=$PATH:.
+export PLASMA_HOME=
+export EUROPA_HOME=
+bitten-slave --verbose --config=bitten-slave.ini --log=bitten-slave.log http://babelfish.arc.nasa.gov/trac/europa/builds
