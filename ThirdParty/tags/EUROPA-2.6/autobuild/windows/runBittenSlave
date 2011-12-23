@@ -1,0 +1,30 @@
+#!/bin/sh
+export JAVA_HOME="/cygdrive/c/Progra~1/Java/jdk1.6.0_12"
+
+#put in an infinite loop in case the build fails
+for (( c=1; c>0; c++ ))
+do
+  #make a unique bitten log file
+  timestamp=`/usr/bin/date +%Y%m%d-%H%m`
+  logfile="bitten-slave-$timestamp.log"
+
+  echo running iteration $c >> $logfile
+
+  #
+  #debug dry run in tmp directory
+  #
+  #nohup /usr/bin/bitten-slave --dry-run --verbose --config="bitten-slave.ini" --log="bitten-slave-$timestamp.log" http://babelfish.arc.nasa.gov/trac/europa/builds
+ 
+  #
+  #debug dry run in work-dir
+  #
+  #nohup /usr/bin/bitten-slave --dry-run --verbose --config="bitten-slave.ini" --log="bitten-slave-$timestamp.log" --work-dir="/cygdrive/e/plasma.autobuild" http://babelfish.arc.nasa.gov/trac/europa/builds
+  
+  #
+  #full run
+  #
+# old python2.6 version
+#  nohup /usr/bin/bitten-slave            --verbose --config="bitten-slave.ini" --log="bitten-slave-$timestamp.log" --work-dir="/cygdrive/e/plasma.autobuild" http://babelfish.arc.nasa.gov/trac/europa/builds
+  nohup /cygdrive/c/Python24/Scripts/bitten-slave            --verbose --config="e:\nasa\workspace\plasma.ThirdParty\autobuild\windows\bitten-slave.ini" --log="bitten-slave-$timestamp.log" --work-dir="e:\plasma.autobuild" http://babelfish.arc.nasa.gov/trac/europa/builds
+
+done
