@@ -21,31 +21,37 @@ We will build a batch application where we provide an application domain model a
 http://europa-pso.googlecode.com/svn/wiki/images/simple-sample-overview.jpg  *Figure 3*: Application overview
 
 == Application Domain Analysis ==
-Developing EUROPA applications is a design task that requires judgment and multiple iterations. We have found the steps in this tutorial useful in practice. The overall approach is to gradually build up a domain description adding detail methodically. This approach controls complexity by allowing the domain writer to focus only on well defined issues at a given instant.
+Developing EUROPA applications is a design task that requires judgement and multiple iterations. We have found the steps in this tutorial useful in practice. The overall approach is to gradually build up a domain description adding detail methodically. This approach controls complexity by allowing the domain writer to focus only on well defined issues at a given instant.
 
-The first stage is to draw a concept map of the entities in the application domain and their relationships. The figure below shows our concept map for the rover domain. We have identified locations and the paths between them as the key environment entities. The rover itself has been divided in subcomponents. The navigator concept manages the location of the rover. The instrument concept will manage the instruments for sampling rocks and the commands concept looks after instructions from the scientists that the rover will serve. Finally the battery concept is included to provide a place for managing the power used by the other components of the rover. The Lander corresponds to the vehicle used to deliver the rover to the planet surface. The Lander also provides a communication service that the rover can use to transmit information to earth.
+The first stage is to draw a concept map of the entities in the application domain and their relationships. The figure below shows our concept map for the rover domain. We have identified locations and the paths between them as the key environment entities. The rover is the core vehicle, and includes possible commands scientists can issues, as well as subcomponents for the various things it can do. The navigator concept manages the location of the rover. The instrument concept will manage the instruments for sampling rocks.  The battery concept is included to provide a place for managing the power used by the other components of the rover. The Lander corresponds to the vehicle used to deliver the rover to the planet surface and provides a communication service that the rover can use to transmit information to earth.
 
-http://europa-pso.googlecode.com/svn/wiki/images/rover-application-concept-diagram.jpg  *Figure 4*:  Rover Application Concept Diagram
+http://europa-pso.googlecode.com/svn/wiki/images/RoverConcept.jpg  *Figure 4*:  Rover Application Concept Diagram
 
 The next decision is to identify the entities in our concept map that will describe changes in state of the rover as it moves around its environment and performs experiments. We call each entity a _timeline_. The concept is best introduced by example. The rover in our domain is the actor we will be planning for and will contain all the timelines. Analyzing the components of the rover produces the following breakdown of timelines:
 
  * *Navigator* controls the rover's movement between locations and holds position at a location.
- * *Instrument* controls the scientific instrument on the rover.
- * *Commands* manages instructions from the scientists tasking the rover.
+ * *Rover* itsefl manages instructions from the scientists tasking the rover.
+ * *Instrument* controls the API (commands) for the scientific instrument on the rover.
+ * *InstrumentLocation* controls the location (or position) of the instrument on board the rover.
+ * *InstrumentState* controls the state of the instrument.
 
 The next stage is to identify the states that each timeline can be in. We call each state a _predicate_. The easiest way to identify the predicates is to think through the lifecycle of each timeline. The following figure shows the set of predicates we have identified on each timeline.
 
-http://europa-pso.googlecode.com/svn/wiki/images/rover-tutorial-initial-timelines.jpg  *Figure 5*:  Initial Timelines and Predicates
+http://europa-pso.googlecode.com/svn/wiki/images/RoverTimelines.jpg  *Figure 5*:  Initial Timelines and Predicates
 
 Working from the top of the figure downwards:
 
  * *Navigator:* The rover is _at_ a location or it _going_ between locations.
- * *Instrument:* The instrument can be _stowed_ away and can be in the state of being _stow_ed or being _unstow_ed. The instrument may also be _placed_ on a target where it can then take a sample.
- * *Commands:* The rover can be instructed to take a sample or to upload its data to the lander or directly to earth.
+ * *Rover:* The activities the rover can perform are _Go_ somewhere, _TakeSample_, _PhoneHome_ or _PhoneLander_.
+ * *Instrument:* The four commands that can be sent to the instrument are _TakeSample_, _Place_, _Stow_, and _Unstow_.
+ * *InstrumentLocation:* The instrument can be stowed, unstowed, or moving between those locations.
+ * *InstrumentState:* The instrument can be _Free_, _Placed_ at a given location to take a sample, or in the process of _Sampling_.
 
 As noted earlier, identifying the timelines and predicates is an iterative process. It would not be unusual to find new timelines while identifying predicates or to discover that two timelines could be collapsed into one. Please iterate and be comfortable with experimentation.
 
-The next stage is to flesh out the properties of the predicates and the constraints between them. Lets begin by adding these elements to the figure above (we've omitted the properties of the instrument's predicates for clarity). We focus first on just the transitions between predicates within a timeline not the constraints between predicates on different timelines. The black circle indicates a startup state for the timeline while the black circle with an outer circle indicates a terminal state.
+The next stage is to flesh out the properties of the predicates and the constraints between them. Lets begin by adding these elements to the figure above (we've omitted the properties of the instrument's predicates for clarity). We focus first on just the transitions between predicates within a timeline not the constraints between predicates on different timelines.
+
+
 
 http://europa-pso.googlecode.com/svn/wiki/images/rover-tutorial-navigation-timeline.jpg  *Figure 6*:  Timelines and Predicates with Transitions between Predicates on each Timeline.
 
