@@ -134,7 +134,7 @@ class Navigator extends Timeline
 
 === Defining the Instrument Timelines ===
 
-Before we get to the Instrument timeline itself, we consider two sub-timelines that it will use.  The InstrumentLocation timelines maintains.  These predicates are declared but have no accompanying logic (in effect, the only constraint is that they occur on a single timeline, so cannot overlap).
+Before we get to the Instrument timeline itself, we consider two sub-timelines that it will use.  !The InstrumentLocation timelines maintains.  These predicates are declared but have no accompanying logic (in effect, the only constraint is that they occur on a single timeline, so cannot overlap).
 
 {{{
 class InstrumentLocation extends Timeline
@@ -149,15 +149,16 @@ class InstrumentLocation extends Timeline
 
 Similarly, we create a timeline for the state of the instrument, where the _Placed_ and _Sampling_ predicates include the specific location.
 
+{{{
 class InstrumentState extends Timeline
 {
 	predicate Placed {Location rock;}	
 	predicate Sampling {Location rock;}	
 	predicate Free {}	
 }
+}}}
 
-
-Finally, the Instrument timlines itself details the management of the rover's instrument for taking samples and for keeping the instrument safely stowed while moving.  It contains InstrumentLocation and InstrumentState timlines.  Notice that the TakeSample and Place actions each include a Location parameter, and that each action has a specfied duration (for example, _Place_ takes 3 time units).
+Finally, the Instrument timline itself details the management of the rover's instrument for taking samples and for keeping the instrument safely stowed while moving.  It contains !InstrumentLocation and !InstrumentState objects (timelines).  Notice that the !TakeSample and Place actions each include a Location parameter, and that each action has a specfied duration (for example, _Place_ takes 3 time units).
 
 {{{
 class Instrument
@@ -194,7 +195,7 @@ class Instrument
 }}}
 
 
-With the predicates defined we now move on to specify the detailed constraints on each beginning with _!TakeSample_.  These constraints ensure that the state switches from _Placed_ to sampling when the sampling starts, that the location of the instrument is _Unstowed_ and that the rock being sampled matches the rock variables for the InstrumentState.Sampling variable. The predicate consumes 120 units of battery power.
+With the predicates defined we now move on to specify the detailed constraints on each beginning with _!TakeSample_.  These constraints ensure that the state switches from _Placed_ to sampling when the sampling starts, that the location of the instrument is _Unstowed_ and that the rock being sampled matches the rock variables for the _!InstrumentState.Sampling_ variable. The predicate consumes 120 units of battery power.
 
 {{{
 Instrument::TakeSample
@@ -263,6 +264,7 @@ Instrument::Stow
 === Defining the Rover ===
 The _Rover_ class pulls together all the components we have defined so far and manages instructions from the scientist user to move (_Go_), take samples (_!TakeSample_), or transmit information back to the lander (_!PhoneLander_) or earth (_!PhoneEarth_). It has an attribute for the navigator, instrument, and battery classes. The constructor takes an instance of the _Battery_ class and creates instances of the other classes to setup the rover. 
 
+{{{
 class Rover 
 {
 	Navigator navigator;   // Keeps track of Rover's position
@@ -283,9 +285,11 @@ class Rover
    	action PhoneHome{}    // Communicate material back to earth  
    	action PhoneLander{}  // Communicate material back to lander
 }
+}}}
 
 The definitions of the Rover actions will be familiar from previous predicates.  The _Go_ predicate specifies that the instrument must be stowed, defines what the Navigator timeline should look like before during and after the _Go_, and matches the destination with the Path 'from' variable.  Finally, the _Go_ action consumes battery charge.
 
+{{{
 Rover::Go
 {
 	// Instrument must be stowed while driving
@@ -311,6 +315,7 @@ Rover::Go
   	starts(effect object.mainBattery.consume tx);
   	eq(tx.quantity, path.cost);
 }
+}}}
 
 Consider _!TakeSample_ next. The contained_by constraint ensures that the Rover stay at one location throughout the sampling..  The equals constraint ensures that the instrument does indeed take the sample, and that it is taking a sample from the correct rock.  The condition allows the predicate to either meet a _!PhoneHome_ or _!PhoneLander_ predicate to transmit the results of the sampling back to earth. Either way can be used by the planner unless we set specify the value of the _OR_ variable.
 
