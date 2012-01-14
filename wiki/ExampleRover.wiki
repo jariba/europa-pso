@@ -30,10 +30,10 @@ http://europa-pso.googlecode.com/svn/wiki/images/RoverConcept.jpg  *Figure 4*:  
 The next decision is to identify the entities in our concept map that will describe changes in state of the rover as it moves around its environment and performs experiments. We call each entity a _timeline_. The concept is best introduced by example. The rover in our domain is the actor we will be planning for and will contain all the timelines. Analyzing the components of the rover produces the following breakdown of timelines:
 
  * *Navigator* controls the rover's movement between locations and holds position at a location.
- * *Rover* itsefl manages instructions from the scientists tasking the rover.
+ * *Rover* manages instructions from the scientists tasking the rover.
  * *Instrument* controls the API (commands) for the scientific instrument on the rover.
- * *InstrumentLocation* controls the location (or position) of the instrument on board the rover.
- * *InstrumentState* controls the state of the instrument.
+ * *!InstrumentLocation* controls the location (or position) of the instrument on board the rover.
+ * *!InstrumentState* controls the state of the instrument.
 
 The next stage is to identify the states that each timeline can be in. We call each state a _predicate_. The easiest way to identify the predicates is to think through the lifecycle of each timeline. The following figure shows the set of predicates we have identified on each timeline.
 
@@ -42,10 +42,10 @@ http://europa-pso.googlecode.com/svn/wiki/images/RoverTimelines.jpg  *Figure 5*:
 Working from the top of the figure downwards:
 
  * *Navigator:* The rover is _at_ a location or it _going_ between locations.
- * *Rover:* The activities the rover can perform are _Go_ somewhere, _TakeSample_, _PhoneHome_ or _PhoneLander_.
- * *Instrument:* The four commands that can be sent to the instrument are _TakeSample_, _Place_, _Stow_, and _Unstow_.
- * *InstrumentLocation:* The instrument can be stowed, unstowed, or moving between those locations.
- * *InstrumentState:* The instrument can be _Free_, _Placed_ at a given location to take a sample, or in the process of _Sampling_.
+ * *Rover:* The activities the rover can perform are _Go_ somewhere, _!TakeSample_, _!PhoneHome_ or _!PhoneLander_.
+ * *Instrument:* The four commands that can be sent to the instrument are _!TakeSample_, _Place_, _Stow_, and _Unstow_.
+ * *!InstrumentLocation:* The instrument can be _Stowed_, _Unstowed_, or moving between those locations (_Stowing_ or _Unstowing_).
+ * *!InstrumentState:* The instrument can be _Free_, _Placed_ at a given location to take a sample, or in the process of _Sampling_.
 
 As noted earlier, identifying the timelines and predicates is an iterative process. It would not be unusual to find new timelines while identifying predicates or to discover that two timelines could be collapsed into one. Please iterate and be comfortable with experimentation.
 
@@ -53,19 +53,13 @@ The next stage is to flesh out the properties of the predicates and the constrai
 
 http://europa-pso.googlecode.com/svn/wiki/images/RoverTakeSample.jpg  *Figure 6*:  Timelines and Predicates with Transitions between Predicates on each Timeline.
 
-In the above figure, we show the constraints between the instrument _TakeSample_ command and other instrument timelines, using a variety of temporal relations.  The 'contained by' constraint indicates the instrument must be in the unstowed location for the duration of the _TakeSample_ (but could be unstowed before and after as well).  The constraints with the !InstrumentState timeline show that when the _!TakeSample_ starts, a _Placed_ state must end ('met by'), and a _Sampling_ state must begin; the use of 'equals' for the _Sampling_ state indicates that it will begin and end at the same times as the _!TakeSample_.
+In the above figure, we show the constraints between the instrument _!TakeSample_ command and other instrument timelines, using a variety of temporal relations.  The 'contained by' constraint indicates the instrument must be in the unstowed location for the duration of the _TakeSample_ (but could be unstowed before and after as well).  The constraints with the !InstrumentState timeline show that when the _!TakeSample_ starts, a _Placed_ state must end ('met by'), and a _Sampling_ state must begin; the use of 'equals' for the _Sampling_ state indicates that it will begin and end at the same times as the _!TakeSample_.
 
 == NDDL Encoding - Model ==
 Our encoding of the Rover domain is available [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Rover here]. We will step through each of the model files and explain how it was derived form our analysis above and the NDDL constructs that were used. Rover-model.nddl contains the application domain model and Rover-inital-state.nddl contains a sample problem definition.
 
 
-We begin with the application domain model. For this example, there are no necessary include statements at the top.  If there were other NDDL files that this model depended on, they could be included using C++ syntax:
-
-{{{
- #include "Plasma.nddl"
- #include "PlannerConfig.nddl"
- #include "Resources.nddl"
-}}}
+We begin with the application domain model.
 
 === Defining Locations ===
 The concept of locations is encoded in the _Location_ class. The class has three attributes. The _name_ is a symbolic name for the location. The _x_ and _y_ attributes are coordinates. We have decided to position all our locations on a Euclidean Plane. The second part of the class specifies the constructor. The constructor defines how the attributes of a location are initialized when a new instance is created. We simply provide a signature that allows us to create locations with the name and coordinates specified; the constructor's job is to copy those initial values into the correct member variables.
@@ -81,7 +75,7 @@ class Location {
      x = _x;
      y = _y;
    }
-}}}}
+}}}
 
 === Defining Paths ===
 The _Path_ class connects pairs of locations and its implementation follows a similar pattern to the _Location_ class. Paths have a symbolic name and a pair of locations that they connect. The _cost_ parameter will be used to compute the amount of battery power that will be consumed while traversing a path. The constructor's role is again just to take initial values for each of a path's attributes.
@@ -138,7 +132,7 @@ class Navigator extends Timeline
 
 
 
-=== Defining the Instrument Timeline ===
+=== Defining the Instrument Timelines ===
 
 Before we get to the Instrument timeline itself, we consider two sub-timelines that it will use.  The InstrumentLocation timelines maintains.  These predicates are declared but have no accompanying logic (in effect, the only constraint is that they occur on a single timeline, so cannot overlap).
 
@@ -176,7 +170,7 @@ class Instrument
 	{
 		rover = r;
 		location = new InstrumentLocation();
-	    state = new InstrumentState();
+             	state = new InstrumentState();
 	}
 	
 	action TakeSample{
@@ -186,15 +180,15 @@ class Instrument
 
 	action Place{
 		Location rock;
-    	eq(3, duration); // duration of Place is 3 time units
-    }
+    	        eq(3, duration); // duration of Place is 3 time units
+        }
 
 	action Stow{
 		eq(2, duration); // duration of Stow is 2 time units
 	}
 
   	action Unstow{
-    	eq(2, duration); // duration of Unstow is 2 time units
+    		eq(2, duration); // duration of Unstow is 2 time units
 	}
 }
 }}}
@@ -208,7 +202,7 @@ Instrument::TakeSample
   	met_by(condition object.state.Placed on);
   	eq(on.rock, rock);
 
-    contained_by(condition object.location.Unstowed);
+        contained_by(condition object.location.Unstowed);
     
   	equals(effect object.state.Sampling sample);
   	eq(sample.rock, rock);
@@ -226,13 +220,12 @@ Instrument::Place
 {
     contained_by(condition object.location.Unstowed);
     
-	meets(effect object.state.Placed on);
-	eq(on.rock,rock);
+    meets(effect object.state.Placed on); 
+    eq(on.rock,rock);
 	
-  	starts(effect object.rover.mainBattery.consume tx);
-  	eq(tx.quantity, 20); // consume battery power		
+    starts(effect object.rover.mainBattery.consume tx);
+    eq(tx.quantity, 20); // consume battery power		
 }
-} 
 }}}
 
 _Unstow_ has three conditions on the InstrumentLocation timeline; it is preceded by a _Stowed_ predicate, matches an _Unstowing_ predicate and is followed by an _Unstowed_ predicate.  It also consumes some battery charge.
