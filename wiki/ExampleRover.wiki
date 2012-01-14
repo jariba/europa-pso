@@ -443,7 +443,7 @@ Run the example:
 % cd $EUROPA_HOME/examples/Rover
 % ant
 }}}
-Click on "Go" in the solver dialog, then run "setupDesktop()" from the !BeanShell console.  You will see the resulting schedule for this particular example (windows have been rearranged in this screenshot to show everything):
+Click on "Go" in the solver dialog, then run "setupDesktop();" from the !BeanShell console.  You will see the resulting schedule for this particular example (windows have been rearranged in this screenshot to show everything):
 
 http://europa-pso.googlecode.com/svn/wiki/images/Rover.results3.png
 *Figure 7*: EUROPA UI Showing a Rover domain solution
