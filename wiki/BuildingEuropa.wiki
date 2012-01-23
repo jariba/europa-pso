@@ -82,6 +82,8 @@ The commands below set up the 3rd party packages for 64bit, under your home dire
 > make ; make install
 }}}
 
+NOTE: if you encounter the error "configure: error: expected an absolute directory name", replace the relative directory "~" with the absolute directory (e.g., "/Users/XYZ").
+
 = Building EUROPA =
 == Check out the source code ==
 EUROPA's source code is kept on a  [http://subversion.tigris.org/ subversion] code repository.
