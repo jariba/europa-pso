@@ -119,11 +119,10 @@ svn co http://europa-pso.googlecode.com/svn/PLASMA/trunk PLASMA
 The following environment variables are needed to build and run EUROPA (shown here added to `~/.bashrc`, assuming that PLASMA was checked out in the $HOME/svn directory):
 
 {{{
-export PLASMA_HOME=$HOME/svn/PLASMA                             # PLASMA_HOME is only used to ease the definition of other paths.
-
-# On Windows, the following two paths should be defined with Windows style paths without spaces.
-export JAVA_HOME=/usr/java/jdk1.5.0_12                          # the directory where you installed Java
+export PLASMA_HOME=$HOME/svn/PLASMA                             # The root of your PLASMA checkout
 export EUROPA_HOME=$PLASMA_HOME/dist/europa                     # where the results of the build are placed
+
+export JAVA_HOME=/usr/java/jdk1.5.0_12                          # the directory where you installed Java
 
 export LD_LIBRARY_PATH=$EUROPA_HOME/lib:./build/lib:.           # DYLD_LIBRARY_PATH on a Mac
 export DYLD_BIND_AT_LAUNCH=YES                                  # Only needed on Mac OS X
@@ -155,7 +154,7 @@ To build EUROPA, simply run (Note that this will take a while since it'll build 
 % cd $PLASMA_HOME
 % ant release-dist
 }}}
-the EUROPA distribution will be available at $PLASMA_HOME/dist/europa-*.zip, you can then take the distribution and [EuropaInstallation install it]
+the EUROPA distribution will be available at $PLASMA_HOME/dist/europa-_version_-_platform_.zip, you can then take the distribution and [EuropaInstallation install it]
 
 If desired, Doxygen API documentation can be run by following the directions [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/documentation/README here].
 
