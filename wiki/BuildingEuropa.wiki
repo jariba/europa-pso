@@ -140,6 +140,10 @@ To see if you have the necessary software requirements, run (note that you must 
 % checkreqs
 }}}
 
+
+NOTE: if you use other shell such as tcsh, you will need to change the "export" command to the equivalent on that shell ("setenv" for csh/tcsh)
+
+
 == Configuring a Windows Environment ==
   Visual Studio users, please see [http://code.google.com/p/europa-pso/wiki/VisualStudioWindows Windows Build] for more information.
 
