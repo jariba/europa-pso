@@ -121,7 +121,7 @@ You should see the following window come up :
 
 http://europa-pso.googlecode.com/svn/wiki/images/Examples-Light0.jpg
 
-In the "Solver" window, hit the "Go" button to have the solver run. The solver should finish after 7 steps, satisfying the goal that was specified in Light-initial-state.nddl (that is, to turn the light off by time=10).
+In the "Solver" window, hit the "Go" button to have the solver run. The solver should finish after 5 steps, satisfying the goal that was specified in Light-initial-state.nddl (that is, to turn the light off by time=10).
 
 = Examine Results =
 You can now run the method showPlan() defined in [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Light/Light.bsh Light.bsh]. Just go into the "Console" window, type "showPlan()" then `<`enter`>`.
