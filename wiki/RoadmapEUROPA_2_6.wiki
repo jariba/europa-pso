@@ -7,7 +7,7 @@
     * re-enable ANML module
     * upgrade ANML parser to latest grammar version from Dave Smith & Will Cushing
 
-=== Search ===
+=== Search Support ===
   * Add ability to keep track of Token Type information so that solvers can build planning graph
   * In built-in solver, take advantage of STRIPS annotations if present
 
