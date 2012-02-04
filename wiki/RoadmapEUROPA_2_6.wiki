@@ -1,52 +1,19 @@
 #summary Release Summary for EUROPA-2.6
 
-*NOTE* : work in progress, still migrating from 2.5 statement
-
 === Modeling ===
- * PDDL
-   * New PDDL-to-NDDL translator
-   * Benchmark problems
- * ANML
-   * New ANML-to-NDDL translator
-   * Benchmark problems
- * NDDL
-   * Add method invocation for predicate definition
-   * add nicer error reporting for parser, verify line numbers are not lost.
-   * Add [http://valgrind.org Valgrind] output and checks to regression tests
+  * NDDL
+    * Add STRIPS (action/condition/effect) annotations
 
-=== Search Support ===
-   * Add visualization tool for search tree (see decisions made in compressed format, zoom, etc).
- 
-=== Architecture enhancements/re-factoring/cleanup ===
- * Drop architectural assumption that Constraint Engine stops computation at first constraint violation
-   * Remove this assumption from built-in solver, propagators, etc.
-   * Modify Constraint Engine API?
- * Make constraint violation reporting robust : #216,#173,#204,#205, and a bunch of A4O tickets.
-   * Make sure Timelines can be substituted with Unary resources under the covers so that timeline overload is reported as a violation, not as a flaw
- * Systematically expose listeners through PSEngine
- * Add State resource class
+=== Search ===
+  * Add ability to keep track of Token Type information so that solvers can build planning graph
+  * In built-in solver, take advantage of STRIPS annotations if present
 
-=== Visualization/Debugging tools ===
- * Provide logging api for standard (log4j) logging behavior. Support with our home-grown logging class first, also possibly with log4cxx : #142
- * Come up with a plan to integrate Tatiana's UI work into distribution
- * Provide schema browser : #38
- * Improve gantt chart : #39,#40
-
-=== Automated Build ===
- * Report test failures correctly on windows : #252
- * Add missing regression tests
-     * PSEngine : #219
-     * constraint violation reporting : #220
- * Add plan comparison to regression tests : #50, #104
- * Add performance measurements to regression tests and autobuild : #64
- * Use [http://valgrind.org Valgrind] to verify sound memory management
- * Set up bitten build for Solaris
+=== Resources ===
+  * Add ability to define time-varying capacity and limit profiles, instead of single numeric value
 
 === Documentation ===
- * Improve PSEngine docs :  #221
- * Architecture
- * Add mandatory tips & tricks for beginners (ask Conor to get input from interns as they become EUROPA users)
- * Add specific section on debugging
- * Add docs for power user
+  * Improve example models, use STRIPS annotations where applicable
 
 === Bug Fixes ===
+  * Several bug fixes and performance improvements to Temporal Network
+  * Fix update mechanism for incremental flow profile
