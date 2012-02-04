@@ -3,6 +3,9 @@
 === Modeling ===
   * NDDL
     * Add STRIPS (action/condition/effect) annotations
+  * ANML
+    * re-enable ANML module
+    * upgrade ANML parser to latest grammar version from Dave Smith & Will Cushing
 
 === Search ===
   * Add ability to keep track of Token Type information so that solvers can build planning graph
