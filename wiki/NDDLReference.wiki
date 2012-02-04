@@ -220,35 +220,48 @@ Path p1 = new Path(l1, l2, 10);
 
 The above NDDL fragment allocates 2 locations and a single path between them with a cost of 10. Obviously, more elaborate path networks can be created using this pattern.
 
-== Predicate Declaration ==
-Thus far, the discussion of classes has been limited to problem domain elements without any temporal context. Predicates provide the means to describe temporally qualified state and action of objects. In this next example, consider a _Navigator_ with the simple behavior of being _At_ a _Location_ or _Going_ from one _Location_ to another. The NDDL model given in Figure 4 extends the path network model to include the class and predicates required for navigation.
+== Token Types (Action and Predicate) Declaration ==
+Thus far, the discussion of classes has been limited to problem domain elements without any temporal context. As was described in the [PlanningApproach EUROPA Overview], a Token is an entity that contains a set of attributes (variables) and has a temporal extent. Tokens can be used to represent temporally qualified actions that an object can perform and temporally qualified states that an object can be in. Consequently, in a NDDL model, Token Types provide the means to describe the types of actions and states needed to describe a domain. 
+In this next example, consider a _Navigator_ with the simple behavior of being _At_ a _Location_ or _Going_ from one _Location_ to another. The NDDL model given in Figure 4 extends the path network model to include the class and predicates required for navigation.
 
 {{{
 // Include prior model file, re-using the definition of Location
 #include "classes.0.nddl"
 
-// Declare a class for describing basic Navigation state and action.
 class Navigator extends Timeline {
    // A predicate for the state of being at a location for a period of time
    predicate At{
     Location location; // Paramater is Location
    }
 
-   // A predicate describing the action of going from one place to another
+   // A predicate for the state of being in the middle of travel between 2 locations
    predicate Going{
       Location from, to;
-      // Intrinsic to the definition of this predicate is that we cannot go to where we are!
-      from !=  to;
+      from !=  to; // Travel must happen between different locations
    }
+}
+
+class Rover {
+   Navigator navigator;
+
+   Rover() {
+      navigator = new Navigator();
+   }     
+
+   // An action for traveling from one location to another
+   // Internally it can use the navigator to keep track of the Rover's location
+   action Go{
+       Location destination;
+   } 
 }
 }}}
 *Figure 4*: Navigation support
 
-Note that declaration of arguments to a predicate follow patterns of variable declaration and allocation already described, including implicit and explicit base domain specifications. However, the _new_ operator is not permitted. Note also that there may be cases where relationships exist among predicate arguments. These are examples of internal token relationships discussed in 3.2. They are defined in the predicate declaration itself as constraints in the same way that constraints were introduced in prior sections. This example prohibits going to a location one is presently at by posting a constraint in the body of the predicate declaration which imposes the relation that its arguments are not equal (_neq_). Finally, notice that the _Navigator_ class extends a _Timeline_. Thus it inherits semantics of mutual exclusion described in the [PlanningApproach EUROPA Overview].
+Note that declaration of arguments to a Token Type follow patterns of variable declaration and allocation already described, including implicit and explicit base domain specifications. However, the _new_ operator is not permitted. Note also that there may be cases where relationships exist among Token Type arguments. These are examples of internal token relationships discussed in 3.2. They are defined in the Token Type declaration itself as constraints in the same way that constraints were introduced in prior sections. This example prohibits going to a location one is presently at by posting a constraint in the body of the predicate declaration which imposes the relation that its arguments are not equal (_neq_). Finally, notice that the _Navigator_ class extends a _Timeline_. Thus it inherits semantics of mutual exclusion described in the [PlanningApproach EUROPA Overview].
 
 The NDDL listing in Figure 5 uses NDDL to construct a partial plan with:
  1. A set of Locations
- 1. A single instance of a Navigator
+ 1. A single instance of a Rover which has its own Navigator
  1. 2 tokens, i.e. instances of predicates, for being at a _Rock_ and later being at a _Lander_.
 
 {{{
@@ -260,31 +273,23 @@ Location Hill = new Location("Hill");
 Location Rock = new Location("Rock");
 Location Lander = new Location("Lander");
 
-// Allocate a navigator using the default constructor.
-Navigator nav1 = new Navigator();
+// Allocate a Rover which in turn allocates its navigator internally.
+Rover rover = new Rover();
 
 // Indicate that the database is closed - no new objects can be created
 close();
 
 // Now allocate instances of predicates i.e. tokens
 
-// First token
-goal(nav1.At t0);
-
-// Specify that it is located at the Rock
+// Initial state, at time=0 are at a Rock
+fact(rover.navigator.At t0);
 t0.location.specify(Rock);
-
-// Specify that it is at the rock from timepoint 0. No end time is indicated.
 t0.start.specify(0);
 
-// Second token
-goal(nav1.At t1);
-
-// Specify that it is at the Lander
+// Post a goal to be at Lander by time=1000
+goal(rover.navigator.At t1);
 t1.location.specify(Lander);
-
-// Specify that it is at the Lander from timepoint 1000. 
-t1.start.specify(1000);
+t1.start <= 1000;
 
 // Impose a temporal distance of between 20 and 100 time units between the end of the first token
 // and the start of the second.
@@ -294,9 +299,9 @@ t0.end +  [20 100] == t1.start;
 
 A number of items are worth noting:
  1. Commands are executed in the order they are defined.
- 1. A _goal_ keyword is used to introduce a token. The base domain of its built-in _state variable_ will be {ACTIVE, MERGED}.  The _fact_ keyword is currently identical to _goal_ (see issue 134).  Alternatively the _rejectable_ keyword results in {ACTIVE, MERGED, REJECTED} and can be used to specify a goal that is preferred but not required.
- 1. An instance of _Navigator_ is allocated prior to creating any token. If a token of the _Navigator_ class were created prior to allocation of an object, then the base domain of the built-in object variable would be empty. This would yield an inconsistent state and is not permitted for tokens.
- 1. Unlike object member variables, token parameter variables are not initialized specially during allocation. Therefore, the base domain is derived from the defaults in the predicate declaration. Further restriction is possible using the assignment statement.
+ 1. _goal_ and _fact_ keywords are used to introduce tokens. The base domain of their built-in _state variable_ will be {ACTIVE, MERGED}. (Current implementation of _facts_ needs to be improved, see issue #134).  Alternatively the _rejectable_ keyword results in {ACTIVE, MERGED, REJECTED} and can be used to specify a goal that is preferred but not required.
+ 1. An instance of _Navigator_ is allocated inside the _Rover_ instance prior to creating any token. If a token of the _Navigator_ class were created prior to allocation of an object, then the base domain of the built-in object variable would be empty. This would yield an inconsistent state and is not permitted for tokens.
+ 1. Unlike object member variables, token parameter variables are not initialized specially during allocation. Therefore, the base domain is derived from the defaults in the Token Type declaration. Further restriction is possible using the assignment statement.
  1. A scoping operator is used to access variables of tokens. This example accesses built-in variables (e.g. _start_, _end_) as well as user-defined parameter variables (e.g. _location_).
 
 
@@ -389,34 +394,41 @@ Internally, EUROPA uses maximum flow and incremental maximum flow (the default) 
 This section describes the facilities in NDDL for describing internal and external relationships between tokens and between token variables. These relationships were described at a high-level in [PlanningApproach Planning Approach].
 
 == Basic Rule Definition ==
-The absence of rules governing interactions between  _Navigator.At_ and _Navigator.Going_ in Figure 13 lead to an incomplete partial plan which had to be completed with explicit specification of an appropriate linkage. To enable a planner to bridge this gap automatically, model rules can be added to indicate the required relationships. Figure 7 presents a listing which provides the rules to accomplish this.
+The absence of rules governing interactions between  _Rover.Go_, _Navigator.At_ and _Navigator.Going_ in Figure 13 lead to an incomplete partial plan which had to be completed with explicit specification of an appropriate linkage. To enable a planner to bridge this gap automatically, model rules can be added to indicate the required relationships. Figure 7 presents a listing which provides the rules to accomplish this.
 
 {{{
 #include "classes.2.nddl" // Reuse the definitions
 
-// Define compatibility rules for the At predicate
-Navigator::At{
-   // Allocate a token of the Going predicate as a slave.  Impose a meets temporal relation such that this meets slave
-   meets(object.Going successor);
-   // Constrain the slave so it is going from this location
-   successor.from == location;
-   // Allocate a token for the going predicate as a slave.  Impose a met_by temporal relation such that this met_by slave
-   met_by(object.Going predecessor);
-   // Constrain the slave so that it is going to this location
-   predecessor.to == location;
+// Define compatibility rules for the Go Action
+// Only parameter is "Location destination;", which is
+// the location we want to go to.
+Rover::Go
+{
+    // Keep track of initial and end location using the navigator
+    met_by(condition object.navigator.At currentLocation);
+
+    meets(effect object.navigator.At targetLocation);
+    eq(targetLocation.location, destination);
+
+    // Find a path between the current location and the desired destination
+    Path path; 
+	
+    // The path used must be between the 2 points
+    path.from == currentLocation.location;
+    path.to == destination;
+  	
+    equals(effect object.navigator.Going going);
+    eq(going.path,path);
+    eq(going.from,currentLocation.location);
+    eq(going.to,destination);
 }
 
-Navigator::Going{
-   meets(object.At successor);
-   successor.location == to;
 
-   met_by(object.At predecessor);
-   predecessor.location == from;
-}
+
 }}}
 *Figure 7*: Bridging the gap with domain rules.
 
-Rules are written for a specific predicate, and are then applied to all tokens of that predicate that are [NDDLReference#Summary ACTIVE]^3^. There is no limit to the number of rules that can be defined on a predicate. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
+Rules are written for a specific Token Type (predicate and actions accept the same kinds of rules, although the _condition_ and _effect_ annotations only make sense inside actions), and are then applied to all tokens of that predicate that are [NDDLReference#Summary ACTIVE]^3^. There is no limit to the number of rules that can be defined on a Token Type. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
 
 {{{
 ClassName::PredicateName {<rule-body>}
@@ -475,6 +487,8 @@ The supported binary temporal relations are :
 || starts_before || origin.start <= target.start ||
 || any || None ||
 
+Inside actions, a slave can be optionally annotated as being a_condition_ or _effect_, EUROPA doesn't enforce any semantics for those, but keeps the information around which can be exploited by a solver. EUROPA's built-in solver in fact takes advantage of those annotations when present to speed up search, in general most planning solvers will find that information useful, so it is a good practice to specify them when appropriate (for many scheduling or CSP problems the concepts of condition/effect may not apply and so the annotations will not be necessary).
+
 == Variables and Constraints ==
 The material presented above for handling variables and constraints at the global level applies equally in the context of rules. All variables accessible in a rule context can be incorporated into constraints in precisely the same manner as seen earlier. The scope for accessing variables in a rule includes:
  1. All token variables. All built-in and user-defined predicate parameters for the master token are accessible without qualification, or with explicit qualification using the keyword _this_.
@@ -517,17 +531,21 @@ if(a == 1 && b == 2 && c == 3){..}
 }}}
 
 == Filtering ==
-The navigation model presented in Figure 16 had a rather glaring deficiency: it was permitted to go from any location to any other location whether a path existed or not. Recall that the model included a _Path_ class which is a link between two locations and a cost associated with that link. It is desirable to restrict navigation to stay on defined paths in a problem. To accomplish this, a rule can be added on the _Going_ token which states the equivalent of:
+The navigation model presented in Figure 7 expressed rules for moving the Rover from its current location to a new, desired location. Recall that the model included a _Path_ class which is a link between two locations and a cost associated with that link. The condition we are looking to satisfy in that rule then is:
 
-_There exists some path such that its goes from my source location to my destination location_.
+_There exists some path such that its goes from my current location to my destination location_.
 
-In NDDL this could be another rule, or an addendum to the prior rule.  As a new rule:
+In NDDL this is expressed as:
 
 {{{
-Navigator::Going{
+Rover::Go{
+
+// ...
 Path p;
-p.from == from;
-p.to == to;
+p.from == currentLocation.location;
+p.to == destination;
+// ...
+
 }
 }}}
 
@@ -620,7 +638,7 @@ goal(nav1.At); // Allocates an anonymous active token with a singleton object va
 goal(nav1.At t0); // Allocates a labeled active token t1 with a singleton object variable == nav1
 }}}
 Upon execution of this command, the state variable is INACTIVE and has domain={ACTIVE, MERGED}. This means that the token cannot be REJECTED.
-  # With the _fact_ keyword.  Currently identical to _goal_, the intention is that a _fact_ cannot be MERGED, and has state variable = {ACTIVE}.  See issue #134.
+  # With the _fact_ keyword.  A _fact_ is different from a _goal_ in that it can only be merged with other facts, whereas as _goal_ can be satisfied by merging with a fact.(Current implementation needs to be improved, see issue #134).
   # With the _rejectable_ keyword. The keyword _rejectable_ is identical in form to the goal keyword. The only difference is that the resulting token is in an _inactive_ state. Upon execution of this command, the state variable of the new token is _{ACTIVE, MERGED, REJECTED}_. This means that we can _activate_, or _reject_ the token.
 
 == Specifying and Resetting Variables ==
@@ -726,7 +744,7 @@ foo1.free(t0, t1);
 
 = Summary =
 
-This chapter has presented the means of describing problem domains and partial plans in E2 using the NDDL modeling language. NDDL provides a very high-level, declarative, object-oriented approach for specifying the types to be considered in a domain and the nature of the interactions among domain elements. It is an open language in the sense that it promotes extension by integration of plug-in constraints. Chapter 8 will further show how the expressive power of the language can be extended with customized base classes. Being able to describe the salient features of a domain of interest is a necessary condition for problem solving in that domain. However, it is not sufficient. Powerful problem representation must be complimented with effective algorithms to actually solve problems. That is the topic of the next chapter.
+This chapter has presented the means of describing problem domains and partial plans in EUROPA using the NDDL modeling language. NDDL provides a very high-level, declarative, object-oriented approach for specifying the types to be considered in a domain and the nature of the interactions among domain elements. It is an open language in the sense that it promotes extension by integration of plug-in types for constraints, variables, objects and tokens. 
 
 ----
 
