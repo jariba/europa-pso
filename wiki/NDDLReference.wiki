@@ -222,7 +222,7 @@ The above NDDL fragment allocates 2 locations and a single path between them wit
 
 == Token Types (Action and Predicate) Declaration ==
 Thus far, the discussion of classes has been limited to problem domain elements without any temporal context. As was described in the [PlanningApproach EUROPA Overview], a Token is an entity that contains a set of attributes (variables) and has a temporal extent. Tokens can be used to represent temporally qualified actions that an object can perform and temporally qualified states that an object can be in. Consequently, in a NDDL model, Token Types provide the means to describe the types of actions and states needed to describe a domain. 
-In this next example, consider a _Navigator_ with the simple behavior of being _At_ a _Location_ or _Going_ from one _Location_ to another. The NDDL model given in Figure 4 extends the path network model to include the class and predicates required for navigation.
+In this next example, consider a _Navigator_ with the simple behavior of being _At_ a _Location_ or _Going_ from one _Location_ to another. The NDDL model given in Figure 4 extends the path network model to include the classes and token types required for navigation.
 
 {{{
 // Include prior model file, re-using the definition of Location
@@ -257,7 +257,7 @@ class Rover {
 }}}
 *Figure 4*: Navigation support
 
-Note that declaration of arguments to a Token Type follow patterns of variable declaration and allocation already described, including implicit and explicit base domain specifications. However, the _new_ operator is not permitted. Note also that there may be cases where relationships exist among Token Type arguments. These are examples of internal token relationships discussed in 3.2. They are defined in the Token Type declaration itself as constraints in the same way that constraints were introduced in prior sections. This example prohibits going to a location one is presently at by posting a constraint in the body of the predicate declaration which imposes the relation that its arguments are not equal (_neq_). Finally, notice that the _Navigator_ class extends a _Timeline_. Thus it inherits semantics of mutual exclusion described in the [PlanningApproach EUROPA Overview].
+Note that declaration of arguments to a Token Type follow patterns of variable declaration and allocation already described, including implicit and explicit base domain specifications. However, the _new_ operator is not permitted. Note also that there may be cases where relationships exist among Token Type arguments. These are examples of internal token relationships discussed in 3.2. They are defined in the Token Type declaration itself as constraints in the same way that constraints were introduced in prior sections. This example prohibits going to a location one is presently at by posting a constraint in the body of the predicate declaration which imposes the relation that its arguments are not equal (!=). Finally, notice that the _Navigator_ class extends a _Timeline_. Thus it inherits semantics of mutual exclusion described in the [PlanningApproach EUROPA Overview].
 
 The NDDL listing in Figure 5 uses NDDL to construct a partial plan with:
  1. A set of Locations
