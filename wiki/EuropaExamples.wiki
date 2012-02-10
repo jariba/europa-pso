@@ -8,7 +8,7 @@ A simple EUROPA example is described on the [QuickStart Quick Start] page.  Here
     * *NQueens* : One of the [http://en.wikipedia.org/wiki/Eight_queens_puzzle workhorses] of constraint programming. This problem consists of placing N queens on a chessboard in such a way that they don't attack each other. [ExampleNQueens More...]
 
 === Scheduling ===
-    * *RCPSP* ([http://www.sciencedirect.com/science/article/pii/S0377221798002045 Resource Constrained Project Scheduling Problem]) : A well known problem in the OR community that consists of scheduling a set of activities with temporal and resource constraints.  [ExampleRCPSP More...]
+    * *RCPSP* ( Resource Constrained Project Scheduling Problem) : A [http://www.sciencedirect.com/science/article/pii/S0377221798002045 well known problem] in the OR community that consists of scheduling a set of activities with temporal and resource constraints.  [ExampleRCPSP More...]
 
 === Planning ===
    * *Shopping*:  One way to implement the shopping example discussed in Russel and Norvig's AI textbook ([DocReferences Russel/Norvig 1995]).  They describe the problem as "Get a quart of milk and a bunch of bananas and a variable-speed cordless drill" and refer to it throughout chapter 11 (Planning). [ExampleShopping More...]
