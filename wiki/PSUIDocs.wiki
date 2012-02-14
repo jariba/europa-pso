@@ -15,7 +15,7 @@ PSDesktop takes 2 arguments :
 There several ways to run PSDesktop (the last two have not been tested recently):
     
     * run [MakeprojectPage makeproject] then go to the new project directory and run "ant", or
-    * if you don't want to create a new project, copy [http://code.google.com/codesearch#B2TcGbQICeg/PLASMA/trunk/src/PLASMA/System/component/PSUI/.ant.psui.properties .ant.psui.properties] to your home directory, modify appropriately and run "ant" from [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI $EUROPA_HOME/../../src/PLASMA/System/component/PSUI], or
+    * if you don't want to create a new project, copy [http://code.google.com/codesearch#B2TcGbQICeg/PLASMA/trunk/src/PLASMA/System/component/PSUI/.ant.psui.properties .ant.psui.properties] to your home directory, modify appropriately and run "ant" from [http://code.google.com/codesearch#B2TcGbQICeg/PLASMA/trunk/src/PLASMA/System/component/PSUI/ $EUROPA_HOME/../../src/PLASMA/System/component/PSUI], or
     * create your own Java project from scratch and include nddl.jar,PSEngine.jar and PSUI.jar (all found under $EUROPA_HOME/dist/europa/lib) in your classpath. Also make sure that you LD_LIBRARY_PATH includes the library directory. You'll want to run org.ops.psui.PSDesktop.main()
 
 Once you run ant under any of these scenarios, you'll get the PSDesktop UI :
