@@ -16,8 +16,8 @@ If you don't know where to start, or just want a quick overview of how to use EU
  * [MakeprojectPage makeproject]:  Automatically create all the pieces for a new project.
  * EUROPA UI Options:
    * [EclipseIDE Eclipse Plugin (SWT)]:  Edit NDDL, view schema, configure and run solver, and view solution details, all from within your Eclipse IDE.
-   * [SwingUI Java UI (Swing)]:  View schema, configure and run solver, interact with EUROPA, and view solution details from a plain Java UI.
-   * [PSUIDocs Java PSUI (Swing,deprecated)]: Earlier implementation of Java UI.
+   * [PSUIDocs Java PSUI (Swing)]: View schema, configure and run solver, interact with EUROPA, and view solution details from a plain Java UI.
+   * [SwingUI Java UI (Swing, deprecated)]: another set of Java UI components, currently being merged with PSUI.  
  * Low-level debugging:
    * [DebugOutputManagement EUROPA Logging]
    * Timelines
