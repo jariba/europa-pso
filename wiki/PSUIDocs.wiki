@@ -53,7 +53,7 @@ In the [http://www.beanshell.org BeanShell] console, you'll have access to the f
     
 = PSUI Components =
 
-The package [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui here] contains a number of components that make it easy to visualize your plan and interact with EUROPA :
+The package [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui here] contains a number of components that make it easy to visualize your plan and interact with EUROPA :
 PLASMA/trunk/src/PLASMA/System/component
 
     * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/gantt/swing/PSGantt.java PSGantt] : allows you to see the tokens on a timeline as a gantt chart
