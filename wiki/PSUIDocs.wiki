@@ -54,10 +54,10 @@ In the [http://www.beanshell.org BeanShell] console, you'll have access to the f
 = PSUI Components =
 
 The package [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui here] contains a number of components that make it easy to visualize your plan and interact with EUROPA :
-PLASMA/trunk/src/PLASMA/System/component
+
 
     * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/gantt/swing/PSGantt.java PSGantt] : allows you to see the tokens on a timeline as a gantt chart
-    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/chart/PSChart.java PSChart] : allows you to see resource profiles as charts
+    * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/rchart PSChart] : allows you to see resource profiles as charts
     * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/solver/swing/PSSolverDialog.java PSSolverDialog] : allows you to drive a solver interactively and see its status as it tries to achieve the goals you specified for it
     * [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/mouse/swing ActionDetails and ActionViolation] : allows you to easily display violation and detail information about actions in your plan as you mouse over actions in other components (for instance a gantt chart)
 
