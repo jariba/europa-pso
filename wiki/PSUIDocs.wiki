@@ -1,6 +1,6 @@
 #summary Overview of using the PSUI tools.
 
-[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui/PSDesktop.java PSDesktop] is a Java application that allows the user to drive EUROPA interactively by making use of the [PSEngine] client interface, and a number of prepackaged UI [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui components].
+[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/main/swing/PSDesktop.java PSDesktop] is a Java application that allows the user to drive EUROPA interactively by making use of the [PSEngine] client interface, and a number of prepackaged UI [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/component/PSUI/src/org/ops/ui components].
 
 = Command Line arguments =
 
