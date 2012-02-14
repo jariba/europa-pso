@@ -47,7 +47,7 @@ In the NDDL console you can type in NDDL statements that will be intrepreted as 
 
 In the [http://www.beanshell.org BeanShell] console, you'll have access to the following variables :
     * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/System/base/PSEngine.hh PSEngine]*: this will give you access to the EUROPA engine, you can create a solver, query the plan database, execute NDDL scripts, in general perform any task needed to drive EUROPA to load a model and create a plan. You can also use this interface to create your own custom solver, see for instance [http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/NQueens/java/NQueens/TSNQueensSolver.java TSNQueensSolver.java]
-    * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/main/swingPSDesktop.java PSDesktop]*: this will give you access to many utility methods to create new desktop windows, display tables of tokens, create a solver, etc.
+    * *[http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/Java/JavaUI/source/org/ops/ui/main/swing/PSDesktop.java PSDesktop]*: this will give you access to many utility methods to create new desktop windows, display tables of tokens, create a solver, etc.
 
 
     
