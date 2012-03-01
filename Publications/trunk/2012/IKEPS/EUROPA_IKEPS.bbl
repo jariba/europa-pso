@@ -1,0 +1,65 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Frank and Jonsson}{2003}]{frank:europa}
+Frank, J., and Jonsson, A.~K.
+\newblock 2003.
+\newblock Constraint-based attribute and interval planning.
+\newblock {\em Journal of Constraints Special Issue on Constraints and
+  Planning} 8(4).
+
+\bibitem[\protect\citeauthoryear{Gerevini \bgroup et al\mbox.\egroup
+  }{2009}]{gerevini:ipcjair}
+Gerevini, A.; Long, D.; Haslum, P.; Saetti, A.; and Dimopoulos, Y.
+\newblock 2009.
+\newblock Deterministic planning in the fifth international planning
+  competition: Pddl3 and experimental evaluation of the planners.
+\newblock {\em Artificial Intelligence} 173:619--668.
+
+\bibitem[\protect\citeauthoryear{Ghallab and Laruelle}{1994}]{ghallab:rci}
+Ghallab, M., and Laruelle, H.
+\newblock 1994.
+\newblock Representation and control in {IxTeT}, a temporal planner.
+\newblock In {\em Proceedings of {AIPS}-94},  61--67.
+
+\bibitem[\protect\citeauthoryear{Hoffmann and
+  Edelkamp}{2005}]{hoffmann:ipcjair}
+Hoffmann, J., and Edelkamp, S.
+\newblock 2005.
+\newblock The deterministic part of ipc-4: An overview.
+\newblock {\em Journal of Artificial Intelligence Research} 24:519--579.
+
+\bibitem[\protect\citeauthoryear{McGann \bgroup et al\mbox.\egroup
+  }{2008}]{mcgann:2008}
+McGann, C.; Py, F.; Rajan, K.; Thomas, H.; Henthorn, R.; and McEwen, R.
+\newblock 2008.
+\newblock A deliberative architecture for auv control.
+\newblock In {\em Proc. of Intnl. Conf. on Robotics and Automation (ICRA)}.
+
+\bibitem[\protect\citeauthoryear{McGann \bgroup et al\mbox.\egroup
+  }{2009}]{mcgann:2009}
+McGann, C.; Berger, E.; Bohren, J.; Chitta, S.; Gerkey, B.; Glaser, S.; Marthi,
+  B.; Meeussen, W.; Pratkanis, T.; Marder-Eppstein, E.; and Wise, M.
+\newblock 2009.
+\newblock Model-based, hierarchical control of a mobile manipulation platform.
+\newblock In {\em Proc. of ICAPS Workshop on Planning and Plan Execution for
+  Real-World Systems}.
+
+\bibitem[\protect\citeauthoryear{Muscettola \bgroup et al\mbox.\egroup
+  }{1998}]{muscettola:1998}
+Muscettola, N.; Nayak, P.; Pell, B.; and Williams, B.
+\newblock 1998.
+\newblock Remote agent: To boldly go where no ai system has gone before.
+\newblock {\em Artificial Intelligence} 103:5--47.
+
+\bibitem[\protect\citeauthoryear{Smith and Bernardini}{2010}]{smith:pddl-nddl}
+Smith, D.~E., and Bernardini, S.
+\newblock 2010.
+\newblock Translating pddl into nddl.
+
+\bibitem[\protect\citeauthoryear{Smith, Frank, and Cushing}{2008}]{smith:anml}
+Smith, D.; Frank, J.; and Cushing, W.
+\newblock 2008.
+\newblock The anml language.
+\newblock In {\em Proceedings of ICAPS-08}.
+
+\end{thebibliography}
