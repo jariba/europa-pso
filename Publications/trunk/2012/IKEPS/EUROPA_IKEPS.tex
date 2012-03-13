@@ -56,7 +56,7 @@
 \title{\europa: A Platform for AI Planning, Scheduling, Constraint Programming, and Optimization}
 
 
-\author{Javier Barreiro, Tristan Smith, Paul Morris, Jeremy Frank, Tatiana Kichkaylo, \\ add\_some\_people\_here (Ari, Conor, Michael?), Minh Do}
+\author{Javier Barreiro, Matthew Boyce, Jeremy Frank, Michael Iatauro, Tatiana Kichkaylo, Paul Morris, Tristan Smith, Minh Do}
 
 %Keywords: Planning, real-time}
 
@@ -67,7 +67,7 @@
 %------
 \begin{abstract}
 
-\europa\ is a class library and tool set for building and analyzing planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm. This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications. \europa\ offers capabilities in 3 key areas of problem solving: (1) Representation; (2) Reasoning; and (3) Search. \europa\ is a means to integrate advanced planning, scheduling and constraint reasoning into an end-user application and is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.  In this paper, we will demonstrate the core capabilities of this open-source planning \& scheduling framework. While \europa\ is the complete planning and scheduling software suite, we will concentrate on the aspects that are relevant to the knowledge engineering purpose: modeling language capabilities, model debugging and execution tools, and plan visualization and analysis.
+\europa is a class library and tool set for building and analyzing planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm. This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications. \europa\ offers capabilities in 3 key areas of problem solving: (1) Representation; (2) Reasoning; and (3) Search. \europa\ is a means to integrate advanced planning, scheduling and constraint reasoning into an end-user application and is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.  In this paper, we will demonstrate the core capabilities of this open-source planning \& scheduling framework. While \europa\ is the complete planning and scheduling software suite, we will concentrate on the aspects that are relevant to the knowledge engineering purpose: modeling language capabilities, model debugging and execution tools, and plan visualization and analysis.
 
 \end{abstract}
 %-----
@@ -108,7 +108,7 @@
 
 While \europa\ is a large complex framework which provides many reasoning capabilities beyond the typical planning knowledge engineering tool, in this paper we will concentrate on aspects that are more relevant to IKEPS such as: modeling capabilities, model debugging and execution tools, and plan visualization and analysis. To emphasize the strength of \europa\ as a general purpose planning \& scheduling framework, we will include examples from different class of problems such as resource scheduling, simple planning domains (BlocksWorld), complex planning domains (Rovers), and CSP benchmarks (N-Queens)\footnote{All examples are included in the open-source distribution of \europa}. To give a more complete picture of the whole system, we will also provide a brief background on \europa\ main architecture and how key components are integrated.
 
-For the rest of this paper, we will first outline the modeling and reasoning capabilities. We then provide a short guide on how to use \europa\ in the most effective way and illustrate it with a list of simple examples. We then list the NASA and non-NASA projects that have used \europa. We finish the paper with a brief discussion of related work and discussion of our product roadmap for future releases of \europa\.
+For the rest of this paper, we will first outline the modeling and reasoning capabilities. We then provide a short guide on how to use \europa\ in the most effective way and illustrate it with a list of simple examples. We then list the NASA and non-NASA projects that have used \europa. We finish the paper with a brief discussion of related work and discussion of our product roadmap for future releases of \europa.
 
 
 %-----------------------------
@@ -264,60 +264,6 @@ Figure~\ref{fig:PSDesktop_start} shows the two console windows when running {\em
 Figure~\ref{fig:PSUI_exp} shows an example of how different UI components within the PSUI package can be activated to assist the plan analysis.
 
 
-
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/Examples-Light1.pdf}
-  \end{center}
-  \caption{\small UI example of the simple light-switch domain where the only action is to turn a light \emph{ON} or \emph{OFF}.}
-  \label{fig:light_exp}
-\end{figure*}
-%--
-
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/NQueens.pdf}
-  \end{center}
-  \caption{\small UI example of the representative Constraint Programming domain: NQueens}
-  \label{fig:nqueens}
-\end{figure*}
-%--
-
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/Examples-Shopping0.pdf}
-  \end{center}
-  \caption{\small UI example of the text-book \emph{shopping} planning example}
-  \label{fig:shopping}
-\end{figure*}
-%--
-
-
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/blocksworld.pdf}
-  \end{center}
-  \caption{\small UI example of the classical \emph{Blocksworld} planning domain.}
-  \label{fig:blocksworld}
-\end{figure*}
-%--
-
-
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/rover.pdf}
-  \end{center}
-  \caption{\small UI example of the \emph{Rovers} planning domain.}
-  \label{fig:rover}
-\end{figure*}
-%--
-
-
 %------------------
 \subsection{Eclipse Plugin (SWT) for \europa\ Modeling, Solving, and Debugging}
 The {\em Eclipse} plugin has two major components: (1) an editor and (2) an execution perspective. They provide the graphical interface to model, run, and analyze plans within the {\em Eclipse} development environment. The main capabilities are:
@@ -378,8 +324,6 @@ Users can run \europa\ by directly invoking the \emph{Run As} action for a given
 
 In this section, we show several examples that demonstrate the flexibility of \europa\ (both its core engine and its supporting knowledge engineering tools) when solving different types of planning, scheduling, and constraint satisfaction problems. All examples covered in this section are included in the \europa\ distribution and in this section they are illustrated through the {\em PSDesktop} interface. \\
 
-\comment{JRB: should we try to embed the figure for each domain after its description?}
-
 \noindent {\bf Light:} A "Hello World" domain for \europa\ , it  describes how a light switch can be used to control a light bulb. Figure~\ref{fig:light_exp} shows an example output analyzing the final plans. In this particular example, the intervals mean that the action or state change could happen at any point in the interval, so for instance, ``{\em lightSwitch1 is turned off at time [0,8]}" means that {\em lightSwitch1} could be turned off at time 0, or at time 1, ..., or at time 8. You can modify your model or \europa's configuration to generate grounded plans (where all the values are points, instead of intervals), if that's what you want for your particular application.\\
 
 \noindent {\bf N-Queens:}  N-Queens is one of CSP's workhorses. Figure~\ref{fig:nqueens} shows how \europa\ supports model and solve this problem through {\em PSDesktop}. Users can click on a chess board to move the the queens around and see the constraint violations that \europa\ computes by moving the mouse over each queen. It also provides a simple Tabu Search solver which briefly illustrates how users can build their own solvers on top of \europa.\\
@@ -391,6 +335,59 @@ In this section, we show several examples that demonstrate the flexibility of \e
 \noindent {\bf Blocksworld}: this is one of the most well-known planning domains. This version uses a robotic arm to build the stacks and Figure~\ref{fig:blocks world} shows a UI where you can look at the partial state of the arm and the stacks as the planner progresses towards the stated goal. The \emph{PSDesktop} UI allows users to mouse over the green rectangles to see the actions over each timeline; for example, you can see the arm operator performing pick up and stack operations on the blocks. The ``BlockWorld History" window shows the evolution of the stacks as the operator performs the actions from the plan on them, until it arrives to the stated goal.\\
 
 \noindent {\bf Planetary Rover}: this is a more complex planning domain that was inspired by NASA robotic missions and has also been translated to PDDL to be used in recent IPCs. Figure~\ref{fig:rover} shows the UI result of this domain. In this figure, red and blue curves on the chart at the top-right corner bound the possible battery charge. The difference between the two is due to flexibility in the plan regarding when navigation and sampling may take place. The red curve shows the charge when they occur as soon as possible, and the blue curve shows them if everything is delayed as long as possible. The bottom window displays a gantt chart for the Rover, Navigator and Instrument timelines in this problem. Hover the mouse over any piece (green rectangle) of the gantt chart to see details displayed in the Details window. In this screenshot, the mouse was hovered over the large box on the Navigator timeline, which is an \emph{At} predicate.\\
+
+
+%--
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=6.5in]{./Figures/Examples-Light1.pdf}
+  \end{center}
+  \caption{\small UI example of the simple light-switch domain where the only action is to turn a light \emph{ON} or \emph{OFF}.}
+  \label{fig:light_exp}
+\end{figure*}
+%--
+
+%--
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=6.5in]{./Figures/NQueens.pdf}
+  \end{center}
+  \caption{\small UI example of the representative Constraint Programming domain: NQueens}
+  \label{fig:nqueens}
+\end{figure*}
+%--
+
+%--
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=6.5in]{./Figures/Examples-Shopping0.pdf}
+  \end{center}
+  \caption{\small UI example of the text-book \emph{shopping} planning example}
+  \label{fig:shopping}
+\end{figure*}
+%--
+
+
+%--
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=6.5in]{./Figures/blocksworld.pdf}
+  \end{center}
+  \caption{\small UI example of the classical \emph{Blocksworld} planning domain.}
+  \label{fig:blocksworld}
+\end{figure*}
+%--
+
+
+%--
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=6.5in]{./Figures/rover.pdf}
+  \end{center}
+  \caption{\small UI example of the \emph{Rovers} planning domain.}
+  \label{fig:rover}
+\end{figure*}
+%--
 
 
 %----------------------------
