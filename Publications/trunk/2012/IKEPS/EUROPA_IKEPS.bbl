@@ -28,6 +28,14 @@ Hoffmann, J., and Edelkamp, S.
 \newblock The deterministic part of ipc-4: An overview.
 \newblock {\em Journal of Artificial Intelligence Research} 24:519--579.
 
+\bibitem[\protect\citeauthoryear{Jonsson and
+  B{\"a}ckstr{\"o}m}{1998}]{jonsson:1998}
+Jonsson, P., and B{\"a}ckstr{\"o}m, C.
+\newblock 1998.
+\newblock State-variable planning under structural restrictions: Algorithms and
+  complexity.
+\newblock {\em Artificial Intelligence} 100(1-2)(4):125--176.
+
 \bibitem[\protect\citeauthoryear{McGann \bgroup et al\mbox.\egroup
   }{2008}]{mcgann:2008}
 McGann, C.; Py, F.; Rajan, K.; Thomas, H.; Henthorn, R.; and McEwen, R.
