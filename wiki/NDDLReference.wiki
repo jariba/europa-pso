@@ -686,7 +686,7 @@ class Foo {
 
 Foo foo = new Foo();
 close();
-goal(foo.pred t0); // Initially active
+goal(foo.pred t0); // Initially inactive
 rejectable(foo.pred t2);  // Initially inactive
 t2.reject(); // Now rejected
 rejectable(foo.pred t3);  // Initially inactive
