@@ -1,0 +1,34 @@
+// Author: Minh Do (minh.do@nasa.gov)
+
+#include "Logistics-model.nddl"
+
+// Start with only two locations
+Location cityA = new Location("City A");
+Location cityB = new Location("City B");
+
+// And one airplane
+Airplane airplaneA = new Airplane("Airplane A");
+
+// And one package
+Package packageA = new Package("Package A");
+
+// Close the Object Database - no more objects can be created
+close();
+
+// Establish the initial values
+// [airplane] & [package] @ cityA and need to move the [package] to cityB 
+fact(airplaneA.state.FreeAt initialAirplaneALocation);
+initialAirplaneALocation.start.specify(0);
+initialAirplaneALocation.location.specify(cityA);
+initialAirplaneALocation.activate();
+
+fact(packageA.location.At initialPackageALocation);
+initialPackageALocation.start.specify(0);
+initialPackageALocation.location.specify(cityA);
+initialPackageALocation.activate();
+
+goal(packageA.location.At finalPackageALocation);
+finalPackageALocation.location.specify(cityB);
+// finalPackageALocation.end.specify(50);
+
+// EOF

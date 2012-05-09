@@ -1,0 +1,148 @@
+// Author: Minh Do (minh.do@nasa.gov)
+// Description: moving packages between different locations using vehicles
+// (1) airplanes for inter-city; (2) trucks for intra-city
+
+#include "Plasma.nddl"
+
+// NOTE: START SIMPLE with only airplane (like ZenoTravel)
+// will add the following features later:
+// (1) Explicit path (right now can fly between any two cities) with distance between them
+// (2) fuel conssumption & refuel action
+// (3) fly between different cities with different speed and consume
+// different amount of fuels
+// (4) trucks to take packages between different locations within the same "city"
+
+
+class Location {
+	string name;
+	
+	Location(string _name) {
+		name = _name;
+	}
+}
+
+
+// The package can be either: (1) at a location; (2) in an airplane
+// or (3) moving between a location and a vehicle.
+// We define as an extension of timeline to indicate that at any given
+// moment, it needs to be in one of the three unique states
+class PackageLocation extends Timeline {
+	predicate At {Location location; }
+	predicate InVehicle {Airplane airplane; }
+	// We can combine Loading & Unloading but keep them separated
+	// for readability purpose
+	predicate Loading {}
+	predicate Unloading {}
+}
+
+class Package {
+	string name;
+	PackageLocation location;
+	// May extend with other characteristics (e.g., weight) later
+	
+	Package(string _name) {
+		name = _name;
+		location = new PackageLocation();
+	}
+}
+
+class AirplaneState extends Timeline {
+	predicate FreeAt {Location location; }
+	predicate Loading { }
+	predicate Unloading { }
+	
+	// Will add explicit Path later
+	predicate Flying {Location destination; }
+}
+
+// An aiplane can: (1) fly between different locations
+// (2) load and unload a package
+class Airplane {
+	string name;
+	AirplaneState state;
+	
+	Airplane(string _name) {
+		name = _name;
+		state = new AirplaneState();
+	}
+
+	action Fly {
+		Location destination;
+		// First version, use static duration
+		eq(10,duration);
+	}
+	
+	action Load { 
+		Package package;
+		// May extend to have duration tied to package weight
+		eq(3,duration);
+		
+	}
+	action Unload { 
+		Package package;
+		eq(3,duration);
+	}
+}
+
+Airplane::Fly
+{
+	// (Pre)condition: the airplane need to be "free" at the beginning of the flying action
+	met_by(condition object.state.FreeAt _from);
+	
+	// Effect: the airplane will be "free" at the destination when it reach there
+	meets(effect object.state.FreeAt _to);
+	eq(_to.location, dest);
+	
+	// Change the status of the airplane to "flying" during the whole duration
+	equals(effect object.state.Flying _flying);
+}
+
+// Right now do NOT allow parallel load/unload of different packages
+Airplane::Load
+{
+	// (Pre)conditions: 
+	// The airplane need to be "free" at the beginning of the loading action
+	met_by(condition object.state.FreeAt _airplaneFreeAtStart);
+	
+	// The package to be loaded should be at the same location
+	met_by(condition package.location.At _packageAt);
+	eq(_airplaneFreeAtStart.location, _packageAt.location);
+	
+	// Effects:
+	// Both the [package] and [airplane] are in the [loading] mode the whole time
+	equals(effect object.state.Loading _loadingAirplane);
+	equals(effect package.location.Loading _loadingPackage);
+	
+	// The [package] will be in the [airplane] at the end of the loading action
+	meets(effect package.location.InVehicle _inAirplane);
+	eq(_inAirplane.airplane,object);
+	// The [airplane] will be "free" (to do other actions) at the end of loading action
+	meets(effect object.state.FreeAt _airplanFreeAtEnd);
+	eq(_airplaneFreeAtStart.location,_airplaneFreeAtEnd.location);
+}
+
+Airplane::Unload
+{
+	// (Pre)conditions: 
+	// The [airplane] needs to be "free" for the whole duration
+	met_by(condition object.state.FreeAt _airplaneFreeAtStart);
+	
+	// The [package] needs to be in the [airplane] at the beginning of the action
+	met_by(condition package.location.InVehicle _packageInAirplane);
+	eq(_packageInAirplane.airplane,object);
+	
+	// Effects:
+	// Both the [package] and [airplane] are in the [unloading] mode the whole time
+	equals(effect object.state.Unloading _unloadingAirplane);
+	equals(effect package.location.Unloading _unloadingPackage);
+	
+	// The [package] will be on the ground at the end of the loading action
+	meets(effect package.location.At _packageAt);
+	eq(_packageAt.location,_airplaneFreeAtStart.location);
+	
+	// The [airplane] will be "free" (to do other actions) at the end of loading action
+	meets(effect object.state.FreeAt _airplanFreeAtEnd);
+	eq(_airplaneFreeAtStart.location,_airplaneFreeAtEnd.location);
+}
+
+// EOF
