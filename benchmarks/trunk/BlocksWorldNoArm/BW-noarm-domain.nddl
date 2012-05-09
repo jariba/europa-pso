@@ -1,0 +1,127 @@
+// Author: Minh Do (minh.do@nasa.org)
+// Description: Change the block-stacking configurations. This is the simpler version
+// that doesn't use robot-arm. Also known as "3-operator" version.
+
+#include "Plasma.nddl"
+
+class Top extends Timeline {
+	predicate Clear {}
+	predicate NotClear {}
+}
+
+class Bottom extends Timeline {
+	predicate On {Block bottomBlock;}
+	predicate OnTable {}
+}
+
+class Block {
+	string name;
+	Top top;
+	Bottom bottom;
+	
+	Block(string _name) {
+		name = _name;
+		top = new Top();
+		bottom = new Bottom();
+	}
+	
+	action MoveBlockToBlock {
+		Block _newBottomBlock;
+		eq(duration,1);
+	}
+	
+	action MoveBlockToTable {
+		eq(duration,1);
+	}
+	
+	action MoveBlockFromTable {
+		Block _newBottomBlock;
+		eq(duration,1);
+	}
+}
+
+Block::MoveBlockToBlock {
+	// 
+	// Conditions: 
+	//
+	// (1) moved block needs to be clear
+	contained_by(condition object.top.Clear);
+	
+	// (2) the block it moves to needs to be clear
+	met_by(condition _newBottomBlock.top.Clear);
+	
+	// (3) The current block need to be On some block until the *end* of the action
+	// (this is a _combined_ Condition & Effect)
+	ends(condition object.bottom.On _currentBottomBlockOn);
+	_currentBottomBlockOn.start <= this.start;
+	
+	// 
+	// Effect:
+	//
+	// (1) the new bottom block will not be clear anymore
+	// starting with the start of this action and last (at least) through the end
+	starts(effect _newBottomBlock.top.NotClear _newBottomBlockNotClear);
+	_newBottomBlockNotClear.end >= this.end;
+	
+	// (2) the current block at the bottom will become CLEAR at the end of the action
+	meets(effect _currentBottomBlockOn.bottomBlock.Top.Clear);
+	
+	// (3) the moved block now will be on a new bottom block at the *end* of moving
+	meets(effect object.bottom.On _onNewBlock);
+	eq(_onNewBlock.bottomBlock,_newBottomBlock);
+}
+
+
+Block::MoveBlockToTable {
+	//
+	// Conditions:
+	//
+	// (1) moved block needs to be clear
+	contained_by(condition object.top.Clear);
+	
+	// (2) moved block needs to be On some block until the *end* of the action
+	// (this is a _combined_ Condition & Effect)
+	ends(condition object.bottom.On _currentBottomBlockOn);
+	_currentBottomBlockOn.start <= this.start;
+	
+	//
+	// Effect:
+	//
+	// (1) current block at the bottom will become CLEAR at the *end* of the action
+	meets(effect _currentBottomBlockOn.bottomBlock.Top.Clear);
+	
+	// (2) moved block will be on the table at the *end* of action
+	meets(effect object.bottom.OnTable);
+}
+
+
+Block::MoveBlockFromTable {
+	//
+	// Conditions:
+	//
+	// (1) moved block needs to be clear
+	contained_by(condition object.top.Clear);
+	
+	// (2) moved block needs to be OnTable until the *end* of the action
+	// (this is a _combined_ Condition & Effect)
+	ends(condition object.bottom.OnTable _onTable);
+	_onTable.start <= this.start;
+	
+	// (3) block that will become the new bottom needs to be CLEAR too
+	met_by(condition _newBottomBlock.top.Clear);	
+	
+	//
+	// Effect:
+	//
+	// (1) the new bottom block will not be clear anymore
+	// starting with the *start* of this action and last (at least) through the *end*
+	starts(effect _newBottomBlock.top.NotClear _newBottomBlockNotClear);
+	_newBottomBlockNotClear.end >= this.end;
+	
+	// (2) the moved block now will be on a new bottom block at the *end* of moving
+	meets(effect object.bottom.On _onNewBlock);
+	eq(_onNewBlock.bottomBlock,_newBottomBlock);
+
+}
+
+// EOF
