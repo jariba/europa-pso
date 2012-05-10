@@ -44,11 +44,11 @@ Block::MoveBlockToBlock {
 	// 
 	// Conditions: 
 	//
-	// (1) moved block needs to be clear
-	contained_by(condition object.top.Clear);
+	// (1) moved block needs to be clear at the *start* of the action
+	met_by(condition object.top.Clear);
 	
 	// (2) the block it moves to needs to be clear
-	met_by(condition _newBottomBlock.top.Clear);
+	contains_by(condition _newBottomBlock.top.Clear);
 	
 	// (3) The current block need to be On some block until the *end* of the action
 	// (this is a _combined_ Condition & Effect)

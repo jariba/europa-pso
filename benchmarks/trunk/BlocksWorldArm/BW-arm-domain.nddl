@@ -1,0 +1,192 @@
+// Author: Minh Do (minh.do@nasa.org)
+// Description: Change the block-stacking configurations. This is the "4-operator" version
+// that use a robot arm and separate the "pickup" and "putdown" actions that use an arm
+// NOTE: There can be multiple arms
+
+
+#include "Plasma.nddl"
+
+class Arms extends Reservoir {
+	string profileType;
+	string detectorType;
+
+	Arms(float numberOfArm) {
+		super(0.0,0.0, numberOfArm);
+		profileType = "GroundedProfile";
+		detectorType = "GroundedFVDetector";
+	}
+}
+
+class Top extends Timeline {
+	predicate Clear {}
+	predicate NotClear {}
+}
+
+class Bottom extends Timeline {
+	predicate On {Block bottomBlock;}
+	predicate OnTable {}
+	predicate HeldByArm {}
+}
+
+class Block {
+	string name;
+	Top top;
+	Bottom bottom;
+	
+	Block(string _name) {
+		name = _name;
+		top = new Top();
+		bottom = new Bottom();
+	}
+}
+
+// Main class
+class BlocksWorld {
+	Arms arms;
+	
+	BlocksWorld(Arms _arms) {
+		arms = _arms;
+	}
+	
+	// Pickup a block from Table
+	action Pickup {
+		Block block;
+		eq(duration,1);
+	}
+	
+	// Putdown a block on a Table
+	action Putdown {
+		Block block;
+		eq(duration,1);
+	}
+	
+	// Pickup a block from a top of a stack of blocks
+	action Unstack {
+		Block block;
+		eq(duration,1);
+	}
+
+
+	// Putdown a block on top of some stack of blocks
+	action Stack {
+		Block block;
+		eq(duration,1);
+	}
+}
+
+// Pickup a block currently on table using one of the available robot arms
+BlocksWorld::Pickup {
+	//
+	// Conditions:
+	//
+	// (1) picked-up block needs to be clear at the beginning
+	meets(condition block.top.Clear);
+	
+	// (2) picked-up block needs to be OnTable until the *end* of the action
+	// (this is a _combined_ Condition & Effect)
+	ends(condition block.bottom.OnTable _onTable);
+	_onTable.start <= this.start;
+
+	//
+	// Effect:
+	//
+	// (1) picked-up block will be held in the robot arm
+	meets(effect block.bottom.HeldByArm);
+	
+	// (2) picked-up block will not be clear anymore
+	// (combine with the condition #1 above will basically force the equal constraint on starts)
+	contained_by(effect block.top.NotClear);
+	
+	// (3) the number of available arms will be reduced by one
+	starts(effect object.arms.consume _useOneArm);
+	eq(_useOneArm.quantity,1.0);
+}
+
+// Put a block that is currently held in one of the robot arm on the table
+BlocksWorld::Putdown {
+	//
+	// Conditions:
+	//
+	// (1) put-down block needs to be currently held in the robot hand
+	// and last until the *end* of the action
+	ends(condition object.bottom.HeldByArm _heldByArm);
+	_heldByArm.start <= this.start;
+	
+	//
+	// Effects:
+	//
+	// (1) put-down block will be on table at the *end* of the action
+	meets(effect block.bottom.OnTable);
+	
+	// (2) put-down block will be Clear at the *end* of the action
+	meets(effect block.top.Clear);
+	
+	// (3) the holding arm will be released at the *end* of the action
+	ends(effect object.arms.produce _releaseOneArm);
+	eq(_produceOneArm.quantity,1.0);
+}
+
+// Pick a block up from a top of a block stack (on top of another block)
+BlocksWorld::Unstack {
+	//
+	// Conditions:
+	//
+	// (1) picked-up block needs to be clear at the beginning
+	meets(condition block.top.Clear);
+	
+	// (2) The current block need to be On some block until the *end* of the action
+	// (this is a _combined_ Condition & Effect)
+	ends(condition block.bottom.On _currentBottomBlockOn);
+	_currentBottomBlockOn.start <= this.start;	
+	
+	//
+	// Effect:
+	//
+	// (1) picked-up block will be held in the robot arm
+	meets(effect block.bottom.HeldByArm);
+	
+	// (2) picked-up block will not be clear anymore
+	// (combine with the condition #1 above will basically force the equal constraint on starts)
+	contained_by(effect block.top.NotClear);
+
+	// (3) the block right under the picked-up block will become clear at the *end* of the action
+	meets(effect _currentBottomBlockOn.block.top.Clear);
+
+	// (4) the number of available arms will be reduced by one
+	starts(effect object.arms.consume _useOneArm);
+	eq(_useOneArm.quantity,1.0);	
+}
+
+// Put a block down on top of some block stack
+BlocksWorld::Stack {
+	//
+	// Conditions:
+	//
+	// (1) put-down block needs to be currently held in the robot hand
+	// and last until the *end* of the action
+	ends(condition object.bottom.HeldByArm _heldByArm);
+	_heldByArm.start <= this.start;
+	
+	//
+	// Effects:
+	//
+	// (1) put-down block will be on top of some other block
+	meets(effect block.bottom.On _onSomeBlock);
+	
+	// (2) put-down block will be Clear at the *end* of the action
+	meets(effect block.top.Clear);
+	
+	// (3) the holding arm will be released at the *end* of the action
+	ends(effect object.arms.produce _releaseOneArm);
+	eq(_produceOneArm.quantity,1.0);
+	
+	//
+	// Conditions/Effects: on the block that will be put on top
+	//
+	meets(condition _onSomeBlock.bottomBlock.top.Clear);
+	starts(effect _onSomeBlock.bottomBlock.top.NotClear _newBottomBlockNotClear);
+	_newBottomBlockNotClear.end >= this.end;
+}
+
+
+// EOF
