@@ -1,7 +1,7 @@
 // Author: Minh Do (minh.do@nasa.org)
 // Description: Change the block-stacking configurations. This is the "4-operator" version
 // that use a robot arm and separate the "pickup" and "putdown" actions that use an arm
-// NOTE: There can be multiple arms
+// NOTE: There can be multiple arms and thus arms are defined as resources
 
 
 #include "Plasma.nddl"
@@ -164,7 +164,7 @@ BlocksWorld::Stack {
 	//
 	// (1) put-down block needs to be currently held in the robot hand
 	// and last until the *end* of the action
-	ends(condition object.bottom.HeldByArm _heldByArm);
+	ends(condition block.bottom.HeldByArm _heldByArm);
 	_heldByArm.start <= this.start;
 	
 	//
