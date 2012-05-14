@@ -110,8 +110,9 @@ class Truck {
 	float speed;
 	TruckState state;
 	
-	Truck(string _name) {
+	Truck(string _name, float _speed) {
 		name = _name;
+		speed = _speed;
 		state = new TruckState();
 	}
 	
