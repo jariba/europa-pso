@@ -1,0 +1,563 @@
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=latex 2012.2.9)  29 FEB 2012 12:04
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**EUROPA_IKEPS.tex
+(./EUROPA_IKEPS.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, ge
+rman-x-2011-07-01, ngerman-x-2011-07-01, afrikaans, ancientgreek, ibycus, arabi
+c, armenian, basque, bulgarian, catalan, pinyin, coptic, croatian, czech, danis
+h, dutch, ukenglish, usenglishmax, esperanto, estonian, ethiopic, farsi, finnis
+h, french, galician, german, ngerman, swissgerman, monogreek, greek, hungarian,
+ icelandic, assamese, bengali, gujarati, hindi, kannada, malayalam, marathi, or
+iya, panjabi, tamil, telugu, indonesian, interlingua, irish, italian, kurmanji,
+ lao, latin, latvian, lithuanian, mongolian, mongolianlmc, bokmal, nynorsk, pol
+ish, portuguese, romanian, russian, sanskrit, serbian, serbianc, slovak, sloven
+ian, spanish, swedish, turkish, turkmen, ukrainian, uppersorbian, welsh, loaded
+.
+(/usr/local/texlive/2011/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2011/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (./aaai.sty
+Conference Style for AAAI for LaTeX 2e -- version of 7 January 2011
+\titlebox=\skip43
+) (/usr/local/texlive/2011/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2009/06/22 v3.00 Basic AMSFonts support
+\@emptytoks=\toks14
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 96.
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/times.sty
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/helvet.sty
+Package: helvet 2005/04/12 PSNFSS-v9.2a (WaS) 
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks15
+))
+(/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/courier.sty
+Package: courier 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/message (HO)
+)
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/04/18 v1.20 LaTeX kernel commands for general use (HO)
+)
+
+/usr/local/texlive/2011/texmf-dist/tex/latex/pdftex-def/pdftex.def:433: Package
+ pdftex.def Error: PDF mode expected, but DVI mode detected!
+(pdftex.def)                If you are using `latex', then call `pdflatex'.
+(pdftex.def)                Otherwise check and correct the driver options.
+(pdftex.def)                Error recovery by switching to PDF mode.
+
+See the pdftex.def package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.433   }\@ehc
+              
+? 
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+) (/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip44
+
+For additional information on amsmath, use the `?' option.
+(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks16
+\ex@=\dimen105
+))
+(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen106
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count88
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count89
+\leftroot@=\count90
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count91
+\DOTSCASE@=\count92
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen107
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count93
+\c@MaxMatrixCols=\count94
+\dotsspace@=\muskip10
+\c@parentequation=\count95
+\dspbrk@lvl=\count96
+\tag@help=\toks17
+\row@=\count97
+\column@=\count98
+\maxfields@=\count99
+\andhelp@=\toks18
+\eqnshift@=\dimen108
+\alignsep@=\dimen109
+\tagshift@=\dimen110
+\tagwidth@=\dimen111
+\totwidth@=\dimen112
+\lineht@=\dimen113
+\@envbody=\toks19
+\multlinegap=\skip45
+\multlinetaggap=\skip46
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+)
+\c@codeline=\count100
+
+(./EUROPA_IKEPS.aux)
+\openout1 = `EUROPA_IKEPS.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 52.
+LaTeX Font Info:    ... okay on input line 52.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 52.
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+(/usr/local/texlive/2011/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count101
+\scratchdimen=\dimen114
+\scratchbox=\box28
+\nofMPsegments=\count102
+\nofMParguments=\count103
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count104
+\MPscratchDim=\dimen115
+\MPnumerator=\count105
+\makeMPintoPDFobject=\count106
+\everyMPtoPDFconversion=\toks22
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 63.
+LaTeX Font Info:    Try loading font information for U+msa on input line 63.
+ (/usr/local/texlive/2011/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2009/06/22 v3.00 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 63.
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2009/06/22 v3.00 AMS symbols B
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 63.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 66.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 81.
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/psnfss/omsptm.fd
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 81.
+
+Underfull \hbox (badness 7595) in paragraph at lines 81--82
+[]\OT1/ptm/m/n/10 Observation schedul-ing for the Hub-ble Tele-scope
+ []
+
+[1{/usr/local/texlive/2011/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+
+
+]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 117.
+
+Underfull \hbox (badness 10000) in paragraph at lines 118--118
+[][]\OT1/ptm/m/n/9 A com-plete NDDL Ref-er-ence guide with ex-am-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 118--118
+\OT1/ptm/m/n/9 ples is avail-able at: \OT1/ptm/m/it/9 http://code.google.com/p/
+europa-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 118--118
+\OT1/ptm/m/it/9 pso/wiki/NDDLReference \OT1/ptm/m/n/9 and the NDDL gram-mar
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 118--118
+\OT1/ptm/m/n/9 guide is avail-able at: \OT1/ptm/m/it/9 http://code.google.com/p
+/europa-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 118--118
+\OT1/ptm/m/it/9 pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/
+ []
+
+
+LaTeX Warning: Citation `jonsson:199' on page 2 undefined on input line 118.
+
+
+Underfull \hbox (badness 1824) in paragraph at lines 123--125
+\OT1/ptm/b/n/10 The NDDL Trans-ac-tion Lan-guage: \OT1/ptm/m/n/10 NDDL in-clude
+s
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 123--125
+
+ []
+
+[2] <./Figures/europa_architecture.pdf, id=14, 448.67625pt x 243.91125pt>
+File: ./Figures/europa_architecture.pdf Graphic file (type pdf)
+
+<use ./Figures/europa_architecture.pdf>
+Package pdftex.def Info: ./Figures/europa_architecture.pdf used on input line 1
+37.
+(pdftex.def)             Requested size: 252.94499pt x 137.50491pt.
+
+Overfull \hbox (13.55061pt too wide) in paragraph at lines 137--138
+ [] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 146--147
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 148--149
+
+ []
+
+Missing character: There is no Ð in font ptmr7t!
+
+Underfull \hbox (badness 10000) in paragraph at lines 150--151
+
+ []
+
+
+Underfull \hbox (badness 1242) in paragraph at lines 152--153
+\OT1/ptm/m/n/10 a component-based ar-chi-tec-ture for Flaw Iden-ti-fi-ca-tion,
+ []
+
+
+Underfull \hbox (badness 1472) in paragraph at lines 152--153
+\OT1/ptm/m/n/10 Res-o-lu-tion and heuris-tics as well as an al-go-rithm for
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 152--153
+
+ []
+
+<./Figures/NDDL_editor.pdf, id=15, 722.7pt x 475.7775pt>
+File: ./Figures/NDDL_editor.pdf Graphic file (type pdf)
+
+<use ./Figures/NDDL_editor.pdf>
+Package pdftex.def Info: ./Figures/NDDL_editor.pdf used on input line 159.
+(pdftex.def)             Requested size: 469.75499pt x 309.25896pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 167--168
+
+ []
+
+
+Underfull \hbox (badness 2173) in paragraph at lines 169--171
+\OT1/ptm/m/n/10 pro-vides spe-cial-ized al-go-rithms and data struc-tures to
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 169--171
+
+ []
+
+
+Underfull \hbox (badness 3568) in paragraph at lines 172--173
+\OT1/ptm/m/n/10 oriented, declar-a-tive do-main and prob-lem de-scrip-tion
+ []
+
+
+Underfull \hbox (badness 1038) in paragraph at lines 172--173
+\OT1/ptm/m/n/10 lan-guage to the code and con-se-quently in-ter-faces to a
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 172--173
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
+
+ []
+
+Missing character: There is no Õ in font ptmr7t!
+
+Underfull \hbox (badness 10000) in paragraph at lines 183--184
+
+ []
+
+
+Underfull \hbox (badness 1184) in paragraph at lines 201--202
+\OT1/ptm/m/n/10 is the of-fi-cial in-ter-face for \OT1/ptm/m/sl/10 EU-ROPA \OT1
+/ptm/m/n/10 clients, it is the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 201--202
+
+ []
+
+[3 <./Figures/europa_architecture.pdf>] [4 <./Figures/NDDL_editor.pdf>]
+<./Figures/NDDL_runas.pdf, id=70, 722.7pt x 450.68375pt>
+File: ./Figures/NDDL_runas.pdf Graphic file (type pdf)
+
+<use ./Figures/NDDL_runas.pdf>
+Package pdftex.def Info: ./Figures/NDDL_runas.pdf used on input line 213.
+(pdftex.def)             Requested size: 469.75499pt x 292.94783pt.
+
+<./Figures/NDDL_runconfig.pdf, id=71, 722.7pt x 325.215pt>
+File: ./Figures/NDDL_runconfig.pdf Graphic file (type pdf)
+
+<use ./Figures/NDDL_runconfig.pdf>
+Package pdftex.def Info: ./Figures/NDDL_runconfig.pdf used on input line 223.
+(pdftex.def)             Requested size: 469.75499pt x 211.3922pt.
+
+<./Figures/EclipseRunPerspective.pdf, id=72, 722.7pt x 452.69125pt>
+File: ./Figures/EclipseRunPerspective.pdf Graphic file (type pdf)
+
+<use ./Figures/EclipseRunPerspective.pdf>
+Package pdftex.def Info: ./Figures/EclipseRunPerspective.pdf used on input line
+ 234.
+(pdftex.def)             Requested size: 469.75499pt x 294.25273pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 255--256
+
+ []
+
+<./Figures/PSDesktop_1.pdf, id=73, 722.7pt x 253.94875pt>
+File: ./Figures/PSDesktop_1.pdf Graphic file (type pdf)
+
+<use ./Figures/PSDesktop_1.pdf>
+Package pdftex.def Info: ./Figures/PSDesktop_1.pdf used on input line 268.
+(pdftex.def)             Requested size: 469.75499pt x 165.06859pt.
+
+<./Figures/Example_UBO0.pdf, id=74, 722.7pt x 404.51125pt>
+File: ./Figures/Example_UBO0.pdf Graphic file (type pdf)
+
+<use ./Figures/Example_UBO0.pdf>
+Package pdftex.def Info: ./Figures/Example_UBO0.pdf used on input line 278.
+(pdftex.def)             Requested size: 469.75499pt x 262.93536pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 294--295
+
+ []
+
+
+Underfull \hbox (badness 1281) in paragraph at lines 299--300
+\OT1/ptm/m/n/10 ex-e-cute NDDL scripts, in gen-eral per-form any task
+ []
+
+<./Figures/Examples-Light1.pdf, id=75, 690.58pt x 262.9825pt>
+File: ./Figures/Examples-Light1.pdf Graphic file (type pdf)
+
+<use ./Figures/Examples-Light1.pdf>
+Package pdftex.def Info: ./Figures/Examples-Light1.pdf used on input line 320.
+(pdftex.def)             Requested size: 469.75499pt x 178.88992pt.
+
+<./Figures/NQueens.pdf, id=76, 681.54625pt x 293.095pt>
+File: ./Figures/NQueens.pdf Graphic file (type pdf)
+
+<use ./Figures/NQueens.pdf>
+Package pdftex.def Info: ./Figures/NQueens.pdf used on input line 330.
+(pdftex.def)             Requested size: 469.75499pt x 202.01662pt.
+
+<./Figures/Examples-Shopping0.pdf, id=77, 722.7pt x 209.78375pt>
+File: ./Figures/Examples-Shopping0.pdf Graphic file (type pdf)
+
+<use ./Figures/Examples-Shopping0.pdf>
+Package pdftex.def Info: ./Figures/Examples-Shopping0.pdf used on input line 34
+0.
+(pdftex.def)             Requested size: 469.75499pt x 136.36101pt.
+
+<./Figures/blocksworld.pdf, id=78, 668.4975pt x 462.72874pt>
+File: ./Figures/blocksworld.pdf Graphic file (type pdf)
+
+<use ./Figures/blocksworld.pdf>
+Package pdftex.def Info: ./Figures/blocksworld.pdf used on input line 351.
+(pdftex.def)             Requested size: 469.75499pt x 325.17177pt.
+
+<./Figures/rover.pdf, id=79, 722.7pt x 451.6875pt>
+File: ./Figures/rover.pdf Graphic file (type pdf)
+ <use ./Figures/rover.pdf>
+Package pdftex.def Info: ./Figures/rover.pdf used on input line 362.
+(pdftex.def)             Requested size: 469.75499pt x 293.60028pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 373--374
+
+ []
+
+[5] [6 <./Figures/NDDL_runas.pdf> <./Figures/NDDL_runconfig.pdf>] [7 <./Figures
+/EclipseRunPerspective.pdf> <./Figures/PSDesktop_1.pdf>] [8 <./Figures/Example_
+UBO0.pdf> <./Figures/Examples-Light1.pdf>] [9 <./Figures/NQueens.pdf> <./Figure
+s/Examples-Shopping0.pdf>] [10 <./Figures/blocksworld.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 375--376
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 377--378
+
+ []
+
+
+Underfull \hbox (badness 5431) in paragraph at lines 379--380
+\OT1/ptm/b/n/10 Resource Con-strained Project Schedul-ing Prob-lem
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 379--380
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 381--382
+
+ []
+
+
+LaTeX Warning: Reference `fig:blocks world' on page 11 undefined on input line 
+383.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 383--384
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 385--386
+
+ []
+
+[11 <./Figures/rover.pdf>]
+Missing character: There is no Ô in font ptmr7t!
+
+Underfull \hbox (badness 4927) in paragraph at lines 399--400
+[]\OT1/ptm/m/n/10 Crew Plan-ning Re-search project on Plan-ning and
+ []
+
+Missing character: There is no Ô in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+
+Underfull \hbox (badness 1852) in paragraph at lines 405--406
+[]\OT1/ptm/m/n/10 Intelligent Dis-tributed Ex-e-cu-tion Ar-chi-tec-ture (IDEA
+ []
+
+Missing character: There is no Ð in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+Missing character: There is no Ð in font ptmr7t!
+
+Underfull \hbox (badness 10000) in paragraph at lines 424--425
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 435--436
+
+ []
+
+(./EUROPA_IKEPS.bbl [12]) [13
+
+] (./EUROPA_IKEPS.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 2074 strings out of 493630
+ 27325 string characters out of 3143347
+ 89878 words of memory out of 3000000
+ 5334 multiletter control sequences out of 15000+200000
+ 36108 words of font info for 69 fonts, out of 3000000 for 9000
+ 831 hyphenation exceptions out of 8191
+ 27i,10n,22p,1871b,250s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/te
+xlive/2011/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2011
+/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2011/texmf-dis
+t/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2011/texmf-dist/fonts/ty
+pe1/urw/times/utmri8a.pfb>
+Output written on EUROPA_IKEPS.pdf (13 pages, 1629969 bytes).
+PDF statistics:
+ 267 PDF objects out of 1000 (max. 8388607)
+ 183 compressed objects within 2 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 61 words of extra memory for PDF output out of 10000 (max. 10000000)
+

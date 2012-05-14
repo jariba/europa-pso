@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99d (TeX Live 2011)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: EUROPA_IKEPS.aux
+The style file: aaai.bst
+Database file #1: ../../../Bibliography/master.bib
+Warning--I didn't find a database entry for "jonsson:199"
+Warning--empty booktitle in smith:pddl-nddl
+You've used 9 entries,
+            2568 wiz_defined-function locations,
+            624 strings with 6201 characters,
+and the built_in function-call counts, 3845 in all, are:
+= -- 387
+> -- 212
+< -- 1
++ -- 77
+- -- 74
+* -- 313
+:= -- 654
+add.period$ -- 44
+call.type$ -- 9
+change.case$ -- 73
+chr.to.int$ -- 9
+cite$ -- 10
+duplicate$ -- 141
+empty$ -- 249
+format.name$ -- 89
+if$ -- 776
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 9
+newline$ -- 56
+num.names$ -- 27
+pop$ -- 71
+preamble$ -- 1
+purify$ -- 82
+quote$ -- 0
+skip$ -- 99
+stack$ -- 0
+substring$ -- 126
+swap$ -- 24
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 72
+warning$ -- 1
+while$ -- 24
+width$ -- 11
+write$ -- 122
+(There were 2 warnings)
