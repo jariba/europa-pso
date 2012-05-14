@@ -3,6 +3,7 @@
 // Combine the representative domains "BlocksWorld" and "Logistics"
 // (1) trucks can transport crates around and then 
 // (2) the crates must be stacked onto pallets at their destinations using hoist.
+// NOTE: can add later: (1) explicit fuel consumption/refuel for truck; (2) crate weight.
 
 #include "Plasma.nddl"
 
@@ -16,18 +17,19 @@ class Top extends Timeline {
 class Bottom extends Timeline {
 	predicate OnCrate {
 		Crate bottomCrate;
+		Location location;
 	}
-	predicate OnPallet {Pallet pallet;}
+	predicate OnPallet {
+		Pallet pallet;
+	}
 	predicate InTruck {Truck truck;}
-	predicate HeldByHoist {}
+	predicate HeldByHoist {Location location;}
 }
 
 class Crate {
 	string name;
 	Top top;
 	Bottom bottom;
-	
-	predicate At {Location location; }
 	
 	Crate(string _name) {
 		name = _name;
@@ -37,10 +39,21 @@ class Crate {
 }
 
 // Pallet (just like "table-place" in Blocksworld -- there are a limited number of them)
-class Pallet extends Timeline {
+class PalletState extends Timeline {
+	predicate Clear { }
+	predicate NotClear { }
+}
+
+class Pallet {
 	string name;
-	predicate ClearAt { Location location; }
-	predicate NotClearAt { Location location; }
+	Location location
+	PalletState state;
+	
+	Pallet(string _name, Location _location) {
+		name = _name;
+		location = _location;
+		state = new PalletState();
+	}
 }
 
 // Hoist: to lift/drop crate at a given location
@@ -94,6 +107,7 @@ class TruckState extends Timeline {
 
 class Truck {
 	string name;
+	float speed;
 	TruckState state;
 	
 	Truck(string _name) {
@@ -101,7 +115,10 @@ class Truck {
 		state = new TruckState();
 	}
 	
-	action Drive { Path path; }
+	action Drive { 
+		Path path;
+		eq(duration, path.distance / speed);
+	}
 }
 
 
@@ -119,62 +136,147 @@ Location::LiftFromCrate {
 	// Hoist should be available
 	meets(condition object.hoist.Available);
 	
-	meets(effect crate.bottom.HeldByHoist);
+	meets(effect crate.bottom.HeldByHoist _heldByHoist);
+	eq(_heldByHoist.location,object);
+	
 	contained_by(effect crate.top.NotClear);
+	
 	meets(effect _onBottomCrate.bottomCrate.top.Clear);
+	
 	starts(effect object.hoist.HoldingCrate _hoistBusy);
 	this.end <= _hoistBusy.end;
+	
 }
 
 Location::LiftFromPallet {
 	meets(condition crate.top.Clear);
+	
 	ends(condition crate.bottom.OnPallet _onPallet);
 	_onPallet.start <= this.start;
-	ends(condition _onPallet.pallet.NotClearAt _palletNotClear);
+	
+	ends(condition _onPallet.pallet.state.NotClearAt _palletNotClear);
 	_palletNotClear.start <= this.start;
-	eq(_palletNotClear.location,object);
+	eq(_onPallet.pallet.location,object);
+	
 	meets(condition object.hoist.Available);
 	
-	meets(effect crate.bottom.HeldByHoist);
+	meets(effect crate.bottom.HeldByHoist _heldByHoist);
+	eq(_heldByHoist.location,object);
+	
 	contained_by(effect crate.top.NotClear);
-	meets(effect _onPallet.pallet.Clear);
+	
+	meets(effect _onPallet.pallet.state.Clear);
+	
 	starts(effect object.hoist.HoldingCrate _hoistBusy);
 	this.end <= _hoistBusy.end;	
 }
 
 Location::LiftFromTruck {
+	Truck truck;
+	
 	ends(condition crate.bottom.InTruck _inTruck);
 	_inTruck.start <= this.start;
 	
-	Truck truck;
 	eq(_inTruck.truck,truck);
-	meets(condition truck.state.FreeAt _truckInitialFreeAt);
+	met_by(condition truck.state.FreeAt _truckInitialFreeAt);
+	
 	meets(condition object.hoist.Available);
 	
-	meets(effect crate.bottom.HeldByHoist);
+	meets(effect crate.bottom.HeldByHoist _heldByHoist);
+	eq(_heldByHoist.location,object);
+	
 	contained_by(effect crate.top.NotClear);
+	
 	starts(effect object.hoist.HoldingCrate _hoistBusy);
 	this.end <= _hoistBusy.end;
+	
 	equals(effect truck.state.Unloading _truckUnloading);
+	
 	meets(effect truck.state.FreeAt _truckAfterFreeAt);
 	
 	eq(_truckInitialFreeAt.location,_truckAfterFreeAt,this.object);
 }
 
 Location::DropOnCrate {
+	Crate newBottomCrate;
+
 	ends(condition crate.bottom.HeldByHoist _heldByHoist);
 	_heldByHoist.start <= this.start;
-
+	eq(_heldByHoist.location,object);
 	
+	meets(condition newBottomCrate.top.Clear _newBottomCrateClear);
+	
+	ends(condition object.Hoist.HoldingCrate _holdingCrate);
+	_holdingCrate.start <= this.start;
+
+	meets(effect crate.top.Clear);
+	
+	meets(effect crate.botton.OnCrate  _onSomeCrate);
+	eq(_onSomeCrate.location,object);
+	eq(_onSomeCrate.bottomCrate,newBottomCrate);
+	
+	starts(effect newBottomCrate.top.NotClear _newBottomCrateNotClear);
+	_newBottomCrateNotClear.end >= this.end;
+	
+	meets(effect object.hoist.Available);
 }
 
 Location::DropOnPallet {
+	Pallet pallet;
+	eq(pallet.location,object);
 
+	ends(condition crate.bottom.HeldByHoist _heldByHoist);
+	_heldByHoist.start <= this.start;
+	eq(_heldByHoist.location,object);
+	
+	meets(condition pallet.state.Clear);
+
+	ends(condition object.Hoist.HoldingCrate _holdingCrate);
+	_holdingCrate.start <= this.start;		
+	
+	meets(effect crate.top.Clear);
+	
+	meets(effect crate.bottom.OnPallet _onSomePallet);
+	eq(_onSomePallet.pallet,pallet);
+	
+	meets(effect pallet.state.NotClear);
+	
+	meets(effect object.hoist.Available);
 }
 
 Location::DropIntoTruck {
+	Truck truck;
+	
+	ends(condition crate.bottom.HeldByHoist _heldByHoist);
+	_heldByHoist.start <= this.start;
+	eq(_heldByHoist.location,object);
+		
+	met_by(condition truck.state.FreeAt _truckInitialFreeAt);
+	
+	ends(condition object.Hoist.HoldingCrate _holdingCrate);
+	_holdingCrate.start <= this.start;
+	
+	meets(effect object.hoist.Available);
+	
+	meets(effect crate.bottom.InTruck _inTruck);
+	eq(_inTruck,truck);
+	
+	equals(effect truck.state.Unloading _truckUnloading);
+	
+	meets(effect truck.state.FreeAt _truckAfterFreeAt);
 
-
+	eq(_truckInitialFreeAt.location,_truckAfterFreeAt,this.object);
 }
 
-// EOF
+Truck::drive {
+	met_by(condition state.FreeAt _freeAtBefore);
+	eq(_freeAtBefore.location,path.from);
+
+	equals(effect state.Moving _moving);
+	eq(_moving.path,path);
+	
+	meets(effect state.FreeAt _freeAtAfter);
+	eq(_freeAtAfter.location,path.to);
+}
+
+// EOF qw5pg9gf7We2
