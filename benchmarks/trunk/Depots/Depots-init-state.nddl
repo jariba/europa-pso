@@ -1,0 +1,91 @@
+// Authors: Minh Do (minh.do@nasa.gov)
+// Model after the problem 1 in the IPC benchmark set for the Depot metric+time benchmark set
+
+#include "Depots-domain.nddl"
+
+Location depot0 = new Location("Depot 0");
+Location distributor0 = new Location("Distributor 0");
+Location distributor1 = new Location("Distributor 1");
+
+Path Depot0ToDistributor0(depot0,distributor0,5);
+Path Distributor0ToDepot0(distributor0,depot0,5);
+Path Depot0ToDistributor1(depot0,distributor1,7);
+Path Distributor1ToDepot0(distributor1,depot0,4);
+Path Distributor0ToDistributor1(distributor0,distributor1,5);
+Path Distributor1ToDistributor0(distributor1,distributor0,4);
+
+Truck truck0 = new Truck("Truck 0", 4);
+Truck truck1 = new Truck("Truck 1", 8);
+
+Pallet pallet0 = new Pallet("Pallet 0", depot0);
+Pallet pallet1 = new Pallet("Pallet 1", distributor0);
+Pallet pallet2 = new Pallet("Pallet 2", distributor1);
+
+Crate crate0 = new Crate("Crate 0");
+Crate crate1 = new Crate("Crate 1");
+
+// NOTE: hoist are built-in @ Location
+close();
+
+
+// Initial Facts
+fact(crate0.top.Clear crate0InitialClear);
+crate0InitialClear.start.specify(0);
+crate0InitialClear.activate();
+
+fact(crate0.bottom.OnPallet crate0InitialLocation);
+crate0InitialLocation.start.specify(0);
+crate0InitialLocation.pallet.specify(pallet1);
+crate0InitialClear.activate();
+
+fact(crate1.top.Clear crate1InitialClear);
+crate1InitialClear.start.specify(0);
+crate1InitialClear.activate();
+
+fact(crate1.bottom.OnPallet crate1InitialLocation);
+crate1InitialLocation.start.specify(0);
+crate1InitialLocation.pallet.specify(pallet0);
+crate1InitialClear.activate();
+
+fact(pallet0.state.NotClear pallet0InitialClear);
+pallet0InitialClear.start.specify(0);
+pallet0InitialClear.activate();
+
+fact(pallet1.state.NotClear pallet1InitialClear);
+pallet1InitialClear.start.specify(0);
+pallet1InitialClear.activate();
+
+fact(pallet2.state.Clear pallet2InitialClear);
+pallet2InitialClear.start.specify(0);
+pallet2InitialClear.activate();
+
+fact(truck0.state.FreeAt truck0InitiallyAt);
+truck0InitiallyAt.start.specify(0);
+truck0InitiallyAt.location.specify(distributor1);
+truck0InitiallyAt.activate();
+
+fact(truck1.state.FreeAt truck1InitiallyAt);
+truck1InitiallyAt.start.specify(0);
+truck1InitiallyAt.location.specify(depot0);
+truck1InitiallyAt.activate();
+
+fact(depot0.hoist.Available depot0InitialHoistAvailable);
+depot0InitialHoistAvailable.start.specify(0);
+depot0InitialHoistAvailable.activate();
+
+fact(distributor0.hoist.Available distributor0InitialHoistAvailable);
+distributor0InitialHoistAvailable.start.specify(0);
+distributor0InitialHoistAvailable.activate();
+
+fact(distributor1.hoist.Available distributor1InitialHoistAvailable);
+distributor1InitialHoistAvailable.start.specify(0);
+distributor1InitialHoistAvailable.activate();
+
+// Establish Goals
+goal(crate0.bottom.OnPallet crate0FinalLocation);
+eq(crate0FinalLocation.pallet,pallet2);
+
+goal(crate1.bottom.OnPallet crate1FinalLocation);
+eq(crate1FinalLocation.pallet,pallet1);
+
+// EOF
