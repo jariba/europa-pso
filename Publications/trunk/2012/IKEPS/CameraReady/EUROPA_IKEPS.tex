@@ -146,14 +146,59 @@ In this section, we will start with an introduction to \europa\ main modeling la
 There are several examples of NDDL for well known planning and CSP domains such as Blocksworld, 8-Queen, RCPSP available at the \europa\ website.\\
 
 
-\comment{JRB: do we want to add a short nddl snippet that show the concepts mentioned above?}
+\comment{TODO: Formatting and caption}
+\begin{verbatim}
+class LightBulb extends Timeline
+{
+    predicate On  {}
+    predicate Off {}
+}
 
+class LightSwitch extends Timeline
+{
+    LightBulb myBulb_;
+
+    LightSwitch(LightBulb b)
+    {
+        myBulb_ = b;
+    }
+
+    action turnOn  { duration=1; }
+    action turnOff { duration=1; }
+}
+
+LightSwitch::turnOn
+{
+    met_by(condition object.myBulb_.Off);  // Bulb must be Off to be turned On
+    meets(effect object.myBulb_.On);   // Must be turned on through the switch
+}
+
+LightSwitch::turnOff
+{
+    met_by(condition object.myBulb_.On);   // Bulb must be On to be turned Off
+    meets(effect object.myBulb_.Off);      // Must be turned off through the switch
+}
+
+\end{verbatim}
 
 \noindent {\bf  The NDDL Transaction Language:}
 NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction Language}, to operate on the partial plan and thus initialize and/or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data (as opposed to the problem domain abstraction that is stated through other NDDL elements). It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through \europa's client interface. The NDDL transaction language has many applications. The most common one is the construction of an initial partial plan as an input to a solver. A second important application is to log transactions on the plan database for later replay. This is useful for copying a database, and for reproducing a state found through planning in a direct manner without having to search. It is also a potentially very useful integration mechanism for pushing updates to the plan database from external systems.\\
 
-\comment{JRB: do we want to add a short nddl snippet that show the concepts mentioned above?}
+\comment{TODO: Formatting & caption}
+\begin{verbatim}
+// Problem instance : turning the light off
+LightBulb bulb1 = new LightBulb();
+LightSwitch switch1 = new LightSwitch(bulb1);
 
+// At time 0, the bulb is on
+fact(bulb1.On initialCondition);
+eq(initialCondition.start,0);
+
+// We want the bulb to be off by time 10
+goal(bulb1.Off goal1);
+lt(0,goal1.start);
+lt(goal1.start,10);
+\end{verbatim}
 
 %---------------------------
 \subsection{\europa's Core Reasoning Components}
@@ -234,7 +279,41 @@ There are several different ways in which \europa\ can be used to to support sol
 \item Shutdown \europa\
 \end{enumerate}
 
-\comment{JRB: Provide a short snippet showing a  "hello world" java app that embeds europa?}
+\comment{TODO: Formatting and Caption}
+\begin{verbatim}
+int main(int argc, const char ** argv)
+{
+  try {
+    const char* nddlFile = argv[1];
+    const char* plannerConfig = argv[2];
+  
+    PSEngine* engine = PSEngine::makeInstance();
+    engine->start();
+    
+    // Load nddl model and problem instance
+    engine->executeScript("nddl",nddlFile,true/*isFile*/);
+
+    PSSolver* solver = engine->createSolver(plannerConfig);
+    int startHorizon=0, endHorizon=100;
+    solver->configure(startHorizon,endHorizon);
+    
+    int maxSteps=1000, maxDepth=1000;
+    solver->solve(maxSteps,maxDepth);   
+    
+    // Print resulting plan
+    std::cout << engine->planDatabaseToString() << std::endl;
+    
+    delete solver;
+    delete engine;
+    return 0;
+  }
+  catch (Error& e) {
+        std::cerr << "PSEngine failed:" << e.getMsg() << std::endl;
+        return -1;
+  }
+}
+
+\end{verbatim}
 
 \noindent {\em Using the C++ or JAVA API:} The \emph{PSEngine} interface is the official interface for \europa\ clients, it is the recommended way to use \europa. This interface is very straightforward and allows the user to run the entire application cycle described above. This abstraction layer will isolate a user's client code from most changes in the internals of the \europa\ implementation, it is also designed for easy mapping to other languages using SWIG.\\
 
