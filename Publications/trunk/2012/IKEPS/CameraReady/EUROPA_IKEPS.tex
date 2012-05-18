@@ -86,7 +86,7 @@
 %------
 \begin{abstract}
 
-\europa\ is a class library and tool set for building and analyzing planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm. This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications. \europa\ offers capabilities in 3 key areas of problem solving: (1) Representation; (2) Reasoning; and (3) Search. \europa\ is a means to integrate advanced planning, scheduling and constraint reasoning into an end-user application and is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.  In this paper, we will outline the core capabilities of this open-source planning \& scheduling framework. While \europa\ is the complete planning and scheduling software suite, we will pay extra attentions on the aspects that are relevant to the knowledge engineering purpose: modeling supports, planner integration, and plan visualization and analysis.
+\europa\ is a class library and tool set for building and analyzing planners within a Constraint-based Temporal Planning paradigm. This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications. \europa\ offers capabilities in 3 key areas of problem solving: (1) Representation; (2) Reasoning; and (3) Search. \europa\ is a means to integrate advanced planning, scheduling and constraint reasoning into an end-user application and is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.  In this paper, we will outline the core capabilities of this open-source planning \& scheduling framework. While \europa\ is the complete planning and scheduling software suite, we will pay special attention to the aspects that are relevant for knowledge engineering: modeling support, embedding a planner into an end-user application, and plan visualization and analysis.
 
 \end{abstract}
 %-----
@@ -96,7 +96,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-\europa\ (Extensible Universal Remote Operations Planning Architecture) is a class library and tool set for building planners (and/or schedulers) within a Constraint-based Temporal Planning paradigm ~\cite{frank:europa}. Constraint-based Temporal Planning (and Scheduling) is a paradigm of planning based on an explicit notion of time and a deep commitment to a constraint-based formulation of planning problems. This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications including:
+\europa\ (Extensible Universal Remote Operations Planning Architecture) is a class library and tool set for building planners within a Constraint-based Temporal Planning paradigm ~\cite{frank:europa}. Constraint-based Temporal Planning and Scheduling is a paradigm of planning based on an explicit notion of time and a deep commitment to a constraint-based formulation of planning problems. This paradigm has been successfully applied in a wide range of practical planning problems and has a legacy of success in NASA applications including:
 
 \begin{itemize}
 \item Observation scheduling for the Hubble Telescope ~\cite{muscettola:1998}
@@ -105,17 +105,17 @@
 \item Autonomous control of EO-1.
 \end{itemize}
 
-\europa\ is now at version 2.6 and is the successor of the original \europa\ which in turn was based upon HSTS ~\cite{muscettola:1998}. It has been made available under an open-source license. The source code and extensive documents on \europa\ are available at: \emph{http://code.google.com/p/europa\-pso/}.  \europa's major strengths are: (1) flexibility in integrating with client applications; (2) proven track record; (3) open-source software license; and (4) online document repository with detailed guidelines and a variety of examples in different domains. As a Planning \& Scheduling Knowledge Engineering tool, it has components to support the modeling and plan analysis processes.
+\europa\ is now at version 2.6 and is the successor of the original \europa\ which in turn was based upon HSTS ~\cite{muscettola:1998}. It has been made available under an open-source license. The source code and extensive documents on \europa\ are available at: \emph{http://code.google.com/p/europa\-pso/}.  \europa's major strengths as an embeddable planning toolkit are: (1) flexibility in integrating with client applications; (2) proven track record; (3) open-source software license; and (4) online document repository with detailed guidelines and a variety of examples in different domains. As a Planning \& Scheduling Knowledge Engineering tool, it has components to support the modeling and plan analysis processes.
 
 As a complete Planning \& Scheduling platform, \europa\ offers capabilities in 3 key areas of problem solving:
 
 \begin{enumerate}
 \item {\bf Representation}: \europa\ allows a rich representation for actions, states, resources and constraints that allows concise declarative descriptions of problem domains and powerful expressions of plan structure. This representation is supported with a high-level object-oriented modeling language for describing problem domains and data structures for instantiating and manipulating problem instances.
-\item {\bf Reasoning \& Inference}: Algorithms are provided which exploit the formal structure of problem representation to enforce domain rules and propagate consequences as updates are made to the problem state. These algorithms are based on logical inference and constraint-processing. Specialized techniques for reasoning about temporal constraints included in \europa\ are particularly useful to deal with real-life problem domains.
+\item {\bf Reasoning \& Inference}: Algorithms are provided which exploit the formal structure of problem representation to enforce domain rules and propagate consequences as updates are made to the problem state. These algorithms are based on logical inference and constraint-processing. Specialized techniques for reasoning about temporal constraints and resource included in \europa\ are particularly useful to deal with real-life problem domains.
 \item {\bf Search}: Problem solving in \europa\ requires search. Effective problem solving typically requires heuristics to make search tractable and to find good solutions. \europa\ provides a framework for integrating heuristics into a basic search algorithm and for developing new search algorithms.
 \end{enumerate}
 
-\europa's key development goal is to easy the process of integrate advanced planning, scheduling and constraint reasoning into an end-user application. \europa\ is not a specific planner or a scheduler. Rather it is a framework for developing specific planners and/or schedulers. It is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.
+One of \europa's key development goals is to streamline the process of integrating advanced planning, scheduling and constraint reasoning into an end-user application. \europa\ is not a specific planner or a scheduler. Rather it is a framework for developing specific planners and/or schedulers. It is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.
 
 \europa\ is unconventional in providing a separate \emph{Plan Database} (i.e., a structure to represent a partial or complete lifted partial order temporal plan)  that can integrate in a wide variety of applications. This reflects the common needs for representation and manipulation of plan data in different application contexts and different problem solving approaches. Possible approaches include:
 
@@ -125,7 +125,7 @@ As a complete Planning \& Scheduling platform, \europa\ offers capabilities in 3
 \item An autonomous execution system where the plan database stores the plan data as it evolves in time, being updated from data in the environment, commitments from the executive, and the accompanying automated solver which plans ahead and fixes plans when they break.
 \end{itemize}
 
-While \europa\ is a large complex planning \& scheduling framework which provides many reasoning capabilities, in this paper we pay extra attention to knowledge engineering for planning aspects  such as: modeling support, integrated planner invocation and configuration, and plan visualization and analysis. To emphasize its flexibility and robustness, we will include examples from different class of problems such as resource scheduling, simple planning domains (BlocksWorld), complex planning domains (Rovers), and CSP benchmarks (N-Queens). All those examples are included in the open-source distribution of \europa. 
+While \europa\ is a large and complex planning \& scheduling framework which provides many reasoning capabilities, in this paper we pay extra attention to knowledge engineering for planning aspects  such as: modeling support, embedded planner invocation and configuration, and plan visualization and analysis. To emphasize its flexibility and robustness, we will include examples from different class of problems such as resource scheduling, simple planning domains (BlocksWorld), complex planning domains (Rovers), and CSP benchmarks (N-Queens). All those examples are included in the open-source distribution of \europa. 
 
 For the rest of this paper, we will first provide in Section~\ref{sec:technical-background} a brief background on  \europa's architecture and its modeling and reasoning capabilities. We then provide a short guide in Section~\ref{sec:using-europa} on how to use \europa\ in the most effective way. Section~\ref{sec:ke-tool} describe \europa's knowledge engineering aspects and we illustrate its KE capabilities with a list of simple examples in Section~\ref{sec:example}. We then list the NASA and non-NASA projects that have used \europa. We finish the paper with a brief discussion of related work and discussion of our product roadmap for future releases of \europa.
 
@@ -144,10 +144,13 @@ In this section, we will start with an introduction to \europa\ main modeling la
 \europa's main input modeling language is New Domain Definition Language (NDDL) (pronounced `noodle'), a domain description language for constraint-based planning and scheduling problems. NDDL can describe a number of concepts based on Variables and Constraints~\footnote{A complete NDDL Reference guide with examples is available at: \emph{http://code.google.com/p/europa-pso/wiki/NDDLReference} and the NDDL grammar guide is available at: \emph{http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/ base/antlr/NDDL3.g}}. The NDDL representation includes state and activity descriptions, as is common in planners using traditional modeling languages like the Planning Domain Definition Language (PDDL) ~\cite{gerevini:ipcjair,hoffmann:ipcjair}.  However, unlike PDDL, NDDL uses a state variable-value formalism. \europa\ thus takes its heritage from planning formalisms like IxTeT ~\cite{ghallab:rci} and SAS+ ~\cite{jonsson:1998}. \europa\ state variables are called timelines, and the values of timelines are sequences of states. States are temporally extended predicates, and consist of a proposition and a list of parameters, which by default includes the start, end and duration times.  Timelines are totally ordered sequences of states; hence, a timeline can be in only one state at any instant.  The final component of NDDL model is a set of compatibilities that govern the legal arrangements of states on, and across, timelines.  These compatibilities are logical implications asserting that if a timeline is in a state, then other timelines must be in one of a set of compatible states. Compatibilities can incorporate explicit constraints on the parameters of the states.  \europa\ provides a library of such constraints, and this library can be extended if new constraints are needed.
 
 There are several examples of NDDL for well known planning and CSP domains such as Blocksworld, 8-Queen, RCPSP available at the \europa\ website.\\
+
+
 \comment{JRB: do we want to add a short nddl snippet that show the concepts mentioned above?}
 
+
 \noindent {\bf  The NDDL Transaction Language:}
-NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction Language}, to operate on the partial plan and thus initialize and/or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data. It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through the DbClient interface. The NDDL transaction language has many applications. The most common one is the construction of an initial partial plan as an input to a solver. A second important application is to log transactions on the plan database for later replay. This is useful for copying a database, and for reproducing a state found through planning in a direct manner without having to search. It is also a potentially very useful integration mechanism for pushing updates to the plan database from external systems.\\
+NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction Language}, to operate on the partial plan and thus initialize and/or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data (as opposed to the problem domain abstraction that is stated through other NDDL elements). It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through \europa's client interface. The NDDL transaction language has many applications. The most common one is the construction of an initial partial plan as an input to a solver. A second important application is to log transactions on the plan database for later replay. This is useful for copying a database, and for reproducing a state found through planning in a direct manner without having to search. It is also a potentially very useful integration mechanism for pushing updates to the plan database from external systems.\\
 
 \comment{JRB: do we want to add a short nddl snippet that show the concepts mentioned above?}
 
@@ -157,7 +160,6 @@ NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction L
 \label{subsec:reasoning}
 
 Figure~\ref{fig:architecture} shows the main reasoning components of \europa\ and the relationships/interactions between them.
-\comment{JRB: we may still need to include the UI and eclipse tools in Figure~\ref{fig:architectture}}
 
 %--
 \begin{figure}
@@ -171,7 +173,6 @@ Figure~\ref{fig:architecture} shows the main reasoning components of \europa\ an
 \end{figure}
 %--
 
-\comment{JRB: I'll have to update this section}
 
 \noindent {\bf Utils module}: provides common C++ utility classes for error checking, smart pointers etc. It also includes a very useful debugging utility. Many common programming practices in \europa\ development are built on assets in this module.\\
 
@@ -207,7 +208,8 @@ Figure~\ref{fig:architecture} shows the main reasoning components of \europa\ an
 \noindent {\bf Rules Engine:} provides the inference capabilities based on domain rules described in the model. It is almost exclusively used to execute NDDL rules but can be extended for custom rule formats.\\
 
 \noindent {\bf Resources module}:  provides specialized algorithms and data structures to support metric resources (e.g. battery, power bus, disk drive).
-The Temporal Network module provides specialized algorithms and data structures to support efficient propagation of temporal constraints.\\
+
+\noindent {\bf Temporal Network module}:  provides specialized algorithms and data structures to support efficient propagation of temporal constraints.\\
 
 \noindent {\bf NDDL/ANML module}: provides a parser and compiler for NDDL, the main input language of NDDL. This module defines the mapping from the language to the code and consequently interfaces to a number of key modules in the system. We will also discuss in the later section the currently developed PM/IDE tool to add to \europa\ the support of another planning modeling language ANML, which is closer to the standard language PDDL.\\
 
@@ -221,7 +223,7 @@ There are several different ways in which \europa\ can be used to to support sol
 
 
 %------------------------------------
-\noindent {\bf Embed \europa\ in an Application:} \europa\ provides a script called \emph{makeproject} that will generate C++ and Java applications that embed \europa, along with simple NDDL model and initial-state files that users can then modify for their own purposes. This allows the users to perform the full application cycle of:
+\noindent {\bf Embed \europa\ in an Application:} \europa\ provides a script called \emph{makeproject} that will generate C++ and Java applications that embed \europa, along with simple NDDL model and initial-state files that users can then modify for their own purposes. This allows the users to perform the full application cycle:
 
 \begin{enumerate}
 \item Initialize \europa\
@@ -289,6 +291,8 @@ In this section, we will describe two different ways to support modeling in NDDL
 
 \noindent {\bf NDDL Graphical Model Editor:} Eclipse plugin registers a file type for ``.nddl" and a default editor for it. The editor has \emph{syntax highlighting} and an \emph{outline}, which is updated every time an editor is saved. If the parser detects any errors, they are displayed as error markers in the editor. Figure~\ref{fig:NDDL_editor} shows the GUI for editing and checking the NDDL files.\\
 
+\comment {JRB: is this accurate? as far as I know SH is done with their SBIR and there are no plans to implement generic ANML-PDDL support)}
+
 \noindent {\bf ANML Graphical Model Editor:} Stottle Henke is currently under contract to develop Eclipse-based tool called PM/IDE to add support for ANML ~\cite{smith:anml}, the new modeling language that import features from PDDL, IxTeT, AML, and NDDL. ANML models can then be translated directly into NDDL and \europa\ can be invoked within the tool to run on the translated model files. PM/IDE provides text-based and graphical visualization to help modelers analyze relationships between actions, fluents, and objects. The current main PM/IDE's capabilities are:
 
 \begin{itemize}
@@ -301,7 +305,10 @@ In this section, we will describe two different ways to support modeling in NDDL
 
 Currently, PM/IDE also supports limited ANML to NDDL translation capability that can translate a subset of the ANML language into NDDL and also the NDDL browsing and editing features to PM/IDE. Thus, for a subset of ANML, modelers can:
 
-\begin{enumerate}\item Use ANML text-oriented views and visualizations to enter, edit, and review an ANML planning domain model and problem,\item Invoke the ANML $\rightarrow$ NDDL translator to translate the ANML model and problem into NDDL,\item Use NDDL views to review and edit (if necessary) the automatically-generated NDDL, 
+\begin{enumerate}
+\item Use ANML text-oriented views and visualizations to enter, edit, and review an ANML planning domain model and problem,
+\item Invoke the ANML $\rightarrow$ NDDL translator to translate the ANML model and problem into NDDL,
+\item Use NDDL views to review and edit (if necessary) the automatically-generated NDDL, 
 \end{enumerate}
 
 
@@ -396,7 +403,7 @@ In this section, we show several examples that demonstrate the flexibility of \e
 
 \noindent {\bf N-Queens:}  N-Queens is one of CSP's workhorses. Figure~\ref{fig:nqueens} shows how \europa\ supports model and solve this problem through {\em PSDesktop}. Users can click on a chess board to move the the queens around and see the constraint violations that \europa\ computes by moving the mouse over each queen. It also provides a simple Tabu Search solver which briefly illustrates how users can build their own solvers on top of \europa.\\
 
-\noindent {\bf Resource Constrained Project Scheduling Problem (RCPSP):} this is a  well known problem in the OR community that consists of scheduling a set of activities with temporal and resource constraints. Typically, the goal is to minimize total project duration while respecting all constraints (Figure~\ref{fig:PSUI_exp}). Like previous example, this example shows how users can build their own solvers on top of \europa\ for a specific problem.\\
+\noindent {\bf Resource Constrained Project Scheduling Problem (RCPSP):} this is a  well known problem in the OR community that consists of scheduling a set of activities with temporal and resource constraints. Typically, the goal is to minimize total project duration while respecting all constraints (Figure~\ref{fig:PSUI_exp}). Like the previous example, this example shows how users can build their own solvers on top of \europa\ for a specific problem.\\
 
 \noindent {\bf Shopping}: a simple example discussed in Russel and Norvig's AI textbook, first Edition, Chapter 11 on Planning (Figure~\ref{fig:shopping}).\\
 
@@ -491,7 +498,7 @@ Outside of NASA, it has also beed used at MBARI to help control underwater auton
 
 In this paper, we described \europa\ with concentration on its modeling and plan analysis capabilities. The main strengths of \europa\ are: (1) expressive; (2) flexible framework; (3) strong support for integration with other applications; (4) open-source license; and (5) proven track record.
 
-While \europa\ and its supporting tools have been going through a long period of development, we still have a long list of improvements that we want to make. The most important ones in our opinion are: significantly improve search (especially heuristic guidance) and inference capabilities, support the ANML and PDDL modeling languages, improve the visualization and debugging tools and  allow \europa\ extensions to be written in other languages. Given that \europa\ is open-source software, we welcome contributions from planning and scheduling researchers and practitioners. \\
+While \europa\ and its supporting tools have been going through a long period of development, we still have a long list of improvements that we want to make. The most important ones in our opinion are: significantly improve search (especially heuristic guidance) and inference capabilities, support the ANML and PDDL modeling languages, improve the visualization and debugging tools and allow \europa\ extensions to be written in other languages. Given that \europa\ is open-source software, we welcome contributions from planning and scheduling researchers and practitioners. \\
 
 
 \noindent {\bf Acknowledgements:} \europa\ is the result of many years of research, development and deployment of constraint-based planning technology.
