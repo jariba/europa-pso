@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2011)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: EUROPA_IKEPS.aux
+The style file: named.bst
+Database file #1: /Users/mbdo/Documents/master.bib
+Warning--empty booktitle in smith:pddl-nddl
+You've used 10 entries,
+            2439 wiz_defined-function locations,
+            605 strings with 6249 characters,
+and the built_in function-call counts, 4178 in all, are:
+= -- 400
+> -- 225
+< -- 1
++ -- 81
+- -- 78
+* -- 340
+:= -- 694
+add.period$ -- 30
+call.type$ -- 10
+change.case$ -- 79
+chr.to.int$ -- 10
+cite$ -- 11
+duplicate$ -- 160
+empty$ -- 298
+format.name$ -- 93
+if$ -- 848
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 10
+newline$ -- 53
+num.names$ -- 30
+pop$ -- 79
+preamble$ -- 1
+purify$ -- 89
+quote$ -- 0
+skip$ -- 126
+stack$ -- 0
+substring$ -- 152
+swap$ -- 31
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 80
+warning$ -- 1
+while$ -- 27
+width$ -- 12
+write$ -- 127
+(There was 1 warning)
