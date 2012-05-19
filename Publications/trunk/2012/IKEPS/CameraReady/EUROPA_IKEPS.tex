@@ -8,8 +8,9 @@
 \usepackage{courier}
 \usepackage{ifthen}
 \usepackage{color}
+\usepackage{boxedminipage} 
 
-\nocopyright
+%\nocopyright
 
 \newcommand{\fix}[1]{{$\langle${\sc #1}$\rangle$}}
 
@@ -59,25 +60,13 @@
 
 \title{\europa: A Platform for AI Planning, Scheduling, Constraint Programming, and Optimization}
 
-\author{\large{Javier Barreiro{$^*$}, Matthew Boyce{$^*$}, Jeremy Frank{$^\dagger$}, Michael Iatauro{$^*$}, Tatiana Kichkaylo{$^\ddagger$}}\\
-\large{\bf Paul Morris{$^\dagger$}, Tristan Smith{$^*$}, David Smith{$^\dagger$}, James Ong{$^+$}, Emilio Remolina{$^+$}, Minh Do{$^*$}}\\ 
+\author{\large{Javier Barreiro{$^*$}, Matthew Boyce{$^*$}, Minh Do{$^*$}, Jeremy Frank{$^\dagger$}, Michael Iatauro{$^*$}}\\
+\large{\bf Tatiana Kichkaylo{$^\ddagger$}, Paul Morris{$^\dagger$}, James Ong{$^+$}, Emilio Remolina{$^+$}, Tristan Smith{$^*$}, David Smith{$^\dagger$}}\\ 
 {\small {$^*$} SGT Inc., NASA Ames Research Center, Mail Stop 269-3, Moffett Field, CA 94035}\\
 {\small {$^\dagger$} NASA Ames Research Center, Mail Stop 269-3, Moffett Field, CA 94035}\\
 {\small {$^+$} Stottler Henke Associates, Inc., 951 Mariners Island Blvd., Suite 360, San Mateo, CA 94404}\\
 {\small {$^\ddagger$} Decision Systems, USC Information Sciences Institute, 4676 Admiralty Way, Marina del Rey, CA 90292}
 }
-
-%\author{\small{Javier Barreiro}{$^*$}
-%\and Matthew Boyce{$^*$}
-%\and Jeremy Frank{$^\dagger$}
-%\and Michael Iatauro{$^*$}\\
-%\and Tatiana Kichkaylo{$^\ddagger$}
-%\and Paul Morris{$^\dagger$}
-%\and Tristan Smith{$^*$}
-%\and Minh Do{$^*$}}
-
-
-%Keywords: Planning, real-time}
 
 
 \date{}
@@ -146,59 +135,66 @@ In this section, we will start with an introduction to \europa\ main modeling la
 There are several examples of NDDL for well known planning and CSP domains such as Blocksworld, 8-Queen, RCPSP available at the \europa\ website.\\
 
 
-\comment{TODO: Formatting and caption}
-\begin{verbatim}
-class LightBulb extends Timeline
-{
-    predicate On  {}
-    predicate Off {}
-}
+%-----------------------------
+\begin{figure}
+\begin{boxedminipage}{0.45\textwidth}
+{\bf class} {\em LightBulb} extends {\em Timeline}\\
+\{\\
+\hspace*{0.5cm}    predicate On  \{\}\\
+\hspace*{0.5cm}        predicate Off \{\}\\
+\}\\ \\
+{\bf class} {\em LightSwitch} extends {\em Timeline}\\
+\{\\
+\hspace*{0.5cm}        LightBulb myBulb\_;\\
+\\
+\hspace*{0.5cm}        LightSwitch(LightBulb b)\\
+\hspace*{0.5cm}        \{\\
+\hspace*{1.0cm}           myBulb\_ = b;\\
+\hspace*{0.5cm}        \}\\ \\
+\hspace*{0.5cm}        action turnOn  \{ duration=1; \}\\
+\hspace*{0.5cm}        action turnOff \{ duration=1; \}\\
+\}\\ \\
+LightSwitch::turnOn\\
+\{\\
+\hspace*{0.5cm}        // Bulb must be Off to be turned On\\
+\hspace*{0.5cm}        met\_by(condition object.myBulb\_.Off); \\
+\hspace*{0.5cm}        // Must be turned on through the switch\\
+\hspace*{0.5cm}        meets(effect object.myBulb\_.On);  \\ 
+\}\\ \\
+LightSwitch::turnOff\\
+\{\\
+\hspace*{0.5cm}        // Bulb must be On to be turned Off\\
+\hspace*{0.5cm}        met\_by(condition object.myBulb\_.On);\\
+\hspace*{0.5cm}        // Must be turned off through the switch\\
+\hspace*{0.5cm}        meets(effect object.myBulb\_.Off); 
+\}
+\end{boxedminipage}
+\caption{LightBulb example NDDL model file}
+\label{algo:cost-ucpnet}
+\end{figure}
+%-----------------
 
-class LightSwitch extends Timeline
-{
-    LightBulb myBulb_;
+%-----------------------------
+\begin{figure}
+\begin{boxedminipage}{0.45\textwidth}
+LightBulb bulb1 = new LightBulb();\\
+LightSwitch switch1 = new LightSwitch(bulb1);\\\\
+// At time 0, the bulb is on\\
+fact(bulb1.On initialCondition);\\
+eq(initialCondition.start,0);\\\\
+// We want the bulb to be off by time 10\\
+goal(bulb1.Off goal1);\\
+lt(0,goal1.start);\\
+lt(goal1.start,10);
+\end{boxedminipage}
+\caption{LightBulb example NDDL problem instance: turning the light OFF}
+\label{algo:cost-ucpnet}
+\end{figure}
+%-----------------
 
-    LightSwitch(LightBulb b)
-    {
-        myBulb_ = b;
-    }
-
-    action turnOn  { duration=1; }
-    action turnOff { duration=1; }
-}
-
-LightSwitch::turnOn
-{
-    met_by(condition object.myBulb_.Off);  // Bulb must be Off to be turned On
-    meets(effect object.myBulb_.On);   // Must be turned on through the switch
-}
-
-LightSwitch::turnOff
-{
-    met_by(condition object.myBulb_.On);   // Bulb must be On to be turned Off
-    meets(effect object.myBulb_.Off);      // Must be turned off through the switch
-}
-
-\end{verbatim}
 
 \noindent {\bf  The NDDL Transaction Language:}
 NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction Language}, to operate on the partial plan and thus initialize and/or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data (as opposed to the problem domain abstraction that is stated through other NDDL elements). It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through \europa's client interface. The NDDL transaction language has many applications. The most common one is the construction of an initial partial plan as an input to a solver. A second important application is to log transactions on the plan database for later replay. This is useful for copying a database, and for reproducing a state found through planning in a direct manner without having to search. It is also a potentially very useful integration mechanism for pushing updates to the plan database from external systems.\\
-
-\comment{TODO: Formatting & caption}
-\begin{verbatim}
-// Problem instance : turning the light off
-LightBulb bulb1 = new LightBulb();
-LightSwitch switch1 = new LightSwitch(bulb1);
-
-// At time 0, the bulb is on
-fact(bulb1.On initialCondition);
-eq(initialCondition.start,0);
-
-// We want the bulb to be off by time 10
-goal(bulb1.Off goal1);
-lt(0,goal1.start);
-lt(goal1.start,10);
-\end{verbatim}
 
 %---------------------------
 \subsection{\europa's Core Reasoning Components}
@@ -266,6 +262,47 @@ From an application developerÕs view-point, the modules of interest are: {\em ND
 
 There are several different ways in which \europa\ can be used to to support solving a planning \& scheduling or CSP problem: (1) embed \europa\ within the client application; (2) using \emph{PSDesktop}, a Java Swing UI Framework; and (3) utilizing the provided Eclipse plugins. For the rest of this section, we will outline those three different approaches and provide some examples.
 
+%---------
+\begin{figure}
+\begin{boxedminipage}{0.5\textwidth}
+int main(int argc, const char ** argv)\\
+\{\\
+\hspace*{0.2cm}     try \{\\
+\hspace*{0.5cm}       const char* nddlFile = argv[1];\\
+\hspace*{0.5cm}       const char* plannerConfig = argv[2];\\
+  \\
+\hspace*{0.5cm}       PSEngine* engine = PSEngine::makeInstance();\\
+\hspace*{0.5cm}       engine$\rightarrow$start();\\
+    \\
+\hspace*{0.5cm}       // Load nddl model and problem instance\\
+\hspace*{0.5cm}       engine$\rightarrow$executeScript("nddl",nddlFile,true/*isFile*/);\\
+ \\
+\hspace*{0.5cm}       PSSolver* solver = engine$\rightarrow$createSolver(plannerConfig);\\
+\hspace*{0.5cm}       int startHorizon=0, endHorizon=100;\\
+\hspace*{0.5cm}       solver$\rightarrow$configure(startHorizon,endHorizon);\\
+    \\
+\hspace*{0.5cm}       int maxSteps=1000, maxDepth=1000;\\
+\hspace*{0.5cm}       solver$\rightarrow$solve(maxSteps,maxDepth); \\
+    \\
+\hspace*{0.5cm}       // Print resulting plan\\
+\hspace*{0.5cm}       std::cout $\ll$ engine$\rightarrow$planDatabaseToString() \\
+\hspace*{1.8cm}          $\ll$ std::endl;\\
+    \\
+\hspace*{0.5cm}       delete solver;\\
+\hspace*{0.5cm}       delete engine;\\
+\hspace*{0.5cm}       return 0;\\
+\hspace*{0.2cm}     \}\\
+\hspace*{0.2cm}     catch (Error\& e) \{\\
+\hspace*{0.5cm}           std::cerr $\ll$ "PSEngine failed:"\\
+\hspace*{1.8cm}  $\ll$ e.getMsg() $\ll$ std::endl;\\
+\hspace*{0.5cm}           return -1;\\
+\hspace*{0.2cm}     \}\\
+\}
+\end{boxedminipage}
+\caption{Example of embedding \europa\ in a C++ application by utilizing the API through extending the code template generated by the \emph{makeproject} utility.}
+\label{algo:cost-ucpnet}
+\end{figure}
+%-----------------
 
 %------------------------------------
 \noindent {\bf Embed \europa\ in an Application:} \europa\ provides a script called \emph{makeproject} that will generate C++ and Java applications that embed \europa, along with simple NDDL model and initial-state files that users can then modify for their own purposes. This allows the users to perform the full application cycle:
@@ -279,41 +316,7 @@ There are several different ways in which \europa\ can be used to to support sol
 \item Shutdown \europa\
 \end{enumerate}
 
-\comment{TODO: Formatting and Caption}
-\begin{verbatim}
-int main(int argc, const char ** argv)
-{
-  try {
-    const char* nddlFile = argv[1];
-    const char* plannerConfig = argv[2];
-  
-    PSEngine* engine = PSEngine::makeInstance();
-    engine->start();
-    
-    // Load nddl model and problem instance
-    engine->executeScript("nddl",nddlFile,true/*isFile*/);
 
-    PSSolver* solver = engine->createSolver(plannerConfig);
-    int startHorizon=0, endHorizon=100;
-    solver->configure(startHorizon,endHorizon);
-    
-    int maxSteps=1000, maxDepth=1000;
-    solver->solve(maxSteps,maxDepth);   
-    
-    // Print resulting plan
-    std::cout << engine->planDatabaseToString() << std::endl;
-    
-    delete solver;
-    delete engine;
-    return 0;
-  }
-  catch (Error& e) {
-        std::cerr << "PSEngine failed:" << e.getMsg() << std::endl;
-        return -1;
-  }
-}
-
-\end{verbatim}
 
 \noindent {\em Using the C++ or JAVA API:} The \emph{PSEngine} interface is the official interface for \europa\ clients, it is the recommended way to use \europa. This interface is very straightforward and allows the user to run the entire application cycle described above. This abstraction layer will isolate a user's client code from most changes in the internals of the \europa\ implementation, it is also designed for easy mapping to other languages using SWIG.\\
 
@@ -328,7 +331,8 @@ int main(int argc, const char ** argv)
 \item  \emph{bsh} file (optional) : filename of the \emph{BeanShell} file that is executed upon starting\footnote{BeanShell is a small, free, embeddable Java source interpreter with object scripting language features, written in Java. BeanShell dynamically executes standard Java syntax and extends it with common scripting conveniences such as loose types, commands, and method closures like those in Perl and JavaScript.}.
 \end{itemize}
 
-Figure~\ref{fig:PSDesktop_start} shows the two console windows when running {\em PSDesktop}. In the BeanShell console window the user can type in Java statements that allow him to drive \europa\ interactively through its Java API.  \comment{JRB: The NDDL console is currently broken!} 
+Figure~\ref{fig:PSDesktop_start} shows the two console windows when running {\em PSDesktop}. In the BeanShell console window the user can type in Java statements that allow him to drive \europa\ interactively through its Java API.  
+%\comment{JRB: The NDDL console is currently broken!} 
 In the NDDL console the user can type in NDDL statements that will be interpreted as soon as he completes a valid NDDL statement and hit enter.\\
 
 %------------------
@@ -370,7 +374,7 @@ In this section, we will describe two different ways to support modeling in NDDL
 
 \noindent {\bf NDDL Graphical Model Editor:} Eclipse plugin registers a file type for ``.nddl" and a default editor for it. The editor has \emph{syntax highlighting} and an \emph{outline}, which is updated every time an editor is saved. If the parser detects any errors, they are displayed as error markers in the editor. Figure~\ref{fig:NDDL_editor} shows the GUI for editing and checking the NDDL files.\\
 
-\comment {JRB: is this accurate? as far as I know SH is done with their SBIR and there are no plans to implement generic ANML-PDDL support)}
+%\comment {JRB: is this accurate? as far as I know SH is done with their SBIR and there are no plans to implement generic ANML-PDDL support)}
 
 \noindent {\bf ANML Graphical Model Editor:} Stottle Henke is currently under contract to develop Eclipse-based tool called PM/IDE to add support for ANML ~\cite{smith:anml}, the new modeling language that import features from PDDL, IxTeT, AML, and NDDL. ANML models can then be translated directly into NDDL and \europa\ can be invoked within the tool to run on the translated model files. PM/IDE provides text-based and graphical visualization to help modelers analyze relationships between actions, fluents, and objects. The current main PM/IDE's capabilities are:
 
@@ -592,7 +596,7 @@ External contributors and collaborators include: Tatiana Kichkaylo, Mark Roberts
 
 
 {\small
-\bibliography{../../../Bibliography/master}
+\bibliography{/Users/mbdo/Documents/master}
 \bibliographystyle{named}
 }
 
