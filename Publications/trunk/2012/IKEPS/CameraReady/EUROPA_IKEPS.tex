@@ -197,10 +197,10 @@ lt(goal1.start,10);
 NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction Language}, to operate on the partial plan and thus initialize or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data (as opposed to the problem domain abstraction that is stated through other NDDL elements). It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through \europa's client interface. The NDDL transaction language has many applications. The most common one is the construction of an initial partial plan as an input to a solver. A second important application is to log transactions on the plan database for later replay. This is useful for copying a database, and for reproducing a state found through planning in a direct manner without having to search. It is also a potentially very useful integration mechanism for pushing updates to the plan database from external systems.\\
 
 %---------------------------
-\subsection{\europa's Core Reasoning Components}
+\subsection{\europa's Architectural Components}
 \label{subsec:reasoning}
 
-Figure~\ref{fig:architecture} shows the main reasoning components of \europa\ and the relationships and interactions between them.
+Figure~\ref{fig:architecture} shows \europa\'s main architectural components. Keeping in mind that  \europa\ is a framework, not an application, the components are arranged according to their relatively static structural role, which is determined by their responsibilities as explained below. The runtime relationships between this modules and how they interact in detail to assist problem solving is beyond the scope of this paper, [TODO: reference Robotics Autonomy paper] covers these aspects in a good amount of detail
 
 %--
 \begin{figure}
@@ -215,14 +215,17 @@ Figure~\ref{fig:architecture} shows the main reasoning components of \europa\ an
 %--
 
 
-% \noindent {\bf Utils module}: provides common C++ utility classes for error checking, smart pointers etc. It also includes a very useful debugging utility. Many common programming practices in \europa\ development are built on assets in this module.\\
+The deepest layer in Figure~\ref{fig:architecture} depicts \europa\'s kernel, which offers  fundamental representation, reasoning, modeling and search capabilities that can be configured, extended and customized to create planning and scheduling applications
 
 \noindent {\bf Constraint Engine}: is the nexus for consistency management. It provides a general-purpose component-based architecture for handling dynamic constraint networks. It deals in variables and constraints. It includes an open propagation architecture making it straightforward to integrate specialized forms of local and global constraint propagation.\\
 
 \noindent {\bf Plan Database}: adds higher levels of abstractions for tokens and objects and the interactions between them. This is the code embodiment of the \europa\ planning paradigm. It supports all services for creation, deletion, modification and inspection of partial plans. It maintains the dynamic constraint network underlying a partial–plan by delegation to the Constraint Engine and leverages that propagation infrastructure to maintain relationships between tokens and objects.\\
 
-\noindent {\bf Solvers module}: provides abstractions to support search in line with the \europa\ planning approach. It includes a component-based architecture for Flaw Identification, Resolution and heuristics as well as an algorithm for chronological backtracking search. As additional search algorithms are implemented they will be added to this module.\\
+\noindent {\bf Rules Engine:} provides the inference capabilities based on domain rules described in the model. It is almost exclusively used to execute NDDL rules but can be extended for custom rule formats.\\
+ 
+ \noindent {\bf Solvers module}: provides abstractions to support search in line with the \europa\ planning approach. It includes a component-based architecture for Flaw Identification, Resolution and heuristics as well as an algorithm for chronological backtracking search. As additional search algorithms are implemented they will be added to this module.\\
 
+ \noindent {\bf Modeling languages module}:
 
 %--
 \begin{figure*}
@@ -246,13 +249,15 @@ Figure~\ref{fig:architecture} shows the main reasoning components of \europa\ an
 %--
 
 
-\noindent {\bf Rules Engine:} provides the inference capabilities based on domain rules described in the model. It is almost exclusively used to execute NDDL rules but can be extended for custom rule formats.\\
-
-\noindent {\bf Resources module}:  provides specialized algorithms and data structures to support metric resources (e.g. battery, power bus, disk drive).
+The next layer in Figure~\ref{fig:architecture} depicts important extension modules that have been found to be useful in dealing with real life domains and are therefore bundled with the \europa\ distribution. These modules were built using the exact same mechanisms that are available to all \europa\ user for building their own specialized modules on top of \europa\'s kernel.
 
 \noindent {\bf Temporal Network module}:  provides specialized algorithms and data structures to support efficient propagation of temporal constraints.\\
 
+\noindent {\bf Resources module}:  provides specialized algorithms and data structures to support metric resources (e.g. battery, power bus, disk drive).
+
 \noindent {\bf NDDL/ANML module}: provides a parser and compiler for NDDL, the main input language of NDDL. This module defines the mapping from the language to the code and consequently interfaces to a number of key modules in the system. We will also discuss in the later section the currently developed PM/IDE tool to add to \europa\ the support of another planning modeling language ANML~\cite{smith:anml}, which is closer to the standard language PDDL.\\
+
+[TODO: talk briefly about API and client apps]
 
 From an application developer’s view-point, the components of the most interest are: NDDL modeling language, Client API to the Solvers, and the UI \& Eclipse tools (which we will explain shortly). These modules address modeling, access to the problem solving mechanism and troubleshooting respectively. Other modules will be explored in the context of making customized extensions.
 
