@@ -257,7 +257,7 @@ The next layer in Figure~\ref{fig:architecture} depicts important extension modu
 
 \noindent {\bf NDDL/ANML module}: provides a parser and compiler for NDDL, the main input language of NDDL. This module defines the mapping from the language to the code and consequently interfaces to a number of key modules in the system. We will also discuss in the later section the currently developed PM/IDE tool to add to \europa\ the support of another planning modeling language ANML~\cite{smith:anml}, which is closer to the standard language PDDL.\\
 
-[TODO: talk briefly about API and client apps]
+\comment{JVB: talk briefly about API and client apps}
 
 From an application developer’s view-point, the components of the most interest are: NDDL modeling language, Client API to the Solvers, and the UI \& Eclipse tools (which we will explain shortly). These modules address modeling, access to the problem solving mechanism and troubleshooting respectively. Other modules will be explored in the context of making customized extensions.
 
@@ -336,9 +336,10 @@ While currently only C++ and Java bindings are bundled with the \europa\ distrib
 \item  \emph{bsh} file (optional) : filename of the \emph{BeanShell} file that is executed upon starting\footnote{BeanShell is a small, free, embeddable Java source interpreter with object scripting language features, written in Java. BeanShell dynamically executes standard Java syntax and extends it with common scripting conveniences such as loose types, commands, and method closures like those in Perl and JavaScript.}.
 \end{itemize}
 
-Figure~\ref{fig:PSDesktop_start} shows the two console windows when running {\em PSDesktop}. In the BeanShell console window user can type in Java statements that allow driving \europa\ interactively through its Java API.  
-\comment{JRB: The NDDL console is currently broken!} 
-In the NDDL console the user can type in NDDL statements that will be interpreted as soon as he completes a valid NDDL statement and hits enter.\\
+%Figure~\ref{fig:PSDesktop_start} shows the two console windows when running {\em PSDesktop}. 
+Utilizing the BeanShell console window user can type in Java statements that allow driving \europa\ interactively through its Java API.  
+%\comment{JRB: The NDDL console is currently broken!} 
+%In the NDDL console the user can type in NDDL statements that will be interpreted as soon as he completes a valid NDDL statement and hits enter.\\
 
 %------------------
 \noindent {\bf Eclipse Plugin (SWT) for \europa:} The {\em Eclipse} plugin has two major components: (1) an editor and (2) an execution perspective. They provide the graphical interface to \emph{model}, \emph{run}, and \emph{analyze} plans within the {\em Eclipse} development environment. The main capabilities are:  {\em NDDL Editor},  {\em Solver View}, {\em Statistics View}, {\em Open Decision View}, {\em Schema Browser View}, {\em Schema Browser View}, {\em Gantt View}, {\em Details View}, and the  {\em Run NDDL model perspective} that includes all of the above components. We will describe them in more detail in the next section dedicated to \europa's KE capabilities.
@@ -377,9 +378,7 @@ In this section, we will describe two different graphical model editing supports
 %--
 
 
-\noindent {\bf NDDL Graphical Model Editor:} Eclipse plugin registers a file type for ``.nddl" and a default editor for it. The editor has \emph{syntax highlighting} and an \emph{outline}, which is updated every time the model file is saved. If the parser detects any errors, they are displayed as error markers in the editor. Figure~\ref{fig:NDDL_editor} shows the GUI for editing and checking NDDL files.\\
-
-%\comment {JRB: is this accurate? as far as I know SH is done with their SBIR and there are no plans to implement generic ANML-PDDL support)}
+\noindent {\bf NDDL Graphical Model Editor:} an Eclipse plugin registers a file type for ``.nddl" and a default editor for it. The editor has \emph{syntax highlighting} and an \emph{outline}, which is updated every time the model file is saved. If the parser detects any errors, they are displayed as error markers in the editor. Figure~\ref{fig:NDDL_editor} shows the GUI for editing and checking NDDL files.\\
 
 \noindent {\bf ANML Graphical Model Editor:} Stottler Henke is currently under contract to develop an Eclipse-based tool called PM/IDE to add support for the ANML~\cite{smith:anml} language, a new modeling language that imports features from PDDL, IxTeT, AML, and NDDL. ANML models can then be translated directly into NDDL and \europa\ can be invoked within the tool to run on the translated model files. PM/IDE provides text-based and graphical visualization to help modelers analyze relationships between actions, fluents, and objects. The current main PM/IDE capabilities are:
 
@@ -387,7 +386,7 @@ In this section, we will describe two different graphical model editing supports
 \item \emph{Text-based ANML Editor}: an ANML text-based editor with syntax highlighting and associated \emph{outline} and \emph{object type hierarchy} views. Figure~\ref{fig:pm-ide-text} shows an example of this view.
 \item \emph{Action Timeline Summary}: For an action, this view summarizes when the action reads or changes the value of a variable/fluent. Horizontal bars show when a variable is changed over a time period such as {\em [all]}. Mouse actions (e.g., right-click, double-click) on items in this view will automatically trigger highlight activities in the text-based ANML editor.
 \item \emph{Fluent Actions Timeline Summary}: For a fluent, this view summarizes how actions in the model read or change the given fluent. Symbols and horizontal bars show when such actions read or change the fluent. This is similar to the Action Timeline Summary, but it shows all the actions related to the selected fluent rather than all variables/fluents affected by one particular action. Also similar to the Action Timeline Summary view, mouse actions in this view trigger highlights of the corresponding components in the text-based ANML editor.
-\item \emph{Action Variable Matrix}: This matrix contains one row per action and one column per global variable/fluent. At each row-column position, up to three overlapping symbols are drawn to indicate whether the action reads, writes, and/or constrains the variable. This view let modelers quickly scan columns to see the actions that read/write each fluent. Modelers can also scan rows to see the fluents that are read/written by each action. Moreover, there are additional capabilities associated with this view such as \emph{highlight}, \emph{group}, and \emph{filter} to assist future model analysis. Figure~\ref{fig:anml-model-view} shows examples of the three non-text views.
+\item \emph{Action Variable Matrix}: This matrix contains one row per action and one column per global variable/fluent. At each row-column position, up to three overlapping symbols are drawn to indicate whether the action reads, writes, and/or constrains the variable. This view lets modelers quickly scan columns to see the actions that read/write each fluent. Modelers can also scan rows to see the fluents that are read/written by each action. Moreover, there are additional capabilities associated with this view such as \emph{highlight}, \emph{group}, and \emph{filter} to assist future model analysis. Figure~\ref{fig:anml-model-view} shows examples of the three non-text views.
 \end{itemize}
 
 
@@ -400,7 +399,7 @@ Currently, PM/IDE also supports limited ANML to NDDL translation capability that
 \end{enumerate}
 
 
-\noindent {\bf Discussion on PDDL:} PDDL is the dominant modeling language used in the planning research community. While it's out of the scope of this paper to discuss PDDL's ability to model complex real-world application, the capability to support PDDL is a useful thing for any KE tool or planning system.  \europa\  currently does not come with any tool to support PDDL modeling directly. However, there are promising work showed that this can be done such as: (1) Smith et al. ~\cite{smith:anml,smith:pddl-nddl} showed that it is possible to translate between ANML and PDDL; (2) Sara Bernardini and David Smith have developed a tool to translate from PDDL into NDDL.
+\noindent {\bf PDDL:} PDDL is the dominant modeling language used in the planning research community. While it's out of the scope of this paper to discuss PDDL's ability to model complex real-world applications, the capability to support PDDL is a useful feature of any KE tool or planning system.  \europa\  currently does not come with any tool to support PDDL modeling directly. However, there is promising work showing that this can be done. Sara Bernardini and David Smith have developed technique based on variable/value model which allows translation of PDDL into either ANML or NDDL~\cite{bernardini:iwpss2011}.
 
 
 %----------------
@@ -429,7 +428,7 @@ Currently, PM/IDE also supports limited ANML to NDDL translation capability that
 
 Figure~\ref{fig:PSUI_exp} shows an example of how different UI components within the PSUI package can be activated to assist the plan analysis. In the next section, we show additional examples of a diverse set of problems (all come with the \europa\ distribution).
 
-\noindent{\bf  Eclipse Plugin:} \europa\  package provides the following capabilities through the Eclipse plugins
+\noindent{\bf  Eclipse Plugin:} the \europa\  package provides the following capabilities through Eclipse plugins
 
 \begin{itemize}
 \item {\em Solver View}: Start/stop the \europa\ engine, and configure and run a solver.
@@ -451,13 +450,13 @@ Figure~\ref{fig:PSUI_exp} shows an example of how different UI components within
 \end{figure*}
 %--
 
-Alternatively, for the plan generated through the PM/IDE Eclipse-plugin by first utilizing ANML-to-NDDL translator and invoke \europa\ from within this tool on the resulting NDDL models, PM/IDE also provides capabilities to visualize the resulting plan (Figure~\ref{fig:pm-ide-plan}). 
+Alternatively, for the plan generated through the PM/IDE Eclipse-plugin by first utilizing the ANML-to-NDDL translator and invoke \europa\ from within this tool on the resulting NDDL models, PM/IDE also provides capabilities to visualize the resulting plan (Figure~\ref{fig:pm-ide-plan}). 
 
 %---------------
 \subsection{Interacting with the Core Planning Engine}
 \label{subset:mixed-initiative}
 
-\noindent{\bf  Java Swing UI Framework:} In the BeanShell console, users will have access to:
+\noindent{\bf  Java Swing UI Framework:} In the BeanShell console, users have access to:
 
 \begin{itemize}
 \item \emph{PSEngine}: provides access to the \europa\ engine, users can create a solver, query the plan database, execute NDDL scripts, in general perform any task needed to drive \europa\ to load a model and create a plan. Users can also use this interface to create their own custom solvers.
