@@ -21,6 +21,8 @@ class Location {
 	}
 }
 
+class Airplane;
+
 
 // The package can be either: (1) at a location; (2) in an airplane
 // or (3) moving between a location and a vehicle.
@@ -91,7 +93,7 @@ Airplane::Fly
 	
 	// Effect: the airplane will be "free" at the destination when it reach there
 	meets(effect object.state.FreeAt _to);
-	eq(_to.location, dest);
+	eq(_to.location, destination);
 	
 	// Change the status of the airplane to "flying" during the whole duration
 	equals(effect object.state.Flying _flying);
@@ -117,7 +119,7 @@ Airplane::Load
 	meets(effect package.location.InVehicle _inAirplane);
 	eq(_inAirplane.airplane,object);
 	// The [airplane] will be "free" (to do other actions) at the end of loading action
-	meets(effect object.state.FreeAt _airplanFreeAtEnd);
+	meets(effect object.state.FreeAt _airplaneFreeAtEnd);
 	eq(_airplaneFreeAtStart.location,_airplaneFreeAtEnd.location);
 }
 
@@ -141,7 +143,7 @@ Airplane::Unload
 	eq(_packageAt.location,_airplaneFreeAtStart.location);
 	
 	// The [airplane] will be "free" (to do other actions) at the end of loading action
-	meets(effect object.state.FreeAt _airplanFreeAtEnd);
+	meets(effect object.state.FreeAt _airplaneFreeAtEnd);
 	eq(_airplaneFreeAtStart.location,_airplaneFreeAtEnd.location);
 }
 
