@@ -1,5 +1,20 @@
 \begin{thebibliography}{}
 
+\bibitem[\protect\citeauthoryear{Ai-Chang \bgroup \em et al.\egroup
+  }{2004}]{ai-chang:mapgen}
+M.~Ai-Chang, J.~Bresina, L.~Charest, J.~Hsu, A.~K. Jonsson, B.~Kanefsky,
+  P.~Maldague, P.~Morris, K.~Rajan, and J.~Yglesias.
+\newblock Mapgen: Mixed-initiative activity planning for the mars exploration
+  rover mission.
+\newblock In {\em System Demo at ICAPS'04}, 2004.
+
+\bibitem[\protect\citeauthoryear{Bernardini and
+  Smith}{2011}]{bernardini:iwpss2011}
+Sara Bernardini and David Smith.
+\newblock Finding mutual exclusion invariants in temporal planning domains.
+\newblock In {\em Proc. of 7th International Workshop on Planning and
+  Scheduling for Space (IWPSS)}, 2011.
+
 \bibitem[\protect\citeauthoryear{Frank and Jonsson}{2003}]{frank:europa}
 Jeremy Frank and Ari~K. Jonsson.
 \newblock Constraint-based attribute and interval planning.
@@ -49,20 +64,29 @@ Conor McGann, Eric Berger, Jonathan Bohren, Sachin Chitta, Brian Gerkey, Stuart
   Real-World Systems}, 2009.
 
 \bibitem[\protect\citeauthoryear{Muscettola \bgroup \em et al.\egroup
+  }{1997}]{muscettola:ieee1997}
+Nicola Muscettola, Ben Smith, Chuck Fry, Steve Chien, Kanna Rajan, Gregg
+  Rabideau, and David Yan.
+\newblock On-board planning for new millenniumdeep space one autonomy.
+\newblock In {\em Proc. of IEEE Aerospace Conference}, 1997.
+
+\bibitem[\protect\citeauthoryear{Muscettola \bgroup \em et al.\egroup
   }{1998}]{muscettola:1998}
 Nicola Muscettola, Pandurang Nayak, Barney Pell, and Brian Williams.
 \newblock Remote agent: To boldly go where no ai system has gone before.
 \newblock {\em Artificial Intelligence}, 103:5--47, 1998.
-
-\bibitem[\protect\citeauthoryear{Smith and Bernardini}{2010}]{smith:pddl-nddl}
-David~E. Smith and Sara Bernardini.
-\newblock Translating pddl into nddl.
-\newblock 2010.
 
 \bibitem[\protect\citeauthoryear{Smith \bgroup \em et al.\egroup
   }{2008}]{smith:anml}
 David Smith, Jeremy Frank, and Will Cushing.
 \newblock The anml language.
 \newblock In {\em Proceedings of ICAPS-08}, 2008.
+
+\bibitem[\protect\citeauthoryear{Tran \bgroup \em et al.\egroup
+  }{2004}]{tran:aaai04}
+D.~Tran, S.~Chien, R.~Sherwood, R.~Casta–o, B.~Cichy, A.~Davies, and
+  G.~Rabideau.
+\newblock The autonomous sciencecraft experiment onboard the eo-1 spacecraft.
+\newblock In {\em AAAI}, 2004.
 
 \end{thebibliography}
