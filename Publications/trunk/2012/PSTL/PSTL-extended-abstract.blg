@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99d (TeX Live 2011)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: PSTL-extended-abstract.aux
+The style file: aaai.bst
+Database file #1: /Users/mbdo/Documents/master.bib
+You've used 2 entries,
+            2568 wiz_defined-function locations,
+            587 strings with 4957 characters,
+and the built_in function-call counts, 750 in all, are:
+= -- 78
+> -- 36
+< -- 0
++ -- 12
+- -- 12
+* -- 59
+:= -- 138
+add.period$ -- 10
+call.type$ -- 2
+change.case$ -- 14
+chr.to.int$ -- 2
+cite$ -- 2
+duplicate$ -- 27
+empty$ -- 45
+format.name$ -- 15
+if$ -- 146
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 2
+newline$ -- 15
+num.names$ -- 6
+pop$ -- 8
+preamble$ -- 1
+purify$ -- 16
+quote$ -- 0
+skip$ -- 23
+stack$ -- 0
+substring$ -- 22
+swap$ -- 4
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 16
+warning$ -- 0
+while$ -- 5
+width$ -- 3
+write$ -- 30

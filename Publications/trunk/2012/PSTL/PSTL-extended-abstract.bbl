@@ -1,0 +1,17 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citeauthoryear{Frank and Jonsson}{2003}]{frank:europa}
+Frank, J., and Jonsson, A.~K.
+\newblock 2003.
+\newblock Constraint-based attribute and interval planning.
+\newblock {\em Journal of Constraints Special Issue on Constraints and
+  Planning} 8(4).
+
+\bibitem[\protect\citeauthoryear{Muscettola \bgroup et al\mbox.\egroup
+  }{1998}]{muscettola:1998}
+Muscettola, N.; Nayak, P.; Pell, B.; and Williams, B.
+\newblock 1998.
+\newblock Remote agent: To boldly go where no ai system has gone before.
+\newblock {\em Artificial Intelligence} 103:5--47.
+
+\end{thebibliography}
