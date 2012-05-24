@@ -89,9 +89,9 @@
 
 \begin{itemize}
 \item Observation scheduling for the Hubble Telescope ~\cite{muscettola:1998}
-\item Autonomous control of DS-1. \comment{Dave: reference needed}
-\item Ground-based activity planning for MER. \comment{Dave: reference needed}
-\item Autonomous control of EO-1. \comment{Dave: reference needed}
+\item Autonomous control of DS-1 ~\cite{muscettola:ieee1997}.
+\item Ground-based activity planning for MER ~\cite{ai-chang:mapgen}.
+\item Autonomous control of EO-1~\cite{tran:aaai04}.
 \end{itemize}
 
 \europa\ is now at version 2.6 and is the successor of the original \europa\ which in turn was based upon HSTS ~\cite{muscettola:1998}. It has been made available under an open-source license. The source code and extensive documents on \europa\ are available at: \emph{http://code.google.com/p/europa\-pso/}.  \europa's major strengths as an embeddable planning toolkit are: (1) flexibility in integrating with client applications; (2) proven track record; (3) open-source software license; and (4) online document repository with detailed guidelines and a variety of examples in different domains. As a Planning \& Scheduling Knowledge Engineering tool, it has components to support the modeling and plan analysis processes.
@@ -106,7 +106,7 @@ As a complete Planning \& Scheduling platform, \europa\ offers capabilities in 3
 
 One of \europa's key development goals is to streamline the process of integrating advanced planning, scheduling and constraint reasoning into an end-user application. \europa\ is not a specific planner or scheduler. Rather it is a framework for developing specific planners and schedulers. It is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core.
 
-\europa\ is unconventional in providing a separate \emph{Plan Database} (i.e., a structure to represent a partial or complete lifted partial order temporal plan)  that can be integrated into a wide variety of applications. This reflects the common needs for representation and manipulation of plan data in different application contexts and different problem solving approaches. Possible approaches include:
+\europa\ is unconventional in providing a separate \emph{Plan Database} (i.e., set of base components to represent a partial or complete lifted partial order temporal plan)  that can be integrated into a wide variety of applications. This reflects the common needs for representation and manipulation of plan data in different application contexts and different problem solving approaches. Possible approaches include:
 
 \begin{itemize}
 \item A batch planning application where an initial state is input and a final plan is output without any interaction with other actors.
@@ -156,16 +156,16 @@ There are several examples of NDDL for well known planning and CSP domains such 
 \}\\ \\
 LightSwitch::turnOn\\
 \{\\
-\hspace*{0.5cm}        // Bulb must be Off to be turned On\\
-\hspace*{0.5cm}        met\_by(condition object.myBulb\_.Off); \\
-\hspace*{0.5cm}        // Must be turned on through the switch\\
+\hspace*{0.5cm}        {\fontfamily{phv}\selectfont // Bulb must be Off to be turned On}\\
+\hspace*{0.5cm}        met\_by(condition object.myBulb\_.Off); \\ \\
+\hspace*{0.5cm}        {\fontfamily{phv}\selectfont // Must be turned on through the switch}\\
 \hspace*{0.5cm}        meets(effect object.myBulb\_.On);  \\ 
 \}\\ \\
 LightSwitch::turnOff\\
 \{\\
-\hspace*{0.5cm}        // Bulb must be On to be turned Off\\
-\hspace*{0.5cm}        met\_by(condition object.myBulb\_.On);\\
-\hspace*{0.5cm}        // Must be turned off through the switch\\
+\hspace*{0.5cm}        {\fontfamily{phv}\selectfont // Bulb must be On to be turned Off}\\
+\hspace*{0.5cm}        met\_by(condition object.myBulb\_.On);\\ \\
+\hspace*{0.5cm}        {\fontfamily{phv}\selectfont // Must be turned off through the switch}\\
 \hspace*{0.5cm}        meets(effect object.myBulb\_.Off); 
 \}
 \end{boxedminipage}
@@ -179,10 +179,10 @@ LightSwitch::turnOff\\
 \begin{boxedminipage}{0.45\textwidth}
 LightBulb bulb1 = new LightBulb();\\
 LightSwitch switch1 = new LightSwitch(bulb1);\\\\
-// At time 0, the bulb is on\\
+{\fontfamily{phv}\selectfont // At time 0, the bulb is on}\\
 fact(bulb1.On initialCondition);\\
 eq(initialCondition.start,0);\\\\
-// We want the bulb to be off by time 10\\
+{\fontfamily{phv}\selectfont // We want the bulb to be off by time 10}\\
 goal(bulb1.Off goal1);\\
 lt(0,goal1.start);\\
 lt(goal1.start,10);
@@ -200,7 +200,7 @@ NDDL includes procedural extensions, referred to as the \emph{NDDL Transaction L
 \subsection{\europa's Architectural Components}
 \label{subsec:reasoning}
 
-Figure~\ref{fig:architecture} shows \europa\'s main architectural components. Keeping in mind that  \europa\ is a framework, not an application, the components are arranged according to their relatively static structural role, which is determined by their responsibilities as explained below. The runtime relationships between this modules and how they interact in detail to assist problem solving is beyond the scope of this paper, [TODO: reference Robotics Autonomy paper] covers these aspects in a good amount of detail
+Figure~\ref{fig:architecture} shows \europa's main architectural components. Keeping in mind that  \europa\ is a framework, not an application, the components are arranged according to their relatively static structural role, which is determined by their responsibilities as explained below. The runtime relationships between this modules and how they interact in detail to assist problem solving is beyond the scope of this paper, \comment{JVB: reference Robotics Autonomy paper} covers these aspects in a good amount of detail
 
 %--
 \begin{figure}
@@ -276,20 +276,22 @@ int main(int argc, const char ** argv)\\
 \hspace*{0.5cm}       const char* nddlFile = argv[1];\\
 \hspace*{0.5cm}       const char* plannerConfig = argv[2];\\
   \\
+\hspace*{0.5cm}        {\fontfamily{phv}\selectfont // Instantiate \europa\ engine}\\
 \hspace*{0.5cm}       PSEngine* engine = PSEngine::makeInstance();\\
 \hspace*{0.5cm}       engine$\rightarrow$start();\\
     \\
-\hspace*{0.5cm}       // Load nddl model and problem instance\\
-\hspace*{0.5cm}       engine$\rightarrow$executeScript("nddl",nddlFile,true/*isFile*/);\\
+\hspace*{0.5cm}       {\fontfamily{phv}\selectfont // Load nddl model and problem instance}\\
+\hspace*{0.5cm}       engine$\rightarrow$executeScript("nddl",nddlFile,true);\\
  \\
 \hspace*{0.5cm}       PSSolver* solver = engine$\rightarrow$createSolver(plannerConfig);\\
 \hspace*{0.5cm}       int startHorizon=0, endHorizon=100;\\
 \hspace*{0.5cm}       solver$\rightarrow$configure(startHorizon,endHorizon);\\
     \\
+\hspace*{0.5cm}       {\fontfamily{phv}\selectfont //Create a plan}\\
 \hspace*{0.5cm}       int maxSteps=1000, maxDepth=1000;\\
 \hspace*{0.5cm}       solver$\rightarrow$solve(maxSteps,maxDepth); \\
     \\
-\hspace*{0.5cm}       // Print resulting plan\\
+\hspace*{0.5cm}       {\fontfamily{phv}\selectfont// Output resulting plan}\\
 \hspace*{0.5cm}       std::cout $\ll$ engine$\rightarrow$planDatabaseToString() \\
 \hspace*{1.8cm}          $\ll$ std::endl;\\
     \\
@@ -298,7 +300,7 @@ int main(int argc, const char ** argv)\\
 \hspace*{0.5cm}       return 0;\\
 \hspace*{0.2cm}     \}\\
 \hspace*{0.2cm}     catch (Error\& e) \{\\
-\hspace*{0.5cm}           std::cerr $\ll$ "PSEngine failed:"\\
+\hspace*{0.5cm}           std::cerr $\ll$ ``PSEngine failed:"\\
 \hspace*{1.8cm}  $\ll$ e.getMsg() $\ll$ std::endl;\\
 \hspace*{0.5cm}           return -1;\\
 \hspace*{0.2cm}     \}\\
@@ -419,7 +421,7 @@ Currently, PM/IDE also supports limited ANML to NDDL translation capability that
   \begin{center}
     \includegraphics[width=6.5in]{./Figures/Example_UBO0.pdf}
   \end{center}
-  \caption{\small Example of PSUI components}
+  \caption{\small PSUI components in the Resource Constrained Project Scheduling Problem (RCPSP)}
   \label{fig:PSUI_exp}
 \end{figure*}
 %--
@@ -459,7 +461,7 @@ Alternatively, for the plan generated through the PM/IDE Eclipse-plugin by first
 \noindent{\bf  Java Swing UI Framework:} In the BeanShell console, users have access to:
 
 \begin{itemize}
-\item \emph{PSEngine}: provides access to the \europa\ engine, users can create a solver, query the plan database, execute NDDL scripts, in general perform any task needed to drive \europa\ to load a model and create a plan. Users can also use this interface to create their own custom solvers.
+\item \emph{PSEngine}: provides access to the \europa\ engine, users can create a solver, query the plan database, execute NDDL scripts, and in general perform any task needed to drive \europa\ to load a model and create a plan. Users can also use this interface to create their own custom solvers.
 \item {\em PSSolverDialog}: allows the user to drive a solver interactively and see its status as it tries to achieve the goals specified for it
 \item \emph{PSDesktop}: provides access to many utility methods to create new desktop windows, display tables of tokens, create a solver, etc.
 \end{itemize}
@@ -486,17 +488,17 @@ Alternatively, for the plan generated through the PM/IDE Eclipse-plugin by first
 
 In this section, we show several examples that demonstrate the flexibility of \europa\ (both its core engine and its supporting knowledge engineering tools) when solving different types of planning, scheduling, and constraint satisfaction problems. All examples covered in this section are included in the \europa\ distribution and in this section they are illustrated through the {\em PSDesktop} interface. \\
 
-\noindent {\bf Light:} A "Hello World" domain for \europa\ , it  describes how a light switch can be used to control a light bulb. Figure~\ref{fig:light_exp} shows an example output analyzing the final plans. In this particular example, the intervals mean that the action or state change could happen at any point in the interval, so for instance, ``{\em lightSwitch1 is turned off at time [0,8]}" means that {\em lightSwitch1} could be turned off at time 0, or at time 1, ..., or at time 8. You can modify your model or \europa's configuration to generate grounded plans (where all the values are points, instead of intervals), if that's what you want for your particular application.\\
+\noindent {\bf Light:} A simple domain for \europa\  that  describes how a light switch can be used to control a light bulb. Figure~\ref{fig:light_exp} shows an example output analyzing the final plans. In this particular example, the intervals mean that the action or state change could happen at any point in the interval, so for instance, ``{\em lightSwitch1 is turned off at time [0,8]}" means that {\em lightSwitch1} could be turned off at time 0, or at time 1, ..., or at time 8. One can modify the model or \europa's configuration to generate grounded plans (where all the values are points, instead of intervals), if that's what is desired for a particular application.\\
 
-\noindent {\bf N-Queens:}  N-Queens is one of CSP's workhorses. Figure~\ref{fig:nqueens} shows how \europa\ supports model and solve this problem through {\em PSDesktop}. Users can click on a chess board to move the the queens around and see the constraint violations that \europa\ computes by moving the mouse over each queen. It also provides a simple Tabu Search solver which briefly illustrates how users can build their own solvers on top of \europa.\\
+\noindent {\bf N-Queens:}  N-Queens is one of the CSP benchmark domains. Figure~\ref{fig:nqueens} shows how \europa\ supports modeling and solves this problem through {\em PSDesktop}. Users can click on a chess board to move the the queens around and see the constraint violations that \europa\ computes by moving the mouse over each queen. It also provides a simple Tabu Search solver which briefly illustrates how users can build their own solvers on top of \europa.\\
 
 \noindent {\bf Resource Constrained Project Scheduling Problem (RCPSP):} this is a  well known problem in the OR community that consists of scheduling a set of activities with temporal and resource constraints. Typically, the goal is to minimize total project duration while respecting all constraints (Figure~\ref{fig:PSUI_exp}). Like the previous example, this example shows how users can build their own solvers on top of \europa\ for a specific problem.\\
 
-\noindent {\bf Shopping}: a simple example discussed in Russel and Norvig's AI textbook, first Edition, Chapter 11 on Planning (Figure~\ref{fig:shopping}).\\
+\noindent {\bf Shopping}: a simple example discussed in Russell and Norvig's AI textbook, first Edition, Chapter 11 (Figure~\ref{fig:shopping}).\\
 
-\noindent {\bf Blocksworld}: this is one of the most well-known planning domains. This version uses a robotic arm to build the stacks and Figure~\ref{fig:blocksworld} shows a UI where you can look at the partial state of the arm and the stacks as the planner progresses towards the stated goal. The \emph{PSDesktop} UI allows users to mouse over the green rectangles to see the actions over each timeline; for example, you can see the arm operator performing pick up and stack operations on the blocks. The ``BlockWorld History" window shows the evolution of the stacks as the operator performs the actions from the plan on them, until it arrives to the stated goal.\\
+\noindent {\bf Blocksworld}: this is one of the most well-known planning domains. This version uses a robotic arm to build the stacks and Figure~\ref{fig:blocksworld} shows a UI where one can look at the partial state of the arm and the stacks as the planner progresses towards the stated goal. The \emph{PSDesktop} UI allows users to mouse over the green rectangles to see the actions over each timeline; for example, one can see the arm operator performing pick up and stack operations on the blocks. The ``BlockWorld History" window shows the evolution of the stacks as the operator performs the actions from the plan, until it arrives at the stated goal.\\
 
-\noindent {\bf Planetary Rover}: this is a more complex planning domain that was inspired by NASA robotic missions and has also been translated to PDDL to be used in recent IPCs. Figure~\ref{fig:rover} shows the UI result of this domain. In this figure, red and blue curves on the chart at the top-right corner bound the possible battery charge. The difference between the two is due to flexibility in the plan regarding when navigation and sampling may take place. The red curve shows the charge when they occur as soon as possible, and the blue curve shows them if everything is delayed as long as possible. The bottom window displays a gantt chart for the Rover, Navigator and Instrument timelines in this problem. Hover the mouse over any piece (green rectangle) of the gantt chart to see details displayed in the Details window. In this screenshot, the mouse was hovered over the large box on the Navigator timeline, which is an \emph{At} predicate.\\
+\noindent {\bf Planetary Rover}: this is a more complex planning domain that was inspired by NASA robotic missions and has also been translated to PDDL to be used in recent IPCs. Figure~\ref{fig:rover} shows the UI for this domain. In this figure, red and blue curves on the chart at the top-right corner bound the possible battery charge. The difference between the two is due to the flexibility in the plan regarding when navigation and sampling may take place. The red curve shows the charge when actions occur as soon as possible, and the blue curve shows charge when all battery consuming actions are delayed as long as possible. The bottom window displays a gantt chart for the Rover, Navigator and Instrument timelines in this problem. Hovering the mouse over any piece (green rectangle) of the gantt chart shows details displayed in the Details window. In this screenshot, the mouse was hovered over the large box on the Navigator timeline, which is an \emph{At} predicate.\\
 
 
 %--
@@ -558,26 +560,23 @@ In this section, we show several examples that demonstrate the flexibility of \e
 \europa\ has been used for a variety of missions, mission-oriented research, and demonstrations, including:
 
 \begin{itemize}
-\item DS1: RAX ÐRemote Agent Experiment (original version of technology)
-\item SACE Support for operation of the International Space Station's solar arrays
-\item Bedrest study at Johnson Space Center
-\item MER Tactical Activity Planning. \europa\ is the core planning technology behind MAPGEN, a decision support tool for generating detailed activity plans on a daily basis for the MER robotic mission to Mars.
-\item Mars Ô03: MER ÐMars Exploration Rover Science Operations
-\item MSL : Support for planning and scheduling for Mars Science Laboratory Science Operations
+\item DS1: RAX ÐRemote Agent Experiment (original version of \europa\ technology) controlling the Deep Space One mission.
+\item SACE Support for optimization of the International Space Station's solar arrays
+\item Bedrest study at Johnson Space Center to minimize the changes that occur to the body during space flight and enable the return of normal body functions once back on Earth.
+\item MER Tactical Activity Planning: \europa\ is the core planning technology behind MAPGEN, a decision support tool for generating detailed activity plans on a daily basis for the MER robotic mission to Mars.
+\item MSL mission: Support for planning and scheduling for Mars Science Laboratory Science Operations
 \item Intelligent Distributed Execution Architecture (IDEA)
 \item On-board Planning and Plan Execution. \europa\ was the core planning technolgoy for deliberative and reactive planning on-board a variety of mobile robots. It has been fielded in the Atacama Desert and was the cornerstone of a 2005 milestone of human-robotic collaboration for the Collaborative Decision Systems program.
 \item Crew Planning Research project on Planning and Scheduling for space missions
-\item ATHLETE support for foot fall planning for a lunar robot
-\item STAR Advanced Spaceflight Training Systems Development
-\item Mission Simulation. \europa\ was used to simulate a prospective robotic mission (LORAX) to the Antarctic for the purposes of system design evaluation.
-\item Contingent Planning for ROVER operations (PiCO)
+\item ATHLETE support for foot fall planning for a hexapod lunar robot
+\item Integrated with On-board Planning and Plan Execution: EUROPA was the core planning technolgoy for deliberative and reactive planning on-board a variety of mobile robots. It has been fielded in the Atacama Desert and was the cornerstone of a 2005 milestone of human-robotic collaboration for the Collaborative Decision Systems program.
+\item Mission Simulation: \europa\ was used to simulate a prospective robotic mission (LORAX) to the Antarctic for the purposes of system design evaluation.
+\item Contingent Planning for ROVER operations (PiCO) for K9 research rover.
 \item Personal Satellite Assistant (PSA)
 \item Spoken Interface Prototype for PSA (RIALIST)
-\item IS Milestone 
-\item CDS Milestone
 \end{itemize}
 
-Outside of NASA, it has also beed used at MBARI to help control underwater autonomous vehicle~\cite{mcgann:2008} and at Willow Garage for autonomous robot navigation~\cite{mcgann:2009}\footnote{Surveying the \europa\ mailing list revealed some other projects that \europa\ has been used to. However, there is no officially published work for those efforts which we can refer to.}.
+Outside of NASA, it has also beed used at MBARI to help control underwater autonomous vehicle~\cite{mcgann:2008} and at Willow Garage for autonomous robot navigation~\cite{mcgann:2009}\footnote{Surveying the \europa\ mailing list revealed some other projects that \europa\ has been used for. However, there is no officially published work for those efforts that we can refer to.}.
 
 
 %-----------------------------------
@@ -591,7 +590,7 @@ While \europa\ and its supporting tools have been going through a long period of
 \noindent {\bf Acknowledgements:} \europa\ is the result of many years of research, development and deployment of constraint-based planning technology.
 \begin{itemize}
 \item The precursor to \europa\ was HSTS, designed and developed by Nicola Muscettola. HSTS set out the initial domain description language and essentials of the planning paradigm that became the starting point for \europa.
-\item Ari Jonsson led the implemenation of the first version of \europa\. Ari's team included Jeremy Frank, Paul Morris and Will Edgington, who all made valuable contributions.
+\item Ari Jonsson led the implemenation of the first version of \europa. Ari's team included Jeremy Frank, Paul Morris and Will Edgington, who all made valuable contributions.
 \item Conor McGann led the implementation of \europa\ 2, which is a further evolution of this line of work, targeted mainly at making the technology easier to use, more efficient, easier to integrate and easier to extend. \europa\ 2's main contributors were Andrew Bachmann, Tania Bedrax-Weiss, Matthew Boyce, Patrick Daley, Will Edgington, Jeremy Frank, Michael Iatauro, Peter Jarvis, Ari Jonsson, Paul Morris, Sailesh Ramakrishnan and Will Taylor.
 \item Javier Barreiro took over as the \europa\ team lead in the Fall of 2006 and has been working on it since then, improving \europa's technology and packaging. Javier's main collaborators at NASA Ames are Matthew Boyce, Minh Do, Michael Iatauro, Paul Morris, Tristan Smith and David Smith.
 \end{itemize}
