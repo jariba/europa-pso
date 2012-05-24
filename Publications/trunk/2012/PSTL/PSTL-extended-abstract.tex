@@ -56,13 +56,12 @@
 %------------------------------
 \begin{document}
 
-\title{\europa: A Platform for AI Planning, Scheduling, Constraint Programming, and Optimization}
+\title{\europa: A Platform for Timeline-based AI Planning, Scheduling, Constraint Programming, and Optimization}
 
 \author{\large{Javier Barreiro{$^*$}, Matthew Boyce{$^*$}, Jeremy Frank{$^\dagger$}, Michael Iatauro{$^*$}}\\
-\large{\bf Tatiana Kichkaylo{$^\ddagger$}, Paul Morris{$^\dagger$}, Tristan Smith{$^*$}, Minh Do{$^*$}}\\ \\
+\large{\bf Paul Morris{$^\dagger$}, Tristan Smith{$^*$}, Minh Do{$^*$}}\\ \\
 {\small {$^*$} SGT Inc., NASA Ames Research Center, Mail Stop 269-3, Moffett Field, CA 94035}\\
-{\small {$^\dagger$} NASA Ames Research Center, Mail Stop 269-3, Moffett Field, CA 94035}\\
-{\small {$^\ddagger$} Decision Systems, USC Information Sciences Institute, 4676 Admiralty Way, Marina del Rey, CA 90292}
+{\small {$^\dagger$} NASA Ames Research Center, Mail Stop 269-3, Moffett Field, CA 94035}
 }
 
 \date{}
@@ -86,7 +85,7 @@
 As a complete Planning \& Scheduling platform, \europa\ offers capabilities in 3 key areas of problem solving:
 
 \begin{enumerate}
-\item {\bf Representation}:  Externally, \europa's main input modeling language is New Domain Definition Language (NDDL) (pronounced `noodle'). NDDL is a high-level object-oriented modeling language that can describe a number of concepts based on Variables and Constraints. Internally, \europa\ allows a rich representation based on \emph{durative tokens} on \emph{timelines} for actions, states, resources and constraints that allows concise declarative descriptions of problem domains and powerful expressions of plan structure
+\item {\bf Representation}:  Externally, \europa's main input modeling language is New Domain Definition Language (NDDL) (pronounced `noodle'). NDDL is a high-level object-oriented modeling language that can describe a number of concepts based on Variables and Constraints. Internally, \europa\ allows a rich representation based on \emph{durative tokens} on \emph{timelines} for actions, states, resources and constraints that allows concise declarative descriptions of problem domains and powerful expressions of plan structure.
 \item {\bf Constraint-based Reasoning}: \europa's main reasoning module contains constraint-processing and inference algorithms to enforce domain rules/constraints and propagate consequences as updates are made to the problem state. Specialized techniques for reasoning about temporal quantities and relations included in \europa\ are particularly useful to deal with real-life problem domains.
 \item {\bf Search}: by default, \europa\ supports chronological-backtracking search with the ability to integrate heuristics into the basic search algorithm and for developing new customized search algorithms.
 \end{enumerate}
@@ -104,7 +103,7 @@ As a complete Planning \& Scheduling platform, \europa\ offers capabilities in 3
 \end{figure}
 %--
 
-\europa\ is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core; Figure~\ref{fig:architecture} shows the main components of \europa\ and the relationships/interactions between them. It is now at version 2.6 and is the successor of the original \europa\ which in turn was based upon HSTS ~\cite{muscettola:1998}. It has been made available under an open-source license. The source code and extensive documents on \europa\ are available at: \emph{http://code.google.com/p/europa\-pso/}. 
+\europa\ is designed to be open and extendable to accommodate diverse and highly specialized problem solving techniques within a common design framework and around a common technology core. Figure~\ref{fig:architecture} shows the main components of \europa\ and the hierarchical relationships between them: through the \emph{Client API}, applications can utilize or extend either the core components of the \emph{\europa\ kernel} or the built-in commonly used components that are extensions of the kernel components. \europa\ is now at version 2.6 and is the major upgrade of the original \europa, which in turn was based upon HSTS ~\cite{muscettola:1998}. It has been made available under an open-source license. The source code and extensive documents on \europa\ are available at: \emph{http://code.google.com/p/europa\-pso/}. 
 
 
 %----------
@@ -117,7 +116,7 @@ As a complete Planning \& Scheduling platform, \europa\ offers capabilities in 3
 \item {\bf Compatibility:} The final component of NDDL model is a set of compatibilities/rules that govern the legal arrangements of states on, and across, timelines.  These compatibilities are logical implications asserting that if a timeline is in a state (represented by a given token), then other timelines must be in one of a set of compatible states. Compatibilities can incorporate (1) explicit logical and arithmetic constraints on the parameters of the states/tokens or (2) temporal constraints between tokens.  \europa\ provides a library of such constraints (e.g., all of the Allen's Temporal Relations), and this library can be extended if new constraints are needed.
 \end{itemize}
 
-\noindent{\bf Least-Commitment Partial Planning Refinement Search:} EUROPA follows the \emph{plan-space refinement} planning approach. It uses a series of refinements to convert an initial partial plan into a final plan that is complete with respect to the requirements of the planner. A partial plan consist of a set of timelines containing partially instantiated and ordered set of tokens with the possible flaws of: (1) unbound variables; (2) open condition; and (3) temporal threats.  Flaws are resolved one at a time following user-defined flaw filter and flaw selection strategy and a complete plan is returned when there is no flaw. Below, we outline the flaw types and the resolution strategy for each of them:
+\noindent{\bf Least-Commitment Partial Planning Refinement Search:} EUROPA follows the \emph{lifted plan-space refinement} planning approach. It uses a series of refinements to convert an initial partial plan into a final plan that is complete with respect to the requirements of the planner. A partial plan consistes of a set of timelines containing partially instantiated and ordered set of tokens with the possible flaws of: (1) unbound variables; (2) open condition; and (3) temporal threats.  Flaws are resolved one at a time following user-defined flaw filter and flaw selection strategy and a complete plan is returned when there is no flaw. The main flaw types and the resolution strategy for each of them are:
 
 \begin{itemize}
 \item {\bf Unbound Variable:} a variable in the partial plan whose domain is not a singleton. A unbound variable flaw is resolved by specifying a value from the domain of that variable.
@@ -132,13 +131,13 @@ There are extendable built-in flaw-filter and flaw-selection strategies to decid
 
 \europa\ and its supporting tools have been going through a long period of development. Besides the core modeling and reasoning capabilities, \europa\ also provides strong API to integrate with native client applications, Eclipse's plugin to help build and debug NDDL/ANML models, and visualization capability to support plan comprehension and diagnosis. Overall, \europa's current main strengths include: (1) expressive modeling capability; (2) flexible framework; (3) strong support for integration with other applications; (4) open-source license. It has been used for a variety of missions, mission-oriented research, and demonstrations, including: DS1: RAX ÐRemote Agent Experiment, Support for operation of the International Space Station's solar arrays, Bedrest study at Johnson Space Center, MER Tactical Activity Planning, Advanced Spaceflight Training Systems Development, MBARI's underwater autonomous vehicle, and Willow Garage's autonomous robot navigation.
 
-Nevertheless, we still have a long list of improvements that we want to make to \europa. The most important ones in our opinion are: significantly improve search (especially heuristic guidance) and inference capabilities, support the ANML and PDDL modeling languages, improve the visualization and debugging tools and  allow \europa\ extensions to be written in other languages. Given that \europa\ is open-source software, we welcome contributions from planning and scheduling researchers and practitioners.
+Nevertheless, we still have a long list of improvements for \europa. The most important ones in our opinion are: significant improvements for search (especially heuristic guidance) and inference capabilities, support the ANML and PDDL modeling languages, improve the visualization and debugging tools and  allow \europa\ extensions to be written in other languages. Given that \europa\ is open-source software, we welcome contributions from planning and scheduling researchers and practitioners.
 
 
 
 
 {\small
-\bibliography{../../../../Bibliography/master}
+\bibliography{/Users/mbdo/Documents/master}
 \bibliographystyle{aaai}
 }
 
