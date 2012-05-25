@@ -130,7 +130,7 @@ In this section, we will start with an introduction to \europa's main modeling l
 \label{subsec:nddl}
 
 
-\europa's main input modeling language is the New Domain Definition Language (NDDL) (pronounced `noodle'), a domain description language for constraint-based planning and scheduling problems. NDDL can describe a number of concepts based on Variables and Constraints~\footnote{A complete NDDL Reference guide with examples is available at: \emph{http://code.google.com/p/europa-pso/wiki/NDDLReference} and the NDDL grammar guide is available at: \emph{http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/ base/antlr/NDDL3.g}}. The NDDL representation includes state and activity descriptions, as is common in planners using traditional modeling languages like the Planning Domain Definition Language (PDDL) ~\cite{gerevini:ipcjair,hoffmann:ipcjair}.  However, unlike PDDL, NDDL uses a state variable-value formalism. \europa\ thus takes its heritage from planning formalisms like IxTeT ~\cite{ghallab:rci} and SAS+ ~\cite{jonsson:1998}. \europa\ state variables are called timelines, and the values of timelines are sequences of states. States are temporally extended predicates, and consist of a proposition and a list of parameters, which by default includes the start, end and duration times.  Timelines are totally ordered sequences of states; hence, a timeline can be in only one state at any instant.  The final component of a NDDL model is a set of compatibilities that govern the legal arrangements of states on, and across, timelines.  These compatibilities are logical implications asserting that if a timeline is in a state, then other timelines must be in one of a set of compatible states. Compatibilities can incorporate explicit constraints on the parameters of the states.  \europa\ provides a library of such constraints, and this library can be extended if new constraints are needed.
+\europa's main input modeling language is the New Domain Definition Language (NDDL) (pronounced `noodle'), a domain description language for constraint-based planning and scheduling problems. NDDL can describe a number of concepts based on Variables and Constraints~\footnote{A complete NDDL Reference guide with examples is available at: \emph{http://code.google.com/p/europa-pso/wiki/NDDLReference} and the NDDL grammar guide is available at: \emph{http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/NDDL/ base/antlr/NDDL3.g}}. The NDDL representation includes state and activity descriptions, as is common in planners using traditional modeling languages like the Planning Domain Definition Language (PDDL) ~\cite{gerevini:ipcjair,hoffmann:ipcjair}.  However, unlike PDDL, NDDL uses a state variable-value formalism. \europa\ thus takes its heritage from planning formalisms like IxTeT ~\cite{ghallab:rci} and SAS+ ~\cite{jonsson:1998}. \europa\ state variables are called timelines, and the values of timelines are sequences of states. States are temporally extended predicates, and consist of a proposition and a list of parameters, which by default includes the start, end and duration times.  Timelines are totally ordered sequences of states; hence, a timeline can be in only one state at any instant.  The final component of a NDDL model is a set of domain rules (also known as compatibilities) that govern the legal arrangements of states on, and across, timelines.  These domain rues are logical implications asserting that if a timeline is in a state, then other timelines must be in one of a set of compatible states. Domain rules can incorporate explicit constraints on the parameters of the states.  \europa\ provides a library of such constraints, and this library can be extended if new constraints are needed.
 
 There are several examples of NDDL for well known planning and CSP domains such as Blocksworld, 8-Queens, and RCPSP available at the \europa\ website.\\
 
@@ -215,51 +215,29 @@ Figure~\ref{fig:architecture} shows \europa's main architectural components. Kee
 %--
 
 
-The deepest layer in Figure~\ref{fig:architecture} depicts \europa\'s kernel, which offers  fundamental representation, reasoning, modeling and search capabilities that can be configured, extended and customized to create planning and scheduling applications
+The deepest layer in Figure~\ref{fig:architecture} depicts \europa\'s kernel, which offers  fundamental representation, reasoning, modeling and search capabilities that can be configured, extended and customized to create planning and scheduling applications. \\
 
 \noindent {\bf Constraint Engine}: is the nexus for consistency management. It provides a general-purpose component-based architecture for handling dynamic constraint networks. It deals in variables and constraints. It includes an open propagation architecture making it straightforward to integrate specialized forms of local and global constraint propagation.\\
 
-\noindent {\bf Plan Database}: adds higher levels of abstractions for tokens and objects and the interactions between them. This is the code embodiment of the \europa\ planning paradigm. It supports all services for creation, deletion, modification and inspection of partial plans. It maintains the dynamic constraint network underlying a partial–plan by delegation to the Constraint Engine and leverages that propagation infrastructure to maintain relationships between tokens and objects.\\
+\noindent {\bf Plan Database}: adds higher levels of abstractions for tokens and objects and the interactions between them. This is the code embodiment of the \europa\ planning paradigm. It supports all services for creation, deletion, modification and inspection of partial plans. It maintains the dynamic constraint network underlying a partial plan by delegation to the Constraint Engine and leverages that propagation infrastructure to maintain relationships between tokens and objects.\\
 
-\noindent {\bf Rules Engine:} provides the inference capabilities based on domain rules described in the model. It is almost exclusively used to execute NDDL rules but can be extended for custom rule formats.\\
+\noindent {\bf Rules Engine:} provides the implementation of domain rules described in a problem model. As described above, domain rules are relationships between predicates that represent actions and states in a \europa\ plan. For instance, in the Light model above, there are domain rules stated between a LightSwtich::turnOn action and its corresponding LightBulb::Off precondition and LightBulb::On effect. The Rules Engine component ensure that when a LightSwitch::turnOn action is added to the plan, a requirement is posted for the plan to contain its precondition and effect in a way that satisfies temporal and other constraints stated in the model. \\
  
- \noindent {\bf Solvers module}: provides abstractions to support search in line with the \europa\ planning approach. It includes a component-based architecture for Flaw Identification, Resolution and heuristics as well as an algorithm for chronological backtracking search. As additional search algorithms are implemented they will be added to this module.\\
+ \noindent {\bf Solvers module}: provides abstractions to support search in line with the \europa\ planning approach. It includes a component-based architecture for Flaw Identification, Resolution and heuristics.\\
 
- \noindent {\bf Modeling languages module}:
+ \noindent {\bf Model Interpreter}: provides an implementation so that the functionality in the other \europa\ kernel modules can be exercised through a run-time interpreter. This interpreter implementation can be used as a target for parsers of different modeling languages such as NDDL and ANML. \\
 
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/PSDesktop_1.pdf}
-  \end{center}
-  \caption{\small BeanShell and NDDL console windows \comment{Dave: more realistic example than the "foo" and "bar" example shown in here}}
-  \label{fig:PSDesktop_start}
-\end{figure*}
-%--
-
-
-%--
-\begin{figure*}
-  \begin{center}
-    \includegraphics[width=6.5in]{./Figures/NDDL_editor.pdf}
-  \end{center}
-  \caption{\small NDDL Editor and Syntax Checker.}
-  \label{fig:NDDL_editor}
-\end{figure*}
-%--
-
-
-The next layer in Figure~\ref{fig:architecture} depicts important extension modules that have been found to be useful in dealing with real life domains and are therefore bundled with the \europa\ distribution. These modules were built using the exact same mechanisms that are available to all \europa\ user for building their own specialized modules on top of \europa\'s kernel.
+The next layer in Figure~\ref{fig:architecture} depicts important extension modules that have been found to be useful in dealing with real life domains and are therefore bundled with the \europa\ distribution. These modules were built using the exact same mechanisms that are available to all \europa\ user for building their own specialized modules on top of the  \europa\ kernel.
 
 \noindent {\bf Temporal Network module}:  provides specialized algorithms and data structures to support efficient propagation of temporal constraints.\\
 
 \noindent {\bf Resources module}:  provides specialized algorithms and data structures to support metric resources (e.g. battery, power bus, disk drive).
 
-\noindent {\bf NDDL/ANML module}: provides a parser and compiler for NDDL, the main input language of NDDL. This module defines the mapping from the language to the code and consequently interfaces to a number of key modules in the system. We will also discuss in the later section the currently developed PM/IDE tool to add to \europa\ the support of another planning modeling language ANML~\cite{smith:anml}, which is closer to the standard language PDDL.\\
+\noindent {\bf NDDL/ANML modules}: provides parsers for  the NDDL and ANML~\cite{smith:anml} languages. These modules define the mapping from the language to the data structures provided by the Model Interpreter module and through it interface to all of the modules in the \europa\ kernel. Below we discuss Eclipse modeling tools that  support creating and debugging models using these languages. \\
 
-\comment{JVB: talk briefly about API and client apps}
+\noindent {\bf Client API} : The client API exposes the functionality of the \europa\ kernel and built-in modules in a concise and safe manner so that client applications can be easily built in C++ and Java. \\
 
-From an application developer’s view-point, the components of the most interest are: NDDL modeling language, Client API to the Solvers, and the UI \& Eclipse tools (which we will explain shortly). These modules address modeling, access to the problem solving mechanism and troubleshooting respectively. Other modules will be explored in the context of making customized extensions.
+From an application developer’s view-point, the components of the most interest are: NDDL modeling language, Client API to the Solvers, and the UI \& Eclipse tools (which we will explain shortly). These modules address modeling, access to the problem solving mechanism and troubleshooting respectively. Other modules will be explored in the context of making customized extensions. \\
 
 %---------------------------
 \section{Using \europa}
@@ -592,7 +570,7 @@ While \europa\ and its supporting tools have been going through a long period of
 \item The precursor to \europa\ was HSTS, designed and developed by Nicola Muscettola. HSTS set out the initial domain description language and essentials of the planning paradigm that became the starting point for \europa.
 \item Ari Jonsson led the implemenation of the first version of \europa. Ari's team included Jeremy Frank, Paul Morris and Will Edgington, who all made valuable contributions.
 \item Conor McGann led the implementation of \europa\ 2, which is a further evolution of this line of work, targeted mainly at making the technology easier to use, more efficient, easier to integrate and easier to extend. \europa\ 2's main contributors were Andrew Bachmann, Tania Bedrax-Weiss, Matthew Boyce, Patrick Daley, Will Edgington, Jeremy Frank, Michael Iatauro, Peter Jarvis, Ari Jonsson, Paul Morris, Sailesh Ramakrishnan and Will Taylor.
-\item Javier Barreiro took over as the \europa\ team lead in the Fall of 2006 and has been working on it since then, improving \europa's technology and packaging. Javier's main collaborators at NASA Ames are Matthew Boyce, Minh Do, Michael Iatauro, Paul Morris, Tristan Smith and David Smith.
+\item Javier Barreiro took over as the \europa\ team lead in the Fall of 2006 and has been working on it since then, reshaping \europa's architecture and improving its technology and packaging. Javier's main collaborators at NASA Ames are Matthew Boyce, Minh Do, Michael Iatauro, Paul Morris, Tristan Smith and David Smith.
 \end{itemize}
 
 External contributors and collaborators include: Tatiana Kichkaylo, Mark Roberts, and Tony Pratkanis. Funding for this work has been provided by the NASA Intelligent Systems and Collaborative Decision Systems Programs.\\
