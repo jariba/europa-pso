@@ -10,12 +10,25 @@ try {
 	solver = desktop.makeSolver(
 		"PlannerConfig.xml", // config
 		0,   // startHorizon
-        100  // endHorizon
+        	100  // endHorizon
     );
 
 	desktop.makeSolverDialog(solver);
 }
 catch (Exception e) {
     e.printStackTrace();
+}
+
+void showPlan()
+{
+        PSObjectList l = psengine.getObjectsByType("Object");
+        for (int i=0;i<l.size();i++) {
+                PSObject o = l.get(i);
+		// "Location" are static objects -> skip them
+                if(o.toLongString().startsWith("Location"))
+			continue;
+		else
+                        desktop.showTokens(l.get(i));
+    }
 }
 

@@ -3,14 +3,15 @@
 #include "Logistics-model.nddl"
 
 // Start with only two locations
-Location cityA = new Location("City A");
-Location cityB = new Location("City B");
+Location cityA = new Location("CityA");
+Location cityB = new Location("CityB");
 
 // And one airplane
-Airplane airplaneA = new Airplane("Airplane A");
+Airplane airplaneA = new Airplane("AirplaneA");
 
-// And one package
-Package packageA = new Package("Package A");
+// And 1 or 2 packages
+Package packageA = new Package("PackageA");
+Package packageB = new Package("PackageB");
 
 // Close the Object Database - no more objects can be created
 close();
@@ -27,8 +28,40 @@ initialPackageALocation.start.specify(0);
 initialPackageALocation.location.specify(cityA);
 initialPackageALocation.activate();
 
+fact(packageB.location.At initialPackageBLocation);
+initialPackageBLocation.start.specify(0);
+initialPackageBLocation.location.specify(cityB);
+initialPackageBLocation.activate();
+
+
+// SIMPLEST GOAL: just load the package into the airplane
+// goal(packageA.location.InVehicle finalPackageALocation);
+// Two statements below are equal in this case
+// eq(finalPackageALocation.airplane, airplaneA);
+// finalPackageALocation.airplane.specify(airplaneA);
+// finalPackageALocation.start.specify(20);
+// *** ALTERNATIVE REP OF SIMPLEST GOAL -- USING ACTION TOKEN
+// goal(airplaneA.Load loadPackage);
+// loadPackage.package.specify(packageA);
+// loadPackage.start.specify(20);
+
+
+// GOALS: *** be very careful with the timing specification **
 goal(packageA.location.At finalPackageALocation);
 finalPackageALocation.location.specify(cityB);
-// finalPackageALocation.end.specify(50);
+// Testing: using one of the two time constraints on goal as below
+finalPackageALocation.start.specify(20);
+// finalPackageALocation.end.specify(80);
+
+
+// One more simple goal
+// goal(airplaneA.state.FreeAt finalAirplaneALocation);
+// finalAirplaneALocation.location.specify(cityA);
+// finalAirplaneALocation.start.specify(60);
+
+// One more a little more difficult goal
+goal(packageB.location.At finalPackageBLocation);
+finalPackageBLocation.location.specify(cityA);
+finalPackageBLocation.start.specify(60);
 
 // EOF
