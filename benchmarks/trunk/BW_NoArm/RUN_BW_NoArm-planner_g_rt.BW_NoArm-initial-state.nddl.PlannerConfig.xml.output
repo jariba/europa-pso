@@ -1,0 +1,192 @@
+Main::Iteration:0 6 flaws
+Main::    1 - THREAT:initialBlockANotClear(61) PRIORITY==1e-05
+Main::    2 - THREAT:initialBlockBLocation(77) PRIORITY==1e-05
+Main::    3 - THREAT:initialBlockBClear(93) PRIORITY==1e-05
+Main::    4 - THREAT:initialBlockCLocation(109) PRIORITY==1e-05
+Main::    5 - THREAT:initialBlockCClear(126) PRIORITY==1e-05
+Main::    6 - TOKEN: goalCOn(142) PRIORITY==2e-05
+Main::Iteration:1 5 flaws
+Main::    1 - THREAT:initialBlockBLocation(77) PRIORITY==1e-05
+Main::    2 - THREAT:initialBlockBClear(93) PRIORITY==1e-05
+Main::    3 - THREAT:initialBlockCLocation(109) PRIORITY==1e-05
+Main::    4 - THREAT:initialBlockCClear(126) PRIORITY==1e-05
+Main::    5 - TOKEN: goalCOn(142) PRIORITY==2e-05
+Main::Iteration:2 4 flaws
+Main::    1 - THREAT:initialBlockBClear(93) PRIORITY==1e-05
+Main::    2 - THREAT:initialBlockCLocation(109) PRIORITY==1e-05
+Main::    3 - THREAT:initialBlockCClear(126) PRIORITY==1e-05
+Main::    4 - TOKEN: goalCOn(142) PRIORITY==2e-05
+Main::Iteration:3 3 flaws
+Main::    1 - THREAT:initialBlockCLocation(109) PRIORITY==1e-05
+Main::    2 - THREAT:initialBlockCClear(126) PRIORITY==1e-05
+Main::    3 - TOKEN: goalCOn(142) PRIORITY==2e-05
+Main::Iteration:4 2 flaws
+Main::    1 - THREAT:initialBlockCClear(126) PRIORITY==1e-05
+Main::    2 - TOKEN: goalCOn(142) PRIORITY==2e-05
+Main::Iteration:5 1 flaws
+Main::    1 - TOKEN: goalCOn(142) PRIORITY==2e-05
+Main::Iteration:6 7 flaws
+Main::    1 - THREAT:goalCOn(142) PRIORITY==1e-05
+Main::    2 - TOKEN: Top.Clear(191) PRIORITY==2e-05
+Main::    3 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    4 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::    5 - TOKEN: Top.NotClear(250) PRIORITY==2e-05
+Main::    6 - TOKEN: Top.Clear(269) PRIORITY==2e-05
+Main::    7 - VAR:   currentBottomBlock(249) DERIVED=OBJECT-Block:CLOSED{blockA(8),blockB(21),blockC(34)} PRIORITY==3e-05
+Main::Iteration:7 7 flaws
+Main::    1 - THREAT:goalCOn(142) PRIORITY==1e-05
+Main::    2 - THREAT:Top.NotClear(250) PRIORITY==1e-05
+Main::    3 - TOKEN: Top.Clear(191) PRIORITY==2e-05
+Main::    4 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    5 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::    6 - TOKEN: Top.Clear(269) PRIORITY==2e-05
+Main::    7 - VAR:   currentBottomBlock(249) DERIVED=OBJECT-Block:CLOSED{blockA(8),blockB(21),blockC(34)} PRIORITY==3e-05
+Main::Iteration:8 8 flaws
+Main::    1 - THREAT:goalCOn(142) PRIORITY==1e-05
+Main::    2 - THREAT:Top.NotClear(250) PRIORITY==1e-05
+Main::    3 - THREAT:Top.Clear(269) PRIORITY==1e-05
+Main::    4 - TOKEN: Top.Clear(191) PRIORITY==2e-05
+Main::    5 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    6 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::    7 - VAR:   currentBottomBlock(249) DERIVED=OBJECT-Block:CLOSED{blockA(8),blockB(21),blockC(34)} PRIORITY==3e-05
+Main::    8 - VAR:   object(271) DERIVED=OBJECT-Top:CLOSED{blockA.top(12),blockB.top(25),blockC.top(38)} PRIORITY==3e-05
+Main::Iteration:9 7 flaws
+Main::    1 - THREAT:Top.NotClear(250) PRIORITY==1e-05
+Main::    2 - THREAT:Top.Clear(269) PRIORITY==1e-05
+Main::    3 - TOKEN: Top.Clear(191) PRIORITY==2e-05
+Main::    4 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    5 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::    6 - VAR:   currentBottomBlock(249) DERIVED=OBJECT-Block:CLOSED{blockA(8),blockB(21),blockC(34)} PRIORITY==3e-05
+Main::    7 - VAR:   object(271) DERIVED=OBJECT-Top:CLOSED{blockA.top(12),blockB.top(25),blockC.top(38)} PRIORITY==3e-05
+Main::Iteration:10 6 flaws
+Main::    1 - THREAT:Top.Clear(269) PRIORITY==1e-05
+Main::    2 - TOKEN: Top.Clear(191) PRIORITY==2e-05
+Main::    3 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    4 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::    5 - VAR:   currentBottomBlock(249) DERIVED=OBJECT-Block:CLOSED{blockA(8),blockB(21),blockC(34)} PRIORITY==3e-05
+Main::    6 - VAR:   object(271) DERIVED=OBJECT-Top:CLOSED{blockA.top(12),blockB.top(25),blockC.top(38)} PRIORITY==3e-05
+Main::Iteration:11 3 flaws
+Main::    1 - TOKEN: Top.Clear(191) PRIORITY==2e-05
+Main::    2 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    3 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::Iteration:12 2 flaws
+Main::    1 - TOKEN: Top.Clear(211) PRIORITY==2e-05
+Main::    2 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::Iteration:13 1 flaws
+Main::    1 - TOKEN: Bottom.On(229) PRIORITY==2e-05
+Main::Iteration:14 0 flaws
+Main::Solver finished after 14 steps
+Objects *************************
+	Block:blockA*************************
+		Variables *************************
+			blockA.name=string:CLOSED{Block A}
+			blockA.top=Top:CLOSED{blockA.top(12)}
+			blockA.bottom=Bottom:CLOSED{blockA.bottom(15)}
+		End Variables *********************
+	End Block:blockA*************************
+	Top:blockA.top*************************
+		Tokens *************************
+				{0}
+				Top.NotClear()
+				Key=61  Master=NONE
+				[1, 10]
+				{10}
+				Top.Clear()
+				Key=269  Master=173 MoveBlockToBlock-0(173){9} --> {10}
+				[11, +inf]
+		End Tokens *********************
+	End Top:blockA.top*************************
+	Bottom:blockA.bottom*************************
+		Tokens *************************
+				{0}
+				Bottom.OnTable()
+				Key=45  Master=NONE
+				[1, +inf]
+		End Tokens *********************
+	End Bottom:blockA.bottom*************************
+	Block:blockB*************************
+		Variables *************************
+			blockB.name=string:CLOSED{Block B}
+			blockB.top=Top:CLOSED{blockB.top(25)}
+			blockB.bottom=Bottom:CLOSED{blockB.bottom(28)}
+		End Variables *********************
+	End Block:blockB*************************
+	Top:blockB.top*************************
+		Tokens *************************
+				{0}
+				Top.Clear()
+				Key=93  Master=NONE
+					Merged Key=211 from MoveBlockToBlock-0(173){9} --> {10}
+				{9}
+				{9}
+				Top.NotClear()
+				Key=250  Master=173 MoveBlockToBlock-0(173){9} --> {10}
+				[10, +inf]
+		End Tokens *********************
+	End Top:blockB.top*************************
+	Bottom:blockB.bottom*************************
+		Tokens *************************
+				{0}
+				Bottom.OnTable()
+				Key=77  Master=NONE
+				[1, +inf]
+		End Tokens *********************
+	End Bottom:blockB.bottom*************************
+	Block:blockC*************************
+		Tokens *************************
+				{9}
+				Block.MoveBlockToBlock(_newBottomBlock=Block:CLOSED{blockB(21)})
+				Key=173  Master=NONE
+				{10}
+		End Tokens *********************
+		Variables *************************
+			blockC.name=string:CLOSED{Block C}
+			blockC.top=Top:CLOSED{blockC.top(38)}
+			blockC.bottom=Bottom:CLOSED{blockC.bottom(41)}
+		End Variables *********************
+	End Block:blockC*************************
+	Top:blockC.top*************************
+		Tokens *************************
+				{0}
+				Top.Clear()
+				Key=126  Master=NONE
+					Merged Key=191 from MoveBlockToBlock-0(173){9} --> {10}
+				[10, +inf]
+		End Tokens *********************
+	End Top:blockC.top*************************
+	Bottom:blockC.bottom*************************
+		Tokens *************************
+				{0}
+				Bottom.On(bottomBlock=Block:CLOSED{blockA(8)})
+				Key=109  Master=NONE
+					Merged Key=229 from MoveBlockToBlock-0(173){9} --> {10}
+				{10}
+				{10}
+				Bottom.On(bottomBlock=Block:CLOSED{blockB(21)})
+				Key=142  Master=NONE
+					Merged Key=288 from MoveBlockToBlock-0(173){9} --> {10}
+				[11, +inf]
+		End Tokens *********************
+	End Bottom:blockC.bottom*************************
+Global Variables*************************
+	blockA=Block:CLOSED{blockA(8)}
+	blockB=Block:CLOSED{blockB(21)}
+	blockC=Block:CLOSED{blockC(34)}
+Merged Tokens: *************************
+		[-inf, 9]
+		Top.Clear()
+		Key=191  Master=173 MoveBlockToBlock-0(173){9} --> {10}
+		[10, +inf]
+		[-inf, 8]
+		Top.Clear()
+		Key=211  Master=173 MoveBlockToBlock-0(173){9} --> {10}
+		{9}
+		[-inf, 9]
+		Bottom.On(bottomBlock=Block:CLOSED{blockA(8)})
+		Key=229  Master=173 MoveBlockToBlock-0(173){9} --> {10}
+		{10}
+		[-inf, +inf]
+		Bottom.On(bottomBlock=Block:CLOSED{blockA(8),blockB(21),blockC(34)})
+		Key=288  Master=173 MoveBlockToBlock-0(173){9} --> {10}
+		[-inf, +inf]
+
