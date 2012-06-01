@@ -1,0 +1,63 @@
+// Author: Minh Do (minh.do@nasa.gov)
+
+#include "BW_NoArm-model.nddl"
+
+// The famous "Sussman Anomaly" problem
+Block blockA = new Block("Block A");
+Block blockB = new Block("Block B");
+Block blockC = new Block("Block C");
+
+// Close the Object Database - no more objects can be created
+close();
+
+// Establish the initial block configuration
+// [C on A] [B] -> [A on B on C]
+fact(blockA.bottom.OnTable initialBlockALocation);
+initialBlockALocation.start.specify(0);
+initialBlockALocation.activate();
+
+fact(blockA.top.NotClear initialBlockANotClear);
+initialBlockANotClear.start.specify(0);
+initialBlockANotClear.activate();
+
+fact(blockB.bottom.OnTable initialBlockBLocation);
+initialBlockBLocation.start.specify(0);
+initialBlockBLocation.activate();
+
+fact(blockB.top.Clear initialBlockBClear);
+initialBlockBClear.start.specify(0);
+initialBlockBClear.activate();
+
+fact(blockC.bottom.On initialBlockCLocation);
+initialBlockCLocation.start.specify(0);
+initialBlockCLocation.bottomBlock.specify(blockA);
+initialBlockCLocation.activate();
+
+fact(blockC.top.Clear initialBlockCClear);
+initialBlockCClear.start.specify(0);
+initialBlockCClear.activate();
+
+// SIMPLEST GOAL
+// goal(blockC.bottom.OnTable goalCOnTable);
+// goalCOnTable.start.specify(10);
+
+goal(blockC.bottom.On goalCOn);
+eq(goalCOn.bottomBlock,blockB);
+goalCOn.start.specify(5);
+
+goal(blockA.bottom.On goalAOn);
+eq(goalAOn.bottomBlock,blockC);
+goalAOn.start.specify(10);
+
+
+// Establish the goal condition: [A on B] and [B on C]
+// goal(blockA.bottom.On goalBlockALocation);
+// eq(goalBlockALocation.bottomBlock,blockB);
+// goalBlockALocation.start.specify(20);
+
+// goal(blockB.bottom.On goalBlockBLocation);
+// eq(goalBlockBLocation.bottomBlock,blockC);
+// goalBlockBLocation.start.specify(10);
+
+
+// EOF
