@@ -14,6 +14,16 @@ try {
     );
 
 	desktop.makeSolverDialog(solver);
+} catch(PSLanguageExceptionList l) {
+	PSLanguageException e;
+	for(int i = 0; i < l.getExceptionCount(); i++) {
+		e = l.getException(i);
+		System.out.println(e.getMessage() + " file=" 
+			+ e.getFileName() + " line="
+			+ e.getLine() + " offset="
+			+ e.getOffset() + " length="
+			+ e.getLength());
+	}
 }
 catch (Exception e) {
     e.printStackTrace();
