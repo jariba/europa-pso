@@ -2,6 +2,11 @@
 
 #include "BW_NoArm-model.nddl"
 
+Problem problem = new Problem();
+int startHorizon, endHorizon;
+startHorizon.specify(0);
+endHorizon.specify(100);
+
 // The famous "Sussman Anomaly" problem
 Block blockA = new Block("Block A");
 Block blockB = new Block("Block B");
@@ -11,53 +16,59 @@ Block blockC = new Block("Block C");
 close();
 
 // Establish the initial block configuration
-// [C on A] [B] -> [A on B on C]
+// [C on A] [B] -> goal: [A on B on C]
 fact(blockA.bottom.OnTable initialBlockALocation);
-initialBlockALocation.start.specify(0);
+initialBlockALocation.start.specify(startHorizon);
 initialBlockALocation.activate();
 
 fact(blockA.top.NotClear initialBlockANotClear);
-initialBlockANotClear.start.specify(0);
+initialBlockANotClear.start.specify(startHorizon);
 initialBlockANotClear.activate();
 
 fact(blockB.bottom.OnTable initialBlockBLocation);
-initialBlockBLocation.start.specify(0);
+initialBlockBLocation.start.specify(startHorizon);
 initialBlockBLocation.activate();
 
 fact(blockB.top.Clear initialBlockBClear);
-initialBlockBClear.start.specify(0);
+initialBlockBClear.start.specify(startHorizon);
 initialBlockBClear.activate();
 
 fact(blockC.bottom.On initialBlockCLocation);
-initialBlockCLocation.start.specify(0);
+initialBlockCLocation.start.specify(startHorizon);
 initialBlockCLocation.bottomBlock.specify(blockA);
 initialBlockCLocation.activate();
 
 fact(blockC.top.Clear initialBlockCClear);
-initialBlockCClear.start.specify(0);
+initialBlockCClear.start.specify(startHorizon);
 initialBlockCClear.activate();
 
-// SIMPLEST GOAL
-// goal(blockC.bottom.OnTable goalCOnTable);
-// goalCOnTable.start.specify(10);
+// Goals
+// A problem goal to ensure all subgoals hold concurrently
+goal(problem.goalAchieved problemGoal);
+problemGoal.start >= startHorizon;
+problemGoal.end <= endHorizon;
 
-goal(blockC.bottom.On goalCOn);
-eq(goalCOn.bottomBlock,blockB);
-goalCOn.start.specify(5);
+// SIMPLE GOAL: C OnTable
+/*
+goal(blockC.bottom.OnTable goalCOnTable);
+goalCOnTable.start >= startHorizon;
+goalCOnTable meets problemGoal;
+*/
 
-goal(blockA.bottom.On goalAOn);
-eq(goalAOn.bottomBlock,blockC);
-goalAOn.start.specify(10);
+// SIMPLE GOAL: [C On B] [A]
+goal(blockC.bottom.On goalConB);
+eq(goalConB.bottomBlock,blockB);
+goalConB.start >= startHorizon;
+goalConB meets problemGoal;
 
+// SIMPLE GOAL: [C on B] and [A on C]
+/*
+goal(blockA.bottom.On goalAonC);
+eq(goalAonC.bottomBlock,blockC);
+goalAonC.start >= startHorizon;
+goalAonC meets problemGoal;
+*/
 
-// Establish the goal condition: [A on B] and [B on C]
-// goal(blockA.bottom.On goalBlockALocation);
-// eq(goalBlockALocation.bottomBlock,blockB);
-// goalBlockALocation.start.specify(20);
-
-// goal(blockB.bottom.On goalBlockBLocation);
-// eq(goalBlockBLocation.bottomBlock,blockC);
-// goalBlockBLocation.start.specify(10);
-
+// TODO: GOAL: [A on B on C]
 
 // EOF

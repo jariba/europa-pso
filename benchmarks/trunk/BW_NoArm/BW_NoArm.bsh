@@ -30,13 +30,19 @@ catch (Exception e) {
 }
 
 
+void showTokens(String type)
+{
+	PSObjectList l = psengine.getObjectsByType("Object");
+	for (int i=0;i<l.size();i++) {
+		PSObject o = l.get(i);
+		if(o.toLongString().startsWith(type))
+			desktop.showTokens(l.get(i));
+	}
+}
+
 void showPlan()
 {
-        PSObjectList l = psengine.getObjectsByType("Object");
-        for (int i=0;i<l.size();i++) {
-                PSObject o = l.get(i);
-		// "Location" are static objects -> skip them
-                if(o.toLongString().startsWith("Block"))
-                       desktop.showTokens(l.get(i));
-    }
+	showTokens("Block");
 }
+
+
