@@ -42,6 +42,14 @@ class Block {
 	}
 }
 
+class Problem {
+	predicate goalAchieved { eq(duration,1); }
+}
+
+Bottom::On {
+	equals(bottomBlock.top.NotClear);
+}
+
 Block::MoveBlockToBlock {
 	// 
 	// Conditions: 
