@@ -47,7 +47,7 @@ class Problem {
 }
 
 Bottom::On {
-	equals(bottomBlock.top.NotClear);
+	contained_by(bottomBlock.top.NotClear);
 }
 
 Block::MoveBlockToBlock {
@@ -57,8 +57,9 @@ Block::MoveBlockToBlock {
 	// (1) moved block needs to be clear for the whole duration
 	contained_by(condition object.top.Clear);
 	
-	// (2) the block it moves to needs to be clear
+	// (2) the block it moves to needs to be clear and it has to be a different block
 	met_by(condition _newBottomBlock.top.Clear);
+	neq(_newBottomBlock,object);
 	
 	// (3) The current block need to be On some block until the *end* of the action
 	// (this is a _combined_ Condition & Effect)
@@ -70,16 +71,11 @@ Block::MoveBlockToBlock {
 	// 
 	// Effect:
 	//
-	// (1) the new bottom block will not be clear anymore
-	// starting with the start of this action and last (at least) through the end
-	starts(effect _newBottomBlock.top.NotClear _newBottomBlockNotClear);
-	_newBottomBlockNotClear.end >= this.end;
-	
-	// (2) the current block at the bottom will become CLEAR at the end of the action
+	// (1) the current block at the bottom will become CLEAR at the end of the action
 	meets(effect currentBottomBlock.top.Clear);
 	eq(_currentBottomBlockOn.bottomBlock,currentBottomBlock);
 	
-	// (3) the moved block now will be on a new bottom block at the *end* of moving
+	// (2) the moved block now will be on a new bottom block at the *end* of moving
 	meets(effect object.bottom.On _onNewBlock);
 	eq(_onNewBlock.bottomBlock,_newBottomBlock);
 }
@@ -125,16 +121,12 @@ Block::MoveBlockFromTable {
 	
 	// (3) block that will become the new bottom needs to be CLEAR too
 	met_by(condition _newBottomBlock.top.Clear);	
+	neq(_newBottomBlock,object);
 	
 	//
 	// Effect:
 	//
-	// (1) the new bottom block will not be clear anymore
-	// starting with the *start* of this action and last (at least) through the *end*
-	starts(effect _newBottomBlock.top.NotClear _newBottomBlockNotClear);
-	_newBottomBlockNotClear.end >= this.end;
-	
-	// (2) the moved block now will be on a new bottom block at the *end* of moving
+	// (1) the moved block now will be on a new bottom block at the *end* of moving
 	meets(effect object.bottom.On _onNewBlock);
 	eq(_onNewBlock.bottomBlock,_newBottomBlock);
 
