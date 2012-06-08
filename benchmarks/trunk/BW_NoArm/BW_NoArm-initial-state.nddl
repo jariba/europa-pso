@@ -55,19 +55,20 @@ goalCOnTable.start >= startHorizon;
 goalCOnTable meets problemGoal;
 */
 
-// SIMPLE GOAL: [C On B] [A]
+// SIMPLE GOAL: [C on B] [A]
 goal(blockC.bottom.On goalConB);
 eq(goalConB.bottomBlock,blockB);
 goalConB.start >= startHorizon;
 goalConB meets problemGoal;
 
-// SIMPLE GOAL: [C on B] and [A on C]
+// GOAL: combine with previous one to get [A on C on B]
 /*
 goal(blockA.bottom.On goalAonC);
 eq(goalAonC.bottomBlock,blockC);
 goalAonC.start >= startHorizon;
 goalAonC meets problemGoal;
 */
+
 
 // TODO: GOAL: [A on B on C]
 
