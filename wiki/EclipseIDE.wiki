@@ -5,29 +5,34 @@
 _Option 1_:  Add plugin to existing Eclipse IDE.  Recommended.
 
  # Make sure you have EUROPA installed and running.
- # Make sure EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows) for Eclipse.
+ # [http://code.google.com/p/europa-pso/wiki/EuropaInstallation Make sure] EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows  and DYLD_LIBRARY_PATH for Mac) for Eclipse.
+   * NOTE: for Mac to recognize the library path update, Eclipse needs to be started from the the command-line terminal windows (not by double-clicking on the Eclipse icon from Mac's Finder windows)
  # [http://code.google.com/p/europa-pso/downloads/list Download] the version of the Eclipse plugin that is compatible with your version of EUROPA.
- # Put the downloaded .jar file into your Eclipse dropins directory.
+ # Put the downloaded *.jar* file into your Eclipse dropins directory.
  # Restart Eclipse.
 
 _Option 2_:  Build the plugin site yourself, and add plugin to existing Eclipse IDE.
 
  # Make sure you have EUROPA installed, and running.
- # Make sure EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows) for Eclipse.
+ # [http://code.google.com/p/europa-pso/wiki/EuropaInstallation Make sure] EUROPA dynamic libraries are in LD_LIBRARY_PATH (PATH for Windows and DYLD_LIBRARY_PATH for Mac) for Eclipse.
+   * NOTE: for Mac to recognize the library path update, Eclipse needs to be started from the the command-line terminal windows (not by double-clicking on the Eclipse icon from Mac's Finder windows)
  # Check out EUROPA plugin code
  # Build the Eclipse plugin update site (there is an ant target for that in build.xml)
  # There are two options to install:
-   * Copy .jar from the produced update site structure into Eclipse's dropins directory and restart Eclipse
+   * Copy *.jar* from the produced update site structure into Eclipse's _dropins directory_ and restart Eclipse
    * From Eclipse, point your update manager at the directory produced by the ant script
  
 _Option 3_:  Run as a separate Eclipse Application (instead of updating your Eclipse IDE).
   # Make sure you have EUROPA checked out, built, and running.
-  # Make sure EUROPA_HOME is on your LD_LIBRARY_PATH (PATH for Windows).
+  # [http://code.google.com/p/europa-pso/wiki/EuropaInstallation Make sure] EUROPA_HOME is on your LD_LIBRARY_PATH (PATH for Windows and DYLD_LIBRARY_PATH for Mac).
+   * NOTE: for Mac to recognize the library path update, Eclipse needs to be started from the the command-line terminal windows (not by double-clicking on the Eclipse icon from Mac's Finder windows)
   # You need the plugin to be at the root level, in order for things to run correctly. So:
-   1. File->Import->Existing Projects Into Worspace
-   2. Choose 'PLASMA/src/Java/JavaUI' which will be the root directory (you now have two different 'views' into the same files in the workspace)
-   3. Use the default name for the new 'project', which is 'Europa.java'
-  # Copy PSEngine.jar from EUROPA (PLASMA/build/lib) into Europa.java/lib (NOTE: Whenever EUROPA gets updated, you'll need to redo this copy) 
+   * File->Import->Existing Projects Into Worspace
+   * Choose _PLASMA/src/Java/JavaUI_ which will be the root directory (you now have two different 'views' into the same files in the workspace)
+   * Use the default name for the new 'project', which is *Europa.java*
+  # Copy *PSEngine.jar* from EUROPA (_PLASMA/build/lib_) into _Europa.java/lib_
+   * NOTE 1: Whenever EUROPA gets updated, you'll need to redo this copy
+   * NOTE 2: this 'copy' operation is done within the Eclipse navigation pane, not in the file system.
 
 = Overview =
 
@@ -63,6 +68,8 @@ Like the Swing version, it takes a NDDL file and a planner configuration file to
 http://europa-pso.googlecode.com/svn/wiki/images/LaunchConfiguration.png
 
 == Run NDDL model perspective ==
+
+_How_: Right click on the *-initial-state.nddl* file and choose "Run As -> NDDL".
 
 The Run as NDDL model perspective is the Eclipse version of the Swing PSDesktop user interface. The main difference is the new button that lets you start and stop the engine. The plugin can run multiple NDDL sessions at the same time. You can switch between them using the pulldown list. EUROPA sessions are also visible in the Debug perspective and can be killed or restarted from there.
 
