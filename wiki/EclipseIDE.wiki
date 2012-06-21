@@ -33,10 +33,12 @@ _Option 3_:  Run as a separate Eclipse Application (instead of updating your Ecl
   # Copy *PSEngine.jar* from EUROPA (_PLASMA/build/lib_) into _Europa.java/lib_
    * NOTE 1: Whenever EUROPA gets updated, you'll need to redo this copy
    * NOTE 2: this 'copy' operation is done within the Eclipse navigation pane, not in the file system.
+  # _Activate_: Right click the newly added _Europa.java_ project from Eclipse's _Project Explorer_ pane, choose _Run As -> Eclipse Application_ where you can utilize the _Editor_ and _Execution Perspective_ components as described below.
+   * NOTE: After the EclipseIDE is brought up, user may need to create an empty project in the _Navigator_ pane (by right click on the pane, then choose _New -> Project -> General -> Project_). After a dummy blank project is created, user can copy in the NDDL files (good starting point is the examples) and run the NDDL file from there.
 
 = Overview =
 
-The Eclipse plugin has two major components: an editor and an execution perspective. 
+The Eclipse plugin has two major components: an *Editor* and an *Execution Perspective*. 
 
 === Components ===
 
