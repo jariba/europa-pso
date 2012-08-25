@@ -88,11 +88,10 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
 
   def copy: Domain
 
-  override def toString: String = { 
-    val retval = new StringBuilder
-    retval.append(dataType.name).append(if(isClosed) ":CLOSED" else ":OPEN")
-    return retval.toString
-  }
+  def typeString: String = (new StringBuilder) append dataType.name append(if(isClosed) ":CLOSED" else ":OPEN") toString
+  override def toString: String = typeString
+
+  def toString(d: Double): String = dataType.toString(d)
 
   def setDataType(dt: DataType): Unit = dataType = dt
   def getDataType: DataType = dataType
