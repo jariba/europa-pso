@@ -5,6 +5,9 @@ import gov.nasa.arc.europa.constraintengine.DomainListener
 import gov.nasa.arc.europa.utils.Error._
 import gov.nasa.arc.europa.utils.Number._
 
+import scalaz._
+import Scalaz._
+
 import scala.math._
 
 object IntervalDomain { 
@@ -14,6 +17,8 @@ object IntervalDomain {
     new IntervalDomain(lowerBound, upperBound, FloatDT.INSTANCE)
   def apply(lowerBound: Double, upperBound: Double, dataType: DataType) = 
     new IntervalDomain(lowerBound, upperBound, dataType)
+
+  implicit def IntervalEqual: Equal[IntervalDomain] = equalBy(_.getBounds)
 }
 class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataType, true) { 
  var lowerBound: Double = MINUS_INFINITY
@@ -21,6 +26,8 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
 
   def this(lowerBound: Double, upperBound: Double, dataType: DataType = FloatDT.INSTANCE) = { 
     this(dataType)
+    this.lowerBound = lowerBound
+    this.upperBound = upperBound
   }
   def this(v: Double, dataType: DataType = FloatDT.INSTANCE) = { 
     this(v, v, dataType)
@@ -36,7 +43,7 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
 
   override def set(v: Double): Unit = { 
     if(isMember(v)) { 
-      if(lowerBound != v && upperBound != v) { 
+      if(lowerBound != v || upperBound != v) { 
         lowerBound = v
         upperBound = v
         notifyChange(DomainListener.SET_TO_SINGLETON)
@@ -110,6 +117,7 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
     return if(lt(upperBound, ub) || lt(lb, lowerBound)) { 
       lowerBound = lb
       upperBound = ub
+      notifyChange(DomainListener.RELAXED)
       true
     }
     else false
@@ -129,7 +137,9 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
       else checkError(ALWAYS_FAIL, "Attempted to remove an element from within the interval.  Would require splitting.")
     }
   }
-  override def isMember(v: Double): Boolean = leq(lowerBound, v) && leq(v, upperBound)
+  override def isMember(v: Double): Boolean = { 
+    leq(lowerBound, v) && leq(v, upperBound)
+  }
 
   override def isEnumerated = false
   override def isInterval = true
@@ -163,12 +173,16 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
     return if(d.isEnumerated) d.equate(this)
            else intersect(d) && !isEmpty && d.intersect(this)
   }
+
+  override def toString: String = (new StringBuilder) append typeString append "[" append lowerBound append " " append upperBound append "]" toString
 }
 
 class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDomain(dataType) { 
 
   def this(lowerBound: Double, upperBound: Double, dataType: DataType = IntDT.INSTANCE) = { 
     this(dataType)
+    this.lowerBound = lowerBound
+    this.upperBound = upperBound
   }
   def this(v: Double, dataType: DataType = IntDT.INSTANCE) = { 
     this(v, v, dataType)
@@ -205,12 +219,17 @@ class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDom
   }
   override def translateNumber(v: Double, asMin: Boolean = true): Double = if(asMin) floor(v) else round(v)
   override def copy: Domain = new IntervalIntDomain(this)
-  
+  override def toString: String = (new StringBuilder) append super.typeString append "[" append lowerBound.toInt append " " append upperBound.toInt append "]" toString
 }
 
 class BoolDomain(dataType: DataType = BoolDT.INSTANCE) extends IntervalIntDomain(0, 1, dataType) { 
 
-  def this(v: Double, dataType: DataType = IntDT.INSTANCE) = { 
+  def this(lb: Double, ub: Double, dataType: DataType = BoolDT.INSTANCE) = { 
+    this(dataType)
+    lowerBound = lb
+    upperBound = ub
+  }
+  def this(v: Double, dataType: DataType = BoolDT.INSTANCE) = { 
     this(dataType)
     lowerBound = v
     upperBound = v
@@ -220,6 +239,14 @@ class BoolDomain(dataType: DataType = BoolDT.INSTANCE) extends IntervalIntDomain
     checkError(d.isBool, "Tried to construct a boolean from a non-boolean domain")
     lowerBound = d.lowerBound
     upperBound = d.upperBound
+  }
+  def this(b: Boolean, dataType: DataType) = { 
+    this(dataType)
+    lowerBound = translateToNumber(b)
+    upperBound = translateToNumber(b)
+  }
+  def this(b: Boolean) { 
+    this(b, BoolDT.INSTANCE)
   }
   override def isFinite: Boolean = true
   def isTrue: Boolean = lowerBound == 1 && upperBound == 1
@@ -233,5 +260,8 @@ class BoolDomain(dataType: DataType = BoolDT.INSTANCE) extends IntervalIntDomain
   }
   override def copy: Domain = new BoolDomain(this)
   override def translateNumber(v: Double, asMin: Boolean = true): Double = if(v == 0.0) 0.0 else 1.0
+  def translateToNumber(b: Boolean): Double = if(b) 1.0 else 0.0
+  def set(b: Boolean): Unit = set(translateToNumber(b))
+  def toString(b: Boolean): String = b.toString
 }
-
+//TODO: NumericDomain, StringDomain, SymbolDomain

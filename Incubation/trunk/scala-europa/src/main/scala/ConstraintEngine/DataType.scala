@@ -4,7 +4,7 @@ import gov.nasa.arc.europa.utils.Error._
 import gov.nasa.arc.europa.utils.LabelStr
 
 abstract class DataType(val name: LabelStr, val minDelta: Double = 1, val baseDomain: Domain = Domain.NO_DOMAIN) { 
-  baseDomain.setDataType(this)
+  // baseDomain.setDataType(this)
   def isNumeric: Boolean
   def isBool: Boolean
   def isString: Boolean 
@@ -31,6 +31,8 @@ abstract class DataType(val name: LabelStr, val minDelta: Double = 1, val baseDo
     checkError(() => canBeCompared(domainBase.dataType), "Tried to create a ", name.toString, " variable with a different kind of base domain: ", domainBase.dataType.name.toString)
     return null//new Variable[Domain](engine, domainBase, internal, canBeSpecified, name, parent, index)
   }
+
+  def emptyDomain: Domain
 }
 
 object DataType { 
@@ -49,5 +51,6 @@ object DataType {
                                 index: Int = ConstrainedVariable.NO_INDEX) = { 
       throw new Exception("Tried to create an instance of the Nothing type.")
     }
+    override def emptyDomain = Domain.NO_DOMAIN
   }
 }
