@@ -1,5 +1,6 @@
 package org.europa.ce;
 
+import org.europa.ce.impl.CESchemaImpl;
 import org.europa.ce.impl.ConstraintEngineImpl;
 import org.europa.engine.Engine;
 import org.europa.engine.EngineModule;
@@ -23,12 +24,16 @@ public class ModuleConstraintEngine
 	@Override
 	public void initialize(Engine e) 
 	{
-		e.addComponent(new ConstraintEngineImpl("ConstraintEngine"));
+		CESchema ces = new CESchemaImpl("CESchema");
+		
+		e.addComponent(ces);
+		e.addComponent(new ConstraintEngineImpl("ConstraintEngine", ces));
 	}
 
 	@Override
 	public void uninitialize(Engine e) 
 	{
 		e.removeComponent("ConstraintEngine");
+		e.removeComponent("CESchema");
 	}
 }
