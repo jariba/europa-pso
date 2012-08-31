@@ -14,15 +14,14 @@ public class ConstraintEngineImpl
 	implements ConstraintEngine 
 {
 
-	public ConstraintEngineImpl(String name)
+	public ConstraintEngineImpl(String name, CESchema schema)
 	{	
+		name_ = name;
+		schema_ = schema;
 	}
 	
 	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public String getName() { return name_; }
 
 	@Override
 	public Engine getEngine() {
@@ -118,9 +117,8 @@ public class ConstraintEngineImpl
 	}
 
 	@Override
-	public CESchema getSchema() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	public CESchema getSchema() { return schema_; }
+	
+	protected String name_;
+	protected CESchema schema_;
 }
