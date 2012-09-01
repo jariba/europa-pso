@@ -7,18 +7,22 @@ trait LowPriorityDefaultsTo {
 object DefaultsTo extends LowPriorityDefaultsTo { 
   implicit def default[B] = new DefaultsTo[B, B]
 }
+class Has[B] { 
+  type AsDefault[A] = A DefaultsTo B
+}
 
-private class ErrorMessage[E <: Exception](fileName: String, lineNumber: Int, message: Any,
-                                                       rest: Any*) { 
-  def handleAssert(implicit m: Manifest[E]) = { 
+private class ErrorMessage[E <: Throwable : Has[Exception]#AsDefault : Manifest](fileName: String,
+                                                                    lineNumber: Int, message: Any,
+                                                                    rest: Any*) { 
+  import DefaultsTo._
+  def handleAssert = { 
     val fullMessage = new StringBuilder
     fullMessage.append(fileName).append(":").append(lineNumber).append(": ").append(message.toString).append(rest.map(_.toString).mkString)
     if(Error.displayErrors)
       Console.println(fullMessage)
     if(Error.throwExceptions) { 
-      Console.println(m.erasure.getName)
-      val e = m.erasure.getConstructor(classOf[String]).newInstance(fullMessage.toString).asInstanceOf[E]
-      throw e
+      val exp = implicitly[Manifest[E]].erasure.getConstructor(classOf[String]).newInstance(fullMessage.toString).asInstanceOf[E]
+      throw exp
     }
   }
 }
@@ -29,14 +33,17 @@ object Error {
   private[utils] var displayErrors = true;
 
   def ALWAYS_FAIL = () => false
-  def checkError[E <: Exception](cond: Boolean, message: Any, rest: Any*)(implicit m: Manifest[E]): Unit = { 
+  def checkError[E <: Exception : Has[Exception]#AsDefault : Manifest](cond: Boolean, message: Any, rest: Any*): Unit = { 
     if(!cond) { 
       val ste = SourceLocation(1)
-      new ErrorMessage[E](ste.getFileName, ste.getLineNumber, message.toString, rest:_*).handleAssert(m)
+      new ErrorMessage[E](ste.getFileName, ste.getLineNumber, message.toString, rest:_*).handleAssert
     }
   }
-  def checkError[E <: Exception](cond: () => Boolean, message: Any, rest: Any*)(implicit m: Manifest[E]): Unit = { 
-    checkError(cond(), message, rest)(m)
+  def checkError[E <: Exception : Has[Exception]#AsDefault : Manifest](cond: () => Boolean, message: Any, rest: Any*): Unit = { 
+    if(!cond()) { 
+      val ste = SourceLocation(1)
+      new ErrorMessage[E](ste.getFileName, ste.getLineNumber, message.toString, rest:_*).handleAssert
+    }
   }
 
   def doDisplayWarnings = displayWarnings = true

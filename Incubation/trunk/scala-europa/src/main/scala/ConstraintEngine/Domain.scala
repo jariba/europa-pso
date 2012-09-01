@@ -34,8 +34,8 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
 
   def lowerBound: Double
   def upperBound: Double
-  def getUpperBound: Double = lowerBound
-  def getLowerBound: Double = upperBound
+  def getUpperBound: Double = upperBound
+  def getLowerBound: Double = lowerBound
   def getBounds: (Double, Double) = (getLowerBound, getUpperBound)
   def getValues: List[Double]
   def getSingletonValue: Option[Double]
@@ -123,6 +123,8 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
     return !dataType.isNumeric || (value >= MINUS_INFINITY && value <= PLUS_INFINITY)
   }
   protected def testPrecision(value: Double): Unit
+
+  def :=(d: Domain): Domain = this
 
 }
 

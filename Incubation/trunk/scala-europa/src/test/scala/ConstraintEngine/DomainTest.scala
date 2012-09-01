@@ -4,6 +4,7 @@ import gov.nasa.arc.europa.constraintengine.DomainListener
 import gov.nasa.arc.europa.constraintengine.component.BoolDomain
 import gov.nasa.arc.europa.constraintengine.component.FloatDT
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain
+import gov.nasa.arc.europa.constraintengine.component.IntervalDomain._
 import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain
 import gov.nasa.arc.europa.utils.Number._
 
@@ -340,6 +341,73 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     // CPPUNIT_ASSERT(dom6.getSize() == 5);
 
   }
+  test("operator equals") { 
+    val dom0 = new IntervalDomain(1, 28);
+    val dom1 = new IntervalDomain(50, 100);
+    Console.println(dom0)
+    Console.println(dom1)
+    Console.println(dom1.isFinite)
+    Console.println("=========")
+    dom0 := dom1 
+    Console.println(dom0)
+    Console.println(dom1)
+    (dom0 === dom1) should equal (true)
+  }
+  test("InfinitesAndInts") {
+    val dom0 = new IntervalDomain;
+      dom0.translateNumber(MINUS_INFINITY) should equal (MINUS_INFINITY)
+      dom0.translateNumber(MINUS_INFINITY - 1) should equal (MINUS_INFINITY)
+      dom0.translateNumber(MINUS_INFINITY + 1) should equal (MINUS_INFINITY + 1)
+      dom0.translateNumber(PLUS_INFINITY + 1) should equal (PLUS_INFINITY)
+      dom0.translateNumber(PLUS_INFINITY - 1) should equal (PLUS_INFINITY - 1)
+      dom0.translateNumber(2.8) should equal (2.8)
+
+      val dom1 = new IntervalIntDomain;
+      dom1.translateNumber(2.8, false) should equal (2)
+      dom1.translateNumber(2.8, true) should equal (3)
+      dom1.translateNumber(PLUS_INFINITY - 0.2, false) should equal (PLUS_INFINITY)
+      dom1.translateNumber(PLUS_INFINITY - 0.2, true) should equal (PLUS_INFINITY)
+      dom1.translateNumber(PLUS_INFINITY - 0.2, false) should equal ((PLUS_INFINITY - 1))
+      dom1.translateNumber(PLUS_INFINITY - 0.2, false) should equal (PLUS_INFINITY - 1)
+
+  }
+  // test("EnumSet") { assert(false) }
+  // test("InsertAndRemove") { assert(false) }
+  // test("ValidComparisonWithEmpty_gnats2403") { assert(false) }
+  test("IntervalSingletonValues") { 
+    for(v <- -2.0 to 1.5 by 0.1) {
+      val id = new IntervalDomain(v, v);
+      val values = id.getValues
+      values should have length (1)
+      values should contain (v)
+    }
+    for(v <- 2.0 to 1.5 by -0.1) {
+      val id = new IntervalDomain(v, v);
+      val values = id.getValues
+      values should have length (1)
+      values should contain (v)
+    }
+    val id = new IntervalDomain(0, 0);
+    val values = id.getValues
+    values should have length (1)
+    values should contain (0.0)
+  }
+  test("IntervalIntValues") { 
+    val i0 = new IntervalIntDomain(10, 20)
+    val values = i0.getValues
+    values should have length (11)
+    values should equal((10 to 20).toList)
+
+    val i1 = new IntervalIntDomain(-4, 3)
+    val values1 = i1.getValues
+    values1 should have length (8)
+    values1 should equal ((-4 to 3).toList)
+
+    val i2 = new IntervalIntDomain(-10, 10)
+    val i3: IntervalDomain = i2
+    i2.minDelta should equal(i3.minDelta)
+  }
+
 }
 
 // class DomainTest extends FunSuite with ShouldMatchers { 
