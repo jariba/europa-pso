@@ -86,8 +86,9 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
   override def difference(d: Domain): Boolean = { 
     checkError(d.isOpen || !d.isEmpty, d)
     checkError(isOpen || !isEmpty, this)
-    checkError(!(lt(lowerBound, d.lowerBound) && lt(d.getUpperBound, upperBound)), "Intersecting ", this, " with ", 
-               d, " would split the domain.")
+    checkError(!(lt(lowerBound, d.lowerBound) && lt(d.getUpperBound, upperBound)),
+               "Removing ", d, " from ", this, " would split the domain.")
+
     if(lt(d.upperBound, lowerBound) || lt(upperBound, d.lowerBound)) return false
     if(leq(d.lowerBound, lowerBound) && leq(upperBound, d.upperBound)) { empty; return true}
     if(leq(d.lowerBound, lowerBound)) { 
@@ -175,6 +176,15 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
   }
 
   override def toString: String = (new StringBuilder) append typeString append "[" append lowerBound append " " append upperBound append "]" toString
+
+  override def :=(d: Domain): Domain = {
+//    safeComparison(this, d)
+    checkError(listener == null, "")
+    lowerBound = d.getLowerBound
+    upperBound = d.getUpperBound
+//    closed = d.isFinite
+    this
+  }
 }
 
 class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDomain(dataType) { 
@@ -217,7 +227,13 @@ class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDom
   override def testPrecision(v: Double): Unit = { 
     checkError(v == v.toInt, v, " must be an integer")
   }
-  override def translateNumber(v: Double, asMin: Boolean = true): Double = if(asMin) floor(v) else round(v)
+  override def translateNumber(v: Double, asMin: Boolean = true): Double = { //if(asMin) floor(v) else round(v)
+    if(v == PLUS_INFINITY || v == MINUS_INFINITY)
+      return v
+    val result = super.translateNumber(v.toInt, asMin);
+    if(abs(result - v) >= FloatDT.INSTANCE.minDelta && asMin && v > 0) result + 1
+    else result
+  }
   override def copy: Domain = new IntervalIntDomain(this)
   override def toString: String = (new StringBuilder) append super.typeString append "[" append lowerBound.toInt append " " append upperBound.toInt append "]" toString
 }
