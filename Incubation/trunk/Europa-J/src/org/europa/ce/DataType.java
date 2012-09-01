@@ -12,10 +12,10 @@ public interface DataType
 	
 	public CVariable createVariable(
 				ConstraintEngine constraintEngine,
+				String name, 
+				Object parent, 
+				int index,
 				Domain restrictedBaseDomain, // specify as null to use DataType's default base domain
 				boolean internal,
-				boolean canBeSpecified,
-				String name,
-				Object parent,
-				int index);	
+				boolean canBeSpecified);
 }
