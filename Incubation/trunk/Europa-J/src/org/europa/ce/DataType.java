@@ -8,9 +8,11 @@ public interface DataType
 	public boolean canBeCompared(DataType rhs);
 	public boolean isAssignableFrom(DataType rhs);
 	
+	public Domain getBaseDomain();
+	
 	public CVariable createVariable(
 				ConstraintEngine constraintEngine,
-				Domain baseDomain,
+				Domain restrictedBaseDomain, // specify as null to use DataType's default base domain
 				boolean internal,
 				boolean canBeSpecified,
 				String name,
