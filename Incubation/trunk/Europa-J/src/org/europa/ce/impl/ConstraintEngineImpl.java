@@ -8,33 +8,20 @@ import org.europa.ce.CVariable;
 import org.europa.ce.Constraint;
 import org.europa.ce.ConstraintEngine;
 import org.europa.ce.Domain;
-import org.europa.engine.Engine;
+import org.europa.engine.impl.EngineComponentBase;
 
 public class ConstraintEngineImpl 
-	implements ConstraintEngine 
+	extends EngineComponentBase
+	implements ConstraintEngine
 {
+	protected CESchema schema_;
 
 	public ConstraintEngineImpl(String name, CESchema schema)
 	{	
-		name_ = name;
+		super(name);
 		schema_ = schema;
 	}
 	
-	@Override
-	public String getName() { return name_; }
-
-	@Override
-	public Engine getEngine() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setEngine(Engine e) {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public CVariable createVariable(String name, String dataType,
 			Domain baseDomain, Object parent, int index, boolean isInternal,
@@ -117,8 +104,5 @@ public class ConstraintEngineImpl
 	}
 
 	@Override
-	public CESchema getSchema() { return schema_; }
-	
-	protected String name_;
-	protected CESchema schema_;
+	public CESchema getSchema() { return schema_; }	
 }
