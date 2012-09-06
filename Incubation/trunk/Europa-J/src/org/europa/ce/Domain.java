@@ -7,12 +7,12 @@ public interface Domain
 	public DataType getDataType();
 	
 	public boolean isEnumerated();
-	public boolean isInterval();
-	
-	public void isSingleton();
+	public List<Object> getValues();	
 
+	public boolean isInterval();
 	public double getLowerBound();
 	public double getUpperBound();
 	
-	public List<Object> getValues();	
+	public boolean isSingleton();
+	public Object getSingletonValue();
 }
