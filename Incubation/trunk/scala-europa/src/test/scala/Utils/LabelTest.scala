@@ -3,14 +3,15 @@ package gov.nasa.arc.europa.utils.test
 import gov.nasa.arc.europa.utils.LabelStr
 
 import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
 
-class LabelTest extends FunSuite {
+class LabelTest extends FunSuite with ShouldMatchers {
   test("basic creation") {
     val lbl1 = new LabelStr("");
     val lbl2 = new LabelStr("This is a char*")
     val lbl3 = new LabelStr(lbl2.toString())
 
-    assert(lbl3 == lbl2)
+    assert(lbl3 === lbl2)
 
     val labelStr2 = "This is another char*"
     assert(!LabelStr.isString(labelStr2))
@@ -20,11 +21,11 @@ class LabelTest extends FunSuite {
 
     val key = lbl2.key
     val lbl5 = new LabelStr(key)
-    assert(lbl5 == lbl2)
+    assert(lbl5 === lbl2)
     assert(LabelStr.isString(key))
-    assert(!LabelStr.isString(50))
+    assert(!LabelStr.isString(Integer.MAX_VALUE))
 
-    assert(lbl3 == lbl2)
+    assert(lbl3 === lbl2)
 
   }
 
@@ -43,10 +44,10 @@ class LabelTest extends FunSuite {
   test("element access") {
     val lbl1 = new LabelStr("A 1B 1C 1D EFGH");
     val first = new LabelStr(lbl1.getElement(0, " "));
-    assert(first == new LabelStr("A"));
+    assert(first === new LabelStr("A"));
 
     val last = new LabelStr(lbl1.getElement(3, "1"));
-    assert(last == new LabelStr("D EFGH"));
+    assert(last === new LabelStr("D EFGH"));
 
   }
   test("comparison") {
@@ -57,7 +58,7 @@ class LabelTest extends FunSuite {
     assert(lbl1 < lbl2);
     assert(lbl2 > lbl4);
     assert(lbl2 != lbl4);
-    assert(lbl4 == lbl3);
+    assert(lbl4 === lbl3);
 
     val lbl5 = new LabelStr("ABCDEFGH");
 
@@ -67,5 +68,10 @@ class LabelTest extends FunSuite {
     assert(lbl5.contains(lbl5));
     assert(!lbl5.contains("I"));
 
+  }
+  test("map insertion") { 
+    val m: Map[LabelStr, Int] = Map(LabelStr("foo") -> 1, LabelStr("Bar") -> 9)
+    m should contain key (LabelStr("foo"))    
+    m should not contain key (LabelStr("argle"))
   }
 }

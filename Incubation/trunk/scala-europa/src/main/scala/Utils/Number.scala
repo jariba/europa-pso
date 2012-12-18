@@ -2,8 +2,8 @@ package gov.nasa.arc.europa.utils
 import scala.math.abs
 
 object Number { 
-  val PLUS_INFINITY: Double = java.lang.Float.POSITIVE_INFINITY
-  val MINUS_INFINITY: Double = java.lang.Float.NEGATIVE_INFINITY
+  val PLUS_INFINITY: Double = (java.lang.Integer.MAX_VALUE >> 2)
+  val MINUS_INFINITY: Double = -PLUS_INFINITY
 }
 
 object Infinity { 

@@ -22,14 +22,13 @@ abstract class DataType(val name: LabelStr, val minDelta: Double = 1, val baseDo
     else LabelStr(value.toInt).toString
   }
 
-  //seems like this could be type-parameterized
-  def createVariable(engine: ConstraintEngine, domainBase: Domain, internal: Boolean = false,
+  def createVariable[D <: Domain](engine: ConstraintEngine, domainBase: D, internal: Boolean = false,
                      canBeSpecified: Boolean, name: LabelStr = ConstrainedVariable.NO_NAME,
                      parent: Option[Entity] = None, 
                      index: Int = ConstrainedVariable.NO_INDEX): ConstrainedVariable = { 
 
-    checkError(() => canBeCompared(domainBase.dataType), "Tried to create a ", name.toString, " variable with a different kind of base domain: ", domainBase.dataType.name.toString)
-    return null//new Variable[Domain](engine, domainBase, internal, canBeSpecified, name, parent, index)
+    checkError(canBeCompared(domainBase.dataType), "Tried to create a ", name.toString, " variable with a different kind of base domain: ", domainBase.dataType.name.toString)
+    return new Variable[D](engine, domainBase, internal, canBeSpecified, name, parent, index)
   }
 
   def emptyDomain: Domain
@@ -44,7 +43,7 @@ object DataType {
     override def isAssignableFrom(rhs: DataType) = false
     def createValue(value: String) = None
     override def toString(value: Double) = "None"
-    override def createVariable(engine: ConstraintEngine, domainBase: Domain, 
+    override def createVariable[D <: Domain](engine: ConstraintEngine, domainBase: D, 
                                 internal: Boolean = false, canBeSpecified: Boolean, 
                                 name: LabelStr = ConstrainedVariable.NO_NAME,
                                 parent: Option[Entity] = None, 

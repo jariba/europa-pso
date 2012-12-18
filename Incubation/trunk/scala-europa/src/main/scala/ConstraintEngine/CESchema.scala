@@ -19,6 +19,7 @@ class CESchema extends EngineComponent {
   def getDataType(name: String): Option[DataType] = dataTypes.get(name)
   def isDataType(name: String): Boolean = dataTypes.isDefinedAt(name)
   def baseDomain(name: String): Option[Domain] = dataTypes.get(name).map(_.baseDomain)
+  def getDataTypes: Map[LabelStr, DataType] = dataTypes
   def purgeDataTypes: Unit = dataTypes = Map()
 
   def registerConstraintType(ct: ConstraintType): Unit = { 

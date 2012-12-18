@@ -1,4 +1,6 @@
 package gov.nasa.arc.europa.constraintengine
+import gov.nasa.arc.europa.utils.Debug._
+import gov.nasa.arc.europa.utils.EngineComponent
 import gov.nasa.arc.europa.utils.Entity
 import gov.nasa.arc.europa.utils.Error._
 import gov.nasa.arc.europa.utils.LabelStr
@@ -44,7 +46,7 @@ trait ConstraintEngineListener {
     ce.add(this)
   }
 
-  var engine: ConstraintEngine;
+  var engine: ConstraintEngine = null;
 }
 
 trait ViolationManager { 
@@ -155,18 +157,25 @@ object ConstraintEngine {
   }
 }
 
-class ConstraintEngine(schema: CESchema) { 
+class ConstraintEngine(schema: CESchema) extends EngineComponent { 
   def purge: Unit = { 
     purged = true
-    checkError(() => Entity.isPurging || constraints.isEmpty, "")
-    while(!constraints.isEmpty) constraints.head.discard
-    checkError(() => Entity.isPurging || variables.isEmpty, "")
-    while(!variables.isEmpty) variables.head.discard
+    checkError(Entity.isPurging || constraints.isEmpty, "")
+    discardConstraintGraph
+    debugMsg("ConstraintEngine:purge", "Purging propagators...")
     while(!propagators.isEmpty) propagators.head.discard
+  }
+  def discardConstraintGraph: Unit = { 
+    checkError(Entity.isPurging || constraints.isEmpty, "")
+    debugMsg("ConstraintEngine:purge", "Purging constraints...")
+    while(!constraints.isEmpty) constraints.head.discard
+    checkError(Entity.isPurging || variables.isEmpty, "")
+    debugMsg("ConstraintEngine:purge", "Purging variables...")
+    while(!variables.isEmpty) variables.head.discard
   }
   def provenInconsistent: Boolean = hasEmptyVariables
   def constraintConsistent: Boolean = if(provenInconsistent) false else getNextPropagator.isEmpty
-  def pending: Boolean = if(!dirty) false else relaxed.map(_.hasActiveConstraint).reduceLeft(_ || _) || (!provenInconsistent && !constraintConsistent)
+  def pending: Boolean = if(!dirty) false else relaxed.map(_.hasActiveConstraint).foldLeft(false)(_ || _) || (!provenInconsistent && !constraintConsistent)
   def isPropagating: Boolean = propInProgress
   
   def propagate: Boolean = { 
@@ -218,9 +227,9 @@ class ConstraintEngine(schema: CESchema) {
                            canBeSpecified: Boolean = true,
                            name: LabelStr = ConstrainedVariable.NO_NAME,
                            parent: Option[Entity] = None,
-                           index: Int = ConstrainedVariable.NO_INDEX): ConstrainedVariable = { 
+                           index: Int = ConstrainedVariable.NO_INDEX): Option[ConstrainedVariable] = { 
     val dt = schema.getDataType(typeName)
-    checkError(() => !dt.isEmpty, "Unknown data type: ", typeName)
+    checkError(!dt.isEmpty, "Unknown data type: ", typeName)
     return createVariableWithDomain(typeName, dt.get.baseDomain, internal, canBeSpecified, name,
                                     parent, index)
   }
@@ -229,12 +238,12 @@ class ConstraintEngine(schema: CESchema) {
                                canBeSpecified: Boolean = true, 
                                name: LabelStr = ConstrainedVariable.NO_NAME,
                                parent: Option[Entity] = None, 
-                               index: Int = ConstrainedVariable.NO_INDEX): ConstrainedVariable = { 
+                               index: Int = ConstrainedVariable.NO_INDEX): Option[ConstrainedVariable] = { 
     val dt = schema.getDataType(typeName)
-    checkError(() => !dt.isEmpty, "Unknown data type: ", typeName)
-    return dt.get.createVariable(this, baseDomain, internal, canBeSpecified, name, parent, index)
+    checkError(!dt.isEmpty, "Unknown data type: ", typeName)
+    return dt.map(_.createVariable(this, baseDomain, internal, canBeSpecified, name, parent, index))
   }
-  def createConstraint(name: LabelStr, scope: Vector[ConstrainedVariable], 
+  def createConstraint(name: LabelStr, scope: Seq[ConstrainedVariable], 
                        violationExpl: String = ""): Constraint = { 
     val factory = schema.getConstraintType(name)
     checkError(() => !factory.isEmpty, "Unknown constraint type: ", name)
@@ -256,7 +265,7 @@ class ConstraintEngine(schema: CESchema) {
   def allocateVariableListener(v: ConstrainedVariable): DomainListener = new VariableChangeListener(v, this)
 
   def add(c: Constraint, propagatorName: LabelStr): Unit = { 
-    checkError(() => !constraints.contains(c), "Attempted to add ", c.name, " twice")
+    checkError(!constraints.contains(c), "Attempted to add ", c.name, " twice")
     val possProp: Option[Propagator] = propagatorsByName.get(propagatorName)
     possProp match { 
       case Some(p) => p.addConstraint(c); c.setPropagator(p)
@@ -267,13 +276,14 @@ class ConstraintEngine(schema: CESchema) {
     listeners.foreach(_.notifyAdded(c))
   }
   def remove(c: Constraint): Unit = { 
-    checkError(() => constraints.contains(c), "Attempted to remove ", c.name, " without adding it.")
-    checkError(() => propInProgress, "Can't remove a constraint during propagation")
+    checkError(constraints.contains(c), "Attempted to remove ", c.name, " without adding it.")
+    checkError(!propInProgress, "Can't remove a constraint during propagation")
     constraints = constraints - c
     redundantConstraints = redundantConstraints - c
     if(!Entity.isPurging) { 
       c.propagator.get.removeConstraint(c)
-      if(c.isActive) c.getModifiedVariables.filter((v: ConstrainedVariable) => (v.isDiscarded && v.lastRelaxed < cycleCount)).foreach(_.relax)
+      if(c.isActive) c.getModifiedVariables.filter((v: ConstrainedVariable) => (!v.isDiscarded && v.lastRelaxed < cycleCount)).foreach(_.relax)
+      publish(_.notifyRemoved(c))
     }
   }
   
@@ -283,7 +293,7 @@ class ConstraintEngine(schema: CESchema) {
   }
 
   def notify(source: ConstrainedVariable, change: DomainListener.ChangeType): Unit = { 
-    checkError(() => !Entity.isPurging, "Tried to handle a notification while purging")
+    checkError(!Entity.isPurging, "Tried to handle a notification while purging")
     dirty = true
     if(source.isActive) { 
       change match { 
@@ -293,8 +303,8 @@ class ConstraintEngine(schema: CESchema) {
       }
     }
     if(change != DomainListener.EMPTIED)
-      source.constraints.filter((c: (Constraint, Int)) => (c._1.isActive && !(c._1.isDiscarded) && !(c._1.canIgnore(source, c._2, change))))
-    .foreach((c: (Constraint, Int)) => c._1.propagator.get.handleNotification(source, c._2, c._1, change))
+      source.constraints.filter(c => (c._1.isActive && !c._1.isDiscarded && !c._1.canIgnore(source, c._2, change)))
+    .foreach(c => c._1.propagator.get.handleNotification(source, c._2, c._1, change))
     publish(_.notifyChanged(source, change))
   }
 
@@ -303,11 +313,25 @@ class ConstraintEngine(schema: CESchema) {
     violationMgr.addEmptyVariable(v)
     violationMgr.handleEmpty(v)
   }
+
+  def relaxationAgenda(v: ConstrainedVariable, s: Set[ConstrainedVariable]): Set[ConstrainedVariable] = { 
+    def immediatelyConnectedVars(v: ConstrainedVariable): Set[ConstrainedVariable] = { 
+      (for(c: (Constraint, Int) <- v.constraints if c._1.isActive) yield c._1.getModifiedVariables(v)).flatten.toSet
+    }
+    if(s contains v) return s
+    val connected = immediatelyConnectedVars(v)
+    val visited = s + v
+    return immediatelyConnectedVars(v).map(relaxationAgenda(_, visited)).flatten
+  }
+
+
   def handleRelax(v: ConstrainedVariable): Unit = { 
     def relaxLoop(v: ConstrainedVariable): Unit = { 
-      for(c: (Constraint, Int) <- v.constraints) { 
+      for(c: (Constraint, Int) <- v.constraints if c._1.isActive) { 
         for(variable <- c._1.getModifiedVariables(v)) { 
           if(variable.lastRelaxed < cycleCount) { 
+            debugMsg("ConstraintEngine:handleRelax", 
+                     "Relaxing ", variable.toLongString)
             variable.updateLastRelaxed(cycleCount)
             variable.relax
             if(!relaxingViolation) violationMgr.handleRelax(variable)
@@ -317,6 +341,7 @@ class ConstraintEngine(schema: CESchema) {
     }
 
     checkError(!propInProgress, "Can't relax variables during propagation")
+    debugMsg("ConstraintEngine:handleRelax", "Handling relaxation of ", v.toLongString)
     if(!relaxing) { 
       if(!relaxingViolation) violationMgr.handleRelax(v)
       if(relaxed.isEmpty)
@@ -326,7 +351,13 @@ class ConstraintEngine(schema: CESchema) {
       if(hasEmptyVariables && !(getViolationManager.isEmpty(v)))
         getViolationManager.relaxEmptyVariables
       relaxing = true
-      relaxLoop(v)
+      val agenda = relaxationAgenda(v, Set())
+      for(toRelax <- agenda if toRelax.lastRelaxed < cycleCount) { 
+        toRelax.updateLastRelaxed(cycleCount)
+        toRelax.relax
+        if(!relaxingViolation) violationMgr.handleRelax(toRelax)
+      }
+      //relaxLoop(v)
       relaxing = false
     }
   }
@@ -336,13 +367,15 @@ class ConstraintEngine(schema: CESchema) {
 
   def add(p: Propagator): Unit = { 
     propagatorsByName.get(p.name) match { 
-      case Some(o) => {propagators = propagators.filterNot(_ == p)
-                       o.discard
-                       propagatorsByName = propagatorsByName - p.name}
+      case Some(o) => o.discard
       case None => 
     }
     propagators = p :: propagators
     propagatorsByName = propagatorsByName + ((p.name, p))
+  }
+  def remove(p: Propagator): Unit = { 
+    propagatorsByName = propagatorsByName - p.name
+    propagators = propagators.filterNot(_ == p)
   }
   
   def notifyDeactivated(c: Constraint): Unit = {
@@ -459,6 +492,7 @@ class ConstraintEngine(schema: CESchema) {
         incrementCycle
         propInProgress = true
         var activePropagator = getNextPropagator
+        debugMsg("ConstraintEngine:propagate", "Active propagator: ", activePropagator)
         while(!activePropagator.isEmpty) { 
           if(!started) { 
             started = true
@@ -472,7 +506,7 @@ class ConstraintEngine(schema: CESchema) {
         incrementCycle
         val oldProp = autoPropagate
         autoPropagate = false
-        continueProp = callbacks.map(_.apply).reduceLeft(_||_)
+        continueProp = callbacks.map(_.apply).reduceLeftOption(_||_).getOrElse(false)
         autoPropagate = oldProp
       }
       if(constraintConsistent && started) { 
@@ -485,7 +519,7 @@ class ConstraintEngine(schema: CESchema) {
       }
       relaxed = Set()
     }
-    return true
+    return constraintConsistent
   }
   
   def processRedundantConstraints: Unit = { 
@@ -506,6 +540,8 @@ class ConstraintEngine(schema: CESchema) {
   def getViolationManager: ViolationManager = violationMgr
 
 
+  override def delete: Unit = { }
+
   var cycleCount: Int = 0
   var variables: Set[ConstrainedVariable] = Set()
   var constraints: Set[Constraint] = Set()
@@ -521,7 +557,79 @@ class ConstraintEngine(schema: CESchema) {
   var mostRecentRepropagation: Int = 0
   var listeners: List[ConstraintEngineListener] = List()
   var redundantConstraints: Set[Constraint] = Set()
-  var violationMgr: ViolationManager = null
+  var violationMgr: ViolationManager = new DefaultViolationManager(0, this)
   var autoPropagate: Boolean = true
   var callbacks: List[PostPropagationCallback] = List()
+
+  new DebugCEListener(this)
+}
+
+private class DebugCEListener(ce: ConstraintEngine) extends ConstraintEngineListener { 
+  setConstraintEngine(ce)
+  override def notifyPropagationCommenced(): Unit = {
+    debugMsg("ConstraintEngine:notify", "Propagation commenced")
+  }
+
+  override def notifyPropagationCompleted(): Unit = {
+    debugMsg("ConstraintEngine:notify", "Propagation completed")
+  }
+
+  override def notifyPropagationPreempted(): Unit = {
+    debugMsg("ConstraintEngine:notify", "Propagation preempted")
+  }
+
+  override def notifyAdded(c: Constraint): Unit = {
+    debugMsg("ConstraintEngine:notify", "Added constraint ", c)
+    //debugMsg("ConstraintEngine:longNotify", "Added constraint ", c.toLongString)
+  }
+
+  override def notifyActivated(c: Constraint): Unit = {
+    debugMsg("ConstraintEngine:notify", "Activated constraint ", c)
+    debugMsg("ConstraintEngine:longNotify", "Activated constraint ", c.toLongString)
+  }
+
+  override def notifyDeactivated(c: Constraint): Unit = {
+    debugMsg("ConstraintEngine:notify", "Deactivated constraint ", c)
+    debugMsg("ConstraintEngine:longNotify", "Deactivated constraint ", c.toLongString)
+  }
+
+  override def notifyActivated(v: ConstrainedVariable): Unit = {
+    debugMsg("ConstraintEngine:notify", "Activated variable ", v)
+    debugMsg("ConstraintEngine:longNotify", "Activated variable ", v.toLongString)
+  }
+
+  override def notifyDeactivated(v: ConstrainedVariable): Unit = {
+    debugMsg("ConstraintEngine:notify", "Deactivated variable ", v)
+    debugMsg("ConstraintEngine:longNotify", "Deactivated variable ", v.toLongString)
+  }
+
+
+  override def notifyRemoved(c: Constraint): Unit = {
+    debugMsg("ConstraintEngine:notify", "Removed constraint ", c)
+    debugMsg("ConstraintEngine:longNotify", "Removed constraint ", c.toLongString)
+  }
+
+  override def notifyExecuted(c: Constraint): Unit = {
+    debugMsg("ConstraintEngine:notify", "Executed constraint ", c)
+    debugMsg("ConstraintEngine:longNotify", "Executed constraint ", c.toLongString)
+  }
+
+  override def notifyAdded(v: ConstrainedVariable): Unit = {
+    debugMsg("ConstraintEngine:notify", "Added variable ", v)
+    debugMsg("ConstraintEngine:longNotify", "Added variable ", v.toLongString)
+  }
+
+  override def notifyRemoved(v: ConstrainedVariable): Unit = {
+    debugMsg("ConstraintEngine:notify", "Removed variable ", v)
+    debugMsg("ConstraintEngine:longNotify", "Removed variable ", v.toLongString)
+  }
+
+  override def notifyChanged(v: ConstrainedVariable, change: DomainListener.ChangeType): Unit = {
+    debugMsg("ConstraintEngine:notify", change, " : ", v.toLongString)
+  }
+
+  override def notifyViolationAdded(c: Constraint): Unit = {}
+
+  override def notifyViolationRemoved(c: Constraint): Unit = {}
+
 }

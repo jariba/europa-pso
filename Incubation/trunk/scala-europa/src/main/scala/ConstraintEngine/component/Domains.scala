@@ -2,6 +2,7 @@ package gov.nasa.arc.europa.constraintengine.component
 import gov.nasa.arc.europa.constraintengine.DataType
 import gov.nasa.arc.europa.constraintengine.Domain
 import gov.nasa.arc.europa.constraintengine.DomainListener
+import gov.nasa.arc.europa.utils.Debug._
 import gov.nasa.arc.europa.utils.Error._
 import gov.nasa.arc.europa.utils.Number._
 
@@ -18,7 +19,7 @@ object IntervalDomain {
   def apply(lowerBound: Double, upperBound: Double, dataType: DataType) = 
     new IntervalDomain(lowerBound, upperBound, dataType)
 
-  implicit def IntervalEqual: Equal[IntervalDomain] = equalBy(_.getBounds)
+  //implicit def IntervalEqual: Equal[IntervalDomain] = equalBy(_.getBounds)
 }
 class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataType, true) { 
  var lowerBound: Double = MINUS_INFINITY
@@ -171,8 +172,9 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
            else None
   }
   override def equate(d: Domain): Boolean = { 
+    debugMsg("IntervalDomain:equate", "Equating ", this, " with ", d)
     return if(d.isEnumerated) d.equate(this)
-           else intersect(d) && !isEmpty && d.intersect(this)
+           else intersect(d) | ((!isEmpty) && d.intersect(this))
   }
 
   override def toString: String = (new StringBuilder) append typeString append "[" append lowerBound append " " append upperBound append "]" toString
@@ -185,6 +187,20 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
 //    closed = d.isFinite
     this
   }
+
+  override def eq(other: Domain): Boolean = eq(lowerBound, other.lowerBound) && eq(upperBound, other.upperBound)
+}
+
+object IntervalIntDomain { 
+  def apply() = new IntervalIntDomain(IntDT.INSTANCE)
+  def apply(dataType: DataType) = new IntervalIntDomain(dataType)
+  def apply(value: Int) = new IntervalIntDomain(value, value, IntDT.INSTANCE)
+  def apply(lowerBound: Int, upperBound: Int) = 
+    new IntervalIntDomain(lowerBound, upperBound, IntDT.INSTANCE)
+  def apply(lowerBound: Int, upperBound: Int, dataType: DataType) = 
+    new IntervalIntDomain(lowerBound, upperBound, dataType)
+
+//  implicit def IntervalIntEqual: Equal[IntervalIntDomain] = equalBy(_.getBounds)
 }
 
 class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDomain(dataType) { 
@@ -238,6 +254,15 @@ class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDom
   override def toString: String = (new StringBuilder) append super.typeString append "[" append lowerBound.toInt append " " append upperBound.toInt append "]" toString
 }
 
+object BoolDomain { 
+  def apply() = new BoolDomain(BoolDT.INSTANCE)
+  def apply(dataType: DataType) = new BoolDomain(dataType)
+  def apply(value: Boolean) = 
+    new BoolDomain(value, IntDT.INSTANCE)
+
+  // implicit def BoolEqual: Equal[BoolDomain] = equalBy(_.getBounds)
+}
+
 class BoolDomain(dataType: DataType = BoolDT.INSTANCE) extends IntervalIntDomain(0, 1, dataType) { 
 
   def this(lb: Double, ub: Double, dataType: DataType = BoolDT.INSTANCE) = { 
@@ -279,5 +304,6 @@ class BoolDomain(dataType: DataType = BoolDT.INSTANCE) extends IntervalIntDomain
   def translateToNumber(b: Boolean): Double = if(b) 1.0 else 0.0
   def set(b: Boolean): Unit = set(translateToNumber(b))
   def toString(b: Boolean): String = b.toString
+  def isMember(b: Boolean): Boolean = isMember(translateToNumber(b))
 }
 //TODO: NumericDomain, StringDomain, SymbolDomain

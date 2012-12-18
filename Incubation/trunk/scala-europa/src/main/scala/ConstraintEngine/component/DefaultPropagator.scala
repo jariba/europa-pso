@@ -37,6 +37,7 @@ class DefaultPropagator(override val name: LabelStr, override val engine: Constr
 	  debugMsg("DefaultPropagator:agenda","Cleared agenda because CE was proven inconsistent");
         }
     }
+    activeConstraint = 0
   }
   override def updateRequired: Boolean = !agenda.isEmpty
   override def handleConstraintAdded(constraint: Constraint): Unit = { agenda = agenda + constraint}
@@ -45,6 +46,8 @@ class DefaultPropagator(override val name: LabelStr, override val engine: Constr
   override def handleConstraintDeactivated(constraint: Constraint): Unit = { agenda = agenda - constraint}
   override def handleNotification(source: ConstrainedVariable, argIndex: Int, c: Constraint, 
                          change: DomainListener.ChangeType): Unit = { 
+    debugMsg("DefaultPropagator:handleNotification",
+             "Received ", change, " notification on ", source, " through ", c)
     if(c.key != activeConstraint) agenda = agenda + c
   }
 

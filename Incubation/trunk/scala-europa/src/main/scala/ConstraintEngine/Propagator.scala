@@ -4,20 +4,19 @@ import gov.nasa.arc.europa.utils.Error._
 import gov.nasa.arc.europa.utils.LabelStr
 
 abstract class Propagator(override val name: LabelStr, val engine: ConstraintEngine) extends Entity { 
-  engine.add(this)
 
   def isEnabled: Boolean = enabled
   def enable: Unit = enabled = true
   def disable: Unit = enabled = false
 
   def addConstraint(c: Constraint): Unit = { 
-    checkError(c.propagator == null, c, " already has a propagator.")
+    checkError(c.propagator.isEmpty , c, " already has a propagator.")
     constraints = constraints + c
     handleConstraintAdded(c)
   }
 
   def removeConstraint(c: Constraint): Unit = { 
-    checkError(c.propagator == this, c, " isn't on this propagator")
+    checkError(c.propagator.get == this, c, " isn't on this propagator")
     constraints = constraints - c
     handleConstraintRemoved(c)
   }
@@ -43,8 +42,14 @@ abstract class Propagator(override val name: LabelStr, val engine: ConstraintEng
   def notifyConstraintViolated(c: Constraint): Unit = c.notifyViolated
   def notifyVariableEmptied(v: ConstrainedVariable): Unit = engine.getViolationManager.addEmptyVariable(v)
 
-  var enabled: Boolean = false
+  override def handleDiscard: Unit = { 
+    engine.remove(this)
+    super.handleDiscard
+  }
+
+  var enabled: Boolean = true
   var constraints: Set[Constraint] = Set()
+  engine.add(this)
 }
 
 object Propagator { 

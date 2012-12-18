@@ -42,7 +42,7 @@ abstract class Constraint(override val name: LabelStr, val propagatorName: Label
   
   def toLongString: String = { 
     val builder = new StringBuilder
-    builder.append(super.toString)
+    builder.append(super.toString).append("\n")
     variables.zipWithIndex.map(v => builder.append(" ARG[").append(v._2).append("]:").append(v._1.toLongString).append("\n"))
     if(violationExpl != LabelStr()) builder.append("{ViolationExpl:").append(violationExpl.toString).append("}")
     return builder.toString
@@ -100,7 +100,7 @@ abstract class Constraint(override val name: LabelStr, val propagatorName: Label
 
   override def handleDiscard: Unit = { 
     if(!Entity.isPurging) { 
-      checkError(() => isValid, "Not valid")
+      checkError(isValid, "Not valid")
       variables.zipWithIndex.map((v) => v._1.removeConstraint(this, v._2))
     }
     engine.remove(this)
@@ -108,18 +108,21 @@ abstract class Constraint(override val name: LabelStr, val propagatorName: Label
   }
 
   private[constraintengine] def setPropagator(p: Propagator): Unit = { 
-    checkError(() => propagator == None, "Propagator not None")
-    checkError(() => p.engine == engine, "Propagator not for the same engine")
+    checkError(propagator == None, "Propagator not None")
+    checkError(p.engine == engine, "Propagator not for the same engine")
     propagator = Some(p)
   }
   private[constraintengine] def isValid: Boolean = !variables.isEmpty && !propagator.isEmpty && engine != null
+
+  def deactivationCount = deactivationRefCount
 
   var propagator: Option[Propagator] = None
   var source: Option[Constraint] = None
   var deactivationRefCount: Int = 0
   var redundant: Boolean = false
   var violationExpl: LabelStr = LabelStr()
-
+  engine.add(this, propagatorName)
+  variables.zipWithIndex.foreach(v => v._1.addConstraint(this, v._2))
 }
 
 object Scope { 

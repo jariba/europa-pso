@@ -12,14 +12,16 @@ trait ConstrainedVariableListener {
 }
 
 abstract class ConstrainedVariable(val engine: ConstraintEngine, val internal: Boolean, 
-                                   val canBeSpecified: Boolean, override val name: LabelStr, val parent: Option[Entity],
+                                   val canBeSpecified: Boolean, override val name: LabelStr,
+                                   val parent: Option[Entity],
                                    val index: Int) extends Entity {
+
   def getEntityType: String = "ConstrainedVariable"
   def getDataType: DataType = baseDomain.getDataType
 
   def isValid: Boolean = lastDomain.getListener == listener &&
                          (lastDomain.isEmpty || lastDomain.isSubsetOf(baseDomain)) &&
-                         constraints.map(_._1.isVariableOf(this)).reduceLeft(_ && _) && validate
+                         constraints.map(_._1.isVariableOf(this)).reduceLeftOption(_ && _).getOrElse(true) && validate
   def constrs: Set[Constraint] = constraints.map(_._1).toSet
   def constraintCount: Int = constraints.size
   def getFirstConstraint: Option[Constraint] = constraints.headOption.map(_._1)
@@ -45,6 +47,7 @@ abstract class ConstrainedVariable(val engine: ConstraintEngine, val internal: B
   def isSpecified: Boolean = specifiedFlag
   override def toString: String = { 
     val builder = new StringBuilder
+    builder append super.toString
     if(isSingleton) builder.append(getSingletonValue)
     else if(baseDomain.isInterval) builder.append("[").append(lastDomain.getLowerBound).append(" ").append(lastDomain.getUpperBound).append("]")
     else if(baseDomain.isEnumerated) builder.append("{").append(lastDomain.getValues.map(_.toString)).append("}")
@@ -145,25 +148,26 @@ abstract class ConstrainedVariable(val engine: ConstraintEngine, val internal: B
   def internalSpecify(singletonValue: Double): Unit = { 
     if(!specifiedFlag || specifiedValue.get == singletonValue) { 
       debugMsg("ConstrainedVariable:internalSpecify", "specifying value: ",  toString)
-      checkError(() => baseDomain.isMember(singletonValue), singletonValue, " not in ", baseDomain.toString)
-      checkError(() => isActive, toString)
+      checkError(baseDomain.isMember(singletonValue), singletonValue, " not in ", baseDomain.toString)
+      checkError(isActive, toString)
       if(!getCurrentDomain.isSingleton && engine.getAllowViolations) reset
       specifiedFlag = true
       specifiedValue = Some(singletonValue)
       if(!getCurrentDomain.isMember(singletonValue)) getCurrentDomain.empty
       else getCurrentDomain.set(singletonValue)
       debugMsg("ConstrainedVariable:internalSpecify", "specified value: ", toString)
-      checkError(() => isValid, "Invalid!")
+      checkError(isValid, "Invalid!")
     }
   }
   def getCurrentDomain: Domain
 
   def addConstraint(constraint: Constraint, argIndex: Int): Unit = { 
-    checkError(() => !Entity.isPurging, "Can't add constraints during purge")
+    checkError(!Entity.isPurging, "Can't add constraints during purge")
+    debugMsg("ConstrainedVariable:addConstraint", "Adding ", constraint, " to ", this)
     constraints = (constraint, index) :: constraints
     handleConstraintAdded(constraint)
     listeners.map(_.notifyConstraintAdded(constraint, argIndex))
-    checkError(() => isConstrainedBy(constraint), "Weird state")
+    checkError(isConstrainedBy(constraint), "Weird state")
   }
   def removeConstraint(constraint: Constraint, argIndex: Int): Unit = { 
     checkError(() => !Entity.isPurging, "Purging!")
@@ -188,7 +192,7 @@ abstract class ConstrainedVariable(val engine: ConstraintEngine, val internal: B
   def getSingletonValue: Option[Double] = if(isSpecified) specifiedValue else lastDomain.getSingletonValue
 
   var deactivationRefCount: Int = 0
-  val listener: DomainListener = null
+  val listener: DomainListener = engine.allocateVariableListener(this)
   var propagatingConstraint: Constraint = null
   var lastRelaxed: Int = -1
   var specifiedFlag: Boolean = false
