@@ -70,8 +70,9 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
   def isSubsetOf(other: Domain): Boolean
   def intersects(other: Domain): Boolean
 
-  def ===(other: Domain): Boolean = closed == other.closed && isFinite == other.isFinite
-  def !==(other: Domain): Boolean = !(this === other)
+  // def ===(other: Domain): Boolean = closed == other.closed && isFinite == other.isFinite
+  // def !==(other: Domain): Boolean = !(this === other)
+  def eq(other: Domain): Boolean
 
   def setListener(l: DomainListener): Unit = { 
     checkError(() => listener == null, "Tried to set listener twice")
@@ -106,7 +107,7 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
   def convertToMemberValue(value: String): Option[Double]
   def compareEqual(a: Double, b: Double): Boolean = {return abs(a - b) < minDelta}
   def lt(a: Double, b: Double): Boolean = a != PLUS_INFINITY && b != MINUS_INFINITY && (a + minDelta <= b)
-  def eq(a: Double, b: Double) = compareEqual(a, b)
+  def eq(a: Double, b: Double) = a == b || compareEqual(a, b)
   def leq(a: Double, b: Double): Boolean = (a == b) || (a - minDelta) < b
 
   protected def notifyChange(changeType: DomainListener.ChangeType): Unit = { 
@@ -128,7 +129,13 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
 
 }
 
+import scalaz._
+import Scalaz._
+
 object Domain { 
+  implicit def DomainEqual: Equal[Domain] = new Equal[Domain] { 
+    override def equal(a: Domain, b: Domain): Boolean = a.closed == b.closed && a.isFinite == b.isFinite && a.eq(b)
+  }
   def canBeCompared(domx: Domain, domy: Domain) = false;
   def assertSafeComparison(doma: Domain, domb: Domain): Unit = { }
 
@@ -157,7 +164,6 @@ object Domain {
     def isMember(value: Double) = false
     def isSubsetOf(other: Domain) = false
     def intersects(ohter: Domain) = false
-    override def ===(other: Domain) = false
     override def setListener(l: DomainListener): Unit = throw new Exception("Tried to add a listener to the Nothing domain")
     override def getListener  = throw new Exception("Tried to get a listener from the Nothing domain")
     override def copy = throw new Exception("Tried to copy the Nothing domain")
@@ -165,6 +171,6 @@ object Domain {
     override def translateNumber(number: Double, asMin: Boolean = true): Double = throw new Exception("Tried to translate a number to the Nothing domain")
     override def convertToMemberValue(s: String) = throw new Exception("Tried to translate a string to the Nothing domain")
     def testPrecision(value: Double) = throw new Exception("Fail")
-    
+    override def eq(other: Domain): Boolean = this == other
   }
 }

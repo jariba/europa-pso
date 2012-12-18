@@ -6,10 +6,51 @@ import gov.nasa.arc.europa.constraintengine.component.FloatDT
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain._
 import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain
+import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain._
+import gov.nasa.arc.europa.utils.Infinity
 import gov.nasa.arc.europa.utils.Number._
+
+import scalaz._
+import Scalaz._
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
+
+trait Foo
+
+class Bar extends Foo { 
+  var lb: Double = 0.0
+  var ub: Double = 100.0
+  def this(lb: Double, ub: Double) = {this(); this.lb = lb; this.ub = ub}
+  def getBounds = (lb, ub)
+}
+object Bar { 
+  implicit def BarEqual: Equal[Bar] = equalBy(_.getBounds)
+}
+
+class Baz extends Bar { 
+  def this(lb: Int, ub: Int) = { 
+    this()
+    this.lb = lb; this.ub = ub;
+  }
+}
+
+class WierdTest extends FunSuite with ShouldMatchers { 
+
+  test("stuff") { 
+    val v1 = new Bar()
+    val v2 = new Bar(10.0, 20.0)
+    val v3 = new Bar(10.0, 20.0)
+
+    (v1 ≟ v1) should equal (true)
+    (v2 ≟ v2) should equal (true)
+    (v3 ≟ v3) should equal (true)
+    (v1 ≟ v2) should equal (false)
+    (v2 ≟ v1) should equal (false)
+    (v2 ≟ v3) should equal (true)
+    (v3 ≟ v2) should equal (true)
+  }
+}
 
 class ChangeListener extends DomainListener { 
   var changed = false
@@ -50,13 +91,13 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     val d3 = new IntervalIntDomain(intDomain)
     val d4 = new IntervalIntDomain
 
-    (d3 === d4) should equal (false)
+    (d3 ≟ d4) should equal (false)
     d3 relax d4
-    (d3 === d4) should equal (true)
+    (d3 ≟ d4) should equal (true)
     
-    (d2 === d4) should equal (false)
+    (d2 ≟ d4) should equal (false)
     d2 relax d4
-    (d2 === d4) should equal (true)
+    (d2 ≟ d4) should equal (true)
   }
   test("relaxation") { 
     val listener = new ChangeListener
@@ -70,13 +111,13 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     change should equal (DomainListener.RELAXED)
     dom1 isSubsetOf dom0 should equal (true)
     dom0 isSubsetOf dom1 should equal (true)
-    (dom0 === dom1) should equal (true)
+    (dom0 ≟ dom1) should equal (true)
 
     val dom2 = new IntervalIntDomain(-300, 100)
     dom1 intersect dom2
     val (res1, change1) = listener.checkAndClearChange
     res1 should equal (true)
-    (dom1 === dom2) should equal (true)
+    (dom1 ≟ dom2) should equal (true)
     dom1 relax dom2
     val (res2, change2) = listener.checkAndClearChange
     res2 should equal (false)
@@ -89,7 +130,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     dom0 isMember (-EPSILON -EPSILON) should equal (false)
     
     val dom1 = new IntervalDomain(-EPSILON, EPSILON/10)
-    (dom1 === dom0) should equal (true)
+    (dom1 ≟ dom0) should equal (true)
     
     val dom2 = new IntervalDomain(-EPSILON, -EPSILON/10)
     dom2 intersects dom0 should equal (true)
@@ -105,7 +146,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     dom0.intersect(dom1);
     val(res0, _) = l_listener.checkAndClearChange
     res0 should equal (true)
-    (dom0 === dom1) should equal (true)
+    (dom0 ≟ dom1) should equal (true)
 
     // verify no change triggered if none should take place.
     dom0.intersect(dom1);
@@ -130,9 +171,17 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     val dom4 = new IntervalDomain(0.98, 101.23);
     val dom5 = new IntervalDomain(80, 120.44);
     val dom6 = new IntervalDomain(80, 101.23);
-    dom4.equate(dom5);
-    (dom4 === dom6) should equal (true)
-    (dom5 === dom6) should equal (true)
+    dom4 equate dom5
+    (dom4 ≟ dom6) should equal (true)
+    (dom5 ≟ dom6) should equal (true)
+
+    val domEq1 = new IntervalIntDomain(7)
+    val domEq2 = new IntervalIntDomain(0, 10)
+    domEq1 equate domEq2
+    (domEq1 ≟ domEq2) should equal (true)
+    domEq1 should have ('lowerBound (7), 'upperBound (7))
+    domEq2 should have ('lowerBound (7), 'upperBound (7))
+
 
     val dom7 = new IntervalDomain(-1, 0);
     dom6.intersect(dom7);
@@ -213,7 +262,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
 
     // Handle cases where domains are equal
     val dom2 = new IntervalIntDomain(dom0);
-    (dom2 === dom0) should equal (true)
+    (dom2 ≟ dom0) should equal (true)
     dom0.isSubsetOf(dom2) should equal (true)
     dom2.isSubsetOf(dom0) should equal (true)
 
@@ -292,7 +341,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     // dom1.getLowerBound should equal (0.0);
     
     dom1.intersect(dom0);
-    (dom1 === dom0) should equal (true)
+    (dom1 ≟ dom0) should equal (true)
     // CPPUNIT_ASSERT(dom1 == dom0);
 
   }
@@ -344,31 +393,30 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
   test("operator equals") { 
     val dom0 = new IntervalDomain(1, 28);
     val dom1 = new IntervalDomain(50, 100);
-    Console.println(dom0)
-    Console.println(dom1)
-    Console.println(dom1.isFinite)
-    Console.println("=========")
     dom0 := dom1 
-    Console.println(dom0)
-    Console.println(dom1)
-    (dom0 === dom1) should equal (true)
+    (dom0 ≟ dom1) should equal (true)
   }
   test("InfinitesAndInts") {
     val dom0 = new IntervalDomain;
+      // dom0.translateNumber(MINUS_INFINITY) should equal (MINUS_INFINITY)
+      // dom0.translateNumber(MINUS_INFINITY - 1) should equal (MINUS_INFINITY)
+      // dom0.translateNumber(MINUS_INFINITY + 1) should equal (MINUS_INFINITY + 1)
+      // dom0.translateNumber(PLUS_INFINITY + 1) should equal (PLUS_INFINITY)
+      // dom0.translateNumber(PLUS_INFINITY - 1) should equal (PLUS_INFINITY - 1)
       dom0.translateNumber(MINUS_INFINITY) should equal (MINUS_INFINITY)
-      dom0.translateNumber(MINUS_INFINITY - 1) should equal (MINUS_INFINITY)
-      dom0.translateNumber(MINUS_INFINITY + 1) should equal (MINUS_INFINITY + 1)
-      dom0.translateNumber(PLUS_INFINITY + 1) should equal (PLUS_INFINITY)
-      dom0.translateNumber(PLUS_INFINITY - 1) should equal (PLUS_INFINITY - 1)
+      dom0.translateNumber(Infinity.minus(MINUS_INFINITY, 1, MINUS_INFINITY)) should equal (MINUS_INFINITY)
+      dom0.translateNumber(Infinity.plus(MINUS_INFINITY, 1, MINUS_INFINITY)) should equal (Infinity.plus(MINUS_INFINITY, 1, MINUS_INFINITY))
+      dom0.translateNumber(Infinity.plus(PLUS_INFINITY, 1, PLUS_INFINITY)) should equal (PLUS_INFINITY)
+      dom0.translateNumber(Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY)) should equal (Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY))
       dom0.translateNumber(2.8) should equal (2.8)
 
       val dom1 = new IntervalIntDomain;
       dom1.translateNumber(2.8, false) should equal (2)
       dom1.translateNumber(2.8, true) should equal (3)
-      dom1.translateNumber(PLUS_INFINITY - 0.2, false) should equal (PLUS_INFINITY)
-      dom1.translateNumber(PLUS_INFINITY - 0.2, true) should equal (PLUS_INFINITY)
-      dom1.translateNumber(PLUS_INFINITY - 0.2, false) should equal ((PLUS_INFINITY - 1))
-      dom1.translateNumber(PLUS_INFINITY - 0.2, false) should equal (PLUS_INFINITY - 1)
+      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), false) should equal (PLUS_INFINITY)
+      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), true) should equal (PLUS_INFINITY)
+      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), false) should equal ((Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY)))
+      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), false) should equal (Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY))
 
   }
   // test("EnumSet") { assert(false) }
@@ -409,6 +457,35 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
   }
 
 }
+
+class EnumeratedDomainTest extends FunSuite with ShouldMatchers { 
+  ignore("Strings") {}
+  ignore("EnumerationOnly") {}
+  ignore("BasicLabelOperations") {}
+  ignore("LabelSetAllocations") {}
+  ignore("Equate") {}
+  ignore("ValueRetrieval") {}
+  ignore("Intersection") {}
+  ignore("Difference") {}
+  ignore("OperatorEquals") {}
+  ignore("EmptyOnClosure") {}
+  ignore("OpenEnumerations") {}
+
+}
+
+class MixedTypeTest extends FunSuite with ShouldMatchers { 
+  ignore("OpenAndClosed") {}
+  ignore("InfinityBounds") {}
+  ignore("Equality") {}
+  ignore("Intersection") {}
+  ignore("Subset") {}
+  ignore("IntDomain") {}
+  ignore("DomainComparatorConfiguration") {}
+  ignore("Copying") {}
+  ignore("SymbolicVsNumeric") {}
+}
+
+
 
 // class DomainTest extends FunSuite with ShouldMatchers { 
 // }

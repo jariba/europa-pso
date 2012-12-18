@@ -44,7 +44,8 @@ trait Entity /*extends Ordered[Entity]*/ {
   def isDiscarded: Boolean = discarded
 
   def handleDiscard: Unit = { 
-    m_dependentEntity.notifyDiscarded(this)
+    if(m_dependentEntity != null)
+      m_dependentEntity.notifyDiscarded(this)
     if(m_externalEntity != null)
       m_externalEntity.discard
     Entity.remove(this)
@@ -56,6 +57,7 @@ trait Entity /*extends Ordered[Entity]*/ {
   def name: LabelStr = LabelStr("NO_NAME")
 
   def entityType: String = "Entity"
-  
+
+  override def toString: String = (new StringBuilder) append name append "(" append key append ")" toString
 }
 

@@ -61,13 +61,16 @@ class AddEqual(name: LabelStr, pName: LabelStr, ce: ConstraintEngine, vars: Seq[
 
     // Process Z
     val xMax_plus_yMax = Infinity.plus(xMax, yMax, zMax);
+    debugMsg("AddEqual", "xMax_plus_yMax = ", xMax_plus_yMax)
     if (zMax > xMax_plus_yMax)
       zMax = z.translateNumber(xMax_plus_yMax, false);
 
     val xMin_plus_yMin = Infinity.plus(xMin, yMin, zMin);
+    debugMsg("AddEqual", "xMin_plus_yMin = ", xMin_plus_yMin)
     if (zMin < xMin_plus_yMin)
       zMin = z.translateNumber(xMin_plus_yMin, true);
 
+    debugMsg("AddEqual", "z <- [", zMin, " ", zMax, "]")
     if (z.intersect(zMin, zMax) && z.isEmpty)
       return;
 
@@ -122,7 +125,7 @@ extends Constraint(name, pName, ce, vars) {
   override def handleExecute: Unit = {
 
     var changed = false
-
+    debugMsg("EqualConstraint:equate", "Propagating forward")
     for(i <- 1 until vars.length) {
       val v1 = vars(i - 1)
       val v2 = vars(i)
@@ -210,58 +213,41 @@ extends Constraint(name, pName, ce, vars) {
   val y = vars(1)
 
   override def handleExecute: Unit = {
-    LessThanEqualConstraint.propagate(x.getCurrentDomain.asInstanceOf[IntervalDomain],
-                                      y.getCurrentDomain.asInstanceOf[IntervalDomain])
+    propagate(x.getCurrentDomain, y.getCurrentDomain)
+  }
+
+  def propagate(x: Domain, y: Domain): Unit = { 
+    checkError(x.getDataType.canBeCompared(y.getDataType),
+               "Cannot compare ", x, " and " , y, ".");
+
+    // Discontinue if either domain is open.
+    if (x.isOpen || y.isOpen)
+      return;
+
+    checkError(!x.isEmpty && !y.isEmpty, "Can't propagate with empty domains");
+
+    // Restrict X to be no larger than Y's max
+    debugMsg("LessThanEqualConstraint:handleExecute",
+	     "Intersecting ", x,  " with [", x.getLowerBound, " ", y.getUpperBound, "]");
+
+    if (x.intersect(x.lowerBound, y.upperBound) && x.isEmpty)
+      return;
+
+    // Restrict Y to be at least X's min
+    y.intersect(x.lowerBound, y.upperBound);
   }
 
   override def canIgnore(variable: ConstrainedVariable, argIndex: Int, 
                          changeType: DomainListener.ChangeType): Boolean = { 
-    if(changeType==DomainListener.RESET || changeType == DomainListener.RELAXED)
-      return false;
-
-    val domain = variable.lastDomain;
-
-    if(domain.isSingleton ||
-       (domain.isInterval && domain.isFinite && domain.size.get <= 2 )) // Since this transition is key for propagation
-      return false;
-
-    return true;
+    return((argIndex == 0 &&
+	    (changeType == DomainListener.UPPER_BOUND_DECREASED)) ||
+	   (argIndex == 1 &&
+	    (changeType == DomainListener.LOWER_BOUND_INCREASED)));
   }
 
   override def testIsRedundant(variable: Option[ConstrainedVariable]): Boolean = { 
     super.testIsRedundant(variable) ||
     getScope(0).baseDomain.getUpperBound <= getScope(1).baseDomain.getLowerBound
-  }
-}
-
-object LessThanEqualConstraint { 
-  def propagate(domx: IntervalDomain, domy: IntervalDomain): Unit = { 
-    checkError(domx.getDataType.canBeCompared(domy.getDataType),
-               "Cannot compare " , domx.toString , " and " , domy.toString , ".");
-
-    // Discontinue if either domain is open.
-    if (domx.isOpen || domy.isOpen)
-      return;
-
-    debugMsg("LessThanConstraint:handleExecute", "Computing " , domx.toString , " < " , domy.toString , " x.minDelta = " ,
-	     domx.minDelta , " y.minDelta = " , domy.minDelta);
-    if(domx.getUpperBound >= domy.getUpperBound &&
-       domy.getUpperBound < PLUS_INFINITY &&
-       domx.intersect(domx.getLowerBound, domy.getUpperBound - domx.minDelta) &&
-       domx.isEmpty)
-      return;
-
-    if(domy.getLowerBound <= domx.getLowerBound &&
-       domx.getLowerBound > MINUS_INFINITY &&
-       domy.intersect(domx.getLowerBound + domy.minDelta, domy.getUpperBound) &&
-       domy.isEmpty)
-      return;
-
-    // Special handling for singletons, which could be infinite
-    if(domx.isSingleton && domy.isSingleton && domx.getSingletonValue.get >= domy.getSingletonValue.get){
-      domx.empty;
-      return;
-    }
   }
 }
 

@@ -28,7 +28,7 @@ object Debug {
   def enableAll: Unit = { allEnabled = true; disabled = false;}
   def disableAll: Unit = { allEnabled = false; disabled = true;}
   def clearEnabled: Unit = enabledMsgs = Set.empty
-  private def enable(marker: String): Unit = {
+  def enable(marker: String): Unit = {
     enabledMsgs = enabledMsgs + marker.replaceFirst("\\s*:", "");
     disabled = false;
   }

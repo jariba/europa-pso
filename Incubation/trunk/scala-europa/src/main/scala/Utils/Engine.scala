@@ -33,7 +33,7 @@ class EngineConfig {
 
 abstract class Engine {
   def addComponent(name: String, comp: EngineComponent): Unit
-  def removeComponent(name: String): Unit
+  def removeComponent(name: String): EngineComponent
   def getComponent(name: String): EngineComponent
   def getComponents: scala.collection.immutable.Map[Int, EngineComponent];
   def getConfig: EngineConfig;
@@ -99,12 +99,14 @@ class EngineBase extends Engine {
     }
     }
   }
-  override def removeComponent(name: String): Unit = {
+  override def removeComponent(name: String): EngineComponent = {
+    val retval = getComponent(name)
     val key = LabelStr.getKey(name)
     components.get(key) match {
     case Some(c: EngineComponent) => {components -= key; c.setEngine(null)}
     case None => {}
     }
+    retval
   }
   override def getComponent(name: String) = components.getOrElse(LabelStr.getKey(name), null)
   override def getComponents: scala.collection.immutable.Map[Int, EngineComponent] = components.toMap

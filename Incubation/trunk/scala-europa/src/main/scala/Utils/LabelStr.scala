@@ -1,5 +1,8 @@
 package gov.nasa.arc.europa.utils;
 
+import scalaz._
+import Scalaz._
+
 import scala.collection.mutable.HashMap;
 import scala.collection.mutable.Map;
 
@@ -32,6 +35,7 @@ object LabelStr {
 
   implicit def fromString(s: String): LabelStr = LabelStr(s)
   implicit def toString(l: LabelStr): String = l.toString
+  implicit def LabelEqual: Equal[LabelStr] = equalBy(_.key)
 }
 
 class LabelStr(k: Int) extends Ordered[LabelStr] {
@@ -45,8 +49,11 @@ class LabelStr(k: Int) extends Ordered[LabelStr] {
   def this(s: LabelStr) = this(s.key)
   def this() = this("")
 
-  def ==(o: LabelStr) = key == o.key;
-  def !=(o: LabelStr) = key != o.key;
+  override def hashCode = key.hashCode
+  override def equals(other: Any): Boolean = other match { 
+    case other: LabelStr => this.key == other.key
+    case _ => false
+  }
 
   override def toString: String = LabelStr.keyToString.get(key) match {
     case None => "__ErRoR!!11!!__"
