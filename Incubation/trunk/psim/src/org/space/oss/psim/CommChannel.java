@@ -2,5 +2,9 @@ package org.space.oss.psim;
 
 public interface CommChannel 
 {
-	boolean sendMessage(Object message);
+	public String getOrigin();
+	public String getDestination();
+	
+	public boolean sendMessage(Object message);
+	public boolean sendResponse(Object message);
 }
