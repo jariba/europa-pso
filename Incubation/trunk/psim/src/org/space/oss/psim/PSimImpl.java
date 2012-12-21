@@ -34,7 +34,7 @@ public class PSimImpl implements PSim
 		services.add(telemetryService);
 		
 		for (PSimService s : services)
-			s.init(cfg);
+			s.init(this, cfg);
 		
 		LOG.info("Initialized PSim");
 	}
