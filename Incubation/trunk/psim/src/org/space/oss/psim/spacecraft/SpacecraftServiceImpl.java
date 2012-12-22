@@ -1,5 +1,6 @@
 package org.space.oss.psim.spacecraft;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,17 +27,13 @@ public class SpacecraftServiceImpl implements SpacecraftService
 	{
 		psim_ = psim;
 		spacecraft_ = new TreeMap<String,Spacecraft>();
-		// TODO: make number of SC configurable
-		addSpacecraft("SC-1");
+		List<Spacecraft> sc = spacecraftFactory.makeSpacecraft(psim_);
+		for (Spacecraft s : sc)
+			spacecraft_.put(s.getID(), s);
+		
 		LOG.info("Initialized SpacecraftService");
 	}
 	
-	protected void addSpacecraft(String id)
-	{
-		Spacecraft s = spacecraftFactory.makeSpacecraft(id, psim_);
-		spacecraft_.put(s.getID(), s);
-	}
-
 	@Override
 	public void shutdown() 
 	{
