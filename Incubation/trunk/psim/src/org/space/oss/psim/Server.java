@@ -89,7 +89,7 @@ public class Server
 		return cfg;
 	}
 	
-	protected void init(Config cfg)
+	public void init(Config cfg)
 	{
 		if (running) {
 			LOG.info("PSim server already running. Server.init() had no effect");
@@ -204,8 +204,14 @@ public class Server
     	if("N".equals(cfg.getValue("bshUI"))) 
     		return;
 
-    	(new PSimDesktop(this,cfg)).run();
+    	PSimDesktop desktop = makeDesktop(cfg);
+    	desktop.run();
     }
+	
+	protected PSimDesktop makeDesktop(Config cfg)
+	{
+		return new PSimDesktop(this,cfg);
+	}
 	
 	public static String getDeployDirectory()
 	{
@@ -229,7 +235,7 @@ public class Server
         return getDeployDirectory()+"/"+path;		
 	}
 	
-    static class ShutdownHook extends Thread
+    static protected class ShutdownHook extends Thread
     {
     	public ShutdownHook()
     	{

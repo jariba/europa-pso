@@ -53,7 +53,7 @@ public class PSimDesktop
     		JFrame.setDefaultLookAndFeelDecorated(true);
 
     		//Create and set up the window.
-    		JFrame frame = new JFrame("ConFRM - Server Debug UI");
+    		JFrame frame = new JFrame("PSim - Mission Planning Simulator");
     		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     		frame.getContentPane().setLayout(new BorderLayout());
     		createDesktop();
