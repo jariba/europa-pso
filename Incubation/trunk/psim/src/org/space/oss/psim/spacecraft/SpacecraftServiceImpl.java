@@ -8,6 +8,7 @@ import org.space.oss.psim.Config;
 import org.space.oss.psim.PSim;
 import org.space.oss.psim.Spacecraft;
 import org.space.oss.psim.SpacecraftService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class SpacecraftServiceImpl implements SpacecraftService 
@@ -16,6 +17,9 @@ public class SpacecraftServiceImpl implements SpacecraftService
 	protected Map<String,Spacecraft> spacecraft_;
 	
 	protected PSim psim_;
+	
+	@Autowired
+	protected SpacecraftFactory spacecraftFactory;
 	
 	@Override
 	public void init(PSim psim, Config cfg) 
@@ -29,7 +33,7 @@ public class SpacecraftServiceImpl implements SpacecraftService
 	
 	protected void addSpacecraft(String id)
 	{
-		Spacecraft s = new SpacecraftImpl(id,psim_);
+		Spacecraft s = spacecraftFactory.makeSpacecraft(id, psim_);
 		spacecraft_.put(s.getID(), s);
 	}
 

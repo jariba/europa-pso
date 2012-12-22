@@ -69,4 +69,5 @@ xsi:schemaLocation="
 	<bean id="commandService" class="org.space.oss.psim.command.CommandServiceImpl"/>
 	<bean id="telemetryService" class="org.space.oss.psim.telemetry.TelemetryServiceImpl"></bean>
 	<bean id="spacecraftService" class="org.space.oss.psim.spacecraft.SpacecraftServiceImpl"></bean>
+	<bean id="spacecraftFactory" class="org.space.oss.psim.spacecraft.SpacecraftFactoryImpl"></bean>
 </beans>    
