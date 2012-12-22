@@ -1,5 +1,8 @@
 package org.space.oss.psim.spacecraft;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.log4j.Logger;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.PSim;
@@ -10,11 +13,24 @@ import org.space.oss.psim.SpacecraftService;
 public class SpacecraftServiceImpl implements SpacecraftService 
 {
 	private static Logger LOG = Logger.getLogger(SpacecraftServiceImpl.class);
-
+	protected Map<String,Spacecraft> spacecraft_;
+	
+	protected PSim psim_;
+	
 	@Override
 	public void init(PSim psim, Config cfg) 
 	{
+		psim_ = psim;
+		spacecraft_ = new TreeMap<String,Spacecraft>();
+		// TODO: make number of SC configurable
+		addSpacecraft("SC-1");
 		LOG.info("Initialized SpacecraftService");
+	}
+	
+	protected void addSpacecraft(String id)
+	{
+		Spacecraft s = new SpacecraftImpl(id,psim_);
+		spacecraft_.put(s.getID(), s);
 	}
 
 	@Override
@@ -26,7 +42,6 @@ public class SpacecraftServiceImpl implements SpacecraftService
 	@Override
 	public Spacecraft getSpacecraftByID(String spacecraftID) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return spacecraft_.get(spacecraftID);
 	}
 }

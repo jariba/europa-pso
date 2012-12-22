@@ -16,11 +16,11 @@ public class GroundStationImpl implements GroundStation
 {
 	private static Logger LOG = Logger.getLogger(GroundStationImpl.class);
 		
-	String id_;
-	PSim psim_;
+	protected String id_;
+	protected PSim psim_;
 	protected List<Command> commands_;
 
-	public GroundStationImpl(String id,PSim psim)
+	public GroundStationImpl(String id, PSim psim)
 	{
 		id_ = id;
 		psim_ = psim;
@@ -61,6 +61,7 @@ public class GroundStationImpl implements GroundStation
 			// TODO: create comm packet?
 			boolean ok = comm.sendMessage(new MessageImpl(getID(),(String)c.getArgs().get("Destination"),c));
 			if (ok) {
+				commands_.remove(c);
 				LOG.debug(c + " sent successfully");
 				return true;
 			}
