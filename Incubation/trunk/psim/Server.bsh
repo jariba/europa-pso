@@ -1,0 +1,5 @@
+
+c = cmd.makeCommand("getHealthData","Destination=SC-1,arg1=foo,arg2=bar");
+gs = cmd.getGroundStationByID("GS-1");
+gs.queueCommand(c);
+// gs.sendAllQueuedCommands(10,false);
