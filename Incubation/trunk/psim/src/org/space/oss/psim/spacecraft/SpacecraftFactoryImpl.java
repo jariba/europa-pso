@@ -13,8 +13,11 @@ public class SpacecraftFactoryImpl implements SpacecraftFactory
 	{
 		List<Spacecraft> retval = new ArrayList<Spacecraft>();
 		
-		for (int i=0;i<1;i++)
-			retval.add(new SpacecraftImpl("SC-"+i,psim));
+		for (int i=0;i<1;i++) {
+			Spacecraft sc = new SpacecraftImpl("SC-"+i,psim);
+			sc.init();
+			retval.add(sc);
+		}
 		
 		return retval;
 	}
