@@ -17,6 +17,7 @@ public class SpacecraftImpl implements Spacecraft
 	
 	protected PSim psim_;
 	protected String id_;
+	protected Map<String,Subsystem> subsystems_;
 	protected Map<String,CommandHandler> commandHandlers_;
 	
 	public SpacecraftImpl(String id, PSim psim)
@@ -28,10 +29,14 @@ public class SpacecraftImpl implements Spacecraft
 	@Override
 	public String getID() { return id_; }
 
-	@Override public void init()
+	@Override 
+	public void init()
 	{
+	    subsystems_ = new HashMap<String,Subsystem>();
+	    setupSubsystems();
+		
 	    commandHandlers_ = new HashMap<String,CommandHandler>();
-	    setupCommandHandlers();
+	    setupCommandHandlers(); 
 	}
 	
 	protected void setupCommandHandlers()
@@ -39,6 +44,10 @@ public class SpacecraftImpl implements Spacecraft
 		commandHandlers_.put("noop",new NoopCommandHandler(this));
 	}
 	
+	protected void setupSubsystems()
+	{
+		subsystems_.put("fakeComms", new SubsystemBase("fakeComms"));
+	}
 	protected CommandHandler getCommandHandler(Command c)
 	{
 		return commandHandlers_.get(c.getType());
@@ -50,7 +59,12 @@ public class SpacecraftImpl implements Spacecraft
 		LOG.debug(getID()+ " received: "+message);
 		
 		if (message.getPayload() instanceof Command) {
-			handleCommand(message.getSender(),(Command)message.getPayload());
+			try {
+				handleCommand(message.getSender(),(Command)message.getPayload());
+			}
+			catch (Exception e) {
+				LOG.error("Failed executing command: "+((Command)message.getPayload()).getType(),e);
+			}
 		}
 	}
 	
@@ -58,7 +72,7 @@ public class SpacecraftImpl implements Spacecraft
 	{
 		CommandHandler ch = getCommandHandler(c);
 		if (ch == null) 
-			LOG.error("Unable to find command handler for:"+c);
+			throw new RuntimeException("Unable to find command handler for:"+c);
 		else
 			ch.execute(sender, c);
 	}
@@ -69,4 +83,24 @@ public class SpacecraftImpl implements Spacecraft
 		// TODO: implement through factory
 		return new CommChannelImpl(psim_,getID(),dest);
 	}
+	
+	public Subsystem getSubsystem(String name)
+	{
+		Subsystem s = subsystems_.get(name);
+		
+		if (s==null)
+			throw new RuntimeException("Subsystem "+name+" doesn't exist in spacecraft "+getID());
+		
+		return s;
+	}
+	
+	protected Integer asInt(String arg)
+	{
+		return Integer.getInteger(arg);
+	}
+	
+	protected Long asLong(String arg)
+	{
+		return Long.getLong(arg);
+	}	
 }

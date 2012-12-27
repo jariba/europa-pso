@@ -33,7 +33,7 @@ public class GroundStationImpl implements GroundStation
 	@Override
 	public void queueCommand(Command c) 
 	{
-		commands_.add(0,c);
+		commands_.add(c);
 	}
 
 	@Override
