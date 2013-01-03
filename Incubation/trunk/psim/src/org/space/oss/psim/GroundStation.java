@@ -4,8 +4,10 @@ public interface GroundStation
 	extends MessageReceiver
 {
 	public String getID();
+
+	public boolean sendCommand(Command c);
 	
-	// Methods to manage event queue
+	// Methods to manage command queue
 	public void queueCommand(Command c);
 	public void removeCommand(Integer commandID);
 	public boolean sendQueuedCommand(int retries,boolean discardOnFail);
