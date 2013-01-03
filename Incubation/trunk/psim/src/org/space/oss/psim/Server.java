@@ -188,6 +188,7 @@ public class Server
 		try {
 			psim = (PSim)appContext.getBean("PSim");
 			psim.init(cfg);
+			loadCommandDictionary();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -249,4 +250,8 @@ public class Server
     	}
     }
     
+	protected void loadCommandDictionary()
+	{
+		// TODO: load from file
+	}
 }
