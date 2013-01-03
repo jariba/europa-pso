@@ -6,6 +6,8 @@ public interface Command
 {
 	public Integer getID();
 	public String getType();
+	public String getDestination();
+	
 	public Map<String,Object> getArgs();
 	public void setArgs(Map<String,Object> args);
 	

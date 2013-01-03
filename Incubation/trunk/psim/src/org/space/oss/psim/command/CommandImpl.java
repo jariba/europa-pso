@@ -14,6 +14,7 @@ public class CommandImpl
 	protected int id_;
 	protected String type_;
 	protected Map<String,Object> args_;
+	protected String destinationField_="spacecraft";
 	
 	public CommandImpl(String type,Map<String,Object> args)
 	{
@@ -78,6 +79,13 @@ public class CommandImpl
 		
 		buf.append("CMD{").append(id_).append(",").append(type_).append(",").append(args_).append("}");
 		return buf.toString();
+	}
+
+	@Override
+	public String getDestination() 
+	{
+		// Default implementation
+		return getArgs().get(destinationField_).toString();
 	}
 
 }

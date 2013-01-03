@@ -59,7 +59,7 @@ public class GroundStationImpl implements GroundStation
 		
 		for (int cnt = 0; cnt < retries; cnt++) {
 			// TODO: create comm packet?
-			boolean ok = comm.sendMessage(new MessageImpl(getID(),(String)c.getArgs().get("Destination"),c));
+			boolean ok = comm.sendMessage(new MessageImpl(getID(),c.getDestination(),c));
 			if (ok) {
 				commands_.remove(c);
 				LOG.debug(c + " sent successfully");
@@ -101,7 +101,7 @@ public class GroundStationImpl implements GroundStation
 	protected CommChannel getCommChannel(Command c)
 	{
 		// TODO: implement through factory
-		return new CommChannelImpl(psim_,getID(),(String)c.getArgs().get("Destination"));
+		return new CommChannelImpl(psim_,getID(),c.getDestination());
 	}
 	
 	@Override
@@ -110,4 +110,16 @@ public class GroundStationImpl implements GroundStation
 		// TODO Notify Telemetry service
 		LOG.debug(getID()+ " received: "+message);
 	}	
+	
+	public String toString()
+	{
+		return getID();
+	}
+
+	@Override
+	public boolean sendCommand(Command c) 
+	{
+		CommChannel comm = getCommChannel(c);
+		return comm.sendMessage(new MessageImpl(getID(),c.getDestination(),c));
+	}
 }
