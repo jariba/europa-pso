@@ -1,8 +1,16 @@
 package org.space.oss.psim;
 
+import java.util.Collection;
+
 public interface CommandService extends PSimService
 {
-	GroundStation getGroundStationByID(String gsID);
+	public Collection<GroundStation> getGroundStations();
 	
-	Command makeCommand(String type,String args);
+	public GroundStation getGroundStationByID(String gsID);
+	
+	public Command makeCommand(String type,String args);
+	
+	public Collection<CommandDescriptor> getCommandDictionary();
+	
+	public void setCommandDictionary(Collection<CommandDescriptor> cd);
 }

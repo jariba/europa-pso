@@ -134,4 +134,11 @@ public class PSimDesktop
         addBshVariable("tmt",Server.getPSim().getTelemetryService());
         addBshVariable("sc",Server.getPSim().getSpacecraftService());
     }    
+    
+    public JInternalFrame makeCommandingDialog()
+    {
+    	JInternalFrame f = makeNewFrame("Commanding", new CommandingDialog(Server.getPSim()));
+    	
+    	return f;
+    }
 }
