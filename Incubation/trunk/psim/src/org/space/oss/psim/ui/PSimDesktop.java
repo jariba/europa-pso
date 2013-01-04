@@ -9,6 +9,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 
 import org.space.oss.psim.Config;
+import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.Server;
 
 import bsh.Interpreter;
@@ -138,6 +139,13 @@ public class PSimDesktop
     public JInternalFrame makeCommandingDialog()
     {
     	JInternalFrame f = makeNewFrame("Commanding", new CommandingDialog(Server.getPSim()));
+    	
+    	return f;
+    }
+    
+    public JInternalFrame makeGroundStationViewer(GroundStation gs)
+    {
+    	JInternalFrame f = makeNewFrame("Ground Station "+gs.getID(), new GroundStationViewer(gs));
     	
     	return f;
     }
