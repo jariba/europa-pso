@@ -12,6 +12,8 @@ public class PSimImpl implements PSim
 	private static Logger LOG = Logger.getLogger(PSimImpl.class);
 
 	@Autowired
+	protected TimeService timeService;
+	@Autowired
 	protected CommandService commandService;
 	@Autowired
 	protected SpacecraftService spacecraftService;
@@ -29,6 +31,7 @@ public class PSimImpl implements PSim
 	@Override
 	public void init(Config cfg) 
 	{
+		services.add(timeService);
 		services.add(commandService);
 		services.add(spacecraftService);
 		services.add(telemetryService);
@@ -48,6 +51,9 @@ public class PSimImpl implements PSim
 		LOG.info("PSim shutdown completed succesfully");
 	}
 
+	@Override
+	public TimeService getTimeService() { return timeService; }
+	
 	@Override
 	public CommandService getCommandService() { return commandService; }
 

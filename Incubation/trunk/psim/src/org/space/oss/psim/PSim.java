@@ -11,4 +11,5 @@ public interface PSim
     public CommandService getCommandService();
     public TelemetryService getTelemetryService();
     public SpacecraftService getSpacecraftService();
+    public TimeService getTimeService();
 }
