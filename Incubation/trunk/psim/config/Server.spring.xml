@@ -66,6 +66,7 @@ xsi:schemaLocation="
     	</property>
     </bean>    
     
+	<bean id="timeService" class="org.space.oss.psim.time.TimeServiceBase"/>
 	<bean id="commandService" class="org.space.oss.psim.command.CommandServiceImpl"/>
 	<bean id="telemetryService" class="org.space.oss.psim.telemetry.TelemetryServiceImpl"></bean>
 	<bean id="spacecraftService" class="org.space.oss.psim.spacecraft.SpacecraftServiceImpl"></bean>

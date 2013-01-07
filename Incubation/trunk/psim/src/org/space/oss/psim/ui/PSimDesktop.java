@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.Server;
+import org.space.oss.psim.TimeService;
 
 import bsh.Interpreter;
 import bsh.util.JConsole;
@@ -134,6 +135,7 @@ public class PSimDesktop
         addBshVariable("cmd",Server.getPSim().getCommandService());
         addBshVariable("tmt",Server.getPSim().getTelemetryService());
         addBshVariable("sc",Server.getPSim().getSpacecraftService());
+        addBshVariable("ts",Server.getPSim().getTimeService());
     }    
     
     public JInternalFrame makeCommandingDialog()
@@ -149,4 +151,11 @@ public class PSimDesktop
     	
     	return f;
     }
+    
+    public JInternalFrame makeTimeServiceDialog(TimeService ts)
+    {
+    	JInternalFrame f = makeNewFrame("Time Service ", new TimeServiceDialog(ts));
+    	
+    	return f;
+    }    
 }
