@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.Server;
+import org.space.oss.psim.TelemetryService;
 import org.space.oss.psim.TimeService;
 
 import bsh.Interpreter;
@@ -158,4 +159,11 @@ public class PSimDesktop
     	
     	return f;
     }    
+    
+    public JInternalFrame makeTelemetryViewer(TelemetryService ts)
+    {
+    	JInternalFrame f = makeNewFrame("Telemetry Service ", new TelemetryViewer(ts));
+    	
+    	return f;
+    }        
 }
