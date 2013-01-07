@@ -1,7 +1,7 @@
 package org.space.oss.psim;
 
 public interface GroundStation 
-	extends MessageReceiver
+	extends MessageReceiver, TelemetrySource
 {
 	public String getID();
 

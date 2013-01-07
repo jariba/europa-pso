@@ -9,22 +9,26 @@ import org.space.oss.psim.Command;
 import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.Message;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.TelemetryObserver;
 import org.space.oss.psim.comms.CommChannelImpl;
 import org.space.oss.psim.comms.MessageImpl;
 
-public class GroundStationImpl implements GroundStation 
+public class GroundStationImpl 
+	implements GroundStation
 {
 	private static Logger LOG = Logger.getLogger(GroundStationImpl.class);
 		
 	protected String id_;
 	protected PSim psim_;
 	protected List<Command> commands_;
+	protected List<TelemetryObserver> telemetryObservers_;
 
 	public GroundStationImpl(String id, PSim psim)
 	{
 		id_ = id;
 		psim_ = psim;
 		commands_ = new ArrayList<Command>();
+		telemetryObservers_ = new ArrayList<TelemetryObserver>();
 	}
 	
 	@Override
@@ -44,7 +48,7 @@ public class GroundStationImpl implements GroundStation
 				commands_.remove(c);
 				return;
 			}
-		}
+		} 
 		
 		throw new RuntimeException("Command "+commandID+" not found for removal");
 	}
@@ -107,7 +111,7 @@ public class GroundStationImpl implements GroundStation
 	@Override
 	public void receiveMessage(Message message) 
 	{
-		// TODO Notify Telemetry service
+		notifyNewTelemetry(psim_.getTimeService().getCurrentTime(), message);
 		LOG.debug(getID()+ " received: "+message);
 	}	
 	
@@ -121,5 +125,23 @@ public class GroundStationImpl implements GroundStation
 	{
 		CommChannel comm = getCommChannel(c);
 		return comm.sendMessage(new MessageImpl(getID(),c.getDestination(),c));
+	}
+
+	@Override
+	public void addObserver(TelemetryObserver to) 
+	{
+		telemetryObservers_.add(to);
+	}
+
+	@Override
+	public void removeObserver(TelemetryObserver to) 
+	{
+		telemetryObservers_.remove(to);
+	}
+	
+	protected void notifyNewTelemetry(long time,Object data)
+	{
+		for (TelemetryObserver to : telemetryObservers_)
+			to.handleNewTelemetry(this, time, data);
 	}
 }
