@@ -32,9 +32,9 @@ public class PSimImpl implements PSim
 	public void init(Config cfg) 
 	{
 		services.add(timeService);
+		services.add(telemetryService);
 		services.add(commandService);
 		services.add(spacecraftService);
-		services.add(telemetryService);
 		
 		for (PSimService s : services)
 			s.init(this, cfg);

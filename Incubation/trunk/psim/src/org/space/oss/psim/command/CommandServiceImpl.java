@@ -40,6 +40,7 @@ public class CommandServiceImpl implements CommandService
 	{
 		GroundStation s = new GroundStationImpl(id,psim_);
 		groundStations_.put(s.getID(), s);
+		psim_.getTelemetryService().addTelemetrySource(s);
 	}
 	
 	@Override
