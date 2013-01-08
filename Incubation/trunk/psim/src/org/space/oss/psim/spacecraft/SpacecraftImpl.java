@@ -96,11 +96,11 @@ public class SpacecraftImpl implements Spacecraft
 	
 	protected Integer asInt(String arg)
 	{
-		return Integer.getInteger(arg);
+		return Integer.valueOf(arg);
 	}
 	
 	protected Long asLong(String arg)
 	{
-		return Long.getLong(arg);
+		return Long.valueOf(arg);
 	}	
 }
