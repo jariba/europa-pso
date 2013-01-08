@@ -13,20 +13,20 @@ import org.space.oss.psim.CommandService;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimServiceBase;
 
 
-public class CommandServiceImpl implements CommandService 
+public class CommandServiceImpl extends PSimServiceBase implements CommandService 
 {
 	private static Logger LOG = Logger.getLogger(CommandServiceImpl.class);
 	
-	protected PSim psim_;
 	protected Map<String,GroundStation> groundStations_;
 	protected List<CommandDescriptor> commandDictionary_;
 	
 	@Override
 	public void init(PSim psim, Config cfg) 
 	{
-		psim_ = psim;
+		super.init(psim,cfg);
 		groundStations_ = new TreeMap<String,GroundStation>();
 		// TODO: make number of GS configurable
 		addGroundStation("GS-1");

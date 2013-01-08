@@ -6,13 +6,15 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimServiceBase;
 import org.space.oss.psim.TelemetryObserver;
 import org.space.oss.psim.TelemetryRecord;
 import org.space.oss.psim.TelemetryService;
 import org.space.oss.psim.TelemetrySource;
 
 
-public class TelemetryServiceImpl 
+public class TelemetryServiceImpl
+    extends PSimServiceBase 
 	implements TelemetryService, TelemetryObserver
 {
 	private static Logger LOG = Logger.getLogger(TelemetryServiceImpl.class);
@@ -21,11 +23,16 @@ public class TelemetryServiceImpl
 	protected List<TelemetryObserver> observers_;
 	protected List<TelemetryRecord> allTelemetry_; // TODO: store in database instead
 
+	public TelemetryServiceImpl()
+	{
+	}
+	
 	@Override
 	public void init(PSim psim, Config cfg) 
 	{
+		super.init(psim, cfg);
+		observers_ = new ArrayList<TelemetryObserver>();		
 		sources_ = new ArrayList<TelemetrySource>();
-		observers_ = new ArrayList<TelemetryObserver>();
 		allTelemetry_ = new ArrayList<TelemetryRecord>();
 		LOG.info("Initialized TelemetryService");
 	}

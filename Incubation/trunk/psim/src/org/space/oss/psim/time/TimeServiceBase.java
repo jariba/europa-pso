@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.space.oss.psim.Config;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimServiceBase;
 import org.space.oss.psim.TimeService;
 import org.space.oss.psim.TimeServiceObserver;
 
-public class TimeServiceBase implements TimeService 
+public class TimeServiceBase extends PSimServiceBase implements TimeService 
 {
-	protected PSim psim_;
 	protected long currentTime_;
 	protected List<TimeServiceObserver> observers_;
 	
@@ -21,7 +21,7 @@ public class TimeServiceBase implements TimeService
 	@Override
 	public void init(PSim psim, Config cfg) 
 	{
-		psim_ = psim;
+		super.init(psim, cfg);
 		currentTime_ = 0;
 		observers_ = new ArrayList<TimeServiceObserver>();		
 	}
