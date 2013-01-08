@@ -30,6 +30,7 @@ public class CommandServiceImpl implements CommandService
 		groundStations_ = new TreeMap<String,GroundStation>();
 		// TODO: make number of GS configurable
 		addGroundStation("GS-1");
+		addGroundStation("GS-2");
 		
 		commandDictionary_ = new ArrayList<CommandDescriptor>();
 		

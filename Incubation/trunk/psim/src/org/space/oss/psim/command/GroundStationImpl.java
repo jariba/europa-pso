@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.space.oss.psim.CommChannel;
 import org.space.oss.psim.Command;
 import org.space.oss.psim.GroundStation;
+import org.space.oss.psim.GroundStationObserver;
 import org.space.oss.psim.Message;
 import org.space.oss.psim.PSim;
 import org.space.oss.psim.TelemetryObserver;
@@ -22,6 +23,7 @@ public class GroundStationImpl
 	protected PSim psim_;
 	protected List<Command> commands_;
 	protected List<TelemetryObserver> telemetryObservers_;
+	protected List<GroundStationObserver> observers_;
 
 	public GroundStationImpl(String id, PSim psim)
 	{
@@ -29,6 +31,7 @@ public class GroundStationImpl
 		psim_ = psim;
 		commands_ = new ArrayList<Command>();
 		telemetryObservers_ = new ArrayList<TelemetryObserver>();
+		observers_ = new ArrayList<GroundStationObserver>();
 	}
 	
 	@Override
@@ -38,6 +41,7 @@ public class GroundStationImpl
 	public void queueCommand(Command c) 
 	{
 		commands_.add(c);
+		notifyEvent(GSEvent.COMMAND_QUEUED,c);
 	}
 
 	@Override
@@ -46,6 +50,7 @@ public class GroundStationImpl
 		for (Command c : commands_) {
 			if (c.getID().equals(commandID)) {
 				commands_.remove(c);
+				notifyEvent(GSEvent.COMMAND_REMOVED,c);
 				return;
 			}
 		} 
@@ -66,6 +71,7 @@ public class GroundStationImpl
 			boolean ok = comm.sendMessage(new MessageImpl(getID(),c.getDestination(),c));
 			if (ok) {
 				commands_.remove(c);
+				notifyEvent(GSEvent.COMMAND_SENT,c);
 				LOG.debug(c + " sent successfully");
 				return true;
 			}
@@ -83,7 +89,7 @@ public class GroundStationImpl
 	@Override
 	public void sendAllQueuedCommands(int retries, boolean discardOnFail) 
 	{
-		while (getCommandQueueSize() > 0) {
+		while (getCommandQueue().size() > 0) {
 			boolean ok = sendQueuedCommand(retries,discardOnFail);
 			if (!ok && !discardOnFail)
 				return;
@@ -91,15 +97,16 @@ public class GroundStationImpl
 	}
 
 	@Override
-	public int getCommandQueueSize() 
+	public List<Command> getCommandQueue() 
 	{
-		return commands_.size();
+		return commands_;
 	}
 
 	@Override
 	public void clearCommandQueue() 
 	{
 		commands_.clear();
+		notifyEvent(GSEvent.QUEUE_CLEARED,null);
 	}
 	
 	protected CommChannel getCommChannel(Command c)
@@ -124,7 +131,12 @@ public class GroundStationImpl
 	public boolean sendCommand(Command c) 
 	{
 		CommChannel comm = getCommChannel(c);
-		return comm.sendMessage(new MessageImpl(getID(),c.getDestination(),c));
+		boolean result = comm.sendMessage(new MessageImpl(getID(),c.getDestination(),c));
+		
+		if (result)
+			notifyEvent(GSEvent.COMMAND_SENT,c);
+
+		return result;
 	}
 
 	@Override
@@ -143,5 +155,23 @@ public class GroundStationImpl
 	{
 		for (TelemetryObserver to : telemetryObservers_)
 			to.handleNewTelemetry(this, time, data);
+	}
+
+	protected void notifyEvent(GSEvent type,Command c)
+	{
+		for (GroundStationObserver gso : observers_)
+			gso.handleEvent(type, c);
+	}
+
+	@Override
+	public void addObserver(GroundStationObserver o) 
+	{
+		observers_.add(o);
+	}
+
+	@Override
+	public void removeObserver(GroundStationObserver o) 
+	{
+		observers_.remove(o);
 	}
 }
