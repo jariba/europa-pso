@@ -27,6 +27,9 @@ public class SpacecraftImpl implements Spacecraft
 	}
 	
 	@Override
+	public PSim getPSim() { return psim_; }
+	
+	@Override
 	public String getID() { return id_; }
 
 	@Override 
@@ -46,7 +49,7 @@ public class SpacecraftImpl implements Spacecraft
 	
 	protected void setupSubsystems()
 	{
-		subsystems_.put("fakeComms", new SubsystemBase("fakeComms"));
+		subsystems_.put("fakeComms", new SubsystemBase(this,"fakeComms"));
 	}
 	protected CommandHandler getCommandHandler(Command c)
 	{
@@ -82,6 +85,11 @@ public class SpacecraftImpl implements Spacecraft
 	{
 		// TODO: implement through factory
 		return new CommChannelImpl(psim_,getID(),dest);
+	}
+	
+	protected void addSubsystem(Subsystem s)
+	{
+		subsystems_.put(s.getName(), s);
 	}
 	
 	public Subsystem getSubsystem(String name)

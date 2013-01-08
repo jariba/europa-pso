@@ -7,17 +7,16 @@ import java.util.TreeMap;
 import org.apache.log4j.Logger;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimServiceBase;
 import org.space.oss.psim.Spacecraft;
 import org.space.oss.psim.SpacecraftService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-public class SpacecraftServiceImpl implements SpacecraftService 
+public class SpacecraftServiceImpl extends PSimServiceBase implements SpacecraftService 
 {
 	private static Logger LOG = Logger.getLogger(SpacecraftServiceImpl.class);
 	protected Map<String,Spacecraft> spacecraft_;
-	
-	protected PSim psim_;
 	
 	@Autowired
 	protected SpacecraftFactory spacecraftFactory;
@@ -25,7 +24,7 @@ public class SpacecraftServiceImpl implements SpacecraftService
 	@Override
 	public void init(PSim psim, Config cfg) 
 	{
-		psim_ = psim;
+		super.init(psim, cfg);
 		spacecraft_ = new TreeMap<String,Spacecraft>();
 		List<Spacecraft> sc = spacecraftFactory.makeSpacecraft(psim_);
 		for (Spacecraft s : sc)
