@@ -1,6 +1,8 @@
 package org.space.oss.psim.spacecraft;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -8,6 +10,7 @@ import org.space.oss.psim.CommChannel;
 import org.space.oss.psim.Command;
 import org.space.oss.psim.Message;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimObserver;
 import org.space.oss.psim.Spacecraft;
 import org.space.oss.psim.comms.CommChannelImpl;
 
@@ -19,11 +22,15 @@ public class SpacecraftImpl implements Spacecraft
 	protected String id_;
 	protected Map<String,Subsystem> subsystems_;
 	protected Map<String,CommandHandler> commandHandlers_;
+	protected List<PSimObserver> observers_;
+	protected List<Object> commandTrace_;
 	
 	public SpacecraftImpl(String id, PSim psim)
 	{
 		id_ = id;
 		psim_ = psim;
+		observers_ = new ArrayList<PSimObserver>();
+		commandTrace_ = new ArrayList<Object>();
 	}
 	
 	@Override
@@ -110,5 +117,30 @@ public class SpacecraftImpl implements Spacecraft
 	protected Long asLong(String arg)
 	{
 		return Long.valueOf(arg);
+	}
+
+	@Override
+	public void addObserver(PSimObserver o) 
+	{
+		observers_.add(o);
+	}
+
+	@Override
+	public void removeObserver(PSimObserver o) 
+	{
+		observers_.remove(o);
 	}	
+	
+	@Override
+	public void notifyEvent(int type, Object arg)
+	{
+		if (type == Spacecraft.COMMAND_EXECUTED)
+			commandTrace_.add(0,arg);
+		
+		for (PSimObserver o : observers_)
+			o.handleEvent(type, arg);
+	}
+	
+	@Override
+	public List<Object> getCommandTrace() { return commandTrace_; }
 }
