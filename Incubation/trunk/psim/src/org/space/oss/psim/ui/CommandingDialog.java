@@ -20,8 +20,8 @@ import javax.swing.JTextField;
 import org.space.oss.psim.Command;
 import org.space.oss.psim.CommandArg;
 import org.space.oss.psim.CommandDescriptor;
+import org.space.oss.psim.CommandService;
 import org.space.oss.psim.GroundStation;
-import org.space.oss.psim.PSim;
 import org.space.oss.psim.command.CommandArgValues;
 import org.space.oss.psim.command.CommandImpl;
 
@@ -29,7 +29,7 @@ public class CommandingDialog extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 
-	protected PSim psim_;
+	protected CommandService cmdService_;
 	protected JComboBox cmdList_;
 	protected JComboBox gsList_;
 	protected CommandArgValues cmdArgValues_;
@@ -37,9 +37,9 @@ public class CommandingDialog extends JPanel
 	protected JPanel cmdArgsPanel_;
 	protected Map<String,JTextField> cmdArgTextValues_;
 	
-	public CommandingDialog(PSim psim)
+	public CommandingDialog(CommandService cmd)
 	{
-	    psim_ = psim;	
+	    cmdService_ = cmd;	
 	    
 	    setupLayout();
 	}
@@ -47,7 +47,7 @@ public class CommandingDialog extends JPanel
 	protected void setupLayout()
 	{
     	JPanel topPanel = new JPanel(new FlowLayout());
-    	cmdList_ = new JComboBox(psim_.getCommandService().getCommandDictionary().toArray());
+    	cmdList_ = new JComboBox(cmdService_.getCommandDictionary().toArray());
     	cmdList_.addItemListener(new ItemListener() {
     		public void itemStateChanged(ItemEvent e)  
     		{
@@ -60,7 +60,7 @@ public class CommandingDialog extends JPanel
     	JPanel bottomPanel = new JPanel(new FlowLayout());  
 
     	JPanel gsPanel = new JPanel(new FlowLayout());
-    	gsList_ = new JComboBox(psim_.getCommandService().getGroundStations().toArray());
+    	gsList_ = new JComboBox(cmdService_.getGroundStations().toArray());
     	gsPanel.add(new JScrollPane(gsList_));
     	bottomPanel.add(gsPanel);
         

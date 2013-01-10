@@ -16,6 +16,7 @@ public class PSimEventManager
 	
 	public PSimEventManager(PSim psim)
 	{
+		psim_ = psim;
 		init();
 	}
 	
