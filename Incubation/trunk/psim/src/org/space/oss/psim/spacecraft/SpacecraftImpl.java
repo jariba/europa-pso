@@ -146,8 +146,13 @@ public class SpacecraftImpl implements Spacecraft
 	public List<Object> getCommandTrace() { return commandTrace_; }
 
 	@Override
-	public List<PSimEventGenerator> getEventGenerators() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PSimEventGenerator> getEventGenerators() 
+	{
+		List<PSimEventGenerator> egs = new ArrayList<PSimEventGenerator>();
+		
+		for (Subsystem ss : subsystems_.values())
+			egs.addAll(ss.getEventGenerators());
+
+		return egs;
 	}
 }

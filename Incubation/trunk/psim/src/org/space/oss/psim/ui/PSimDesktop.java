@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 
 import org.space.oss.psim.Config;
 import org.space.oss.psim.GroundStation;
+import org.space.oss.psim.PSimEventManager;
 import org.space.oss.psim.Server;
 import org.space.oss.psim.TelemetryService;
 import org.space.oss.psim.TimeService;
@@ -166,4 +167,11 @@ public class PSimDesktop
     	
     	return f;
     }        
+    
+    public JInternalFrame makeEventPlayer(PSimEventManager em)
+    {
+    	JInternalFrame f = makeNewFrame("PSim Event Player", new EventManagerDialog(em));
+    	
+    	return f;
+    }            
 }
