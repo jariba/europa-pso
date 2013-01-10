@@ -10,6 +10,7 @@ import org.space.oss.psim.CommChannel;
 import org.space.oss.psim.Command;
 import org.space.oss.psim.Message;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimEventGenerator;
 import org.space.oss.psim.PSimObserver;
 import org.space.oss.psim.Spacecraft;
 import org.space.oss.psim.comms.CommChannelImpl;
@@ -143,4 +144,10 @@ public class SpacecraftImpl implements Spacecraft
 	
 	@Override
 	public List<Object> getCommandTrace() { return commandTrace_; }
+
+	@Override
+	public List<PSimEventGenerator> getEventGenerators() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

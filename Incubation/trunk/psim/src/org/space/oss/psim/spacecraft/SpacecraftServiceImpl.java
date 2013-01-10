@@ -1,5 +1,6 @@
 package org.space.oss.psim.spacecraft;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -43,5 +44,11 @@ public class SpacecraftServiceImpl extends PSimServiceBase implements Spacecraft
 	public Spacecraft getSpacecraftByID(String spacecraftID) 
 	{
 		return spacecraft_.get(spacecraftID);
+	}
+
+	@Override
+	public Collection<Spacecraft> getAllSpacecraft() 
+	{
+		return spacecraft_.values();
 	}
 }

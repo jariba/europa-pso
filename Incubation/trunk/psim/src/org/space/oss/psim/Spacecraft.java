@@ -18,4 +18,7 @@ public interface Spacecraft
 	public CommChannel getCommChannel(String dest);
 	public List<Object> getCommandTrace();
 	public void notifyEvent(int type, Object arg);
+	
+	// Generators for events relevant to discrete simulation
+	public List<PSimEventGenerator> getEventGenerators();
 }
