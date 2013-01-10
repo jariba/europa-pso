@@ -66,6 +66,7 @@ public class PSimEventManager
 		
 		events_.addAll(nextEvents);
 		Collections.sort(events_);		
+		notifyEvent(EVENT_QUEUE_CHANGED,this);
 	}
 	
 	public void playNextEvents()
@@ -82,7 +83,7 @@ public class PSimEventManager
 
 		events_.removeAll(toRemove);
 
-		// TODO: notify that event Queue changed
+		notifyEvent(EVENT_QUEUE_CHANGED,this);
 		psim_.getTimeService().setCurrentTime(nextTime);
 	}
 
