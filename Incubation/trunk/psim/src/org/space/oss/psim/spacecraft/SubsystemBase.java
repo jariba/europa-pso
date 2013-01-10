@@ -1,5 +1,9 @@
 package org.space.oss.psim.spacecraft;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.space.oss.psim.PSimEventGenerator;
 import org.space.oss.psim.Spacecraft;
 
 public class SubsystemBase implements Subsystem 
@@ -18,4 +22,10 @@ public class SubsystemBase implements Subsystem
 	
 	@Override
 	public Spacecraft getSpacecraft() { return spacecraft_; }
+
+	@Override
+	public List<PSimEventGenerator> getEventGenerators() 
+	{
+		return new ArrayList<PSimEventGenerator>();
+	}
 }
