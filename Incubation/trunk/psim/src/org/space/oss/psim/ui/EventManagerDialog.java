@@ -31,7 +31,7 @@ public class EventManagerDialog extends JPanel
 	{    	
     	JPanel btnPanel = new JPanel(new FlowLayout());  
 
-    	JButton btn = new JButton("Next Event(s)");
+    	JButton btn = new JButton("Play Next Event(s)");
     	btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
     		{

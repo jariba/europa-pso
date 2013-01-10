@@ -8,6 +8,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 
+import org.space.oss.psim.CommandService;
 import org.space.oss.psim.Config;
 import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.PSimEventManager;
@@ -140,9 +141,9 @@ public class PSimDesktop
         addBshVariable("ts",Server.getPSim().getTimeService());
     }    
     
-    public JInternalFrame makeCommandingDialog()
+    public JInternalFrame makeCommandingDialog(CommandService cmd)
     {
-    	JInternalFrame f = makeNewFrame("Commanding", new CommandingDialog(Server.getPSim()));
+    	JInternalFrame f = makeNewFrame("Commanding", new CommandingDialog(cmd));
     	
     	return f;
     }
