@@ -2,10 +2,12 @@ package org.space.oss.psim.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.space.oss.psim.CommChannel;
 import org.space.oss.psim.Command;
+import org.space.oss.psim.GroundPass;
 import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.GroundStationObserver;
 import org.space.oss.psim.Message;
@@ -24,6 +26,7 @@ public class GroundStationImpl
 	protected List<Command> commands_;
 	protected List<TelemetryObserver> telemetryObservers_;
 	protected List<GroundStationObserver> observers_;
+	protected Map<Long,GroundPass> groundPasses_;
 
 	public GroundStationImpl(String id, PSim psim)
 	{
@@ -173,5 +176,23 @@ public class GroundStationImpl
 	public void removeObserver(GroundStationObserver o) 
 	{
 		observers_.remove(o);
+	}
+
+	@Override
+	public GroundPass addGroundPass(long time) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeGroundPass(long time) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<Long, GroundPass> getGroundPasses() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
