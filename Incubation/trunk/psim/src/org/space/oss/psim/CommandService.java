@@ -12,5 +12,5 @@ public interface CommandService extends PSimService
 	
 	public Collection<CommandDescriptor> getCommandDictionary();
 	
-	public void setCommandDictionary(Collection<CommandDescriptor> cd);
+	public void setCommandDictionary(Collection<CommandDescriptor> cd);	
 }

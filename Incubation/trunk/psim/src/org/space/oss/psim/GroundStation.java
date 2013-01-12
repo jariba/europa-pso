@@ -1,6 +1,7 @@
 package org.space.oss.psim;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GroundStation 
 	extends MessageReceiver, TelemetrySource
@@ -21,4 +22,8 @@ public interface GroundStation
 	
 	public void addObserver(GroundStationObserver o);
 	public void removeObserver(GroundStationObserver o);
+
+	public GroundPass addGroundPass(long time);
+	public void removeGroundPass(long time);
+	public Map<Long,GroundPass> getGroundPasses();	
 }
