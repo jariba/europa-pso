@@ -1,29 +1,33 @@
 package org.space.oss.psim;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public interface GroundStation 
 	extends MessageReceiver, TelemetrySource
 {
-	public enum GSEvent {COMMAND_QUEUED, COMMAND_SENT, COMMAND_REMOVED, QUEUE_CLEARED};
+	public enum GSEvent {
+		COMMAND_QUEUED, COMMAND_SENT, COMMAND_REMOVED, QUEUE_CLEARED,
+		GROUND_PASS_ADDED,GROUND_PASS_REMOVED,GP_COMMAND_QUEUED, GP_COMMAND_REMOVED};
 	
-	public String getID();
+	String getID();
 
-	public boolean sendCommand(Command c);
+	boolean sendCommand(Command c);
+	boolean sendCommand(Command c, int retries);	
 	
 	// Methods to manage command queue
-	public void queueCommand(Command c);
-	public void removeCommand(Integer commandID);
-	public boolean sendQueuedCommand(int retries,boolean discardOnFail);
-	public void sendAllQueuedCommands(int retries,boolean discardOnFail);
-	public List<Command> getCommandQueue();
-	public void clearCommandQueue();
+	void queueCommand(Command c);
+	void removeCommand(Integer commandID);
+	boolean sendQueuedCommand(int retries,boolean discardOnFail);
+	void sendAllQueuedCommands(int retries,boolean discardOnFail);
+	List<Command> getCommandQueue();
+	void clearCommandQueue();
 	
-	public void addObserver(GroundStationObserver o);
-	public void removeObserver(GroundStationObserver o);
+	void addObserver(GroundStationObserver o);
+	void removeObserver(GroundStationObserver o);
 
-	public GroundPass addGroundPass(long time);
-	public void removeGroundPass(long time);
-	public Map<Long,GroundPass> getGroundPasses();	
+	GroundPass addGroundPass(long time);
+	void removeGroundPass(long time);
+	Collection<GroundPass> getGroundPasses();
+	GroundPass getGroundPass(long time);
 }

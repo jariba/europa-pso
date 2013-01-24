@@ -6,6 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.space.oss.psim.CommandService;
@@ -116,7 +117,7 @@ public class PSimDesktop
     public JInternalFrame makeNewFrame(String name, JComponent c)
     {
         JInternalFrame frame = makeNewFrame(name);
-	    frame.add(c);
+	    frame.add(new JScrollPane(c));
         return frame;
     }
 

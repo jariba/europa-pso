@@ -1,11 +1,15 @@
 package org.space.oss.psim;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface GroundPass 
 {
-	public long getTime();
-	public Collection<Command> getCommands();
-	public void addCommand(Command c);
-	public void removeCommand(Command c);
+	long getTime();
+	List<Command> getCommands();
+    void addCommand(Command c);
+	void removeCommand(Command c);
+	void setDiscardOnfailure(boolean b);
+	void setRetries(int r);
+	void execute();
+	GroundStation getGroundStation();
 }

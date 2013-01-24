@@ -1,8 +1,10 @@
 package org.space.oss.psim.command;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.space.oss.psim.CommChannel;
@@ -35,6 +37,7 @@ public class GroundStationImpl
 		commands_ = new ArrayList<Command>();
 		telemetryObservers_ = new ArrayList<TelemetryObserver>();
 		observers_ = new ArrayList<GroundStationObserver>();
+		groundPasses_ = new TreeMap<Long,GroundPass>();
 	}
 	
 	@Override
@@ -67,6 +70,19 @@ public class GroundStationImpl
 		assert commands_.size()>0;
 		
 		Command c = commands_.get(0);
+		boolean result =  sendCommand(c,retries);
+		
+		if (!result && discardOnFail) {
+			commands_.remove(c);
+			LOG.debug("Discarded Command:"+c);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public boolean sendCommand(Command c, int retries)
+	{
 		CommChannel comm = getCommChannel(c);
 		
 		for (int cnt = 0; cnt < retries; cnt++) {
@@ -80,12 +96,7 @@ public class GroundStationImpl
 			}
 		}
 		
-		LOG.debug(c + " failed to be sent");
-		if (discardOnFail) {
-			commands_.remove(c);
-			LOG.debug(c + "discarded");
-		}
-		
+		LOG.debug(c + " failed to be sent after "+retries+ " attempts");
 		return false;
 	}
 
@@ -160,10 +171,10 @@ public class GroundStationImpl
 			to.handleNewTelemetry(this, time, data);
 	}
 
-	protected void notifyEvent(GSEvent type,Command c)
+	protected void notifyEvent(GSEvent type,Object o)
 	{
 		for (GroundStationObserver gso : observers_)
-			gso.handleEvent(type, c);
+			gso.handleEvent(type, o);
 	}
 
 	@Override
@@ -179,20 +190,36 @@ public class GroundStationImpl
 	}
 
 	@Override
-	public GroundPass addGroundPass(long time) {
-		// TODO Auto-generated method stub
-		return null;
+	public GroundPass addGroundPass(long time) 
+	{
+		if (groundPasses_.containsKey(time))
+			throw new RuntimeException(getID()+" already has a GroundPass at time "+time);
+
+		GroundPass gp = new GroundPassImpl(this,time);
+		groundPasses_.put(time,gp);
+		notifyEvent(GSEvent.GROUND_PASS_ADDED, gp);
+		return gp;
 	}
 
 	@Override
-	public void removeGroundPass(long time) {
-		// TODO Auto-generated method stub
+	public void removeGroundPass(long time) 
+	{
+		if (!groundPasses_.containsKey(time))
+			throw new RuntimeException(getID()+" doesn't have a GroundPass at time "+time);
 		
+		GroundPass gp = groundPasses_.remove(time);
+		notifyEvent(GSEvent.GROUND_PASS_REMOVED, gp);
 	}
 
 	@Override
-	public Map<Long, GroundPass> getGroundPasses() {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<GroundPass> getGroundPasses() 
+	{
+		return groundPasses_.values();
+	}
+	
+	@Override 
+	public GroundPass getGroundPass(long time)
+	{
+		return groundPasses_.get(time);
 	}
 }
