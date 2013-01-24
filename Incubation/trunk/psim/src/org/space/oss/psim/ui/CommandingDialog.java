@@ -21,27 +21,38 @@ import org.space.oss.psim.Command;
 import org.space.oss.psim.CommandArg;
 import org.space.oss.psim.CommandDescriptor;
 import org.space.oss.psim.CommandService;
+import org.space.oss.psim.GroundPass;
 import org.space.oss.psim.GroundStation;
+import org.space.oss.psim.GroundStation.GSEvent;
+import org.space.oss.psim.GroundStationObserver;
 import org.space.oss.psim.command.CommandArgValues;
 import org.space.oss.psim.command.CommandImpl;
 
 public class CommandingDialog extends JPanel 
+	implements GroundStationObserver
 {
 	private static final long serialVersionUID = 1L;
 
 	protected CommandService cmdService_;
 	protected JComboBox cmdList_;
 	protected JComboBox gsList_;
+	protected JComboBox gpList_;
 	protected CommandArgValues cmdArgValues_;
 	protected JPanel cmdLauncherPanel_;
 	protected JPanel cmdArgsPanel_;
 	protected Map<String,JTextField> cmdArgTextValues_;
+	protected GroundStation selectedGS_=null;
 	
 	public CommandingDialog(CommandService cmd)
 	{
 	    cmdService_ = cmd;	
 	    
 	    setupLayout();
+	}
+	
+	void dispose()
+	{
+		selectedGS_.removeObserver(this);
 	}
 	
 	protected void setupLayout()
@@ -51,7 +62,7 @@ public class CommandingDialog extends JPanel
     	cmdList_.addItemListener(new ItemListener() {
     		public void itemStateChanged(ItemEvent e)  
     		{
-    			if (e.getStateChange()==ItemEvent.SELECTED)
+    			if (e.getStateChange()==ItemEvent.SELECTED) 
     		        resetArgsPanel();	
     		} 
     	});
@@ -62,9 +73,20 @@ public class CommandingDialog extends JPanel
     	JPanel gsPanel = new JPanel(new FlowLayout());
     	gsList_ = new JComboBox(cmdService_.getGroundStations().toArray());
     	gsPanel.add(new JScrollPane(gsList_));
+    	gsList_.addItemListener(new ItemListener() {
+    		public void itemStateChanged(ItemEvent e)  
+    		{
+    			if (e.getStateChange()==ItemEvent.SELECTED) 
+    				handleNewGSSelected();
+    		} 
+    	});
+    	selectedGS_ = (GroundStation)gsList_.getSelectedItem();
+    	selectedGS_.addObserver(this);
+    	
+    	gpList_ = new JComboBox(selectedGS_.getGroundPasses().toArray());
+    	gsPanel.add(new JScrollPane(gpList_));
     	bottomPanel.add(gsPanel);
         
-    	//JPanel btnPanel = new JPanel(new FlowLayout());
     	JButton btn = new JButton("Execute");
     	btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
@@ -90,8 +112,20 @@ public class CommandingDialog extends JPanel
     		} 
     	});
     	bottomPanel.add(btn);
-    	//bottomPanel.add(btnPanel);
     	    	
+    	btn = new JButton("Add to Ground Pass");
+    	btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+    		{
+				collectCmdArgValues();
+    			addGpCmd(
+    				(GroundPass)gpList_.getSelectedItem(),
+    				(CommandDescriptor)cmdList_.getSelectedItem(),
+					cmdArgValues_);
+    		}
+    	});
+    	bottomPanel.add(btn);
+    	
     	cmdLauncherPanel_ = new JPanel(new BorderLayout());
     	cmdLauncherPanel_.add(BorderLayout.NORTH,topPanel);
     	cmdArgsPanel_=new JPanel(new BorderLayout());
@@ -101,7 +135,15 @@ public class CommandingDialog extends JPanel
     	setLayout(new FlowLayout());
     	add(cmdLauncherPanel_);
     	
-    	resetArgsPanel();	
+    	resetArgsPanel();
+	}
+	
+	protected void handleNewGSSelected()
+	{
+        selectedGS_.removeObserver(this);
+        selectedGS_ = (GroundStation)gsList_.getSelectedItem();
+        selectedGS_.addObserver(this);
+        resetGroundPassList();	
 	}
 	
 	protected void collectCmdArgValues()
@@ -115,7 +157,7 @@ public class CommandingDialog extends JPanel
         }		
 	}
 	
-    void resetArgsPanel()
+    protected void resetArgsPanel()
     {
     	cmdArgTextValues_ = new HashMap<String, JTextField>();
         CommandDescriptor od = (CommandDescriptor)cmdList_.getSelectedItem();
@@ -132,6 +174,14 @@ public class CommandingDialog extends JPanel
         cmdLauncherPanel_.revalidate();
     }	
     
+    protected void resetGroundPassList()
+    {
+    	gpList_.removeAllItems();
+    	for (GroundPass gp : selectedGS_.getGroundPasses())
+    		gpList_.addItem(gp);
+    	cmdLauncherPanel_.revalidate();
+    }
+    
     protected void executeCmd(GroundStation gs, CommandDescriptor cd, CommandArgValues argValues)
     {
     	Command c = makeCommand(cd,argValues);
@@ -144,8 +194,23 @@ public class CommandingDialog extends JPanel
     	gs.queueCommand(c);
     }    
     
+	protected void addGpCmd(GroundPass gp,
+			CommandDescriptor cd,
+			CommandArgValues argValues) 
+	{
+	   	Command c = makeCommand(cd,argValues);
+	    gp.addCommand(c);
+	} 
+    
     protected Command makeCommand(CommandDescriptor cd, CommandArgValues argValues)
     {
     	return new CommandImpl(cd.getName(),argValues);
     }
+
+	@Override
+	public void handleEvent(GSEvent type, Object o) 
+	{
+		if (type==GSEvent.GROUND_PASS_ADDED || type==GSEvent.GROUND_PASS_REMOVED)
+			resetGroundPassList();
+	}
 }
