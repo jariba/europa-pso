@@ -28,6 +28,7 @@ import org.space.oss.psim.GroundStation.GSEvent;
 import org.space.oss.psim.GroundStationObserver;
 
 public class GroundStationViewer extends JPanel 
+	implements GroundStationObserver
 {
 	private static final long serialVersionUID = 1L;
 
@@ -38,6 +39,8 @@ public class GroundStationViewer extends JPanel
 	private JPanel gpPane_;
 
 	protected JTable gpCommandsTable_;
+
+	private JPanel gpButtonPanel_;
 	
 	public GroundStationViewer(GroundStation gs)
 	{
@@ -50,6 +53,12 @@ public class GroundStationViewer extends JPanel
 		setLayout(new BorderLayout());
 		add(tp);
 		this.setPreferredSize(new Dimension(80,80));
+		groundStation_.addObserver(this);
+	}
+	
+	public void finalize()
+	{
+		groundStation_.removeObserver(this);
 	}
 	
 	protected JPanel makeCommandQueuePane()
@@ -107,21 +116,21 @@ public class GroundStationViewer extends JPanel
     		{
     			if (e.getStateChange()==ItemEvent.SELECTED) {
     				GroundPass gp = (GroundPass)groundPassList_.getSelectedItem();
-    				gpPane_.remove(gpCommandsTable_);
-    				gpCommandsTable_ = new JTable(new GPCommandsTM(gp));
-    				gpPane_.add(BorderLayout.CENTER,new JScrollPane(gpCommandsTable_));
+    				GPCommandsTM tm = (GPCommandsTM)gpCommandsTable_.getModel();
+    				tm.setGroundPass(gp);
     				gpPane_.revalidate();
     			}
     		} 
     	});
 		
     	GroundPass gp = (GroundPass)groundPassList_.getSelectedItem();
-    	gpCommandsTable_ = (gp != null ? new JTable(new GPCommandsTM(gp)) : new JTable());
-		gpPane_.add(BorderLayout.CENTER,new JScrollPane(gpCommandsTable_));
-				
-		JPanel buttonPanel = new JPanel(new GridLayout(2,1));
-		
-		JPanel p1 = new JPanel(new FlowLayout());
+    	gpCommandsTable_ = new JTable(new GPCommandsTM(groundStation_,gp));
+    	JTabbedPane tabbed = new JTabbedPane();
+    	tabbed.add("Queued Commands",new JScrollPane(gpCommandsTable_));
+    	tabbed.add("Executed Commands",new JPanel(new FlowLayout()));
+    	
+		gpPane_.add(BorderLayout.CENTER,tabbed);
+						
 		JButton btn = new JButton("Execute Ground Pass");
     	btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
@@ -129,11 +138,11 @@ public class GroundStationViewer extends JPanel
 				((GroundPass)groundPassList_.getSelectedItem()).execute();
     		}
     	});		
-		p1.add(btn);
-		buttonPanel.add(groundPassList_);
-		buttonPanel.add(p1);
+		gpButtonPanel_ = new JPanel(new FlowLayout());
+		gpButtonPanel_.add(groundPassList_);
+		gpButtonPanel_.add(btn);
 		
-		gpPane_.add(BorderLayout.NORTH,buttonPanel);
+		gpPane_.add(BorderLayout.NORTH,gpButtonPanel_);
 		
 		return gpPane_;
 	}	
@@ -280,19 +289,27 @@ public class GroundStationViewer extends JPanel
 	{
 		private static final long serialVersionUID = 1L;
 
+		protected GroundStation groundStation_;
 		protected GroundPass groundPass_;
 
-		public GPCommandsTM(GroundPass gp)
+		public GPCommandsTM(GroundStation gs,GroundPass gp)
 		{
 			groundPass_ = gp;
-			groundPass_.getGroundStation().addObserver(this);
+			groundStation_ = gs;
+			groundStation_.addObserver(this);
 		}
 
-		public void dispose()
+		public void finalize()
 		{
-			groundPass_.getGroundStation().removeObserver(this);
+			groundStation_.removeObserver(this);
 		}
 
+		public void setGroundPass(GroundPass gp) 
+		{
+			groundPass_ = gp; 
+			fireTableDataChanged();
+		}
+		
 		@Override
 		public int getColumnCount() 
 		{
@@ -302,7 +319,7 @@ public class GroundStationViewer extends JPanel
 		@Override
 		public int getRowCount() 
 		{
-			return groundPass_.getCommands().size();
+			return (groundPass_==null ? 0 : groundPass_.getCommands().size());
 		}
 
 		@Override
@@ -329,5 +346,16 @@ public class GroundStationViewer extends JPanel
 			if (type==GSEvent.GP_COMMAND_QUEUED || type==GSEvent.GP_COMMAND_REMOVED)
 				fireTableDataChanged();
 		}		
+	}
+
+	@Override
+	public void handleEvent(GSEvent type, Object o) 
+	{
+		if (type.equals(GSEvent.GROUND_PASS_ADDED) || type.equals(GSEvent.GROUND_PASS_REMOVED)) {
+			groundPassList_.removeAllItems();
+			for (GroundPass gp : groundStation_.getGroundPasses())
+				groundPassList_.addItem(gp);
+			gpButtonPanel_.revalidate();
+		}
 	}		
 }
