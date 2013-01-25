@@ -68,11 +68,7 @@ public class CommandingDialog extends JPanel
     	});
     	topPanel.add(new JScrollPane(cmdList_));
     	
-    	JPanel bottomPanel = new JPanel(new FlowLayout());  
-
-    	JPanel gsPanel = new JPanel(new FlowLayout());
     	gsList_ = new JComboBox(cmdService_.getGroundStations().toArray());
-    	gsPanel.add(new JScrollPane(gsList_));
     	gsList_.addItemListener(new ItemListener() {
     		public void itemStateChanged(ItemEvent e)  
     		{
@@ -83,9 +79,8 @@ public class CommandingDialog extends JPanel
     	selectedGS_ = (GroundStation)gsList_.getSelectedItem();
     	selectedGS_.addObserver(this);
     	
-    	gpList_ = new JComboBox(selectedGS_.getGroundPasses().toArray());
-    	gsPanel.add(new JScrollPane(gpList_));
-    	bottomPanel.add(gsPanel);
+    	JPanel bottomPanel = new JPanel(new GridLayout(2,2));  
+    	bottomPanel.add(new JScrollPane(gsList_));
         
     	JButton btn = new JButton("Execute");
     	btn.addActionListener(new ActionListener() {
@@ -98,7 +93,8 @@ public class CommandingDialog extends JPanel
 					cmdArgValues_);
     		} 
     	});
-    	bottomPanel.add(btn);
+    	JPanel p1 = new JPanel(new FlowLayout());
+    	p1.add(btn);
     	
     	btn = new JButton("Queue");
     	btn.addActionListener(new ActionListener() {
@@ -111,8 +107,13 @@ public class CommandingDialog extends JPanel
 					cmdArgValues_);
     		} 
     	});
-    	bottomPanel.add(btn);
+    	p1.add(btn);
+    	
+    	bottomPanel.add(p1);
     	    	
+    	gpList_ = new JComboBox(selectedGS_.getGroundPasses().toArray());
+    	bottomPanel.add(new JScrollPane(gpList_));
+
     	btn = new JButton("Add to Ground Pass");
     	btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
@@ -124,7 +125,9 @@ public class CommandingDialog extends JPanel
 					cmdArgValues_);
     		}
     	});
-    	bottomPanel.add(btn);
+    	p1 = new JPanel(new FlowLayout());
+    	p1.add(btn);
+    	bottomPanel.add(p1);
     	
     	cmdLauncherPanel_ = new JPanel(new BorderLayout());
     	cmdLauncherPanel_.add(BorderLayout.NORTH,topPanel);
