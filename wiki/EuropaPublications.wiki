@@ -1,7 +1,10 @@
 #summary Publications
 
+= 2012 =
+[http://www.mbari.org/autonomy/Publications/DeliberativeControl.pdf Towards Deliberative Control in Marine Robotics] K. Rajan, F. Py and J. Barreiro in Marine Robot Autonomy, Ed. M. Seto, Springer Verlag, December 2012.
+
 = 2009 =
-[raw-attachment:2009-IEEEAerospace-PeerToPeerPlanningForSpaceMissionControl.pdf:wiki:Downloads Peer-to-peer planning for Space Mission Control]
+[http://ti.arc.nasa.gov/publications/330/download/ Peer-to-peer planning for Space Mission Control]
 Author: Javier Barreiro, Grailing Jones Jr., Steve Schaffer
 Published: 1/29/2009
 
