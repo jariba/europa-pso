@@ -3,3 +3,11 @@ c = cmd.makeCommand("noop","spacecraft=SC-1,arg1=getHealthData,arg2=foo,arg3=bar
 gs = cmd.getGroundStationByID("GS-1");
 gs.queueCommand(c);
 // gs.sendAllQueuedCommands(10,false);
+
+/*
+import com.google.gson.Gson;
+listType = server.getCmdListType();
+gson = new Gson();
+cmds = server.loadCommandDictionary();
+json = gson.toJson(cmds,listType);
+*/

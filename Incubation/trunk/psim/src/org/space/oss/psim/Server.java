@@ -1,6 +1,12 @@
 package org.space.oss.psim;
 
+import java.lang.reflect.Type;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.File;
+import java.io.FileReader;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -188,7 +194,8 @@ public class Server
 		try {
 			psim = (PSim)appContext.getBean("PSim");
 			psim.init(cfg);
-			loadCommandDictionary();
+			List<CommandDescriptor> cd = loadCommandDictionary();
+			psim.getCommandService().setCommandDictionary(cd);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -250,8 +257,23 @@ public class Server
     	}
     }
     
-	protected void loadCommandDictionary()
+	public List<CommandDescriptor> loadCommandDictionary()
 	{
-		// TODO: load from file
+		return loadCommandDictionary("config/CommandDictionary.json");
 	}
+	
+	public List<CommandDescriptor> loadCommandDictionary(String filename)
+	{
+		try {
+			Type listType = new TypeToken<List<CommandDescriptor>>(){}.getType();
+			Gson gson = new Gson();
+			List<CommandDescriptor> retval = gson.fromJson(new FileReader(filename), listType);
+			return retval;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}	
+	
+	public Type getCmdListType() { return new TypeToken<List<CommandDescriptor>>(){}.getType(); }
 }

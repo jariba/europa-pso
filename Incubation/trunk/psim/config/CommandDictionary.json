@@ -1,0 +1,17 @@
+[
+	{
+		"name":"ping",
+		"category":"Engineering",
+		"args":[
+			{"name":"spacecraft","description":"Spacecraft ID","defaultValue":"0"},
+			{"name":"msg","description":"Test Message","defaultValue":"Hello!"}
+		]
+	},
+	{
+		"name":"reset",
+		"category":"Engineering",
+		"args":[
+			{"name":"spacecraft","description":"Spacecraft ID","defaultValue":"0"}
+		]
+	}
+]
