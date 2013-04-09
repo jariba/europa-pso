@@ -3,20 +3,20 @@ package org.space.oss.psim;
 
 public class CommandDescriptor 
 {
-	protected String category_;
-    protected String name_;
-    protected CommandArg args_[];
+    protected String name;
+	protected String category;
+    protected CommandArg args[];
 	
 	public CommandDescriptor(String category, String name, CommandArg args[])
 	{
-		category_ = category;
-		name_ = name;
-		args_ = args;
+		this.category = category;
+		this.name = name;
+		this.args = args;
 	}
 	
-	public String getCategory() { return category_; }
-	public String getName() { return name_; }
-	public CommandArg[] getArgs() { return args_; }
+	public String getCategory() { return category; }
+	public String getName() { return name; }
+	public CommandArg[] getArgs() { return args; }
 	
 	public String toString() { return getName(); }
 }
