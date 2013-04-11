@@ -3,6 +3,8 @@ package org.space.oss.psim;
 public class CommandArg 
 {
     public String name;
+    public String type;
+    public String arraySize;
     public String description;
     public String defaultValue;
     
