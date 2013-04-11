@@ -1,10 +1,12 @@
 package org.space.oss.psim.command;
 
+import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 import org.space.oss.psim.Command;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class CommandImpl 
 	implements Command 
@@ -52,20 +54,13 @@ public class CommandImpl
 		setArgs(newArgs);
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected Map<String,Object> parseArgs(String args)
 	{
-		Map<String,Object> m = new TreeMap<String,Object>();
-		
-		StringTokenizer st = new StringTokenizer(args,",");
-		
-		while (st.hasMoreTokens()) {
-			String arg = st.nextToken();
-			StringTokenizer st1 = new StringTokenizer(arg,"=");
-			assert st1.countTokens() == 2;
-			m.put(st1.nextToken(),st1.nextToken());
-		}
-		
-		return m;
+		Type type = new TypeToken<java.util.Map<String, Object>>(){}.getType();
+		Gson gson = new Gson();
+		Map<String,Object> retval = (Map<String,Object>)gson.fromJson(args, type);
+		return retval;
 	}
 	
 	protected static int getNewID()

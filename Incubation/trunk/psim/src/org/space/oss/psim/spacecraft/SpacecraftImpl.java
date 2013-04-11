@@ -110,14 +110,16 @@ public class SpacecraftImpl implements Spacecraft
 		return s;
 	}
 	
-	protected Integer asInt(String arg)
+	protected Integer asInt(Object arg)
 	{
-		return Integer.valueOf(arg);
+		// TODO: should only accept ints
+		return Double.valueOf(arg.toString()).intValue();
 	}
 	
-	protected Long asLong(String arg)
+	protected Long asLong(Object arg)
 	{
-		return Long.valueOf(arg);
+		// TODO: should only accept longs
+		return Double.valueOf(arg.toString()).longValue();
 	}
 
 	@Override
