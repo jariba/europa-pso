@@ -9,6 +9,7 @@ public interface Spacecraft
 {
 	// Events
 	public static final int COMMAND_EXECUTED=0;
+	public static final int ACTIVITY_GENERATED=1;
 	
 	public String getID();
 	public PSim getPSim();	
