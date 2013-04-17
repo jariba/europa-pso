@@ -1,7 +1,10 @@
 package org.space.oss.psim.spacecraft;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.space.oss.psim.PSimEventGenerator;
 import org.space.oss.psim.Spacecraft;
@@ -10,11 +13,13 @@ public class SubsystemBase implements Subsystem
 {
 	protected String name_;
 	protected Spacecraft spacecraft_;
+	protected Map<String,Subsystem> subsystems_;
 
 	public SubsystemBase(Spacecraft s, String n)
 	{
 		name_ = n;
 		spacecraft_ = s;
+		subsystems_ = new HashMap<String,Subsystem>();
 	}
 	
 	@Override
@@ -26,6 +31,19 @@ public class SubsystemBase implements Subsystem
 	@Override
 	public List<PSimEventGenerator> getEventGenerators() 
 	{
-		return new ArrayList<PSimEventGenerator>();
+		List<PSimEventGenerator> retval = new ArrayList<PSimEventGenerator>();
+		for (Subsystem ss : this.getSubsystems())
+			retval.addAll(ss.getEventGenerators());
+		
+		return retval;
+	}
+
+	@Override
+	public Collection<Subsystem> getSubsystems() { return this.subsystems_.values(); }
+
+	@Override
+	public Subsystem getSubsystem(String name) 
+	{
+		return this.subsystems_.get(name);
 	}
 }
