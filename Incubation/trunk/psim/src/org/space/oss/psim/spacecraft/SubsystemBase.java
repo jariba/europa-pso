@@ -12,7 +12,7 @@ import org.space.oss.psim.Spacecraft;
 public class SubsystemBase implements Subsystem 
 {
 	protected String name_;
-	protected Spacecraft spacecraft_;
+	transient protected Spacecraft spacecraft_;
 	protected Map<String,Subsystem> subsystems_;
 
 	public SubsystemBase(Spacecraft s, String n)

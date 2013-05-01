@@ -79,6 +79,9 @@ public class EventManagerDialog extends JPanel
 		@Override
 		public Object getValueAt(int row, int col) 
 		{
+			if (row >= eventManager_.getEvents().size())
+				return null;
+			
 			PSimEvent e = eventManager_.getEvents().get(row);
 
 			if (col == 0)

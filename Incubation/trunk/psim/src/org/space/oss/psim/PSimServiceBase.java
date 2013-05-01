@@ -19,4 +19,16 @@ public class PSimServiceBase implements PSimService
 
 	}
 
+	@Override
+	public void save(String dir) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void load(String dir) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

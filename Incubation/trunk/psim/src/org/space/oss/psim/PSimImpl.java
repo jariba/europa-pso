@@ -66,4 +66,18 @@ public class PSimImpl implements PSim
 	@Override
 	public Properties getVersionInfo() { return versionInfo; }
 	public void setVersionInfo(Properties vi) { versionInfo = vi; }
+
+	@Override
+	public void save(String dir) 
+	{
+		for (PSimService s : this.services)
+			s.save(dir);
+	}
+
+	@Override
+	public void load(String dir) 
+	{
+		for (PSimService s : this.services)
+			s.load(dir);
+	}
 }

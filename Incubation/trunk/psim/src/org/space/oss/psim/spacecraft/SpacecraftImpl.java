@@ -19,11 +19,11 @@ public class SpacecraftImpl implements Spacecraft
 {
 	private static Logger LOG = Logger.getLogger(SpacecraftImpl.class);
 	
-	protected PSim psim_;
+	transient protected PSim psim_;
 	protected String id_;
 	protected Map<String,Subsystem> subsystems_;
-	protected Map<String,CommandHandler> commandHandlers_;
-	protected List<PSimObserver> observers_;
+	transient protected Map<String,CommandHandler> commandHandlers_;
+	transient protected List<PSimObserver> observers_;
 	protected List<Object> commandTrace_;
 	
 	public SpacecraftImpl(String id, PSim psim)

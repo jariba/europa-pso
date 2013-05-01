@@ -1,6 +1,7 @@
 package org.space.oss.psim.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -8,17 +9,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.ListCellRenderer;
 import javax.swing.table.AbstractTableModel;
 
 import org.space.oss.psim.Command;
@@ -106,6 +112,34 @@ public class GroundStationViewer extends JPanel
 		return p;
 	}
 	
+	protected static class DateRenderer extends JLabel implements ListCellRenderer
+	{
+		private static final long serialVersionUID = 1L;
+		protected SimpleDateFormat formatter;
+		
+		public DateRenderer()
+		{
+			formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList list, 
+													Object value,
+													int index, 
+													boolean isSelected, 
+													boolean cellHasFocus) 
+		{
+			if (value == null)
+				return this;
+			
+			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			cal.setTimeInMillis(Long.valueOf(value.toString()));
+			this.setText(formatter.format(cal.getTime()));
+			return this;
+		}
+		
+	}
+	
 	protected JPanel makeGroundPassPane()
 	{
 		gpPane_ = new JPanel(new BorderLayout());
@@ -122,6 +156,7 @@ public class GroundStationViewer extends JPanel
     			}
     		} 
     	});
+    	//groundPassList_.setRenderer(new DateRenderer());
 		
     	GroundPass gp = (GroundPass)groundPassList_.getSelectedItem();
     	gpCommandsTable_ = new JTable(new GPCommandsTM(groundStation_,gp));
