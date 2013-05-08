@@ -69,6 +69,8 @@ public class GroundPassImpl
 			else
 				break;
 		}
+		if (commands_.size() == 0)
+			this.groundStation_.removeGroundPass(this.time_);
 	}
 	
 	public String toString()

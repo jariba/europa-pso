@@ -30,4 +30,6 @@ public interface GroundStation
 	void removeGroundPass(long time);
 	Collection<GroundPass> getGroundPasses();
 	GroundPass getGroundPass(long time);
+	
+	List<PSimEventGenerator> getEventGenerators(); 	
 }

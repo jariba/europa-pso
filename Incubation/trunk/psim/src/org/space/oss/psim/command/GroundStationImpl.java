@@ -14,12 +14,16 @@ import org.space.oss.psim.GroundStation;
 import org.space.oss.psim.GroundStationObserver;
 import org.space.oss.psim.Message;
 import org.space.oss.psim.PSim;
+import org.space.oss.psim.PSimEvent;
+import org.space.oss.psim.PSimEventGenerator;
+import org.space.oss.psim.PSimEventGeneratorBase;
 import org.space.oss.psim.TelemetryObserver;
+import org.space.oss.psim.TimeServiceObserver;
 import org.space.oss.psim.comms.CommChannelImpl;
 import org.space.oss.psim.comms.MessageImpl;
 
 public class GroundStationImpl 
-	implements GroundStation
+	implements GroundStation, TimeServiceObserver
 {
 	private static Logger LOG = Logger.getLogger(GroundStationImpl.class);
 		
@@ -38,6 +42,7 @@ public class GroundStationImpl
 		telemetryObservers_ = new ArrayList<TelemetryObserver>();
 		observers_ = new ArrayList<GroundStationObserver>();
 		groundPasses_ = new TreeMap<Long,GroundPass>();
+		psim_.getTimeService().addObserver(this);
 	}
 	
 	@Override
@@ -221,5 +226,66 @@ public class GroundStationImpl
 	public GroundPass getGroundPass(long time)
 	{
 		return groundPasses_.get(time);
+	}
+
+	@Override
+	public List<PSimEventGenerator> getEventGenerators() 
+	{
+		List<PSimEventGenerator> retval = new ArrayList<PSimEventGenerator>();
+		retval.add(new GSEventGenerator());
+		return retval;
+	}
+	
+	protected class GSEventGenerator extends PSimEventGeneratorBase 
+		implements GroundStationObserver
+	{
+		
+		public GSEventGenerator()
+		{
+			super(getID());
+			addObserver(this);
+		}
+
+		@Override
+		public List<PSimEvent> getNextEvents(long time) 
+		{
+			List<PSimEvent> retval = new ArrayList<PSimEvent>();
+			
+			for (GroundPass gp : groundPasses_.values()) {
+				if (gp.getTime() > time)
+					retval.add(new PSimEvent(gp.getTime(), this, getID()+" GroundPass"));
+			}
+			
+			return retval;
+		}
+
+		@Override
+		public void disable() {
+			// TODO Auto-generated method stub			
+		}
+
+		@Override
+		public void handleEvent(GSEvent type, Object o) 
+		{
+			if (type.equals(GSEvent.GROUND_PASS_ADDED) ||
+					type.equals(GSEvent.GROUND_PASS_REMOVED)) {
+				manager_.setNextEvents(this, getNextEvents(manager_.getPSim().getTimeService().getCurrentTime()));
+			}
+			
+		}
+		
+	}
+
+	@Override
+	public void handleCurrentTime(long t) 
+	{
+		List<GroundPass> toExecute = new ArrayList<GroundPass>();
+		for (GroundPass gp : this.groundPasses_.values()) {
+			if (gp.getTime() == t)
+				toExecute.add(gp);
+		}
+		
+		for (GroundPass gp : toExecute)
+			gp.execute();
 	}
 }

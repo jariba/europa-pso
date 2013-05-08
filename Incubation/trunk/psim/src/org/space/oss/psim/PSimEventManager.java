@@ -33,6 +33,11 @@ public class PSimEventManager
 				addGenerator(eg);
 		}
 		
+		for (GroundStation gs : psim_.getCommandService().getGroundStations()) {
+			for (PSimEventGenerator eg : gs.getEventGenerators())
+				addGenerator(eg);			
+		}
+		
 		resetEventQueue(psim_.getTimeService().getCurrentTime());
 		psim_.getTimeService().addObserver(this);
 	}
