@@ -44,6 +44,7 @@ public class PSimEventManager
 	
 	public List<PSimEvent> getEvents() { return events_; }
 	
+	public boolean hasEvents() { return events_.size() > 0; }
 	public void disable()
 	{
 		psim_.getTimeService().removeObserver(this);
