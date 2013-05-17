@@ -51,8 +51,8 @@
 maybe we can have an intern perform a systematic comparison at some point :
     * [https://bitbucket.org/oscarlib/oscar/wiki/Home OscaR]: OR in Scala
     * [http://code.google.com/p/or-tools/ Google OR Tools]
-    * [http://eclipse-clp.org/ ECLiPSe]
-    * [http://www.comet-online.org Comet]
+    * [http://eclipseclp.org/ ECLiPSe]
+    * [http://en.wikipedia.org/wiki/Comet_%28programming_language%29 Comet]
     * [http://moya.bus.miami.edu/~tallys/simpl.php Simpl] : see also a [http://wpweb2.tepper.cmu.edu/jnh/simplAPmod.ppt presentation] on it
     * [http://choco-solver.net Choco]
     * [http://www.gecode.org/ GECODE]
