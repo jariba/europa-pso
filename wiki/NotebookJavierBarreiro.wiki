@@ -49,6 +49,7 @@
 = Related Systems =
 
 maybe we can have an intern perform a systematic comparison at some point :
+    * [https://bitbucket.org/oscarlib/oscar/wiki/Home OscaR]: OR in Scala
     * [http://code.google.com/p/or-tools/ Google OR Tools]
     * [http://eclipse-clp.org/ ECLiPSe]
     * [http://www.comet-online.org Comet]
