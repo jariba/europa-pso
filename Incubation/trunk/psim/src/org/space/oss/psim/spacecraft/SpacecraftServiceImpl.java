@@ -1,7 +1,6 @@
 package org.space.oss.psim.spacecraft;
 
 import java.io.FileWriter;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +15,6 @@ import org.space.oss.psim.SpacecraftService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 
 public class SpacecraftServiceImpl extends PSimServiceBase implements SpacecraftService 
 {
