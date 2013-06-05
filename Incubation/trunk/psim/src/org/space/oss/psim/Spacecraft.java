@@ -1,6 +1,7 @@
 package org.space.oss.psim;
 
 import java.util.List;
+import java.util.Map;
 
 import org.space.oss.psim.spacecraft.Subsystem;
 
@@ -10,6 +11,10 @@ public interface Spacecraft
 	// Events
 	public static final int COMMAND_EXECUTED=0;
 	public static final int ACTIVITY_GENERATED=1;
+	
+	public void setProperty(String name, Object value);
+	public Object getProperty(String name);
+	public Map<String,Object> getProperties();
 	
 	public String getID();
 	public PSim getPSim();	

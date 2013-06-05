@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.space.oss.psim.CommChannel;
@@ -21,6 +22,7 @@ public class SpacecraftImpl implements Spacecraft
 	
 	transient protected PSim psim_;
 	protected String id_;
+	protected Map<String,Object> properties_;
 	protected Map<String,Subsystem> subsystems_;
 	transient protected Map<String,CommandHandler> commandHandlers_;
 	transient protected List<PSimObserver> observers_;
@@ -32,6 +34,7 @@ public class SpacecraftImpl implements Spacecraft
 		psim_ = psim;
 		observers_ = new ArrayList<PSimObserver>();
 		commandTrace_ = new ArrayList<Object>();
+		properties_ = new TreeMap<String,Object>();		
 	}
 	
 	@Override
@@ -156,5 +159,24 @@ public class SpacecraftImpl implements Spacecraft
 			egs.addAll(ss.getEventGenerators());
 
 		return egs;
+	}
+
+	@Override
+	public void setProperty(String name, Object value) 
+	{
+		properties_.put(name, value);
+		LOG.debug("setProperty for "+getID()+": "+name+"="+value);
+	}
+
+	@Override
+	public Object getProperty(String name) 
+	{
+		return properties_.get(name);
+	}
+
+	@Override
+	public Map<String, Object> getProperties() 
+	{
+		return properties_;
 	}
 }
