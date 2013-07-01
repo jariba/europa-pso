@@ -1,0 +1,17 @@
+[
+	{
+		"name":"ping",
+		"subsystem":"Engineering",
+		"parameters":[
+			{"name":"spacecraft","type":"uint32","arraySize":"0","description":"Spacecraft ID","defaultValue":"0"},
+			{"name":"msg","type":"string","arraySize":"0","description":"Test Message","defaultValue":"Hello!"}
+		]
+	},
+	{
+		"name":"reset",
+		"subsystem":"Engineering",
+		"parameters":[
+			{"name":"spacecraft","type":"uint32","arraySize":"0","description":"Spacecraft ID","defaultValue":"0"}
+		]
+	}
+]
