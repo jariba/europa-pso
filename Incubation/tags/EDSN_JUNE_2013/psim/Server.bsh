@@ -1,0 +1,20 @@
+
+c = cmd.makeCommand("noop","" +
+		"{spacecraft=SC1,arg1=getHealthData,arg2=foo,arg3=bar}");
+gs = cmd.getGroundStationByID("GS1");
+gs.queueCommand(c);
+// gs.sendAllQueuedCommands(10,false);
+
+/*
+desktop.makeCommandingDialog(cmd);
+desktop.makeGroundStationViewer(gs);
+desktop.makeTimeServiceDialog(ts);
+desktop.makeTelemetryViewer(tmt);
+*/
+/*
+import com.google.gson.Gson;
+listType = server.getCmdListType();
+gson = new Gson();
+cmds = server.loadCommandDictionary();
+json = gson.toJson(cmds,listType);
+*/
