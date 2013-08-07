@@ -42,13 +42,13 @@ class WierdTest extends FunSuite with ShouldMatchers {
     val v2 = new Bar(10.0, 20.0)
     val v3 = new Bar(10.0, 20.0)
 
-    (v1 ≟ v1) should equal (true)
-    (v2 ≟ v2) should equal (true)
-    (v3 ≟ v3) should equal (true)
-    (v1 ≟ v2) should equal (false)
-    (v2 ≟ v1) should equal (false)
-    (v2 ≟ v3) should equal (true)
-    (v3 ≟ v2) should equal (true)
+    (v1 eq v1) should equal (true)
+    (v2 eq v2) should equal (true)
+    (v3 eq v3) should equal (true)
+    (v1 eq v2) should equal (false)
+    (v2 eq v1) should equal (false)
+    (v2 eq v3) should equal (true)
+    (v3 eq v2) should equal (true)
   }
 }
 
@@ -91,13 +91,13 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     val d3 = new IntervalIntDomain(intDomain)
     val d4 = new IntervalIntDomain
 
-    (d3 ≟ d4) should equal (false)
+    (d3 eq d4) should equal (false)
     d3 relax d4
-    (d3 ≟ d4) should equal (true)
+    (d3 eq d4) should equal (true)
     
-    (d2 ≟ d4) should equal (false)
+    (d2 eq d4) should equal (false)
     d2 relax d4
-    (d2 ≟ d4) should equal (true)
+    (d2 eq d4) should equal (true)
   }
   test("relaxation") { 
     val listener = new ChangeListener
@@ -111,13 +111,13 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     change should equal (DomainListener.RELAXED)
     dom1 isSubsetOf dom0 should equal (true)
     dom0 isSubsetOf dom1 should equal (true)
-    (dom0 ≟ dom1) should equal (true)
+    (dom0 eq dom1) should equal (true)
 
     val dom2 = new IntervalIntDomain(-300, 100)
     dom1 intersect dom2
     val (res1, change1) = listener.checkAndClearChange
     res1 should equal (true)
-    (dom1 ≟ dom2) should equal (true)
+    (dom1 eq dom2) should equal (true)
     dom1 relax dom2
     val (res2, change2) = listener.checkAndClearChange
     res2 should equal (false)
@@ -130,7 +130,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     dom0 isMember (-EPSILON -EPSILON) should equal (false)
     
     val dom1 = new IntervalDomain(-EPSILON, EPSILON/10)
-    (dom1 ≟ dom0) should equal (true)
+    (dom1 eq dom0) should equal (true)
     
     val dom2 = new IntervalDomain(-EPSILON, -EPSILON/10)
     dom2 intersects dom0 should equal (true)
@@ -146,7 +146,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     dom0.intersect(dom1);
     val(res0, _) = l_listener.checkAndClearChange
     res0 should equal (true)
-    (dom0 ≟ dom1) should equal (true)
+    (dom0 eq dom1) should equal (true)
 
     // verify no change triggered if none should take place.
     dom0.intersect(dom1);
@@ -172,32 +172,32 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     val dom5 = new IntervalDomain(80, 120.44);
     val dom6 = new IntervalDomain(80, 101.23);
     dom4 equate dom5
-    (dom4 ≟ dom6) should equal (true)
-    (dom5 ≟ dom6) should equal (true)
+    (dom4 eq dom6) should equal (true)
+    (dom5 eq dom6) should equal (true)
 
     val domEq1 = new IntervalIntDomain(7)
     val domEq2 = new IntervalIntDomain(0, 10)
     domEq1 equate domEq2
-    (domEq1 ≟ domEq2) should equal (true)
+    (domEq1 eq domEq2) should equal (true)
     domEq1 should have ('lowerBound (7), 'upperBound (7))
     domEq2 should have ('lowerBound (7), 'upperBound (7))
 
 
-    val dom7 = new IntervalDomain(-1, 0);
-    dom6.intersect(dom7);
+    val dom7 = new IntervalDomain(-1, 0)
+    dom6.intersect(dom7)
     dom6.isEmpty should equal (true)
 
-    val dom8 = new IntervalDomain;
-    val dom9 = new IntervalDomain;
-    dom8.intersect(IntervalDomain(0.1, 0.10));
-    dom9.intersect(IntervalDomain(0.10, 0.10));
+    val dom8 = new IntervalDomain
+    val dom9 = new IntervalDomain
+    dom8 intersect IntervalDomain(0.1, 0.10)
+    dom9 intersect IntervalDomain(0.10, 0.10) 
     dom8.intersects(dom9) should equal (true)
 
     // Case added to recreate failure case for GNATS 3045
     val dom8a = new IntervalDomain;
     val dom9a = new IntervalDomain;
-    dom8a.intersect(IntervalDomain(0.1, 0.1));
-    dom9a.intersect(IntervalDomain(0.1, 0.1));
+    dom8a intersect IntervalDomain(0.1, 0.1)
+    dom9a intersect IntervalDomain(0.1, 0.1)
     dom8a.intersects(dom9a) should equal (true)
     dom8a.upperBound should equal (0.1)
     dom8a.lowerBound should equal (0.1);
@@ -262,7 +262,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
 
     // Handle cases where domains are equal
     val dom2 = new IntervalIntDomain(dom0);
-    (dom2 ≟ dom0) should equal (true)
+    (dom2 eq dom0) should equal (true)
     dom0.isSubsetOf(dom2) should equal (true)
     dom2.isSubsetOf(dom0) should equal (true)
 
@@ -341,7 +341,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     // dom1.getLowerBound should equal (0.0);
     
     dom1.intersect(dom0);
-    (dom1 ≟ dom0) should equal (true)
+    (dom1 eq dom0) should equal (true)
     // CPPUNIT_ASSERT(dom1 == dom0);
 
   }
@@ -394,7 +394,7 @@ class IntervalDomainTest extends FunSuite with ShouldMatchers {
     val dom0 = new IntervalDomain(1, 28);
     val dom1 = new IntervalDomain(50, 100);
     dom0 := dom1 
-    (dom0 ≟ dom1) should equal (true)
+    (dom0 eq dom1) should equal (true)
   }
   test("InfinitesAndInts") {
     val dom0 = new IntervalDomain;
