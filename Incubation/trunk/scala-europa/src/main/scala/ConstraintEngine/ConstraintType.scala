@@ -21,8 +21,10 @@ object ConstraintType {
   def make[C <: Constraint](name: LabelStr, propagatorName: LabelStr, ce: ConstraintEngine, 
               scope: Seq[ConstrainedVariable], violationExpl: String)(implicit m: Manifest[C]): C = { 
     val retval = 
-      m.erasure.getConstructor(classOf[LabelStr], classOf[LabelStr],
-                               classOf[ConstraintEngine], classOf[Seq[ConstrainedVariable]]).newInstance(name, propagatorName, ce, scope).asInstanceOf[C]
+      m.runtimeClass.getConstructor(classOf[LabelStr], classOf[LabelStr],
+                                    classOf[ConstraintEngine], 
+                                    classOf[Seq[ConstrainedVariable]]).
+        newInstance(name, propagatorName, ce, scope).asInstanceOf[C]
     retval.setViolationExpl(violationExpl)
     return retval
   }

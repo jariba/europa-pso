@@ -1,10 +1,9 @@
 package gov.nasa.arc.europa.utils;
 
-import scalaz._
-import Scalaz._
-
 import scala.collection.mutable.HashMap;
 import scala.collection.mutable.Map;
+
+import scalaz.Equal;
 
 object LabelStr {
   private var stringToKey: Map[String, Int] = new HashMap[String, Int]();
@@ -35,7 +34,10 @@ object LabelStr {
 
   implicit def fromString(s: String): LabelStr = LabelStr(s)
   implicit def toString(l: LabelStr): String = l.toString
-  implicit def LabelEqual: Equal[LabelStr] = equalBy(_.key)
+
+  import gov.nasa.arc.europa.utils.EqualImplicits.intEq
+  implicit def LabelEqual: Equal[LabelStr] = Equal.equalBy((x: LabelStr) => x.key)
+  implicit def toDouble(l: LabelStr): Double = l.key.toDouble
 }
 
 class LabelStr(k: Int) extends Ordered[LabelStr] {

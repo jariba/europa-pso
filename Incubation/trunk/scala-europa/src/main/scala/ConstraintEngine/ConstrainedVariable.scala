@@ -75,10 +75,13 @@ abstract class ConstrainedVariable(val engine: ConstraintEngine, val internal: B
   }
   //TODO: eliminate specified flag in favor of just the option on specifiedValue
   def relax: Unit = { 
-    if(specifiedFlag) getCurrentDomain.relax(specifiedValue.get)
-    else getCurrentDomain.relax(baseDomain)
+    if(specifiedFlag){ debugMsg("ConstrainedVariable:relax", "Relaxing ", toLongString, " to ", specifiedValue);
+                      getCurrentDomain.relax(specifiedValue.get)
+                    }
+    else { debugMsg("ConstrainedVariable:relax", "Relaxing ", toLongString, " to ", baseDomain); 
+          getCurrentDomain.relax(baseDomain)}
   }
-  def isClosed: Unit = baseDomain.isClosed
+  def isClosed: Boolean = baseDomain.isClosed
 
   def insert(value: Double): Unit = { 
     checkError(() => internal_baseDomain.isOpen,
@@ -182,8 +185,8 @@ abstract class ConstrainedVariable(val engine: ConstraintEngine, val internal: B
   
   def isConstrainedBy(constr: Constraint): Boolean = !constraints.find(_._1 == constr).isEmpty
   private[constraintengine] def updateLastRelaxed(cycleCount: Int): Unit = { 
-    checkError(() => !Entity.isPurging, "Purging!")
-    checkError(() => lastRelaxed < cycleCount, "Tried to back up the cycle count")
+    checkError(!Entity.isPurging, "Purging!")
+    checkError(lastRelaxed < cycleCount, "Tried to back up the cycle count from ", lastRelaxed, " to ", cycleCount)
     lastRelaxed = cycleCount
     debugMsg("ConstrainedVariable:updateLastRelaxed", name, " updated to ", lastRelaxed)
   }

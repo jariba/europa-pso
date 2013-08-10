@@ -80,7 +80,7 @@ class ConstraintEngineTest extends FunSuite with ShouldMatchers {
   }
 
   //may never implement this, don't know
-  ignore("testVariableLookupByIndex"){ }
+  ignore("testVariableLookupByIndex", Nope){ }
   //  testVariableLookupByIndex(){
   //   std::vector<ConstrainedVariableId> vars;
 

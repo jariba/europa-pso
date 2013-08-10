@@ -4,6 +4,8 @@ import scala.math.abs
 object Number { 
   val PLUS_INFINITY: Double = (java.lang.Integer.MAX_VALUE >> 2)
   val MINUS_INFINITY: Double = -PLUS_INFINITY
+  val EPSILON: Double = 0.00001
+  val MAX_INT: Double = PLUS_INFINITY - 1
 }
 
 object Infinity { 

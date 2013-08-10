@@ -21,7 +21,7 @@ private class ErrorMessage[E <: Throwable : Has[Exception]#AsDefault : Manifest]
     if(Error.displayErrors)
       Console.println(fullMessage)
     if(Error.throwExceptions) { 
-      val exp = implicitly[Manifest[E]].erasure.getConstructor(classOf[String]).newInstance(fullMessage.toString).asInstanceOf[E]
+      val exp = implicitly[Manifest[E]].runtimeClass.getConstructor(classOf[String]).newInstance(fullMessage.toString).asInstanceOf[E]
       throw exp
     }
   }

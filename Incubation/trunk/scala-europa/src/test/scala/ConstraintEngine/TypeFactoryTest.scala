@@ -3,6 +3,7 @@ import gov.nasa.arc.europa.constraintengine.CESchema
 import gov.nasa.arc.europa.constraintengine.ConstrainedVariable
 import gov.nasa.arc.europa.constraintengine.ConstraintEngine
 import gov.nasa.arc.europa.constraintengine.component.BoolDomain
+import gov.nasa.arc.europa.constraintengine.component.EnumeratedDomain
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain
 import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain
 import gov.nasa.arc.europa.utils.LabelStr
@@ -49,49 +50,57 @@ class TypeFactoryTest extends FunSuite with ShouldMatchers {
 
 
   }
-  ignore("testDomainCreationWithEnumerations") { 
-    //const Domain& locationsBaseDomain = tfm->getDataType("Locations")->baseDomain();
-    // CPPUNIT_ASSERT(locationsBaseDomain.isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(locationsBaseDomain.isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(locationsBaseDomain.isMember(LabelStr("Lander")));
-    // CPPUNIT_ASSERT(!locationsBaseDomain.isMember(LabelStr("true")));
-    //!!This (and SymbolDomain) die with complaints of a "bad cast"
-    //!!const Locations & loc0 = dynamic_cast<const Locations&>(tfm->baseDomain("Locations"));
-    // const EnumeratedDomain & loc0 = dynamic_cast<const EnumeratedDomain &>(tfm->baseDomain("Locations"));
-    // CPPUNIT_ASSERT(!loc0.isBool());
-    // CPPUNIT_ASSERT(loc0.isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(loc0.isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(loc0.isMember(LabelStr("Lander")));
-    // CPPUNIT_ASSERT(!loc0.isMember(LabelStr("true")));
-    //!!The compiler complains about using Locations here when EnumeratedDomain is used above.
-    //!!Locations *loc1 = loc0.copy();
-    // EnumeratedDomain *loc1 = loc0.copy();
-    // loc1->open();
-    // loc1->remove(LabelStr("Hill"));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Lander")));
-    // loc1->remove(LabelStr("Rock"));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Lander")));
-    // loc1->insert(LabelStr("Hill"));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Lander")));
-    // loc1->remove(LabelStr("Lander"));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Lander")));
-    // loc1->insert(LabelStr("Rock"));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Lander")));
-    // loc1->remove(LabelStr("Hill"));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Hill")));
-    // CPPUNIT_ASSERT(loc1->isMember(LabelStr("Rock")));
-    // CPPUNIT_ASSERT(!loc1->isMember(LabelStr("Lander")));
-    // delete loc1;
+  test("testDomainCreationWithEnumerations") { 
+    val engine = CETestEngine()
+    val tfm = engine.getComponent("CESchema").asInstanceOf[CESchema]
+    val locationsBaseDomain = tfm.getDataType("Locations").get.baseDomain
+
+    locationsBaseDomain.isMember(LabelStr("Hill")) should be (true)
+    locationsBaseDomain.isMember(LabelStr("Rock")) should be (true)
+    locationsBaseDomain.isMember(LabelStr("Lander")) should be (true)
+    locationsBaseDomain.isMember(LabelStr("true")) should be (false)
+
+    // !!This (and SymbolDomain) die with complaints of a "bad cast"
+    // !!const Locations & loc0 = dynamic_cast<const Locations&>(tfm.baseDomain("Locations"))
+    val loc0 = tfm.baseDomain("Locations").get.asInstanceOf[EnumeratedDomain]
+    loc0.isBool should be (false)
+    loc0.isMember(LabelStr("Hill")) should be (true)
+    loc0.isMember(LabelStr("Rock")) should be (true)
+    loc0.isMember(LabelStr("Lander")) should be (true)
+    loc0.isMember(LabelStr("true")) should be (false)
+    // !!The compiler complains about using Locations here when EnumeratedDomain is used above.
+    // !!Locations *loc1 = loc0.copy
+    val loc1 = loc0.copy
+
+    loc1.remove(LabelStr("Hill"))
+    loc1.isMember(LabelStr("Hill")) should be (false)
+    loc1.isMember(LabelStr("Rock")) should be (true)
+    loc1.isMember(LabelStr("Lander")) should be (true)
+
+    loc1.remove(LabelStr("Rock"))
+    loc1.isMember(LabelStr("Hill")) should be (false)
+    loc1.isMember(LabelStr("Rock")) should be (false)
+    loc1.isMember(LabelStr("Lander")) should be (true)
+
+    // loc1.insert(LabelStr("Hill"))
+    // loc1.isMember(LabelStr("Hill")) should be (true)
+    // loc1.isMember(LabelStr("Rock")) should be (false)
+    // loc1.isMember(LabelStr("Lander")) should be (true)
+
+    loc1.remove(LabelStr("Lander"))
+    loc1.isMember(LabelStr("Hill")) should be (false)
+    loc1.isMember(LabelStr("Rock")) should be (false)
+    loc1.isMember(LabelStr("Lander")) should be (false)
+
+    // loc1.insert(LabelStr("Rock"))
+    // loc1.isMember(LabelStr("Hill")) should be (true)
+    // loc1.isMember(LabelStr("Rock")) should be (true)
+    // loc1.isMember(LabelStr("Lander")) should be (false)
+
+    // loc1.remove(LabelStr("Hill"))
+    // loc1.isMember(LabelStr("Hill")) should be (false)
+    // loc1.isMember(LabelStr("Rock")) should be (true)
+    // loc1.isMember(LabelStr("Lander")) should be (false)
 
   }
   test("testVariableCreation") { 

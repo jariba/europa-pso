@@ -127,16 +127,17 @@ abstract class Domain(var dataType: DataType = null, var closed: Boolean = true,
 
   def :=(d: Domain): Domain = this
 
+  def getTypeName = dataType.name
 }
 
-import scalaz._
-import Scalaz._
+import scalaz.Equal
 
 object Domain { 
-  implicit def DomainEqual: Equal[Domain] = new Equal[Domain] { 
-    override def equal(a: Domain, b: Domain): Boolean = a.closed == b.closed && a.isFinite == b.isFinite && a.eq(b)
+  implicit def DomainEqual[A <: Domain]: Equal[A] = new Equal[A] { 
+    override def equal(a: A, b: A): Boolean = a.closed == b.closed && a.isFinite == b.isFinite && a.eq(b)
+
   }
-  def canBeCompared(domx: Domain, domy: Domain) = false;
+  def canBeCompared(domx: Domain, domy: Domain) = domx.dataType.canBeCompared(domy.dataType)
   def assertSafeComparison(doma: Domain, domb: Domain): Unit = { }
 
   val NO_DOMAIN: Domain = new Domain(DataType.NOTHING, true, null) { 

@@ -1,4 +1,5 @@
 package gov.nasa.arc.europa.constraintengine.test
+import gov.nasa.arc.europa.constraintengine.CESchema
 import gov.nasa.arc.europa.constraintengine.ConstrainedVariable
 import gov.nasa.arc.europa.constraintengine.Constraint
 import gov.nasa.arc.europa.constraintengine.ConstraintEngine
@@ -10,13 +11,20 @@ import gov.nasa.arc.europa.constraintengine.component.AddEqual
 import gov.nasa.arc.europa.constraintengine.component.EqualConstraint
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain
 import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain
+import gov.nasa.arc.europa.constraintengine.component.NumericDomain
+import gov.nasa.arc.europa.constraintengine.component.SymbolicDomain
+import gov.nasa.arc.europa.constraintengine.component.SymbolDT
 import gov.nasa.arc.europa.utils.Debug
 import gov.nasa.arc.europa.utils.Debug._
 import gov.nasa.arc.europa.utils.Entity
 import gov.nasa.arc.europa.utils.LabelStr
+import gov.nasa.arc.europa.utils.LabelStr._
 import gov.nasa.arc.europa.utils.Number._
 
-import com.codecommit.antixml._
+import scales.utils._
+import ScalesUtils._
+import scales.xml._
+import ScalesXml._
 
 import java.io.BufferedReader
 import java.io.FileReader
@@ -25,7 +33,6 @@ import java.io.Reader
 import org.scalatest.BeforeAndAfter
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.FunSuite
-import org.scalatest.Tag
 import org.scalatest.matchers.ShouldMatchers
 
 import scalaz._
@@ -35,25 +42,27 @@ case class ConstraintTestCase(constraintName: String, fileName: String, caseName
   inputs: Option[List[Domain]], outputs: Option[List[Domain]])
 
 object ConstraintTestCase extends ShouldMatchers {
-  def readTestCases(root: Elem, source: String): List[ConstraintTestCase] = {
-    return (root \ "Constraint").map(c =>
+  def readTestCases(root: XmlTree, source: String, schema: CESchema): List[ConstraintTestCase] = {
+    return (root.\\.*("Constraint")).map(c =>
       ConstraintTestCase(c.attrs.getOrElse("name", ""), source,
         c.attrs.getOrElse("test", ""),
-        readDomains((c \ "Inputs").head),
-        readDomains((c \ "Outputs").head))).toList
+        readDomains((c \\ "Inputs").head, schema),
+        readDomains((c \\ "Outputs").head, schema))).toList
   }
-  def readTestCases(reader: Reader, source: String): List[ConstraintTestCase] = {
-    return readTestCases(XML.fromReader(reader), source)
+  def readTestCases(reader: Reader, source: String, schema: CESchema): List[ConstraintTestCase] = {
+    return readTestCases(top(loadXml(reader)), source, schema)
   }
-  def readTestCases(file: String): List[ConstraintTestCase] = {
-    return readTestCases(new BufferedReader(new FileReader(file)), file)
+  def readTestCases(file: String, schema: CESchema): List[ConstraintTestCase] = {
+    return readTestCases(new BufferedReader(new FileReader(file)), file, schema)
   }
 
-  def readDomains(ds: Elem): Option[List[Domain]] = {
-    return (ds \ *).collect(d => d match {
-      case e: Elem => e.name match {
-        case "BoolDomain" | "NumericDomain" | "SymbolDomain" => None
-        case "IntervalDomain" | "IntervalIntDomain" => Some(readInterval(e))
+  def readDomains(ds: XmlTree, schema: CESchema): Option[List[Domain]] = {
+    return (ds.\\.*).collect(d => d match {
+      case e: XmlTree => e.name match {
+        case "BoolDomain" => None
+        case "IntervalDomain" | "IntervalIntDomain" => Some(readInterval(e, schema))
+        case "NumericDomain" => Some(readNumericEnumeration(e, schema))
+        case "SymbolDomain" => Some(readSymbolicEnumeration(e, schema))
         case _ => None
       }
     }).toList.sequence
@@ -65,13 +74,27 @@ object ConstraintTestCase extends ShouldMatchers {
     else if (a == "") 0
     else java.lang.Double.parseDouble(a)
   }
-  def readInterval(d: Elem): Domain = {
-    val lb = atoef(d.attrs.getOrElse("lb", "3"))
-    val ub = atoef(d.attrs.getOrElse("ub", "-2"))
+  def readInterval(d: XmlTree, schema: CESchema): Domain = {
+    val lb = atoef(d.attributes.getOrElse("lb", "3"))
+    val ub = atoef(d.attributes.getOrElse("ub", "-2"))
     if (d.name == "IntervalDomain") {
       return new IntervalDomain(lb, ub)
     } else {
       return new IntervalIntDomain(lb, ub)
+    }
+  }
+  def readNumericEnumeration(d: XmlTree, schema: CESchema): Domain = { 
+    NumericDomain((d \\ "element").collect(_ match { 
+      case e: XmlTree => java.lang.Double.parseDouble(e.attributes.getOrElse("value", "0"))
+    }).toSet)
+  }
+  def readSymbolicEnumeration(d: XmlTree, schema: CESchema): Domain = { 
+    return if(d.attributes("type") ≟ "integer") readNumericEnumeration(d, schema)
+    else { 
+      val dt = schema.getDataType(d.attributes("type")).get
+      new SymbolicDomain((d \\ "element").collect(_ match { 
+        case e: XmlTree => dt.createValue(e.attributes("value")).get
+      }).toSet, dt)
     }
   }
 
@@ -99,7 +122,7 @@ object ConstraintTestCase extends ShouldMatchers {
         val constr = ce.createConstraint(testCase.constraintName, scope)
         ce.propagate
         var problem = false
-        for ((scopeVar, outputDom, i) <- (scope, outputs, 1 to outputs.length).zipped.map((a, b, c) => (a, b, c))) {
+        for ((scopeVar, outputDom, i) <- (scope, outputs, 1 to outputs.length).zipped/*.map((a, b, c) => (a, b, c))*/) {
           if (outputDom.isEmpty != scopeVar.derivedDomain.isEmpty) {
             if (!problem) {
               Console.println(testCase.fileName + ":" + testCase.caseName +
@@ -107,7 +130,7 @@ object ConstraintTestCase extends ShouldMatchers {
             }
             Console.println(";\n  argument " + i + " is " + scopeVar.derivedDomain + "\n  rather than " + outputDom)
             problem = true
-          } else if (!(scopeVar.derivedDomain eq outputDom)) {
+          } else if (!(scopeVar.derivedDomain ≟ outputDom)) {
             if (!problem) {
               Console.println(testCase.fileName + ":" + testCase.caseName +
                 ": unexpected result propagating " + testCase.constraintName)
@@ -118,8 +141,9 @@ object ConstraintTestCase extends ShouldMatchers {
         }
         if (problem) problemCount = problemCount + 1
         else successCount = successCount + 1
-        constr.discard
-        scope map (_.discard)
+        Entity.purgeStart
+        ce.discardConstraintGraph
+        Entity.purgeEnd
       } else if (!ce.getSchema.isConstraintType(testCase.constraintName)) {
         if (!warned.contains(testCase.constraintName)) {
           Console.println("\n    Warning: " + testCase.fileName + ":" + testCase.caseName +
@@ -136,7 +160,24 @@ object ConstraintTestCase extends ShouldMatchers {
   }
 }
 
-object RunThisOne extends Tag("tags.RunThisOne")
+class ColorDT extends SymbolDT("Color") { 
+  val values = Set[Double](LabelStr("red"), LabelStr("green"), LabelStr("blue"), LabelStr("brown"))
+  override val baseDomain = new SymbolicDomain(values, this)
+  override def createValue(value: String): Option[Double] = { 
+    if(values.contains(LabelStr(value))) super.createValue(value)
+    else None
+  }
+}
+
+class LetterDT extends SymbolDT("Letter") { 
+  val values = Set[Double](LabelStr("A"), LabelStr("B"), LabelStr("C"), LabelStr("D"),
+                           LabelStr("E"), LabelStr("F"))
+  override val baseDomain = new SymbolicDomain(values, this)
+  override def createValue(value: String): Option[Double] = { 
+    if(values.contains(LabelStr(value))) super.createValue(value)
+    else None
+  }
+}
 
 class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter with BeforeAndAfterEach {
   var testEngine: CETestEngine = _
@@ -148,6 +189,8 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
   }
   
   test("constraints") {
+    engine.getSchema.registerDataType(new ColorDT)
+    engine.getSchema.registerDataType(new LetterDT)
     val case1 = ConstraintTestCase("Equal", "ConstraintTest.scala", "1",
       Some(List(IntervalIntDomain(1, 10), IntervalIntDomain(2, 11))),
       Some(List(IntervalIntDomain(2, 10), IntervalIntDomain(2, 10))))
@@ -155,11 +198,11 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
     val clibTestURL = getClass.getResource(clibTestName)
     val clibTestFile = clibTestURL.getFile
 
-    val rest = ConstraintTestCase.readTestCases(clibTestFile) //????
+    val rest = ConstraintTestCase.readTestCases(clibTestFile, engine.getSchema) //????
     ConstraintTestCase.executeTestCases(engine, case1 :: rest) should equal(true)
   }
 
-  ignore("GNATS_3181") {}
+  ignore("GNATS_3181", OpenDomains) {} //open domains
   ignore("UnaryConstraint") {}
   test("AddEqualConstraint") {
 
@@ -238,8 +281,8 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
       val c0 = new AddEqual(LabelStr("AddEqualConstraint"), LabelStr("Default"), engine, List(v0, v1, v2));
       val res = engine.propagate
       res should be (true);
-      // TODO v0.derivedDomain eq IntervalIntDomain(0, 9) should be (true);
-      // TODO v1.derivedDomain eq IntervalDomain(0.39, 9.39) should be (true);
+      v0.derivedDomain ≟ IntervalIntDomain(0, 9) should be (true);
+      v1.derivedDomain ≟ IntervalDomain(0.39, 9.39) should be (true);
     }
     finally { 
       Entity.purgeStart
@@ -258,9 +301,9 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
       val c0 = new AddEqual(LabelStr("AddEqualConstraint"), LabelStr("Default"), engine, List(v0, v1, v2));
       val res = engine.propagate
       res should be (true);
-      v0.derivedDomain eq IntervalIntDomain(MINUS_INFINITY.toInt, MINUS_INFINITY.toInt) should be (true);
-      v1.derivedDomain eq IntervalIntDomain(1, PLUS_INFINITY.toInt) should be (true);
-      v2.derivedDomain eq IntervalIntDomain(PLUS_INFINITY.toInt, PLUS_INFINITY.toInt) should be (true);
+      v0.derivedDomain ≟ IntervalIntDomain(MINUS_INFINITY.toInt, MINUS_INFINITY.toInt) should be (true);
+      v1.derivedDomain ≟ IntervalIntDomain(1, PLUS_INFINITY.toInt) should be (true);
+      v2.derivedDomain ≟ IntervalIntDomain(PLUS_INFINITY.toInt, PLUS_INFINITY.toInt) should be (true);
     }
     finally { 
       Entity.purgeStart
@@ -276,9 +319,9 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
       val c0 = new AddEqual(LabelStr("AddEqualConstraint"), LabelStr("Default"), engine, List(v0, v1, v2));
       val res = engine.propagate
       res should be (true);
-      v0.derivedDomain eq IntervalIntDomain(10, 99) should be (true);
-      v1.derivedDomain eq IntervalIntDomain(1, 90) should be (true);
-      v2.derivedDomain eq IntervalIntDomain(11, 100) should be (true);
+      v0.derivedDomain ≟ IntervalIntDomain(10, 99) should be (true);
+      v1.derivedDomain ≟ IntervalIntDomain(1, 90) should be (true);
+      v2.derivedDomain ≟ IntervalIntDomain(11, 100) should be (true);
     }
     finally { 
       Entity.purgeStart
@@ -295,11 +338,9 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
       val c0 = new AddEqual(LabelStr("AddEqualConstraint"), LabelStr("Default"), engine, List(v0, v1, v2));
       val res = engine.propagate
       res should be (true);
-      /* TODO, fix characters
-      v0.derivedDomain eq IntervalIntDomain(MINUS_INFINITY.toInt, PLUS_INFINITY.toInt) should be (true);
-      v1.derivedDomain eq IntervalIntDomain(1) should be (true);
-      v2.derivedDomain eq IntervalIntDomain(MINUS_INFINITY.toInt, PLUS_INFINITY.toInt) should be (true);
-      */
+      v0.derivedDomain ≟ IntervalIntDomain(MINUS_INFINITY.toInt, PLUS_INFINITY.toInt) should be (true);
+      v1.derivedDomain ≟ IntervalIntDomain(1) should be (true);
+      v2.derivedDomain ≟ IntervalIntDomain(MINUS_INFINITY.toInt, PLUS_INFINITY.toInt) should be (true);
     }
     finally { 
       Entity.purgeStart
@@ -321,7 +362,7 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
       engine.propagate should be (true);
       v0.specify(11);
       engine.propagate should be (true);
-      v1.derivedDomain eq IntervalIntDomain(0) should be (true);
+      v1.derivedDomain ≟ IntervalIntDomain(0) should be (true);
     }
     finally { 
       Entity.purgeStart
@@ -410,7 +451,7 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
     // c1.isActive should be (true)
 
   }
-  ignore("DeactivationWithRestrictBaseDomain") { }
+  ignore("DeactivationWithRestrictBaseDomain", Nope) { }
   test("ForceInconsistency") {
     // v0 == v1
     val v0 = new Variable[IntervalIntDomain](engine, IntervalIntDomain(1, 10));
@@ -476,7 +517,7 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
     engine.constraintConsistent should be (true);
 
   }
-  test("ConstraintRemoval", RunThisOne) {
+  test("ConstraintRemoval") {
     // Debug.enable("ConstraintEngine")
     Entity.isPurging should be (false)
     // v0 == v1
@@ -552,14 +593,14 @@ class ConstraintTest extends FunSuite with ShouldMatchers with BeforeAndAfter wi
   //   }
   // }
 
-  ignore("Delegation") {}
+  ignore("Delegation", Nope) {}
   ignore("NotEqual") {} //commented out in Europa-C++!
   ignore("MultEqualConstraint") {}
   ignore("AddMultEqualConstraint") {}
   ignore("EqualSumConstraint") {}
   ignore("CondAllSameConstraint") {}
   ignore("CondAllDiffConstraint") {}
-  ignore("ConstraintDeletion") {
+  test("ConstraintDeletion") {
     val v0 = new Variable[IntervalIntDomain](engine, IntervalIntDomain(1, 10));
     val v1 = new Variable[IntervalIntDomain](engine, IntervalIntDomain(1, 100));
     val v2 = new Variable[IntervalIntDomain](engine, IntervalIntDomain(10, 100));

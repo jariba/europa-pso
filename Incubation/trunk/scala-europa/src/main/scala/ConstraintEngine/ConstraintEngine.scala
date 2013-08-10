@@ -321,27 +321,14 @@ class ConstraintEngine(schema: CESchema) extends EngineComponent {
     if(s contains v) return s
     val connected = immediatelyConnectedVars(v)
     val visited = s + v
-    return immediatelyConnectedVars(v).map(relaxationAgenda(_, visited)).flatten
+    return connected.map(relaxationAgenda(_, visited)).flatten
   }
 
 
   def handleRelax(v: ConstrainedVariable): Unit = { 
-    def relaxLoop(v: ConstrainedVariable): Unit = { 
-      for(c: (Constraint, Int) <- v.constraints if c._1.isActive) { 
-        for(variable <- c._1.getModifiedVariables(v)) { 
-          if(variable.lastRelaxed < cycleCount) { 
-            debugMsg("ConstraintEngine:handleRelax", 
-                     "Relaxing ", variable.toLongString)
-            variable.updateLastRelaxed(cycleCount)
-            variable.relax
-            if(!relaxingViolation) violationMgr.handleRelax(variable)
-          }
-        }
-      }
-    }
-
     checkError(!propInProgress, "Can't relax variables during propagation")
-    debugMsg("ConstraintEngine:handleRelax", "Handling relaxation of ", v.toLongString)
+    debugMsg("ConstraintEngine:handleRelax",
+             "Handling relaxation of ", v.toLongString, " in cycle ", cycleCount)
     if(!relaxing) { 
       if(!relaxingViolation) violationMgr.handleRelax(v)
       if(relaxed.isEmpty)
@@ -352,12 +339,16 @@ class ConstraintEngine(schema: CESchema) extends EngineComponent {
         getViolationManager.relaxEmptyVariables
       relaxing = true
       val agenda = relaxationAgenda(v, Set())
+      debugMsg("ConstraintEngine:handleRelax",
+               "Relaxation agenda: ", agenda.map(_.toLongString).mkString(","))
+      debugMsg("ConstraintEngine:handleRelax",
+               "Last relaxed: ", agenda.map(_.lastRelaxed).mkString(","))
       for(toRelax <- agenda if toRelax.lastRelaxed < cycleCount) { 
         toRelax.updateLastRelaxed(cycleCount)
+        debugMsg("ConstraintEngine:handleRelax", "Relaxing ", toRelax.toLongString)
         toRelax.relax
         if(!relaxingViolation) violationMgr.handleRelax(toRelax)
       }
-      //relaxLoop(v)
       relaxing = false
     }
   }

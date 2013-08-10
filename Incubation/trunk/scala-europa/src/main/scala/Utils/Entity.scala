@@ -11,6 +11,10 @@ object Entity {
   def getEntity(key: Int): Option[Entity] = {
     return entities.get(key);
   }
+  def getTypedEntity[T](key: Int): Option[T] = getEntity(key) match { 
+    case Some(v) => Some(v.asInstanceOf[T])
+    case None => None
+  }
 
   protected def nextKey: Int = {val retval = key; key = key + 1; return retval;}
   protected def newEntity(e: Entity) {
@@ -55,9 +59,14 @@ trait Entity /*extends Ordered[Entity]*/ {
 
   def compare(that: Entity) : Int = key - that.key
   def name: LabelStr = LabelStr("NO_NAME")
+  def getName: LabelStr = name
+  def getKey: Int = key
 
   def entityType: String = "Entity"
 
   override def toString: String = (new StringBuilder) append name append "(" append key append ")" toString
+  
+  def externalEntity: Entity = m_externalEntity
+  def getExternalEntity: Entity = m_externalEntity
 }
 
