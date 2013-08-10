@@ -1,9 +1,6 @@
 package gov.nasa.arc.europa.constraintengine.component
 import gov.nasa.arc.europa.constraintengine.ConstraintTypeChecker
 
-import scalaz._
-import Scalaz._
-
 import gov.nasa.arc.europa.constraintengine.ConstraintType
 import gov.nasa.arc.europa.constraintengine.DataType
 

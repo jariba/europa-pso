@@ -1,3 +1,5 @@
-resolvers += "Scala-Tools Maven2 Snapshots Repository" at "http://scala-tools.org/repo-snapshots"
+resolvers += "Sonatype Maven2 Snapshots Repository" at "http://oss.sonatype.org/content/groups/scala-tools"
+
+resolvers += ScalaToolsSnapshots
     
-addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.0.10")
+addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.1")

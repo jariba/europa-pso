@@ -118,4 +118,38 @@ object Debug {
       Debug.output.flush
     }
   }
+
+  def condDebugStmt(marker: String, cond: Boolean, stmt: () => Unit): Unit = { 
+    if(Debug.isEnabled(marker) && cond) { stmt()}
+  }
+
+  def condDebugMsg(cond: Boolean, marker: String, first: Any): Unit = {
+    if(Debug.isEnabled(marker) && cond) {
+      printMarker(marker)
+      Debug.output.print(first)
+      Debug.output.println
+      Debug.output.flush
+    }
+  }
+
+  def condDebugMsg(cond: Boolean, marker: String, first: Any, rest: Any*): Unit = {
+    if(Debug.isEnabled(marker) && cond) {
+      printMarker(marker)
+      Debug.output.print(first);
+      for(r <- rest)
+	Debug.output.print(r)
+      Debug.output.println
+      Debug.output.flush
+    }
+  }
+
+  def condDebugMsg(cond: Boolean, marker: String): Unit = {
+    if(Debug.isEnabled(marker) && cond) {
+      val ste = SourceLocation(1)
+      if(ste != null)
+	debugMsg(marker, ste.getFileName, ":", ste.getLineNumber)
+      Debug.output.flush
+    }
+  }
+
 }

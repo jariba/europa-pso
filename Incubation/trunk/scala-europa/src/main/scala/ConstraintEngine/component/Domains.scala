@@ -6,9 +6,6 @@ import gov.nasa.arc.europa.utils.Debug._
 import gov.nasa.arc.europa.utils.Error._
 import gov.nasa.arc.europa.utils.Number._
 
-import scalaz._
-import Scalaz._
-
 import scala.math._
 
 object IntervalDomain { 
@@ -18,7 +15,7 @@ object IntervalDomain {
     new IntervalDomain(lowerBound, upperBound, FloatDT.INSTANCE)
   def apply(lowerBound: Double, upperBound: Double, dataType: DataType) = 
     new IntervalDomain(lowerBound, upperBound, dataType)
-
+  def apply(v: Double) = new IntervalDomain(v, v, FloatDT.INSTANCE)
   //implicit def IntervalEqual: Equal[IntervalDomain] = equalBy(_.getBounds)
 }
 class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataType, true) { 
@@ -139,8 +136,9 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
       else checkError(ALWAYS_FAIL, "Attempted to remove an element from within the interval.  Would require splitting.")
     }
   }
+  def convert(v: Double): Double = v
   override def isMember(v: Double): Boolean = { 
-    leq(lowerBound, v) && leq(v, upperBound)
+    convert(v) == v && leq(lowerBound, v) && leq(v, upperBound)
   }
 
   override def isEnumerated = false
@@ -150,7 +148,7 @@ class IntervalDomain(dataType: DataType = FloatDT.INSTANCE) extends Domain(dataT
   override def convertToMemberValue(s: String): Option[Double] = { 
     var v: Double = 0
     try { v = java.lang.Double.parseDouble(s) }
-    catch { case _ => return None }
+    catch { case _ : Throwable => return None }
     return if(isMember(v)) Some(v) else None
   }
   override def intersects(d: Domain): Boolean = { 
@@ -252,13 +250,14 @@ class IntervalIntDomain(dataType: DataType = IntDT.INSTANCE) extends IntervalDom
   }
   override def copy: Domain = new IntervalIntDomain(this)
   override def toString: String = (new StringBuilder) append super.typeString append "[" append lowerBound.toInt append " " append upperBound.toInt append "]" toString
+  override def convert(v: Double): Double = v.toInt.toDouble
 }
 
 object BoolDomain { 
   def apply() = new BoolDomain(BoolDT.INSTANCE)
   def apply(dataType: DataType) = new BoolDomain(dataType)
   def apply(value: Boolean) = 
-    new BoolDomain(value, IntDT.INSTANCE)
+    new BoolDomain(value, BoolDT.INSTANCE)
 
   // implicit def BoolEqual: Equal[BoolDomain] = equalBy(_.getBounds)
 }
@@ -305,5 +304,6 @@ class BoolDomain(dataType: DataType = BoolDT.INSTANCE) extends IntervalIntDomain
   def set(b: Boolean): Unit = set(translateToNumber(b))
   def toString(b: Boolean): String = b.toString
   def isMember(b: Boolean): Boolean = isMember(translateToNumber(b))
+  def remove(b: Boolean): Unit = if(b) upperBound = 0 else lowerBound = 1
 }
-//TODO: NumericDomain, StringDomain, SymbolDomain
+//TODO: StringDomain

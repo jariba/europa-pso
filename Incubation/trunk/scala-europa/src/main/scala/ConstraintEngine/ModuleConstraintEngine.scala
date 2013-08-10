@@ -8,6 +8,7 @@ import gov.nasa.arc.europa.constraintengine.component.FloatDT
 import gov.nasa.arc.europa.constraintengine.component.IntDT
 import gov.nasa.arc.europa.constraintengine.component.LessThanEqualConstraintType
 import gov.nasa.arc.europa.constraintengine.component.NotEqualConstraintType
+import gov.nasa.arc.europa.constraintengine.component.SymbolDT
 import gov.nasa.arc.europa.constraintengine.component.VoidDT
 import gov.nasa.arc.europa.utils.Engine
 import gov.nasa.arc.europa.utils.Module
@@ -24,7 +25,7 @@ class ModuleConstraintEngine extends Module("ConstraintEngine") {
     engine.addComponent("CESchema", ces)
     
     // ces.registerDataType(new StringDT)
-    // ces.registerDataType(new SymbolDT)
+    ces.registerDataType(new SymbolDT)
     val ce = new ConstraintEngine(ces)
     new DefaultPropagator("Default", ce)
     engine.addComponent("ConstraintEngine", ce)

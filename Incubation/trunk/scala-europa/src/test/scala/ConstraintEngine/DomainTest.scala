@@ -1,17 +1,27 @@
 package gov.nasa.arc.europa.constraintengine.test
 import gov.nasa.arc.europa.constraintengine.Domain
+import gov.nasa.arc.europa.constraintengine.Domain._
 import gov.nasa.arc.europa.constraintengine.DomainListener
 import gov.nasa.arc.europa.constraintengine.component.BoolDomain
+import gov.nasa.arc.europa.constraintengine.component.BoolDT
+import gov.nasa.arc.europa.constraintengine.component.EnumeratedDomain
 import gov.nasa.arc.europa.constraintengine.component.FloatDT
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain
 import gov.nasa.arc.europa.constraintengine.component.IntervalDomain._
 import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain
 import gov.nasa.arc.europa.constraintengine.component.IntervalIntDomain._
+import gov.nasa.arc.europa.constraintengine.component.IntDT
+import gov.nasa.arc.europa.constraintengine.component.NumericDomain
+import gov.nasa.arc.europa.constraintengine.component.SymbolicDomain
+import gov.nasa.arc.europa.constraintengine.component.SymbolDT
+import gov.nasa.arc.europa.utils.EqualImplicits._
 import gov.nasa.arc.europa.utils.Infinity
+import gov.nasa.arc.europa.utils.LabelStr
+import gov.nasa.arc.europa.utils.LabelStr._
 import gov.nasa.arc.europa.utils.Number._
 
-import scalaz._
-import Scalaz._
+import scalaz.Equal
+import scalaz.syntax.equal._
 
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
@@ -25,7 +35,7 @@ class Bar extends Foo {
   def getBounds = (lb, ub)
 }
 object Bar { 
-  implicit def BarEqual: Equal[Bar] = equalBy(_.getBounds)
+  implicit def BarEqual: Equal[Bar] = Equal.equalBy(_.getBounds)
 }
 
 class Baz extends Bar { 
@@ -42,13 +52,13 @@ class WierdTest extends FunSuite with ShouldMatchers {
     val v2 = new Bar(10.0, 20.0)
     val v3 = new Bar(10.0, 20.0)
 
-    (v1 eq v1) should equal (true)
-    (v2 eq v2) should equal (true)
-    (v3 eq v3) should equal (true)
-    (v1 eq v2) should equal (false)
-    (v2 eq v1) should equal (false)
-    (v2 eq v3) should equal (true)
-    (v3 eq v2) should equal (true)
+    (v1 ≟ v1) should equal (true)
+    (v2 ≟ v2) should equal (true)
+    (v3 ≟ v3) should equal (true)
+    (v1 ≟ v2) should equal (false)
+    (v2 ≟ v1) should equal (false)
+    (v2 ≟ v3) should equal (true)
+    (v3 ≟ v2) should equal (true)
   }
 }
 
@@ -67,422 +77,694 @@ class ChangeListener extends DomainListener {
   }
 }
 
-class IntervalDomainTest extends FunSuite with ShouldMatchers { 
-  test("allocation") { 
-    val infTest = new IntervalDomain()
-    infTest.isEmpty should equal (false)
-    
-    val realDomain = new IntervalDomain(10.2, 20.4)
-    realDomain.isEmpty should equal (false)
-    realDomain.isFinite should equal (false)
-    realDomain.size should equal (None)
-
-    val intDomain = new IntervalIntDomain(10, 20)
-    intDomain.isFinite should equal (true)
-
-    val (lb, ub) = intDomain.getBounds
-    val d1 = new IntervalIntDomain
-    d1.empty
-    d1.isEmpty should equal (true)
-
-    val d2: Domain = intDomain
-    d2.isEmpty should equal (false)
-
-    val d3 = new IntervalIntDomain(intDomain)
-    val d4 = new IntervalIntDomain
-
-    (d3 eq d4) should equal (false)
-    d3 relax d4
-    (d3 eq d4) should equal (true)
-    
-    (d2 eq d4) should equal (false)
-    d2 relax d4
-    (d2 eq d4) should equal (true)
-  }
-  test("relaxation") { 
-    val listener = new ChangeListener
-    val dom0 = new IntervalIntDomain()
-    dom0.isEmpty should equal (false)
-    val dom1 = new IntervalIntDomain(-100, 100)
-    dom1.setListener(listener)
-    dom1.relax(dom0)
-    var (res, change) = listener.checkAndClearChange
-    res should equal (true)
-    change should equal (DomainListener.RELAXED)
-    dom1 isSubsetOf dom0 should equal (true)
-    dom0 isSubsetOf dom1 should equal (true)
-    (dom0 eq dom1) should equal (true)
-
-    val dom2 = new IntervalIntDomain(-300, 100)
-    dom1 intersect dom2
-    val (res1, change1) = listener.checkAndClearChange
-    res1 should equal (true)
-    (dom1 eq dom2) should equal (true)
-    dom1 relax dom2
-    val (res2, change2) = listener.checkAndClearChange
-    res2 should equal (false)
-  }
-  test("precision") { 
-    val EPSILON = FloatDT.INSTANCE.minDelta
-    val dom0 = new IntervalDomain(-EPSILON, 0)
-    dom0 isMember -EPSILON should equal (true)
-    dom0 isMember (-EPSILON -EPSILON/10) should equal (true)
-    dom0 isMember (-EPSILON -EPSILON) should equal (false)
-    
-    val dom1 = new IntervalDomain(-EPSILON, EPSILON/10)
-    (dom1 eq dom0) should equal (true)
-    
-    val dom2 = new IntervalDomain(-EPSILON, -EPSILON/10)
-    dom2 intersects dom0 should equal (true)
-  }
-  test("intersection") { 
-    val l_listener = new ChangeListener
-
-    val dom0 = new IntervalIntDomain; // Will have very large default range
-    dom0.setListener(l_listener);
-
-    // Execute intersection and verify results
-    val dom1 = new IntervalIntDomain(-100, 100);
-    dom0.intersect(dom1);
-    val(res0, _) = l_listener.checkAndClearChange
-    res0 should equal (true)
-    (dom0 eq dom1) should equal (true)
-
-    // verify no change triggered if none should take place.
-    dom0.intersect(dom1);
-    val (res1, _) = l_listener.checkAndClearChange
-    res1 should equal (false)
-
-    // Verify only the upper bound changes
-    val dom2 = new IntervalIntDomain(-200, 50);
-    dom0.intersect(dom2);
-    val (res2, _) = l_listener.checkAndClearChange
-    res2 should equal (true)
-    dom0.lowerBound should equal (dom1.lowerBound)
-    dom0.upperBound should equal (dom2.upperBound)
-
-    // Make an intersection that leads to an empty domain
-    val dom3 = new IntervalIntDomain(500, 1000);
-    dom0.intersect(dom3);
-    val(res3, _) = l_listener.checkAndClearChange
-    res3 should equal (true)
-    dom0.isEmpty should equal (true)
-
-    val dom4 = new IntervalDomain(0.98, 101.23);
-    val dom5 = new IntervalDomain(80, 120.44);
-    val dom6 = new IntervalDomain(80, 101.23);
-    dom4 equate dom5
-    (dom4 eq dom6) should equal (true)
-    (dom5 eq dom6) should equal (true)
-
-    val domEq1 = new IntervalIntDomain(7)
-    val domEq2 = new IntervalIntDomain(0, 10)
-    domEq1 equate domEq2
-    (domEq1 eq domEq2) should equal (true)
-    domEq1 should have ('lowerBound (7), 'upperBound (7))
-    domEq2 should have ('lowerBound (7), 'upperBound (7))
-
-
-    val dom7 = new IntervalDomain(-1, 0)
-    dom6.intersect(dom7)
-    dom6.isEmpty should equal (true)
-
-    val dom8 = new IntervalDomain
-    val dom9 = new IntervalDomain
-    dom8 intersect IntervalDomain(0.1, 0.10)
-    dom9 intersect IntervalDomain(0.10, 0.10) 
-    dom8.intersects(dom9) should equal (true)
-
-    // Case added to recreate failure case for GNATS 3045
-    val dom8a = new IntervalDomain;
-    val dom9a = new IntervalDomain;
-    dom8a intersect IntervalDomain(0.1, 0.1)
-    dom9a intersect IntervalDomain(0.1, 0.1)
-    dom8a.intersects(dom9a) should equal (true)
-    dom8a.upperBound should equal (0.1)
-    dom8a.lowerBound should equal (0.1);
-    dom9a.upperBound should equal (0.1);
-    dom9a.lowerBound should equal (0.1);
-
-    // Test at the limit of precision
-    val dom10 = new IntervalDomain(0.0001);
-    val dom11 = new IntervalDomain(0.0001);
-    dom10.intersects(dom11) should equal (true)
-
-    // Test at the limit of precision
-    val dom12 = new IntervalDomain(-0.0001);
-    val dom13 = new IntervalDomain(-0.0001);
-    dom12.intersects(dom13) should equal (true)
-
-    val EPSILON = FloatDT.INSTANCE.minDelta
-    // Test beyond the limits of precission
-    val dom14 = new IntervalDomain(-0.1 - EPSILON/10);
-    val dom15 = new IntervalDomain(-0.1);
-    dom14.intersects(dom15) should equal (true)
-    dom14.intersect(dom15) should equal (false)
-
-    val intBase = new IntervalIntDomain(-3, 3);
-    val dom16 = new IntervalIntDomain(intBase);
-    val dom17 = new IntervalDomain(-2.9, 3);
-    val dom18 = new IntervalDomain(-3, 2.9);
-    val dom19 = new IntervalDomain(-2.9, 2.9);
-    val dom20 = new IntervalDomain(-0.9, 3);
-    val dom21 = new IntervalDomain(-3, 0.9);
-    val dom22 = new IntervalDomain(0.3, 0.4);
-
-    dom16.intersect(dom17);
-    dom16 should have ('lowerBound (-2.0), 'upperBound (3.0))
-    dom16.relax(intBase);
-
-    dom16.intersect(dom18);
-    dom16 should have ('lowerBound (-3.0), 'upperBound (2.0))
-    dom16.relax(intBase);
-
-    dom16.intersect(dom19);
-    dom16 should have ('lowerBound (-2.0), 'upperBound (2.0))
-    dom16.relax(intBase);
-
-    dom16.intersect(dom20);
-    dom16 should have ('lowerBound (0.0), 'upperBound (3.0))
-    dom16.relax(intBase);
-
-    dom16.intersect(dom21);
-    dom16 should have ('lowerBound (-3.0), 'upperBound (0.0))
-    dom16.relax(intBase);
-
-    dom16.intersect(dom22);
-    dom16.isEmpty should equal (true)
-    dom16.relax(intBase);
-  }
-  test("subset") { 
-    val dom0 = new IntervalIntDomain(10, 35);
-    val dom1 = new IntervalDomain(0, 101);
-    dom0.isSubsetOf(dom1) should equal (true)
-    dom1.isSubsetOf(dom0) should equal (false)
-
-    // Handle cases where domains are equal
-    val dom2 = new IntervalIntDomain(dom0);
-    (dom2 eq dom0) should equal (true)
-    dom0.isSubsetOf(dom2) should equal (true)
-    dom2.isSubsetOf(dom0) should equal (true)
-
-    // Handle case with no intersection
-    val dom3 = new IntervalIntDomain(0, 9);
-    dom3.isSubsetOf(dom0) should equal (false)
-    dom0.isSubsetOf(dom3) should equal (false)
-
-    // Handle case with partial intersection
-    val dom4 = new IntervalIntDomain(0, 20);
-    dom4.isSubsetOf(dom0) should equal (false)
-    dom0.isSubsetOf(dom4) should equal (false)
-
-    // Handle intersection with infinites
-    val dom5 = new IntervalDomain;
-    val dom6 = new IntervalDomain(0, 100);
-    dom6.isSubsetOf(dom5) should equal (true)
-  }
-  test("printing") { 
-    val d1 = new IntervalIntDomain(1, 100)
-    d1.toString should equal("int:CLOSED[1 100]")
-
-    //intervalInt domain
-    val intervalInt = new IntervalIntDomain(1,100);
-    intervalInt.set(1)
-    intervalInt.dataType.toString(intervalInt.getSingletonValue.get) should equal ("1")
-
-    //intervalReal domain
-    val intervalReal = new IntervalDomain(1.5, 100.6)
-    intervalReal.set(1.5);
-    intervalReal.dataType.toString(intervalReal.getSingletonValue.get) should equal ("1.5")
-
-    // boolean domain
-    val boolDomainTrue = new BoolDomain(true)
-    boolDomainTrue.set(true);
-    boolDomainTrue.toString(boolDomainTrue.getSingletonValue.get) should equal("true")
-
-    val boolDomainFalse = new BoolDomain(false)
-    boolDomainFalse.set(false);
-    boolDomainFalse.toString(boolDomainFalse.getSingletonValue.get) should equal("false")
-
-    // numeric domain
-    // val numericDom = NumericDomain(1.117)
-    // numericDom.set(1.117);
-    // numericDom.getDataType.toString(numericDom getSingletonValue get) should equal ("1.117")
-
-    //   // string domain
-    // LabelStr theString("AString");
-    //   StringDomain stringDom(theString);
-    //   stringDom.set(theString);
-    //   CPPUNIT_ASSERT(stringDom.isSingleton());
-    //   std::string d6DisplayValueStr = stringDom.getDataType()->toString(stringDom.getSingletonValue());
-    //   std::string expectedD6DisplayValue("AString");
-    //   CPPUNIT_ASSERT(d6DisplayValueStr == expectedD6DisplayValue);
-
-    //   // symbol domain
-    //   LabelStr element("ASymbol");
-    //   SymbolDomain symbolDom(element);
-    //   symbolDom.set(element);
-    //   std::string d7DisplayValueStr = symbolDom.getDataType()->toString(symbolDom.getSingletonValue());
-    //   std::string expectedD7DisplayValue("ASymbol");
-    //   CPPUNIT_ASSERT(d7DisplayValueStr == expectedD7DisplayValue);
-
-  }
-  test("bool domain") { 
-    val dom0 = new BoolDomain(true);
-    dom0 should have ('size (Some(1)), 'upperBound (1.0), 'lowerBound (1.0))
-    // dom0.getSize should equal (1)
-    // dom0.getUpperBound should equal (1.0)
-    // dom0.getLowerBound should equal (true)
-    
-    val dom1 = new BoolDomain;
-    dom1 should have ('size (Some(2)), 'upperBound (1.0), 'lowerBound (0.0))
-    // dom1.getSize should equal (2)
-    // dom1.getUpperBound should equal (1.0);
-    // dom1.getLowerBound should equal (0.0);
-    
-    dom1.intersect(dom0);
-    (dom1 eq dom0) should equal (true)
-    // CPPUNIT_ASSERT(dom1 == dom0);
-
-  }
-  test ("difference") { 
-    val dom0 = new IntervalDomain(1, 10);
-    val dom1 = new IntervalDomain(11, 20);
-    dom0.difference(dom1) should equal (false)    
-    dom1.difference(dom0) should equal (false)
-
-    val dom2 = new IntervalDomain(dom0);
-    dom2.difference(dom0) should equal (true)
-    dom2.isEmpty should equal (true)
-
-    val dom3 = new IntervalIntDomain(5, 100);
-    dom3.difference(dom0) should equal (true)
-    dom3 should have ('lowerBound (11))
-    dom3.difference(dom1) should equal (true)
-    dom3 should have ('lowerBound (21))
-
-    val dom4 = new IntervalDomain(0, 20);
-    dom4.difference(dom1) should equal (true)
-    dom4.upperBound should equal (dom1.getLowerBound - dom4.minDelta)
-
-    // val dom5 = new NumericDomain(3.14159265);
-    // CPPUNIT_ASSERT(dom5.getSize() == 1);
-
-    // std::list<edouble> vals;
-    // vals.push_back(dom5.getSingletonValue());
-    // vals.push_back(1.2);
-    // vals.push_back(2.1);
-    // vals.push_back(PLUS_INFINITY);
-    // vals.push_back(MINUS_INFINITY);
-    // vals.push_back(EPSILON);
-    // val dom6 = new NumericDomain(vals);
-
-    // CPPUNIT_ASSERT(dom6.getSize() == 6);
-    // CPPUNIT_ASSERT(std::abs(dom5.minDelta() - dom6.minDelta()) < EPSILON); // Should be ==, but allow some leeway.
-    // CPPUNIT_ASSERT(dom6.intersects(dom5));
-
-    // dom6.difference(dom5);
-    // CPPUNIT_ASSERT(!(dom6.intersects(dom5)));
-    // CPPUNIT_ASSERT(dom6.getSize() == 5);
-
-    // dom6.difference(dom5);
-    // CPPUNIT_ASSERT(!(dom6.intersects(dom5)));
-    // CPPUNIT_ASSERT(dom6.getSize() == 5);
-
-  }
-  test("operator equals") { 
-    val dom0 = new IntervalDomain(1, 28);
-    val dom1 = new IntervalDomain(50, 100);
-    dom0 := dom1 
-    (dom0 eq dom1) should equal (true)
-  }
-  test("InfinitesAndInts") {
-    val dom0 = new IntervalDomain;
-      // dom0.translateNumber(MINUS_INFINITY) should equal (MINUS_INFINITY)
-      // dom0.translateNumber(MINUS_INFINITY - 1) should equal (MINUS_INFINITY)
-      // dom0.translateNumber(MINUS_INFINITY + 1) should equal (MINUS_INFINITY + 1)
-      // dom0.translateNumber(PLUS_INFINITY + 1) should equal (PLUS_INFINITY)
-      // dom0.translateNumber(PLUS_INFINITY - 1) should equal (PLUS_INFINITY - 1)
-      dom0.translateNumber(MINUS_INFINITY) should equal (MINUS_INFINITY)
-      dom0.translateNumber(Infinity.minus(MINUS_INFINITY, 1, MINUS_INFINITY)) should equal (MINUS_INFINITY)
-      dom0.translateNumber(Infinity.plus(MINUS_INFINITY, 1, MINUS_INFINITY)) should equal (Infinity.plus(MINUS_INFINITY, 1, MINUS_INFINITY))
-      dom0.translateNumber(Infinity.plus(PLUS_INFINITY, 1, PLUS_INFINITY)) should equal (PLUS_INFINITY)
-      dom0.translateNumber(Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY)) should equal (Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY))
-      dom0.translateNumber(2.8) should equal (2.8)
-
-      val dom1 = new IntervalIntDomain;
-      dom1.translateNumber(2.8, false) should equal (2)
-      dom1.translateNumber(2.8, true) should equal (3)
-      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), false) should equal (PLUS_INFINITY)
-      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), true) should equal (PLUS_INFINITY)
-      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), false) should equal ((Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY)))
-      dom1.translateNumber(Infinity.minus(PLUS_INFINITY, 0.2, PLUS_INFINITY), false) should equal (Infinity.minus(PLUS_INFINITY, 1, PLUS_INFINITY))
-
-  }
-  // test("EnumSet") { assert(false) }
-  // test("InsertAndRemove") { assert(false) }
-  // test("ValidComparisonWithEmpty_gnats2403") { assert(false) }
-  test("IntervalSingletonValues") { 
-    for(v <- -2.0 to 1.5 by 0.1) {
-      val id = new IntervalDomain(v, v);
-      val values = id.getValues
-      values should have length (1)
-      values should contain (v)
-    }
-    for(v <- 2.0 to 1.5 by -0.1) {
-      val id = new IntervalDomain(v, v);
-      val values = id.getValues
-      values should have length (1)
-      values should contain (v)
-    }
-    val id = new IntervalDomain(0, 0);
-    val values = id.getValues
-    values should have length (1)
-    values should contain (0.0)
-  }
-  test("IntervalIntValues") { 
-    val i0 = new IntervalIntDomain(10, 20)
-    val values = i0.getValues
-    values should have length (11)
-    values should equal((10 to 20).toList)
-
-    val i1 = new IntervalIntDomain(-4, 3)
-    val values1 = i1.getValues
-    values1 should have length (8)
-    values1 should equal ((-4 to 3).toList)
-
-    val i2 = new IntervalIntDomain(-10, 10)
-    val i3: IntervalDomain = i2
-    i2.minDelta should equal(i3.minDelta)
-  }
-
-}
-
 class EnumeratedDomainTest extends FunSuite with ShouldMatchers { 
-  ignore("Strings") {}
-  ignore("EnumerationOnly") {}
-  ignore("BasicLabelOperations") {}
-  ignore("LabelSetAllocations") {}
-  ignore("Equate") {}
-  ignore("ValueRetrieval") {}
-  ignore("Intersection") {}
-  ignore("Difference") {}
-  ignore("OperatorEquals") {}
-  ignore("EmptyOnClosure") {}
-  ignore("OpenEnumerations") {}
+  ignore("Strings", OpenDomains) {}
+  ignore("OpenEnumerations", OpenDomains) {}
 
+  test("EnumerationOnly") {
+    val values: Set[Double] = Set(-98.67, -0.01, 1, 2, 10, 11)
+    val d0 = NumericDomain(values)
+    val d1 = NumericDomain(values);
+
+    d0 ≟ d1 should be (true)
+
+    d0.convertToMemberValue("-0.01").getOrElse(0.0) should be (-0.01)
+    d0.convertToMemberValue("88.46").getOrElse(0.0) should be (0.0)
+
+    d0.isSubsetOf(d1) should be (true)
+    d1.isSubsetOf(d0) should be (true)
+    d0.isMember(-98.67) should be (true)
+
+    d0.remove(-0.01);
+    d0.isMember(-0.01) should be (false)
+    d0.isSubsetOf(d1) should be (true)
+    d1.isSubsetOf(d0) should be (false)
+  }
+
+  test("BasicLabelOperations") {
+    val initialCount = LabelStr.size
+    val dt_l1 = LabelStr("DT_L1");
+    val dt_l2 = LabelStr("DT_L2");
+    val dt_l3 = LabelStr("DT_L3");
+    dt_l1 should be < (dt_l2)
+    dt_l2 should be < (dt_l3)
+
+    val la = LabelStr("L");
+    val l4 = LabelStr("L30");
+    val lb = LabelStr("L");
+
+    la should equal (lb)
+    la should be < (l4)
+
+    val copy1 = LabelStr(dt_l1);
+    dt_l1 should equal (copy1)
+    dt_l2 should not equal (copy1)
+
+    LabelStr.size should equal (initialCount + 5)
+
+    dt_l1.toString() should equal ("DT_L1")
+    LabelStr.isString(dt_l1.key) should be (true)
+    LabelStr.isString((PLUS_INFINITY+1).toInt) should be (false)
+
+  }
+
+  test("LabelSetAllocations") {
+    val values = Set[Double](LabelStr("DT_L1"), LabelStr("L4"), LabelStr("DT_L2"), LabelStr("L5"),
+                             LabelStr("DT_L3"))
+    val listener = new ChangeListener
+    val ls0 = new SymbolicDomain(values)
+    ls0.setListener(listener)
+    ls0.isOpen should be (false)
+
+    val dt_l2 = LabelStr("DT_L2")
+    ls0.isMember(dt_l2) should be (true)
+    
+    ls0.remove(dt_l2)
+    listener.checkAndClearChange should equal (true, DomainListener.VALUE_REMOVED)
+    ls0.isMember(dt_l2) should be (false)
+    
+    val dt_l3 = LabelStr("DT_L3")
+    ls0.set(dt_l3)
+    ls0.isMember(dt_l3)
+    ls0.size == 1
+    
+    val ls1 = new SymbolicDomain(values)
+    ls0.relax(ls1)
+    listener.checkAndClearChange should equal (true, DomainListener.RELAXED)
+    ls0 ≟ ls1 should be (true)
+  }
+  test("Equate") {
+    import SymbolicDomain._
+    val baseValues: Set[Double] = Set[String]("A", "B", "C", "D", "E", "F", "G", "H")
+    val listener = new ChangeListener
+    val ls0 = SymbolicDomain(baseValues)
+    val ls1 = SymbolicDomain(baseValues)
+    ls0.setListener(listener)
+    ls1.setListener(listener)
+    
+    ls0 ≟ ls1 should be (true)
+    ls0.size should be (Some(8))
+    ls0.equate(ls1) should be (false)
+
+    val lC = LabelStr("C")
+    ls0.remove(lC)
+    ls0.isMember(lC) should be (false)
+    ls1.isMember(lC) should be (true)
+    
+    ls0.equate(ls1) should be (true)
+    ls1.isMember(lC) should be (false)
+    
+    val ls2 = SymbolicDomain(baseValues)
+    ls2.setListener(listener)
+    ls2.remove(LabelStr("A"))
+    ls2.remove(LabelStr("B"))
+    ls2.remove(LabelStr("C"))
+    ls2.remove(LabelStr("D"))
+    ls2.remove(LabelStr("E"))
+
+    val ls3 = SymbolicDomain(baseValues)
+    ls3.setListener(listener)
+    val lA = LabelStr("A")
+    val lB = LabelStr("B")
+    ls3.remove(lA)
+    ls3.remove(lB)
+    ls3.remove(lC)
+    ls2.equate(ls3) should be (true)
+    ls2 ≟ ls3 should be (true)
+
+    val ls4 = SymbolicDomain(baseValues)
+    ls4.setListener(listener)
+    ls4.remove(LabelStr("A"))
+    ls4.remove(LabelStr("B"))
+    ls4.remove(LabelStr("C"))
+    ls4.remove(LabelStr("D"))
+    ls4.remove(LabelStr("E"))
+    
+    val ls5 = SymbolicDomain(baseValues)
+    ls5.setListener(listener)
+    ls5.remove(LabelStr("F"))
+    ls5.remove(LabelStr("G"))
+    ls5.remove(LabelStr("H"))
+
+    ls4.equate(ls5)
+    listener.checkAndClearChange should be (true, DomainListener.EMPTIED)
+    ls4.isEmpty || ls5.isEmpty should be (true)
+    !(ls4.isEmpty && ls5.isEmpty) should be (true)
+
+    val enumVals = Set(1.0, 2.5,-0.25,3.375,-1.75)
+    val ed1 = NumericDomain(enumVals)
+    val ed3 = NumericDomain(enumVals)
+
+    val enumVals2 = Set(3.375, 2.5)
+    val ed2 = NumericDomain(enumVals2)
+    val ed4 = NumericDomain(enumVals2)
+
+    ed1.equate(ed2);
+    ed1 ≟ ed2 should be (true);
+
+    ed1.equate(ed3);
+    ed1 ≟ ed3 should be (true);
+
+    var ed0 = NumericDomain(Set(0D))
+
+    ed1.equate(ed0);
+
+    // This is actually false because equate only empties
+    // one of the domains when the intersection is empty.
+    // ed0 qeq ed1 should be (true);
+
+    !(ed0 ≟ ed1) should be (true);
+    ed1.isEmpty != ed0.isEmpty should be (true);
+
+    ed0 = NumericDomain(Set(0D));
+    !ed0.isEmpty should be (true);
+
+    ed0.equate(ed2);
+    ed2 != ed0 && ed2.isEmpty != ed0.isEmpty should be (true);
+
+    ed0 = NumericDomain(Set(0.0, 20.0));
+    !ed0.isEmpty && !ed0.isSingleton should be (true);
+
+    val id0 = IntervalDomain(-10.0, 10.0);
+
+    id0.equate(ed0);
+    //ed0.isSingleton && ed0.getSingletonValue == 0.0, ed0.toString should be (true);
+    //id0.isSingleton && id0.getSingletonValue == 0.0, id0.toString should be (true);
+
+    ed0 = NumericDomain(Set(0.0, 20.0)); // Now 0.0 and 20.0
+    !ed0.isEmpty && !ed0.isSingleton should be (true);
+
+    val id1 = IntervalDomain(0.0, 5.0);
+
+    ed0.equate(id1);
+    ed0.isSingleton && ed0.getSingletonValue.get ≟ 0.0 should be (true);
+    id1.isSingleton && id1.getSingletonValue.get ≟ 0.0 should be (true);
+
+    val ed5 = NumericDomain(Set(3.375, 2.5, 1.5))
+    val id2 = IntervalDomain(2.5, 3.0);
+
+    ed5.equate(id2);
+    ed5.isSingleton && ed5.getSingletonValue.get ≟ 2.5 should be (true);
+    id2.isSingleton && id2.getSingletonValue.get ≟ 2.5 should be (true);
+    
+    val ed6 = NumericDomain(Set(3.375, 2.5, 1.5, -2.0))
+    val id3 = IntervalDomain(-1.0, 3.0);
+
+    id3.equate(ed6);
+    ed6.size.get ≟ 2 should be (true);
+    id3 ≟ IntervalDomain(1.5, 2.5) should be (true);
+
+    val id4 = IntervalDomain(1.0, 1.25);
+
+    ed6.equate(id4);
+    ed6.isEmpty != id4.isEmpty should be (true);
+
+    
+    val ed7 = NumericDomain(Set(1.0))
+    val id5 = IntervalDomain(1.125, PLUS_INFINITY);
+
+    id5.equate(ed7);
+    ed7.isEmpty != id5.isEmpty should be (true);
+  }
+  test("ValueRetrieval") {
+    import SymbolicDomain._
+    val values: Set[Double] = Set[LabelStr]("A", "B", "C", "D", "E")
+    val dt_l1 = SymbolicDomain(values);
+
+    val results = dt_l1.getValues
+    results should equal (List(LabelStr("A").key, LabelStr("B").key, LabelStr("C").key, LabelStr("D").key, LabelStr("E").key).sorted)
+
+    val dt_l2 = SymbolicDomain(results.toSet);
+
+    dt_l1 ≟ dt_l2 should be (true)
+    val lbl = LabelStr("C");
+    dt_l1.set(lbl);
+    dt_l1.getSingletonValue.get should equal (lbl.key)
+  }
+  test("Intersection") {
+    import SymbolicDomain._
+    import LabelStr._
+    val values: Set[Double] = Set[String]("A", "B", "C", "D", "E", "F", "G", "H", "I")
+    val ls1 = SymbolicDomain(values);
+
+    val value = ls1.convertToMemberValue("H")
+    value should be ('defined)
+    value.get ≟ LabelStr("H") should be (true)
+    ls1.convertToMemberValue("LMN") should not be ('defined)
+
+    val ls2 = SymbolicDomain(values);
+    ls2.remove(LabelStr("A"));
+    ls2.remove(LabelStr("C"));
+    ls2.remove(LabelStr("E"));
+    ls2.isSubsetOf(ls1) should be (true)
+    !ls1.isSubsetOf(ls2) should be (true)
+
+    val ls3 = SymbolicDomain(ls1);
+    ls1.intersect(ls2);
+    ls1 ≟ ls2 should be (true)
+    ls2.isSubsetOf(ls1) should be (true)
+
+    ls1.relax(ls3);
+    ls2.isSubsetOf(ls1) should be (true)
+    ls1 ≟ ls3 should be (true)
+
+    val ls4 = SymbolicDomain(values);
+    ls4.remove(LabelStr("A"));
+    ls4.remove(LabelStr("B"));
+    ls4.remove(LabelStr("C"));
+    ls4.remove(LabelStr("D"));
+    ls4.remove(LabelStr("E"));
+    ls4.remove(LabelStr("F"));
+    ls4.remove(LabelStr("G"));
+
+    ls3.remove(LabelStr("H"));
+    ls3.remove(LabelStr("I"));
+    ls4.intersect(ls3);
+    ls4.isEmpty should be (true)
+
+    val d0 = NumericDomain(0 to 3)
+
+    val d1 = NumericDomain(Set(-1D, 2D, 4D, 5D))
+
+    d0.intersect(d1);
+    d0.size ≟ Some(1) should be (true)
+
+    // Also test bounds intersection
+    d1.intersect(0, 4.6);
+    d1.size ≟ Some(2) should be (true)
+
+  }
+  test("Difference") {
+    val dom0 = NumericDomain(Set(1D,3D,2D,8D,10D,6D))
+
+    val dom1 = IntervalIntDomain(11, 100);
+    var res = dom0.difference(dom1);
+    !res should be (true)
+
+    val dom2 = IntervalIntDomain(5, 100);
+    res = dom0.difference(dom2);
+    res should be (true)
+    dom0.getUpperBound should be (3)
+
+    val dom3 = IntervalIntDomain(0, 100);
+    res = dom0.difference(dom3);
+    res should be (true)
+    dom0.isEmpty should be (true)
+  }
+
+  test("OperatorEquals") {
+    val dom0 = NumericDomain(Set(1D,3D,2D,8D,10D,6D))
+
+    val dom1 = NumericDomain(Set(1D,3D,2D))
+
+    val dom2 = NumericDomain(dom0);
+
+    dom0 ≟ dom1 should be (false)
+    dom0 := dom1
+    dom0 ≟ dom1 should be (true)
+
+    dom1 := dom2;
+    dom1 ≟ dom2 should be (true)
+  }
+  ignore("EmptyOnClosure", OpenDomains) {}
 }
 
 class MixedTypeTest extends FunSuite with ShouldMatchers { 
-  ignore("OpenAndClosed") {}
-  ignore("InfinityBounds") {}
-  ignore("Equality") {}
-  ignore("Intersection") {}
-  ignore("Subset") {}
-  ignore("IntDomain") {}
-  ignore("DomainComparatorConfiguration") {}
-  ignore("Copying") {}
-  ignore("SymbolicVsNumeric") {}
+  ignore("OpenAndClosed", OpenDomains) {}
+  test("InfinityBounds") {
+    val dom0 = IntervalDomain()
+
+    dom0.areBoundsFinite should be (false)
+    val dom1 = IntervalDomain(0, PLUS_INFINITY)
+    dom1.areBoundsFinite should be (false)
+    //have to change this test, because the definition of infinity has changed
+    //IntervalDomain dom2(0, PLUS_INFINITY-1);
+    val dom2 = IntervalDomain(0, MAX_INT);
+    dom2.areBoundsFinite should be (true)
+    val dom3 = NumericDomain()
+    dom3.areBoundsFinite should be (false)
+    val dom4 = SymbolicDomain()
+    dom4.areBoundsFinite should be (true)
+    val dom5 = NumericDomain(Set(0D, 1D))
+      // dom5.insert(0);
+      // dom5.insert(1);
+      // dom5.areBoundsFinite should be (false)
+      // dom5.close;
+    dom5.areBoundsFinite should be (true)
+    val dom6 = NumericDomain(PLUS_INFINITY);
+    dom6.areBoundsFinite should be (false)
+  }
+  test("Equality") {
+    val dom = NumericDomain(1D, 2D)
+    
+    val dom0 = NumericDomain(dom);
+    dom0.set(1.0)
+
+    val dom1 = IntervalDomain(1.0);
+    dom1.asInstanceOf[Domain] ≟ dom0.asInstanceOf[Domain] should be (true);
+    dom0.asInstanceOf[Domain] ≟ dom1.asInstanceOf[Domain] should be (true);
+
+    val dom2 = IntervalIntDomain(1);
+    dom1 ≟ dom2 should be (true);
+
+    dom0.reset(dom);
+    val dom3 = IntervalIntDomain(1, 2);
+    dom0.asInstanceOf[Domain] ≟ dom3.asInstanceOf[Domain] should be (true);
+
+  }
+  test("Intersection") {
+    val dom0 = NumericDomain(0.0,0.98,1.0,1.89,2.98,10.0);
+
+    dom0.size ≟ Some(6) should be (true)
+    val dom1 = IntervalIntDomain(1, 8);
+    val dom2 = NumericDomain(dom0)
+
+    dom0.intersect(dom1);
+    dom0.size should be (Some(1))
+    dom0.isMember(1.0) should be (true)
+
+    val dom3 = IntervalDomain(1, 8);
+    dom2.intersect(dom3);
+    dom2.size should be (Some(3))
+  }
+  test("Subset") {
+    val dom0 = NumericDomain(0.0,0.98,1.0,1.89,2.98,10.0);
+    val dom1 = IntervalDomain(0, 10);
+    dom0.isSubsetOf(dom1) should be (true)
+
+    val dom2 = IntervalIntDomain(0, 10);
+    dom0.isSubsetOf(dom2) should be (false)
+
+    dom0.remove(0.98);
+    dom0.remove(1.89);
+    dom0.remove(2.98);
+    dom0.isSubsetOf(dom2) should be (true)
+
+    dom2.isSubsetOf(dom1) should be (true)
+    dom1.isSubsetOf(dom2) should be (false)
+  }
+  test("IntDomain") {
+    val dom0 = NumericDomain(10.0,12.0)
+    val dom1 = NumericDomain(9.98,9.037)
+
+    val dom2 = NumericDomain(10)
+    dom2.isOpen should be (false)
+    dom2.isSingleton should be (true)
+
+    Domain.canBeCompared(dom0, dom2) should be (true)
+    dom0 ≟ dom2 should be (false)
+
+    dom0.isSubsetOf(dom2) should be (false)
+    dom0.isSubsetOf(dom0) should be (true)
+    dom2.isSubsetOf(dom0) should be (true)
+    dom2.isSubsetOf(dom2) should be (true)
+  }
+  ignore("DomainComparatorConfiguration", Nope) {  }
+  test("Copying") {
+    val boolDom = BoolDomain()
+    var copy: Domain = boolDom.copy
+    copy should not be (null)
+    copy ≟ boolDom should be (true)
+    copy should not be (boolDom)
+
+    boolDom.set(false);
+    copy ≟ boolDom should be (false)
+
+    copy = boolDom.copy
+    copy should not be (null)
+    copy ≟ boolDom should be (true)
+    copy should not be (boolDom)
+    boolDom.empty
+    copy ≟ boolDom should be (false)
+
+    copy = boolDom.copy
+    copy should not be (null)
+    copy ≟ boolDom should be (true)
+    copy should not be (boolDom)
+    boolDom.relax(BoolDomain(true))
+    copy ≟ boolDom should be (false)
+
+    copy = boolDom.copy
+    copy should not be (null)
+    copy ≟ boolDom should be (true)
+    copy should not be (boolDom)
+    boolDom.remove(true)
+    copy ≟ boolDom should be (false)
+
+    var iiDom = IntervalIntDomain(-2, PLUS_INFINITY.toInt);
+    copy = iiDom.copy
+    copy should not be (null)
+    copy ≟ iiDom should be (true)
+    copy should not be (iiDom)
+
+      //have to change the definition of this test because PLUS_INFINITY has changed
+//       iiDom = IntervalIntDomain(-2, PLUS_INFINITY-1);
+    iiDom = IntervalIntDomain(-2, MAX_INT.toInt);
+    copy ≟ iiDom should be (false)
+
+    val iDom = IntervalDomain(MINUS_INFINITY);
+    copy = iDom.copy
+    copy should not be (null)
+    copy ≟ iDom should be (true)
+    copy should not be (iDom)
+    iDom.empty
+    copy ≟ iDom should be (false)
+    copy.empty
+    copy ≟ iDom should be (true)
+
+    val eDom = NumericDomain(2.7, PLUS_INFINITY)
+    copy = eDom.copy
+    copy should not be (null)
+    copy ≟ eDom should be (true)
+    copy should not be (eDom)
+
+    eDom.remove(PLUS_INFINITY);
+    copy.remove(PLUS_INFINITY)
+    copy ≟ eDom should be (true)
+    copy should not be (eDom)
+  }
+  test("CopyingBoolDomains") { 
+    var copyPtr: Domain = null
+    val falseDom = BoolDomain(false);
+    val trueDom = BoolDomain(true);
+    val both = BoolDomain()
+    val customDom = BoolDomain(true);
+
+    copyPtr = falseDom.copy
+    copyPtr.isBool should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isFalse should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isTrue should be (false);
+
+
+    copyPtr = trueDom.copy;
+    copyPtr.isBool should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isTrue should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isFalse should be (false);
+
+    copyPtr = both.copy;
+    copyPtr.isBool should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isFalse should be (false);
+    (copyPtr.asInstanceOf[BoolDomain]).isTrue should be (false);
+
+    copyPtr = customDom.copy;
+    copyPtr.isBool should be (true);
+    copyPtr.dataType.name.toString == BoolDT.NAME should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isTrue should be (true);
+    (copyPtr.asInstanceOf[BoolDomain]).isFalse should be (false);
+
+  }
+  test("CopyingEnumeratedDomains") { 
+    var copyPtr: Domain = null
+
+    val values = Set(0.0, 1.1, 2.7, 3.1, 4.2)
+    val fourDom = NumericDomain(0.0, 1.1, 2.7, 3.1);
+    val fiveDom = NumericDomain(values); // Closed
+    val oneDom = NumericDomain(2.7); // Singletn
+
+
+    copyPtr = fourDom.copy;
+    copyPtr.dataType.name should be (LabelStr("float"))
+    copyPtr.isOpen should be (false);
+    copyPtr.isEnumerated should be (true);
+    copyPtr.size should be (Some(4))
+    copyPtr.isSubsetOf(fiveDom) should be (true);
+
+    copyPtr = fiveDom.copy;
+    copyPtr.dataType.name should be (LabelStr("float"))
+    copyPtr.isOpen should be (false);
+    copyPtr.isEnumerated should be (true);
+    copyPtr.size should be (Some(5))
+    fourDom.isSubsetOf(copyPtr) should be (true);
+
+    copyPtr = oneDom.copy;
+    copyPtr.dataType.name should be (LabelStr("float"))
+    copyPtr.isOpen should be (false);
+    copyPtr.isEnumerated should be (true);
+    copyPtr.isSingleton should be (true);
+
+    // Can't call this with a dynamic domain, so close it first.
+    copyPtr.isSubsetOf(fourDom) should be (true);
+
+  }
+  test("CopyingIntervalDomains") { 
+    var copyPtr : Domain = null
+    val one2ten = IntervalDomain(1.0, 10.9);
+    val four = IntervalIntDomain(4,4);
+    val empty = IntervalDomain()
+    empty.empty;
+
+      // Domains containing infinities should also be tested.
+
+    copyPtr = empty.copy;
+    copyPtr.dataType.name ≟ LabelStr("float") should be (true)
+    copyPtr.isOpen should be (false)
+    copyPtr.isNumeric should be (true)
+    copyPtr.isEnumerated should be (false)
+    copyPtr.isFinite should be (true)
+    copyPtr.isMember(0.0) should be (false)
+    copyPtr.isSingleton should be (false)
+    copyPtr.isEmpty should be (true)
+    copyPtr.size ≟ Some(0) should be (true)
+    copyPtr ≟ empty should be (true)
+    (copyPtr ≟ one2ten) should be (false)
+    copyPtr.relax(IntervalDomain(-3.1, 11.0));
+    copyPtr.isMember(0.0) should be (true)
+    copyPtr.isSingleton should be (false)
+    copyPtr.isEmpty should be (false)
+    empty.isEmpty should be (true)
+    (copyPtr ≟ empty) should be (false)
+    empty.isSubsetOf(copyPtr) should be (true)
+
+    copyPtr = one2ten.copy;
+    copyPtr.dataType.name ≟ LabelStr("float") should be (true)
+    copyPtr.isOpen should be (false)
+    copyPtr.isNumeric should be (true)
+    copyPtr.isEnumerated should be (false)
+    copyPtr.isFinite should be (false)
+    copyPtr.isMember(0.0) should be (false)
+    copyPtr.isSingleton should be (false)
+    copyPtr.isEmpty should be (false)
+    (copyPtr ≟ empty) should be (false)
+    copyPtr ≟ one2ten should be (true)
+    copyPtr.relax(IntervalDomain(-3.1, 11.0));
+    copyPtr.isMember(0.0) should be (true)
+    copyPtr.isSingleton should be (false)
+    copyPtr.isEmpty should be (false)
+    (copyPtr ≟ one2ten) should be (false)
+    one2ten.isSubsetOf(copyPtr) should be (true)
+
+    copyPtr = four.copy;
+    copyPtr.dataType.name ≟ IntDT.NAME should be (true)
+    copyPtr.isOpen should be (false)
+    copyPtr.isNumeric should be (true)
+    copyPtr.isEnumerated should be (false)
+    copyPtr.isFinite should be (true)
+    copyPtr.isMember(0.0) should be (false)
+    copyPtr.isSingleton should be (true)
+    copyPtr.isEmpty should be (false)
+    copyPtr.size ≟ Some(1) should be (true)
+    (copyPtr ≟ empty) should be (false)
+    copyPtr ≟ four should be (true)
+    (copyPtr ≟ one2ten) should be (false)
+    copyPtr.relax(IntervalIntDomain(-3, 11));
+    copyPtr.isMember(0.0) should be (true)
+    copyPtr.isSingleton should be (false)
+    copyPtr.isEmpty should be (false)
+    (copyPtr ≟ empty) should be (false)
+    (copyPtr ≟ four) should be (false)
+    four.isSubsetOf(copyPtr) should be (true)
+  }
+  test("CopyingIntervalIntDomains") { 
+    var copyPtr: Domain = null
+    val one2ten = IntervalIntDomain(1, 10);
+    val four = IntervalIntDomain(4,4);
+    val empty = IntervalIntDomain()
+    empty.empty;
+    // domains containing infinities should also be tested
+
+    copyPtr = empty.copy;
+    copyPtr.dataType.name ≟ LabelStr("int") should be (true);
+    copyPtr.isOpen should be (false);
+    copyPtr.isNumeric should be (true);
+    copyPtr.isEnumerated should be (false);
+    copyPtr.isFinite should be (true);
+    copyPtr.isMember(0) should be (false);
+    copyPtr.isSingleton should be (false);
+    copyPtr.isEmpty should be (true);
+    copyPtr.size ≟ Some(0) should be (true);
+    copyPtr ≟ empty should be (true);
+    (copyPtr ≟ one2ten) should be (false);
+    copyPtr.relax(IntervalIntDomain(-3, 11));
+    copyPtr.isMember(0) should be (true);
+    copyPtr.isSingleton should be (false);
+    copyPtr.isEmpty should be (false);
+    empty.isEmpty should be (true);
+    !(copyPtr ≟ empty) should be (true);
+    empty.isSubsetOf(copyPtr) should be (true);
+
+    copyPtr = one2ten.copy;
+    copyPtr.dataType.name ≟ LabelStr("int") should be (true);
+    copyPtr.isOpen should be (false);
+    copyPtr.isNumeric should be (true);
+    copyPtr.isEnumerated should be (false);
+    copyPtr.isFinite should be (true);
+    copyPtr.isMember(0) should be (false);
+    copyPtr.isSingleton should be (false);
+    copyPtr.isEmpty should be (false);
+    copyPtr.size ≟ Some(10) should be (true);
+    !(copyPtr ≟ empty) should be (true);
+    copyPtr ≟ one2ten should be (true);
+    copyPtr.relax(IntervalIntDomain(-3, 11));
+    copyPtr.size ≟ Some(15) should be (true);
+    copyPtr.isMember(0) should be (true);
+    copyPtr.isSingleton should be (false);
+    copyPtr.isEmpty should be (false);
+    !(copyPtr ≟ one2ten) should be (true);
+    one2ten.isSubsetOf(copyPtr) should be (true);
+
+    copyPtr = four.copy;
+    copyPtr.dataType.name.toString ≟ IntDT.NAME should be (true);
+    copyPtr.isOpen should be (false);
+    copyPtr.isNumeric should be (true);
+    copyPtr.isEnumerated should be (false);
+    copyPtr.isFinite should be (true);
+    copyPtr.isMember(0) should be (false);
+    copyPtr.isSingleton should be (true);
+    copyPtr.isEmpty should be (false);
+    copyPtr.size ≟ Some(1) should be (true);
+    !(copyPtr ≟ empty) should be (true);
+    copyPtr ≟ four should be (true);
+    !(copyPtr ≟ one2ten) should be (true);
+    copyPtr.relax(IntervalIntDomain(-3, 11));
+    copyPtr.size ≟ Some(15) should be (true);
+    copyPtr.isMember(0) should be (true);
+    copyPtr.isSingleton should be (false);
+    copyPtr.isEmpty should be (false);
+    !(copyPtr ≟ empty) should be (true);
+    !(copyPtr ≟ four) should be (true);
+    four.isSubsetOf(copyPtr) should be (true);
+
+  }
+  test("SymbolicVsNumeric") {
+    val bDom = BoolDomain(false);
+    val iiDom = IntervalIntDomain(-2, PLUS_INFINITY.toInt);
+    val iDom = IntervalDomain(MINUS_INFINITY);
+    val nDom = NumericDomain(2.7);
+    val eDom = EnumeratedDomain(SymbolDT.INSTANCE); // non numeric enum
+    val enDom = EnumeratedDomain(FloatDT.INSTANCE); // numeric enum
+    val sDom = SymbolicDomain()
+    //StringDomain stDom;
+
+    // change for gnats 3242
+    bDom.isNumeric should be (true)
+    iiDom.isNumeric should be (true)
+    iDom.isNumeric should be (true)
+    nDom.isNumeric should be (true)
+    eDom.isSymbolic should be (true)
+    enDom.isNumeric should be (true)
+    sDom.isSymbolic should be (true)
+    // stDom.isSymbolic should be (true)
+  }
 }
 
 
