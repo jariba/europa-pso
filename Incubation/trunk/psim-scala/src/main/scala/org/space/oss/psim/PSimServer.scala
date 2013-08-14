@@ -9,5 +9,10 @@ object PSimServer
     psim = new PSimImpl
     psim.init(cfg)
     println(psim.toString)
+    
+    val mgr = new PSimEventManager(psim)
+    mgr.init()
+    mgr ! Start
+    mgr.start()
   }
 }
