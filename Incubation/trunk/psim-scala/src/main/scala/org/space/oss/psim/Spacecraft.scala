@@ -1,5 +1,5 @@
 package org.space.oss.psim
 
-trait Spacecraft {
-
+trait Spacecraft extends Simulant {
+	def getID: String
 }
