@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel
 import javax.swing.JTabbedPane
 import javax.swing.JScrollPane
 import javax.swing.JTable
+import org.space.oss.psim.spacecraft.ExecutedCommand
 
 class SpacecraftViewer(sc:Spacecraft) extends JPanel {
   
@@ -47,8 +48,11 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
 		override def handleEvent(event:Any) 
 		{
 		    // TODO case ExecutedCommand()
-		    println("received event:"+event)
-			fireTableDataChanged();
+		    event match  {
+		      case ec:ExecutedCommand =>
+		        //println("received event:"+event)
+		        fireTableDataChanged();
+		    }
 		}		
 	}
   

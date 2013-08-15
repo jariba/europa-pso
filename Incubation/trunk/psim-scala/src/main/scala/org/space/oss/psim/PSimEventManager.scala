@@ -41,7 +41,8 @@ class PSimEventManager(psim: PSim) extends Actor
     	loop {
     	  if (running && busySimulants.isEmpty)
     		  advance()
-    		  
+    		
+    	  // react doesn't return so it must be the last thing within our acting loop  
     	  reactToOneMessage()
     	}
     }	
@@ -60,7 +61,7 @@ class PSimEventManager(psim: PSim) extends Actor
     	}
 
     	currentTime = agenda.head.time
-    			println("Advancing to time "+currentTime)
+    	println("Advancing to time "+currentTime)
 
     	processCurrentEvents()
     	for (sim <- allSimulants)
@@ -94,7 +95,7 @@ class PSimEventManager(psim: PSim) extends Actor
     			assert(time == currentTime)
     			assert(busySimulants contains sim)
     			busySimulants -= sim
-    			println("Got Pong from "+sim+" busySimulants="+busySimulants)
+    			//println("Got Pong from "+sim+" busySimulants="+busySimulants)
 
     		case Start =>
     			assert(!running)
@@ -103,7 +104,7 @@ class PSimEventManager(psim: PSim) extends Actor
     			for (sim <- allSimulants)
     				sim ! Ping(currentTime)
     			busySimulants = Set.empty ++ allSimulants
-    			println("Simulation started at time:"+this.currentTime)
+    			//println("Simulation started at time:"+this.currentTime)
 
     		case Stop =>
     			assert(running)
