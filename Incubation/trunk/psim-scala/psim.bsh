@@ -1,0 +1,7 @@
+import org.space.oss.psim.*;
+
+allSC = psim.getSpacecraftService().getAllSpacecraft();
+for (int i=0;i<allSC.size();i++) 
+    desktop.makeSCViewer(allSC.apply(i));
+    
+// PSimServer.runSimulation();
