@@ -26,14 +26,13 @@ class SpacecraftBase(id:String) extends Spacecraft
 	     case DoXLink(time, source,target) =>
 	       val cmd = "Time:"+time+" "+this.toString +" received xlink request from "+source
 	       logCommand(cmd)
-	       println(msg)
 	       val responseDelay=5
 	       val responseTime=time+responseDelay
 	       eventMgr ! WorkItem(responseTime,this,source,XLinkResponse(responseTime,this,source))
+	       
 	     case XLinkResponse(time, source,target) =>
 	       val cmd = "Time:"+time+" "+this.toString +" received xlink response from "+source
 	       logCommand(cmd)
-	       println(msg)	       
 	   }
 	 } 
 	 
@@ -51,7 +50,6 @@ class SpacecraftBase(id:String) extends Spacecraft
 	   if (this.getID!="SC-1" && time>=nextXlinkTime) {
 		   var target = eventMgr.getPSim.getSpacecraftService.getSpacecraftByID("SC-1").getOrElse(null)
 		   val offset = (Math.random()*100).toInt
-		   //println("offset:"+offset)
 		   nextXlinkTime = time+offset
 		   List(DoXLink(nextXlinkTime,this,target))
 	   }
@@ -62,10 +60,12 @@ class SpacecraftBase(id:String) extends Spacecraft
 	 
 	 def logCommand(c:AnyRef) {
 	   commandTrace = commandTrace :+ c
+	   println(c)
 	   this.notifyEvent(ExecutedCommand(c))
 	 }
 	 
 	 override def handleStop() {
+	   super.handleStop()
 	   nextXlinkTime = -1
 	 }
 }
