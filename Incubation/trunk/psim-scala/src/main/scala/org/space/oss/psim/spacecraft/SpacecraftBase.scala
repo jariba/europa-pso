@@ -8,6 +8,7 @@ import org.space.oss.psim.Stop
 import org.space.oss.psim.PSimObservable
 
 case class DoXLink(time: Int, source: Spacecraft, target: Spacecraft) extends PSimEvent
+case class XLinkResponse(time: Int, source: Spacecraft, target: Spacecraft) extends PSimEvent
 case class ExecutedCommand(c:Any)
 
 class SpacecraftBase(id:String) extends Spacecraft
@@ -26,6 +27,13 @@ class SpacecraftBase(id:String) extends Spacecraft
 	       val cmd = "Time:"+time+" "+this.toString +" received xlink request from "+source
 	       logCommand(cmd)
 	       println(msg)
+	       val responseDelay=5
+	       val responseTime=time+responseDelay
+	       eventMgr ! WorkItem(responseTime,this,source,XLinkResponse(responseTime,this,source))
+	     case XLinkResponse(time, source,target) =>
+	       val cmd = "Time:"+time+" "+this.toString +" received xlink response from "+source
+	       logCommand(cmd)
+	       println(msg)	       
 	   }
 	 } 
 	 
@@ -36,14 +44,11 @@ class SpacecraftBase(id:String) extends Spacecraft
 		       case DoXLink(xlinkTime,source,target) =>
 		       		eventMgr ! WorkItem(xlinkTime,source,target,event)
 		     }
-		 }
-		 
-		 if (time > 500)
-		   eventMgr ! Stop
+		 }		 
 	 }
 	 
 	 def nextEvents(time: Int): List[PSimEvent] = {
-	   if (time >= nextXlinkTime) {
+	   if (this.getID!="SC-1" && time>=nextXlinkTime) {
 		   var target = eventMgr.getPSim.getSpacecraftService.getSpacecraftByID("SC-1").getOrElse(null)
 		   val offset = (Math.random()*100).toInt
 		   //println("offset:"+offset)
@@ -58,5 +63,9 @@ class SpacecraftBase(id:String) extends Spacecraft
 	 def logCommand(c:AnyRef) {
 	   commandTrace = commandTrace :+ c
 	   this.notifyEvent(ExecutedCommand(c))
+	 }
+	 
+	 override def handleStop() {
+	   nextXlinkTime = -1
 	 }
 }
