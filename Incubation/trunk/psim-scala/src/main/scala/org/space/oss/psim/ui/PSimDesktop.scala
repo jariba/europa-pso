@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities
 import bsh.Interpreter
 import bsh.util.JConsole
 import org.space.oss.psim.{Config,PSimServer}
+import org.space.oss.psim.Spacecraft
 
 class PSimDesktop(s:PSimServer, c:Config)
 {
@@ -18,7 +19,7 @@ class PSimDesktop(s:PSimServer, c:Config)
 	val server:PSimServer  = s
 	val bshConsole = new JConsole();
     val bshInterpreter = new Interpreter(bshConsole);
-    val bshFile = c.getValue("bshFile");
+    val bshFile = c.getValue("bshFile").getOrElse("psim.bsh");
 	
     def run() {
     	SwingUtilities.invokeLater(new UICreator());		
@@ -113,4 +114,10 @@ class PSimDesktop(s:PSimServer, c:Config)
         addBshVariable("server",server);
         addBshVariable("psim",server.psim);
     }        
+    
+    def makeSCViewer(sc:Spacecraft) {
+      val scv = new SpacecraftViewer(sc)
+      scv.init()
+      makeNewFrame(sc.getID,scv)
+    }
 }

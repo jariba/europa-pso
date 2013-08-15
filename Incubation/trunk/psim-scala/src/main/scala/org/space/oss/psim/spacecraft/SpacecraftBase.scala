@@ -5,21 +5,27 @@ import org.space.oss.psim.PSimEvent
 import org.space.oss.psim.PSimEventManager
 import org.space.oss.psim.WorkItem
 import org.space.oss.psim.Stop
+import org.space.oss.psim.PSimObservable
 
 case class DoXLink(time: Int, source: Spacecraft, target: Spacecraft) extends PSimEvent
+case class ExecutedCommand(c:Any)
 
-class SpacecraftBase(id:String) extends Spacecraft 
+class SpacecraftBase(id:String) extends Spacecraft
 {
 	 override def getID = id
 	 override def toString(): String = id
-	
+	 override def getCommandTrace:IndexedSeq[AnyRef] = commandTrace
+	 
 	 var eventMgr: PSimEventManager = null
 	 var nextXlinkTime = -1
+	 var commandTrace:Vector[AnyRef] = Vector.empty
 	 
 	 def handleSimMessage(msg: Any) {
 	   msg match {
 	     case DoXLink(time, source,target) =>
-	       println("Time:"+time+" "+this.toString +" received xlink request from "+source)
+	       val cmd = "Time:"+time+" "+this.toString +" received xlink request from "+source
+	       logCommand(cmd)
+	       println(msg)
 	   }
 	 } 
 	 
@@ -47,5 +53,10 @@ class SpacecraftBase(id:String) extends Spacecraft
 	   else {
 	     List.empty[PSimEvent]
 	   }
-	 }	 
+	 }
+	 
+	 def logCommand(c:AnyRef) {
+	   commandTrace = commandTrace :+ c
+	   this.notifyEvent(ExecutedCommand(c))
+	 }
 }
