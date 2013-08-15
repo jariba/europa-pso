@@ -115,7 +115,7 @@ class PSimDesktop(s:PSimServer, c:Config)
         addBshVariable("psim",server.psim);
     }        
     
-    def makeSCViewer(sc:Spacecraft) {
+    def makeSCViewer(sc:Spacecraft): JInternalFrame = {
       val scv = new SpacecraftViewer(sc)
       scv.init()
       makeNewFrame(sc.getID,scv)
