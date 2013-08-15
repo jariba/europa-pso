@@ -13,10 +13,17 @@ case object Stop
 class PSimEventManager(psim: PSim) extends Actor 
 {
 	private var running = false
+	private var maxTime_ = Int.MaxValue
     private var currentTime = 0
     private var agenda: List[WorkItem] = List()
     private var allSimulants: List[Actor] = List()
     private var busySimulants: Set[Actor] = Set.empty
+    
+    def maxTime:Int = maxTime_
+    def maxTime_=(newMax:Int) = {
+    	assert(!running)
+    	maxTime_ = newMax
+	}
     
     def getPSim: PSim = psim
     def add(sim: Simulant) {
@@ -32,19 +39,24 @@ class PSimEventManager(psim: PSim) extends Actor
 	
     def act() {
     	loop {
-    		if (running && busySimulants.isEmpty)
-    			advance()
-
-    		reactToOneMessage()
+    	  if (running && busySimulants.isEmpty)
+    		  advance()
+    		  
+    	  reactToOneMessage()
     	}
     }	
     
     def advance() {
     	if (agenda.isEmpty && currentTime > 0) {
-    		println("** Agenda empty.  Clock exiting at time "+
-    				currentTime+".")
-    				this ! Stop
-    				return
+    		println("** Agenda empty.  Clock exiting at time "+currentTime+".")
+    		this ! Stop
+    		return
+    	}
+    	
+    	if (agenda.head.time > maxTime) {
+    		println("** Next event in agenda exceeds maxTime.  Clock exiting at time "+currentTime+".")
+    		this ! Stop
+    		return    	  
     	}
 
     	currentTime = agenda.head.time
@@ -82,18 +94,24 @@ class PSimEventManager(psim: PSim) extends Actor
     			assert(time == currentTime)
     			assert(busySimulants contains sim)
     			busySimulants -= sim
+    			println("Got Pong from "+sim+" busySimulants="+busySimulants)
 
-    		case Start => 
+    		case Start =>
+    			assert(!running)
+    			agenda = List.empty[WorkItem]
     			running = true
     			for (sim <- allSimulants)
     				sim ! Ping(currentTime)
     			busySimulants = Set.empty ++ allSimulants
+    			println("Simulation started at time:"+this.currentTime)
 
     		case Stop =>
+    			assert(running)
+    		    running = false
     			for (sim <- allSimulants)
     				sim ! Stop
     			println("Simulation stopped at time:"+this.currentTime)
-    			exit()
+    			//exit()
     	}
     }   
     

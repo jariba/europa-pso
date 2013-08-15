@@ -18,10 +18,16 @@ trait Simulant extends Actor {
               eventMgr ! Pong(time, this)
             }
             case Stop =>
-              println(this+" stopped")
-            case msg => handleSimMessage(msg)
+              handleStop()
+            case msg => 
+              handleSimMessage(msg)
           }
         }
       }
+      
+      def handleStop() {
+        println(this+" stopped")
+      }
+      
       start()
 }

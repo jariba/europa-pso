@@ -4,12 +4,25 @@ import org.space.oss.psim.ui.PSimDesktop
 
 class PSimServer
 {
-  var psim: PSim = null
+  var psim: PSim = _
+  var eventMgr:PSimEventManager = _
 
   def init(cfg:Config) {
     psim = new PSimImpl
     psim.init(cfg)
     //println(psim.toString)    
+    eventMgr = new PSimEventManager(psim)
+    eventMgr.init()
+    eventMgr.start()    
+  }
+  
+  def runSimulation(maxTime:Int) {
+    eventMgr.maxTime = maxTime
+    eventMgr ! Start
+  }
+  
+  def stopSimulation() {
+    eventMgr ! Stop
   }
 }
 
@@ -23,13 +36,5 @@ object PSimServer
     instance.init(cfg)
     val desktop = new PSimDesktop(instance,cfg)
     desktop.run()
-    //runSimulation()
-  }
-  
-  def runSimulation() {
-    val mgr = new PSimEventManager(instance.psim)
-    mgr.init()
-    mgr ! Start
-    mgr.start()    
-  }
+  }  
 }
