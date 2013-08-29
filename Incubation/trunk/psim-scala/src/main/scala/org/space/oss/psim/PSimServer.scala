@@ -32,6 +32,7 @@ object PSimServer
   
   def main(args: Array[String]) {
     val cfg = new ConfigByMap
+    cfg.setBeanType("spacecraftFactory","org.space.oss.psim.spacecraft.DefaultSpacecraftFactory")
     instance = new PSimServer
     instance.init(cfg)
     val desktop = new PSimDesktop(instance,cfg)
