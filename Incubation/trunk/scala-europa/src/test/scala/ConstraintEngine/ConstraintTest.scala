@@ -20,14 +20,14 @@ import gov.nasa.arc.europa.utils.Entity
 import gov.nasa.arc.europa.utils.LabelStr
 import gov.nasa.arc.europa.utils.LabelStr._
 import gov.nasa.arc.europa.utils.Number._
+import java.io.InputStream
 
-import scales.utils._
-import ScalesUtils._
-import scales.xml._
-import ScalesXml._
+import scala.xml._
 
 import java.io.BufferedReader
+import java.io.FileInputStream
 import java.io.FileReader
+import java.io.InputStreamReader
 import java.io.Reader
 
 import org.scalatest.BeforeAndAfter
@@ -42,23 +42,24 @@ case class ConstraintTestCase(constraintName: String, fileName: String, caseName
   inputs: Option[List[Domain]], outputs: Option[List[Domain]])
 
 object ConstraintTestCase extends ShouldMatchers {
-  def readTestCases(root: XmlTree, source: String, schema: CESchema): List[ConstraintTestCase] = {
-    return (root.\\.*("Constraint")).map(c =>
-      ConstraintTestCase(c.attrs.getOrElse("name", ""), source,
-        c.attrs.getOrElse("test", ""),
-        readDomains((c \\ "Inputs").head, schema),
-        readDomains((c \\ "Outputs").head, schema))).toList
+  def readTestCases(root: Elem, source: String, schema: CESchema): List[ConstraintTestCase] = {
+    return (root \ "Constraint").map(c =>
+      ConstraintTestCase(c.attribute("name").get.head.text, source,
+        c.attribute("test").get.head.text,
+        readDomains((c \ "Inputs").head, schema),
+        readDomains((c \ "Outputs").head, schema))).toList
   }
-  def readTestCases(reader: Reader, source: String, schema: CESchema): List[ConstraintTestCase] = {
-    return readTestCases(top(loadXml(reader)), source, schema)
-  }
-  def readTestCases(file: String, schema: CESchema): List[ConstraintTestCase] = {
-    return readTestCases(new BufferedReader(new FileReader(file)), file, schema)
+  def readTestCases(reader: InputStream, source: String, schema: CESchema): List[ConstraintTestCase] = {
+    return readTestCases(XML.load(reader), source, schema)
   }
 
-  def readDomains(ds: XmlTree, schema: CESchema): Option[List[Domain]] = {
-    return (ds.\\.*).collect(d => d match {
-      case e: XmlTree => e.name match {
+  def readTestCases(file: String, schema: CESchema): List[ConstraintTestCase] = {
+    return readTestCases(new FileInputStream(file), file, schema)
+  }
+
+  def readDomains(ds: xml.Node, schema: CESchema): Option[List[Domain]] = {
+    return (ds.child).collect(d => d match {
+      case e: Elem => e.label match {
         case "BoolDomain" => None
         case "IntervalDomain" | "IntervalIntDomain" => Some(readInterval(e, schema))
         case "NumericDomain" => Some(readNumericEnumeration(e, schema))
@@ -74,26 +75,39 @@ object ConstraintTestCase extends ShouldMatchers {
     else if (a == "") 0
     else java.lang.Double.parseDouble(a)
   }
-  def readInterval(d: XmlTree, schema: CESchema): Domain = {
-    val lb = atoef(d.attributes.getOrElse("lb", "3"))
-    val ub = atoef(d.attributes.getOrElse("ub", "-2"))
-    if (d.name == "IntervalDomain") {
+
+  import scala.language.reflectiveCalls
+  implicit def enrichNodeSeq(nodeSeq: NodeSeq) = new AnyRef {
+    def textOption : Option[String] = {
+      val text = nodeSeq.text
+      if (text == null || text.length == 0) None else Some(text)
+    }
+
+    def textOrElse(elze : String) : String = textOption.getOrElse(elze)
+  }
+
+  def readInterval(d: xml.Node, schema: CESchema): Domain = {
+    val lb = atoef(d \ "@lb" textOrElse "3")
+    val ub = atoef(d \ "@ub" textOrElse "-2")
+    if (d.label == "IntervalDomain") {
       return new IntervalDomain(lb, ub)
     } else {
       return new IntervalIntDomain(lb, ub)
     }
   }
-  def readNumericEnumeration(d: XmlTree, schema: CESchema): Domain = { 
-    NumericDomain((d \\ "element").collect(_ match { 
-      case e: XmlTree => java.lang.Double.parseDouble(e.attributes.getOrElse("value", "0"))
+
+  def readNumericEnumeration(d: xml.Node, schema: CESchema): Domain = { 
+    NumericDomain((d \ "element").collect(_ match { 
+      case e: xml.Node => java.lang.Double.parseDouble(e \ "@value" textOrElse "0")
     }).toSet)
   }
-  def readSymbolicEnumeration(d: XmlTree, schema: CESchema): Domain = { 
-    return if(d.attributes("type") ≟ "integer") readNumericEnumeration(d, schema)
+
+  def readSymbolicEnumeration(d: xml.Node, schema: CESchema): Domain = { 
+    return if((d \ "@type" text) ≟ "integer") readNumericEnumeration(d, schema)
     else { 
-      val dt = schema.getDataType(d.attributes("type")).get
-      new SymbolicDomain((d \\ "element").collect(_ match { 
-        case e: XmlTree => dt.createValue(e.attributes("value")).get
+      val dt = schema.getDataType(d.attributes("type").text).get
+      new SymbolicDomain((d \ "element").collect(_ match { 
+        case e: xml.Node => dt.createValue(e \ "@value" text).get
       }).toSet, dt)
     }
   }
@@ -122,7 +136,7 @@ object ConstraintTestCase extends ShouldMatchers {
         val constr = ce.createConstraint(testCase.constraintName, scope)
         ce.propagate
         var problem = false
-        for ((scopeVar, outputDom, i) <- (scope, outputs, 1 to outputs.length).zipped/*.map((a, b, c) => (a, b, c))*/) {
+        for ((scopeVar, outputDom, i) <- (scope, outputs, 1 to outputs.length).zipped.map((a, b, c) => (a, b, c))) {
           if (outputDom.isEmpty != scopeVar.derivedDomain.isEmpty) {
             if (!problem) {
               Console.println(testCase.fileName + ":" + testCase.caseName +
