@@ -146,7 +146,7 @@ class EnumeratedDomainTest extends FunSuite with ShouldMatchers {
     val dt_l3 = LabelStr("DT_L3")
     ls0.set(dt_l3)
     ls0.isMember(dt_l3)
-    ls0.size == 1
+    ls0.size.get == 1
     
     val ls1 = new SymbolicDomain(values)
     ls0.relax(ls1)
