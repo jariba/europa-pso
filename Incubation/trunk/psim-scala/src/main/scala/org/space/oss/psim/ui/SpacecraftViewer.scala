@@ -47,7 +47,6 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
 
 		override def handleEvent(event:Any) 
 		{
-		    // TODO case ExecutedCommand()
 		    event match  {
 		      case ec:ExecutedCommand =>
 		        //println("received event:"+event)

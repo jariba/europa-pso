@@ -10,15 +10,15 @@ trait PSimEvent
 case object Start
 case object Stop
 
-class PSimEventManager(psim: PSim) extends Actor 
+class PSimEventManager(sim: PSim) extends Actor 
 {
+    val psim = sim
+    var startTime=0L;
 	private var running = false
 	private var maxTime_ = Long.MaxValue
-    private var currentTime = 0L
     private var agenda: List[WorkItem] = List()
     private var allSimulants: List[Actor] = List()
     private var busySimulants: Set[Actor] = Set.empty
-    var timeListeners = scala.collection.mutable.ListBuffer[(Long)=>Unit]()
     
     def maxTime:Long = maxTime_
     def maxTime_=(newMax:Long) = {
@@ -33,9 +33,10 @@ class PSimEventManager(psim: PSim) extends Actor
     }
 	
 	def init() {
-		psim.getSpacecraftService.getAllSpacecraft map {
-		  sc => add(sc)
-		}
+		for (sc <- psim.getSpacecraftService.getAllSpacecraft) 
+		  add(sc)
+
+		psim.getTimeService.addObserver(handleNewTime)  
 	}
 	
     def act() {
@@ -49,10 +50,12 @@ class PSimEventManager(psim: PSim) extends Actor
     }	
     
     def advance() {
-    	if (agenda.isEmpty && getCurrentTime > 0) {
+    	if (agenda.isEmpty) {
+    	  if (getCurrentTime > startTime) {
     		println("** Agenda empty.  Clock exiting at time "+getCurrentTime+".")
     		this ! Stop
-    		return
+    	  }
+    	  return
     	}
     	
     	if (agenda.head.time > maxTime) {
@@ -61,22 +64,28 @@ class PSimEventManager(psim: PSim) extends Actor
     		return    	  
     	}
 
-    	setCurrentTime(agenda.head.time)
-
-    	processCurrentEvents()
-    	for (sim <- allSimulants)
-    		sim ! Ping(currentTime)
-
-    	busySimulants = Set.empty ++ allSimulants
-    }    
+    	
+    	setCurrentTime(agenda.head.time) // eventually triggers a call to handleNewTime below
+    }   
     
-    private def processCurrentEvents() {
-      val todoNow = agenda.takeWhile(_.time <= getCurrentTime)
+    private def handleNewTime(t:Long) {
+      if (!running)
+        return
+        
+      processCurrentEvents(t)
+      for (sim <- allSimulants)
+    	  sim ! Ping(t)
+
+   	  busySimulants = Set.empty ++ allSimulants      
+    }
+    
+    private def processCurrentEvents(t:Long) {
+      val todoNow = agenda.takeWhile(_.time <= t)
 
       agenda = agenda.drop(todoNow.length)
 
       for (item <- todoNow) {
-        assert(item.time == getCurrentTime)
+        assert(item.time == t)
         //println("processing event:"+item)
         item.target ! item.msg
         //println("processed event:"+item)
@@ -88,32 +97,34 @@ class PSimEventManager(psim: PSim) extends Actor
     		case AfterDelay(delay, source, target, msg) =>
     			val item = WorkItem(getCurrentTime + delay, source, target, msg)
     			agenda = insert(agenda, item)
+    			println("New event from "+item.source+", t="+item.time)
 
     		case item: WorkItem =>
     			agenda = insert(agenda, item)
-    			//println("New event from "+item.source+", t="+item.time)
+    			println("New event from "+item.source+", t="+item.time)
 
     		case Pong(time, sim) =>
     			assert(time == getCurrentTime)
     			assert(busySimulants contains sim)
     			busySimulants -= sim
-    			//println("Got Pong from "+sim+" busySimulants="+busySimulants)
+    			println("Got Pong from "+sim+" busySimulants="+busySimulants)
 
     		case Start =>
     			assert(!running)
     			agenda = List.empty[WorkItem]
     			running = true
     			for (sim <- allSimulants)
-    				sim ! Ping(currentTime)
+    				sim ! Ping(getCurrentTime)
     			busySimulants = Set.empty ++ allSimulants
-    			//println("Simulation started at time:"+this.currentTime)
+    			startTime = getCurrentTime
+    			println("Simulation started at time:"+getCurrentTime)
 
     		case Stop =>
     			assert(running)
     		    running = false
     			for (sim <- allSimulants)
     				sim ! Stop
-    			//println("Simulation stopped at time:"+this.currentTime)
+    			println("Simulation stopped at time:"+getCurrentTime)
     			//exit()
     	}
     }   
@@ -124,13 +135,7 @@ class PSimEventManager(psim: PSim) extends Actor
         else ag.head :: insert(ag.tail, item)
     }
     
-    // TODO use PSim Time Service instead
-    def getCurrentTime = currentTime
+    def getCurrentTime = psim.getTimeService.getCurrentTime
     
-    def setCurrentTime(t:Long) {
-    	currentTime = t
-   		println("Advancing to time "+currentTime)
-    	for (l <- timeListeners)
-    	  l(currentTime)
-    }
+    def setCurrentTime(t:Long) { psim.getTimeService.setCurrentTime(t) }
 }

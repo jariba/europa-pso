@@ -14,7 +14,7 @@ class EventManagerDialog(val eventManager:PSimEventManager) extends JPanel {
 	val mainPanel:JPanel = new JPanel(new GridLayout(2,2))
 	val formatter:SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
 	val stopTime:JTextField = new JTextField("")
-	val currentTime:JTextField = new JTextField("")
+	val currentTime = new JLabel(formatter.format(eventManager.getCurrentTime))
 	
 	def init() { 
 		setLayout(new FlowLayout())
@@ -32,10 +32,10 @@ class EventManagerDialog(val eventManager:PSimEventManager) extends JPanel {
     		{
 			  runSimulation
     		}
-		});
+		})
 				
-		add(mainPanel);		
-		eventManager.timeListeners += handleCurrentTime
+		add(mainPanel)
+		eventManager.psim.getTimeService.addObserver(handleCurrentTime)
 	}
 	
 	def runSimulation() {
