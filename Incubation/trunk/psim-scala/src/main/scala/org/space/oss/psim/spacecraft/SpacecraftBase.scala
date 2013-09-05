@@ -7,8 +7,8 @@ import org.space.oss.psim.WorkItem
 import org.space.oss.psim.Stop
 import org.space.oss.psim.PSimObservable
 
-case class DoXLink(time: Int, source: Spacecraft, target: Spacecraft) extends PSimEvent
-case class XLinkResponse(time: Int, source: Spacecraft, target: Spacecraft) extends PSimEvent
+case class DoXLink(time: Long, source: Spacecraft, target: Spacecraft) extends PSimEvent
+case class XLinkResponse(time: Long, source: Spacecraft, target: Spacecraft) extends PSimEvent
 case class ExecutedCommand(c:Any)
 
 class SpacecraftBase(id:String) extends Spacecraft
@@ -18,7 +18,7 @@ class SpacecraftBase(id:String) extends Spacecraft
 	 override def getCommandTrace:IndexedSeq[AnyRef] = commandTrace
 	 
 	 var eventMgr: PSimEventManager = null
-	 var nextXlinkTime = -1
+	 var nextXlinkTime = -1L
 	 var commandTrace:Vector[AnyRef] = Vector.empty
 	 
 	 def handleSimMessage(msg: Any) {
@@ -36,7 +36,7 @@ class SpacecraftBase(id:String) extends Spacecraft
 	   }
 	 } 
 	 
-	 def handleNewTime(time: Int) {
+	 def handleNewTime(time: Long) {
 		 nextEvents(time) map {
 		   event =>
 		     event match {
@@ -46,10 +46,10 @@ class SpacecraftBase(id:String) extends Spacecraft
 		 }		 
 	 }
 	 
-	 def nextEvents(time: Int): List[PSimEvent] = {
+	 def nextEvents(time: Long): List[PSimEvent] = {
 	   if (this.getID!="SC-1" && time>=nextXlinkTime) {
 		   var target = eventMgr.getPSim.getSpacecraftService.getSpacecraftByID("SC-1").getOrElse(null)
-		   val offset = (Math.random()*100).toInt
+		   val offset = (Math.random()*100).toLong
 		   nextXlinkTime = time+offset
 		   List(DoXLink(nextXlinkTime,this,target))
 	   }

@@ -11,6 +11,7 @@ import bsh.Interpreter
 import bsh.util.JConsole
 import org.space.oss.psim.{Config,PSimServer}
 import org.space.oss.psim.Spacecraft
+import org.space.oss.psim.PSimEventManager
 
 class PSimDesktop(s:PSimServer, c:Config)
 {
@@ -19,40 +20,40 @@ class PSimDesktop(s:PSimServer, c:Config)
 	val server:PSimServer  = s
 	val bshConsole = new JConsole();
     val bshInterpreter = new Interpreter(bshConsole);
-    val bshFile = c.getValue("bshFile").getOrElse("psim.bsh");
+    val bshFile = c.getValue("bshFile").getOrElse("psim.bsh")
 	
     def run() {
-    	SwingUtilities.invokeLater(new UICreator());		
+    	SwingUtilities.invokeLater(new UICreator())		
 	}	
     
     class UICreator extends Runnable 
     {
     	def run() {
-			createAndShowGUI();
+			createAndShowGUI()
 		}      
     }
     
     def createAndShowGUI() {
     	try {
-    		//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+    		//UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel")
     		JFrame.setDefaultLookAndFeelDecorated(true);
 
     		//Create and set up the window.
-    		val frame = new JFrame("PSim - Mission Planning Simulator");
-    		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    		frame.getContentPane().setLayout(new BorderLayout());
-    		createDesktop();
-    		frame.getContentPane().add(desktop,BorderLayout.CENTER);
+    		val frame = new JFrame("PSim - Mission Planning Simulator")
+    		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+    		frame.getContentPane().setLayout(new BorderLayout())
+    		createDesktop()
+    		frame.getContentPane().add(desktop,BorderLayout.CENTER)
 
     		//Display the window.
     		frame.pack();
-    		frame.setSize(1200,600);
-    		frame.setVisible(true);
+    		frame.setSize(1200,600)
+    		frame.setVisible(true)
     	}
     	catch {
     		case e:Exception =>
-    			e.printStackTrace();
-    			exit(-1);
+    			e.printStackTrace()
+    			exit(-1)
     	}    
     }
     
@@ -60,15 +61,15 @@ class PSimDesktop(s:PSimServer, c:Config)
     	desktop = new JDesktopPane();
 
         // BeanShell scripting
-        val consoleFrame = makeNewFrame("Console");
-        consoleFrame.getContentPane().add(bshConsole);
-        new Thread(bshInterpreter).start();
+        val consoleFrame = makeNewFrame("Console")
+        consoleFrame.getContentPane().add(bshConsole)
+        new Thread(bshInterpreter).start()
 
-        registerBshVariables();
+        registerBshVariables()
 
         if (bshFile!=null && bshFile!="") {
             try {
-        	    bshInterpreter.eval("source(\""+bshFile+"\");");
+        	    bshInterpreter.eval("source(\""+bshFile+"\");")
             }
             catch {
               case e:Exception =>
@@ -101,23 +102,29 @@ class PSimDesktop(s:PSimServer, c:Config)
 
     def addBshVariable(name:String, obj:Any) {
         try {
-            bshInterpreter.set(name,obj);
+            bshInterpreter.set(name,obj)
         }
         catch {
           case e:Exception =>
-            throw new RuntimeException(e);
+            throw new RuntimeException(e)
         }
     }
     
     def registerBshVariables() {
-        addBshVariable("desktop",this);
-        addBshVariable("server",server);
-        addBshVariable("psim",server.psim);
+        addBshVariable("desktop",this)
+        addBshVariable("server",server)
+        addBshVariable("psim",server.psim)
     }        
     
     def makeSCViewer(sc:Spacecraft): JInternalFrame = {
       val scv = new SpacecraftViewer(sc)
       scv.init()
       makeNewFrame(sc.getID,scv)
+    }
+    
+    def makeEventManagerDialog(em:PSimEventManager) = {
+      val emd = new EventManagerDialog(em)
+      emd.init
+      makeNewFrame("Event Manager",emd)      
     }
 }
