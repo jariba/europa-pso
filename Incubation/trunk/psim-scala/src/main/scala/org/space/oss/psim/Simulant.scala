@@ -8,8 +8,8 @@ trait Simulant extends Actor {
       def setManager(mgr: PSimEventManager) { eventMgr = mgr }
       
       def handleSimMessage(msg: Any)
-      def handleNewTime(time: Int)
-      def nextEvents(time: Int): List[PSimEvent] 
+      def handleNewTime(time: Long)
+      def nextEvents(time: Long): List[PSimEvent] 
       def act() {
         loop {
           react {

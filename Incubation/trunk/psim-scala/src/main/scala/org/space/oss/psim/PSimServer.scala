@@ -7,6 +7,9 @@ class PSimServer
   var psim: PSim = _
   var eventMgr:PSimEventManager = _
 
+  // To make it accessible from BeanShell
+  def getEventMgr = eventMgr
+  
   def init(cfg:Config) {
     psim = new PSimImpl
     psim.init(cfg)
