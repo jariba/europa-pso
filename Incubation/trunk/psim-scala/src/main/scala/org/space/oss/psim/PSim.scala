@@ -4,4 +4,5 @@ trait PSim
 {
 	def init(cfg: Config)
 	def getSpacecraftService: SpacecraftService
+	def getTimeService: TimeService
 }
