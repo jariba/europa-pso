@@ -7,6 +7,7 @@ import org.space.oss.psim.WorkItem
 import org.space.oss.psim.Stop
 import org.space.oss.psim.PSimObservable
 import java.text.SimpleDateFormat
+import org.space.oss.psim.PSimUtil
 
 case class DoXLink(time: Long, source: Spacecraft, target: Spacecraft) extends PSimEvent
 case class XLinkResponse(time: Long, source: Spacecraft, target: Spacecraft) extends PSimEvent
@@ -25,14 +26,14 @@ class SpacecraftBase(id:String) extends Spacecraft
 	 def handleSimMessage(msg: Any) {
 	   msg match {
 	     case DoXLink(time, source,target) =>
-	       val cmd = "Time:"+asTimeStr(time)+" "+this.toString +" received xlink request from "+source
+	       val cmd = "Time:"+PSimUtil.formatTime(time)+" "+this.toString +" received xlink request from "+source
 	       logCommand(cmd)
 	       val responseDelay=asTime(2)
 	       val responseTime=time+responseDelay
 	       eventMgr ! WorkItem(responseTime,this,source,XLinkResponse(responseTime,this,source))
 	       
 	     case XLinkResponse(time, source,target) =>
-	       val cmd = "Time:"+asTimeStr(time)+" "+this.toString +" received xlink response from "+source
+	       val cmd = "Time:"+PSimUtil.formatTime(time)+" "+this.toString +" received xlink response from "+source
 	       logCommand(cmd)
 	   }
 	 } 
@@ -61,12 +62,9 @@ class SpacecraftBase(id:String) extends Spacecraft
 	 
 	 def asTime(t:Long) = t*1000
 	 
-	 val formatter:SimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
-	 def asTimeStr(t:Long) = formatter.format(t)
-	 
 	 def logCommand(c:AnyRef) {
 	   commandTrace = commandTrace :+ c
-	   println(c)
+	   println("Executed Command: "+c)
 	   this.notifyEvent(ExecutedCommand(c))
 	 }
 	 

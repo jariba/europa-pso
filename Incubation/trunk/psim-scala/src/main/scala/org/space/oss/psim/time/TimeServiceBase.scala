@@ -1,6 +1,7 @@
 package org.space.oss.psim.time
 
 import org.space.oss.psim.TimeService
+import org.space.oss.psim.PSimUtil
 
 class TimeServiceBase extends TimeService {
   var currentTime=0L
@@ -9,7 +10,7 @@ class TimeServiceBase extends TimeService {
   override def getCurrentTime = currentTime
   
   override def setCurrentTime(t:Long) {
-    println("Advancing to time "+t)
+    println("Advancing to time "+PSimUtil.formatTime(t))
     currentTime = t
     for (listenTo <- timeListeners)
     	listenTo(currentTime)    
