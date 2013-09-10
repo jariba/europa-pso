@@ -59,7 +59,7 @@ class PSimEventManager(sim: PSim) extends Actor
     	}
     	
     	if (agenda.head.time > maxTime) {
-    		println("** Next event in agenda exceeds maxTime.  Clock exiting at time "+getCurrentTime+".")
+    		println("** Next event in agenda exceeds maxTime.  Clock exiting at time "+PSimUtil.formatTime(getCurrentTime)+".")
     		this ! Stop
     		return    	  
     	}
@@ -97,17 +97,17 @@ class PSimEventManager(sim: PSim) extends Actor
     		case AfterDelay(delay, source, target, msg) =>
     			val item = WorkItem(getCurrentTime + delay, source, target, msg)
     			agenda = insert(agenda, item)
-    			println("New event from "+item.source+", t="+item.time)
+    			//println("New event from "+item.source+", t="+item.time)
 
     		case item: WorkItem =>
     			agenda = insert(agenda, item)
-    			println("New event from "+item.source+", t="+item.time)
+    			println("New event from "+item.source+", t="+PSimUtil.formatTime(item.time)+" "+item)
 
     		case Pong(time, sim) =>
     			assert(time == getCurrentTime)
     			assert(busySimulants contains sim)
     			busySimulants -= sim
-    			println("Got Pong from "+sim+" busySimulants="+busySimulants)
+    			//println("Got Pong from "+sim+" busySimulants="+busySimulants)
 
     		case Start =>
     			assert(!running)
@@ -117,14 +117,14 @@ class PSimEventManager(sim: PSim) extends Actor
     				sim ! Ping(getCurrentTime)
     			busySimulants = Set.empty ++ allSimulants
     			startTime = getCurrentTime
-    			println("Simulation started at time:"+getCurrentTime)
+    			println("Simulation started at time:"+PSimUtil.formatTime(getCurrentTime))
 
     		case Stop =>
     			assert(running)
     		    running = false
     			for (sim <- allSimulants)
     				sim ! Stop
-    			println("Simulation stopped at time:"+getCurrentTime)
+    			println("Simulation stopped at time:"+PSimUtil.formatTime(getCurrentTime))
     			//exit()
     	}
     }   
