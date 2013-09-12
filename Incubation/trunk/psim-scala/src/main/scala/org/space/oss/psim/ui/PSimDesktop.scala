@@ -21,6 +21,7 @@ class PSimDesktop(s:PSimServer, c:Config)
 	val bshConsole = new JConsole();
     val bshInterpreter = new Interpreter(bshConsole);
     val bshFile = c.getValue("bshFile").getOrElse("psim.bsh")
+    var scvFactory = (sc: Spacecraft) => new SpacecraftViewer(sc)
 	
     def run() {
     	SwingUtilities.invokeLater(new UICreator())		
@@ -117,7 +118,7 @@ class PSimDesktop(s:PSimServer, c:Config)
     }        
     
     def makeSCViewer(sc:Spacecraft): JInternalFrame = {
-      val scv = new SpacecraftViewer(sc)
+      val scv = scvFactory(sc)
       scv.init()
       makeNewFrame(sc.getID,scv)
     }
