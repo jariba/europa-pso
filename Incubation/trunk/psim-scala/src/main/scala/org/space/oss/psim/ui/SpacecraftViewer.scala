@@ -11,6 +11,7 @@ import javax.swing.JTable
 import org.space.oss.psim.spacecraft.ExecutedCommand
 
 class SpacecraftViewer(sc:Spacecraft) extends JPanel {
+  val cmdTraceTable = new JTable(new CommandTraceTM(sc))
   
   def init() {
 	  val tp = new JTabbedPane()
@@ -22,7 +23,7 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
   
   def makeCommandTracePane(): JPanel = {
     val p = new JPanel(new BorderLayout())
-    p.add(new JScrollPane(new JTable(new CommandTraceTM(sc))))
+    p.add(new JScrollPane(cmdTraceTable))
     p
   }
 
@@ -33,7 +34,7 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
 		override def getRowCount(): Int = sc.getCommandTrace.length
 		override def getValueAt(row:Int, col:Int): Object = {
 			if (col == 0)
-				sc.getCommandTrace(row)
+				sc.getCommandTrace(row).toString()
 			else
 			  throw new RuntimeException("Unexpected col number:"+col);
 		}
@@ -44,6 +45,8 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
 			else	
 				throw new RuntimeException("Unexpected col number:"+col);			
 		}
+		
+		override def getColumnClass(columnIndex: Int) = classOf[String]
 
 		override def handleEvent(event:Any) 
 		{
