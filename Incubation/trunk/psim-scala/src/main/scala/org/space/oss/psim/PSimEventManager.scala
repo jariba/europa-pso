@@ -101,7 +101,7 @@ class PSimEventManager(sim: PSim) extends Actor
 
     		case item: WorkItem =>
     			agenda = insert(agenda, item)
-    			println("New event from "+item.source+", t="+PSimUtil.formatTime(item.time)+" "+item)
+    			//println("New event from "+item.source+", t="+PSimUtil.formatTime(item.time)+" "+item)
 
     		case Pong(time, sim) =>
     			assert(time == getCurrentTime)

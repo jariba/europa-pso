@@ -48,10 +48,9 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
 		
 		override def getColumnClass(columnIndex: Int) = classOf[String]
 
-		override def handleEvent(event:Any) 
+		override def handleEvent(eventType: Int, event:Any) 
 		{
-		    event match  {
-		      case ec:ExecutedCommand =>
+		    if (eventType == Spacecraft.EXECUTED_COMMAND) {
 		        //println("received event:"+event)
 		        fireTableDataChanged();
 		    }

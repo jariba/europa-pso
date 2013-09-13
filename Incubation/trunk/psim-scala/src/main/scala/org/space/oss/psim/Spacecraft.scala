@@ -7,3 +7,7 @@ trait Spacecraft
 	def getID: String
 	def getCommandTrace: IndexedSeq[AnyRef]
 }
+
+object Spacecraft {
+  val EXECUTED_COMMAND=1
+}

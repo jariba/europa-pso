@@ -5,11 +5,11 @@ trait PSimObservable {
 	
 	def addObserver(o:PSimObserver) { observers = observers + o }
 	def removeObserver(o:PSimObserver) { observers = observers - o}
-	def notifyEvent(event:Any) { 
-		for (o <- observers) o.handleEvent(event) 
+	def notifyEvent(eventType: Int, event:Any) { 
+		for (o <- observers) o.handleEvent(eventType,event) 
 	}
 }
 
 trait PSimObserver {
-	def handleEvent(event: Any)
+	def handleEvent(eventType: Int,event: Any)
 }
