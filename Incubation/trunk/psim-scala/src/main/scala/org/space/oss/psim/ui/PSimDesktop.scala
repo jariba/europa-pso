@@ -12,6 +12,9 @@ import bsh.util.JConsole
 import org.space.oss.psim.{Config,PSimServer}
 import org.space.oss.psim.Spacecraft
 import org.space.oss.psim.PSimEventManager
+import java.awt.Component
+import java.awt.Container
+import javax.swing.JPanel
 
 class PSimDesktop(s:PSimServer, c:Config)
 {
@@ -97,7 +100,7 @@ class PSimDesktop(s:PSimServer, c:Config)
 
     def makeNewFrame(name:String, c:JComponent): JInternalFrame = {
         val frame = makeNewFrame(name)
-	    frame.add(new JScrollPane(c))
+	    frame.add(c) 
         frame
     }
 
@@ -127,5 +130,9 @@ class PSimDesktop(s:PSimServer, c:Config)
       val emd = new EventManagerDialog(em)
       emd.init
       makeNewFrame("Event Manager",emd)      
+    }
+    
+    def getAppComponent(frame:JInternalFrame): JPanel = {
+      frame.getContentPane.getComponents.apply(0).asInstanceOf[JPanel]
     }
 }

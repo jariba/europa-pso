@@ -18,7 +18,7 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
 	  tp.add("Command Trace",makeCommandTracePane())
 	  
 	  setLayout(new BorderLayout())
-	  add(new JScrollPane(tp))		  
+	  add(tp) //new JScrollPane(tp))		  
   }
   
   def makeCommandTracePane(): JPanel = {
@@ -27,6 +27,20 @@ class SpacecraftViewer(sc:Spacecraft) extends JPanel {
     p
   }
 
+  def scrollCmdTrace(str: String) {
+      var row = -1
+      for (i <- 0 until cmdTraceTable.getRowCount)
+        for (j <- 0 until cmdTraceTable.getColumnCount)
+          if (cmdTraceTable.getValueAt(i,j).toString.contains(str)) 
+            row = i
+      
+      if (row != -1) {
+    	  cmdTraceTable.scrollRectToVisible(cmdTraceTable.getCellRect(cmdTraceTable.getRowCount-1, 0, false))
+    	  cmdTraceTable.scrollRectToVisible(cmdTraceTable.getCellRect(row, 0, false))
+    	  this.repaint()
+      }
+  }
+  
   class CommandTraceTM(sc:Spacecraft) extends AbstractTableModel with PSimObserver {
 		sc.addObserver(this)
 
