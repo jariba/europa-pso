@@ -64,7 +64,7 @@ class SpacecraftBase(id:String) extends Spacecraft
 	 
 	 def logCommand(c:AnyRef) {
 	   commandTrace = commandTrace :+ c
-	   //println("Executed Command: "+c)
+	   //println(this.getID+" Executed Command: "+c)
 	   this.notifyEvent(Spacecraft.EXECUTED_COMMAND,ExecutedCommand(c))
 	 }
 	 
