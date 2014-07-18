@@ -5,7 +5,7 @@ import java.util.TimeZone
 
 trait PSim 
 {
-	def init(cfg: Config)
+	def init(cfg: Config, numCraft: Int)
 	def getSpacecraftService: SpacecraftService
 	def getTimeService: TimeService
 }
