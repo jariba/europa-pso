@@ -6,9 +6,9 @@ class SpacecraftServiceImpl extends SpacecraftService
 {
 	var spacecraft: List[Spacecraft] = Nil
 	
-	override def init(cfg: Config) {
+	override def init(cfg: Config, numSpacecraft: Int) {
 	    val scFactory = cfg.getBean("spacecraftFactory").asInstanceOf[SpacecraftFactory]
-		spacecraft = (for (i <- 1 to 8) yield scFactory.makeInstance(i)) toList
+		spacecraft = (for (i <- 1 to numSpacecraft) yield scFactory.makeInstance(i)) toList
 	}
 	
 	override def toString(): String = spacecraft.toString()	

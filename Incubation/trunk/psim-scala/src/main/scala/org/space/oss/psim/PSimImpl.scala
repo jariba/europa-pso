@@ -8,8 +8,8 @@ class PSimImpl extends PSim
 	val spacecraftService = new SpacecraftServiceImpl
     val timeService = new TimeServiceBase
     
-	override def init(cfg: Config) {
-	  spacecraftService.init(cfg)
+	override def init(cfg: Config, numCraft: Int) {
+	  spacecraftService.init(cfg,numCraft)
 	}
 	
 	override def getSpacecraftService: SpacecraftService = spacecraftService
