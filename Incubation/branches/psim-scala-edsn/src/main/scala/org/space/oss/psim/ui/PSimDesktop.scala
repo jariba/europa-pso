@@ -55,9 +55,7 @@ class PSimDesktop(s:PSimServer, c:Config)
     		frame.setVisible(true)
     	}
     	catch {
-    		case e:Exception =>
-    			e.printStackTrace()
-    			exit(-1)
+    		case e:Exception => e.printStackTrace()
     	}    
     }
     
