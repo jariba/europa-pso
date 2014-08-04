@@ -1,0 +1,24 @@
+import org.space.oss.psim.*;
+import java.util.Vector;
+
+void layoutSCWindows(Vector windows,int rows, int cols,int origX,int origY,int sizeX,int sizeY,int padding)
+{        
+    int i=0;
+    for(int row=0;row<rows;row++) {
+        for (int col=0;col<cols;col++) {
+            w = windows.get(i++);
+			w.setLocation(origX+(col*sizeX),origY+(row*sizeY));
+            // Hack! why is padding parameter needed?
+			w.setSize(sizeX+padding,sizeY+padding);        
+        }
+    }
+}
+
+allSC = psim.getSpacecraftService().getAllSpacecraft();
+scWindows = new Vector();
+for(int i=0;i<allSC.size();i++) 
+    scWindows.add(desktop.makeSCViewer(allSC.apply(i)));
+    
+layoutSCWindows(scWindows,2,4,10,10,350,200,20);
+ 
+// server.runSimulation(50);
