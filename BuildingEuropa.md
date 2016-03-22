@@ -1,0 +1,289 @@
+<a href='Hidden comment: 
+[[PageOutline(1-3,Building EUROPA,pullout)]]
+'></a>
+
+# Software Requirements #
+To begin with, you will need the following software installed on your system:
+
+  * [Jam 2.5](ftp://anonymous@ftp.perforce.com/jam/jam-2.5.zip) - An automated build system _(replacement for'' `make`'')_
+  * [Java 1.5](http://java.sun.com/javase/downloads/) - A platform independent programming language and runtime.
+  * [Doxygen](http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc) - An automated documentation generator. _(required only if you want to generate API documentation)_
+
+The following software is required and tested versions are provided in the ThirdParty section of the EUROPA repository (see 'Building ThirdParty Libraries' below for details).
+
+  * [ANTLR-C](http://www.antlr.org/api/C/main.html) - The C runtime for ANTLR, the parser generator.
+  * [CppUnit](http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page) - A C++ unit testing framework (you may need to rerun ldconfig to get this library installed properly). This is not required to generate a EUROPA distribution, it is only required if you need to run regression tests in the development environment.
+
+
+The following software is also required, but is likely already installed on your system:
+
+  * [Ant 1.7+](http://ant.apache.org/) - The top-level build tool for Europa
+  * [Subversion](http://subversion.tigris.org/project_packages.html) - version control system.
+  * [GCC 3.3+](http://gcc.gnu.org/mirrors.html) - GNU Compiler Collection.
+  * [Python](http://www.python.org) - A general purpose programming language, used for some utility scripts in PLASMA. ''(not required to build PLASMA)''
+  * [SWIG 1.3.36+](http://www.swig.org/) - Tool that allows us to expose C++ interfaces in Java and other languages.
+    * mac users : if you download it from the swig site, make sure you get swig, not macswig, which is a very old version available from that site
+    * version 1.3.29+ will work for everything except one small bug (see #169)
+
+# Building ThirdParty Libraries #
+This section describes how you can install the supported versions of Log4cxx and CPPUnit.  Using the ThirdParty repository from Europa is optional if you already have these packages installed.
+
+## Check out the ThirdParty code ##
+EUROPA's ThirdParty source code is kept on a  [subversion](http://subversion.tigris.org/) code repository.
+```
+svn co http://europa-pso.googlecode.com/svn/ThirdParty/trunk plasma.ThirdParty
+```
+
+In the instructions below, if you want to install any of the 3rd party packages in a custom location, specify the **--prefix=location** option to configure.
+
+## Install ANTLR-C ##
+First, unzip libantlr3c-3.1.3.tar.bz2.
+
+64-bit systems : specify the **--enable-64bit** flag for configure.
+
+```
+> cd plasma.ThirdParty/libantlr3c-3.1.3
+> ./configure ; make
+> sudo make install
+```
+
+If you install ANTLR-C in a location other than the standard one, please specify the environment variable ANTLR\_HOME to point to that location so that the EUROPA build files can find it.
+
+In addition to that, for the time being, you will have to pass that information along to the EUROPA ant file by using the ant variables antlr.lib and antlr.include which specify the antlr lib and include directories.  See Advanced Build Configurations for command execution.
+
+## Install [CPPUnit](http://code.google.com/p/europa-pso/wiki/cppunit) ##
+CPPUnit is not necessary if you are just creating a EUROPA distribution, it is necessary only if you plan to run the regression tests in the development environment.
+
+First, unzip cppunit-1.12.1.tar.bz2.
+
+64-bit systems : specify CXX="g++ -m64" for configure.
+
+```
+> cd plasma.ThirdParty/cppunit-1.12.1
+> ./configure ; make
+> sudo make install
+```
+
+If you install CPPUnit in a location other than the standard one, please specify the environment variable CPPUNIT\_HOME to point to that location so that the EUROPA build files can find it.
+
+## Example for custom configuration ##
+
+The commands below set up the 3rd party packages for 64bit, under your home directory :
+
+```
+> cd plasma.ThirdParty/libantlr3c-3.1.3
+> ./configure --prefix=~/dev/EUROPA/ThirdParty/ANTLRC-64 --enable-64bit
+> make ; make install
+
+> cd plasma.ThirdParty/cppunit-1.12.1
+> ./configure --prefix=~/dev/EUROPA/ThirdParty/CPPUNIT-64 CXX="g++ -m64"
+> make ; make install
+```
+
+NOTE: if you encounter the error "configure: error: expected an absolute directory name", replace the relative directory "~" with the absolute directory (e.g., "/Users/XYZ").
+
+# Building EUROPA #
+## Check out the source code ##
+EUROPA's source code is kept on a  [subversion](http://subversion.tigris.org/) code repository.
+
+### Official Releases ###
+To get an officially released version of EUROPA, run:
+
+```
+svn co http://europa-pso.googlecode.com/svn/PLASMA/tags/<release_tag> PLASMA
+```
+Tags for official EUROPA releases :
+
+|**Tag**|**Date**|
+|:------|:-------|
+| [Europa-2.6](http://europa-pso.googlecode.com/svn/PLASMA/tags/EUROPA-2.6) |2011/12/28|
+| [Europa-2.5](http://europa-pso.googlecode.com/svn/PLASMA/tags/EUROPA-2.5) |2010/12/17|
+| [Europa-2.4](http://europa-pso.googlecode.com/svn/PLASMA/tags/EUROPA-2.4) |2010/02/05|
+| [Europa-2.3](http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2) |2009/10/06|
+| [Europa-2.2](http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.2) |2009/06/10|
+| [Europa-2.1.2](http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.2) |2008/08/12|
+| [Europa-2.1.1](http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.1) |2008/01/11|
+| [Europa-2.1.0](http://babelfish.arc.nasa.gov/trac/europa/milestone/EUROPA%202.1.0) |2007/11/05|
+
+### The Bleeding Edge ###
+To get the most recent version of the code, run :
+
+```
+svn co http://europa-pso.googlecode.com/svn/PLASMA/trunk PLASMA
+```
+
+**Note** : If you are authorized to commit to the EUROPA repository, you must check out your code using https instead of http or you will not be able to commit.  You'll be asked for you googlecode credentials before the checkout operation can proceed.  If you don't happen to know your password (which is automatically generated and different from your gmail password), you can sign into your gmail account and visit http://code.google.com/hosting, then select your profile and click the settings tab.
+
+## Configure your environment ##
+The following environment variables are needed to build and run EUROPA (shown here added to `~/.bashrc`, assuming that PLASMA was checked out in the $HOME/svn directory):
+
+```
+export PLASMA_HOME=$HOME/svn/PLASMA                             # The root of your PLASMA checkout
+export EUROPA_HOME=$PLASMA_HOME/dist/europa                     # where the results of the build are placed
+
+export JAVA_HOME=/usr/java/jdk1.5.0_12                          # the directory where you installed Java
+
+export LD_LIBRARY_PATH=$EUROPA_HOME/lib:./build/lib:.           # DYLD_LIBRARY_PATH on a Mac
+export DYLD_BIND_AT_LAUNCH=YES                                  # Only needed on Mac OS X
+```
+When you compile jam, you may have to move the 'jam0' executable to 'jam'. You may also need to add the 'jam' ,'ant' and 'swig' executables to your path, for instance:
+
+```
+export PATH=$PATH:$ANT_HOME/bin:$HOME/dev/jam:$HOME/dev/swig-1.3.36
+```
+
+To see if you have the necessary software requirements, run (note that you must be in the '$PLASMA\_HOME/bin' directory):
+
+```
+% cd $PLASMA_HOME/bin
+% checkreqs
+```
+
+
+NOTE: if you use other shell such as tcsh, you will need to change the "export" command to the equivalent on that shell ("setenv" for csh/tcsh)
+
+
+## Configuring a Windows Environment ##
+> Visual Studio users, please see [Windows Build](http://code.google.com/p/europa-pso/wiki/VisualStudioWindows) for more information.
+
+## Build a EUROPA distribution ##
+To build EUROPA, simply run (Note that this will take a while since it'll build all the different variants and library types):
+
+```
+% cd $PLASMA_HOME
+% ant release-dist
+```
+the EUROPA distribution will be available at $PLASMA\_HOME/dist/europa-_version_-_platform_.zip, you can then take the distribution and [install it](EuropaInstallation.md)
+
+If desired, Doxygen API documentation can be run by following the directions [here](http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/documentation/README).
+
+# Advanced Build Configuration #
+## Common Targets ##
+Here are the most common ant targets to build/test EUROPA components (all are available in $PLASMA\_HOME/build.xml):
+
+|**Target**|**Description**|
+|:---------|:--------------|
+|build     |Builds all the EUROPA modules|
+|test      |Runs all the regression tests|
+|dist      |Gathers all the elements of a EUROPA distribution under $PLASMA\_HOME/dist/europa|
+|zip-dist  |Same as ''dist'' then puts the distribution directory in a zip file|
+
+TODO: document some of the jam targets as well?
+
+## Build Properties ##
+The following table describes the properties that can be associated with a build.  They can be specified on the command
+line using -D or in a special properties file in $HOME/.ant.plasma.properties:
+
+|**Property**|**Description**|**Values**|**Default**|
+|:|:--------------|:---------|:----------|
+|[jam.libraries](#Build_Options.md)|Type of libraries to build (static, dynamic, none)|STATIC, DYNAMIC, NONE|DYNAMIC    |
+|[jam.variant](#Build_Options.md)| Compilation variant (debugging, optimized, profiling)|DEV, OPTIMIZED, PROFILE|DEV        |
+|jam.64bit|Flag indicating a 64-bit platform|1,0       |Platform dependent|
+|jam.num.cores|The number of compilation processes to run simultaneously|A positive integer|1          |
+|jam.log.type|The logging facility Europa should use|USE\_EUROPA\_LOGGER, ALL\_LOGGING\_DISABLED, "" |USE\_EUROPA\_LOGGER|
+|[jam.args](#Additional_Arguments_to_Jam.md)|Additional user args to pass to jam|A string of Jam arguments|empty      |
+|[antlr.lib](#Running_Ant_using_alternative_Antlr-3c-library.md)|The directory containing libantlr3c|A filesystem path|empty      |
+|[antlr.include](#Running_Ant_using_alternative_Antlr-3c-library.md)|The directory containing antlr header files|A filesystem path|empty      |
+
+
+## Build Options ##
+EUROPA can be built using a few variations. The variations and parameters of the build can be configured through
+parameters to ant or jam. The valid variants are (see [here](http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/src/PLASMA/VariantRules) for implementation details):
+
+  * DEV - unoptimized, unprofiled, all error detection on.   The default option, but not necessarily the best.
+  * OPTIMIZED - optimized, unprofiled.  Error detection is reduced to improve runtime performance; compile times are somewhat slower.
+  * PROFILE - unoptimized, profiled.  Error detection is reduced.
+  * COVERAGE - compiles with the flags required by the gcov code coverage tool. See [Analyzing Code Coverage](#Analyzing_Code_Coverage.md) below for more information.
+
+For example, to build using optimized compiler settings :
+
+```
+% cd $PLASMA_HOME
+% ant -Djam.variant=OPTIMIZED
+```
+The output files are named differently for each variant, which makes it possible to have different variants coexist on
+the filesystem. It is also not necessary to clean the tree when switching variants. Here are the naming patterns for each of the main variants:
+
+  * DEV = {filename}`_`g{ext}
+  * OPTIMIZED = {filename}`_`o{ext}
+  * PROFILE = {filename}`_`p{ext}
+
+The default variant is DEV.
+
+## Configuring Build Libraries ##
+The EUROPA build supports building modules as different kinds of libraries. The building of modules as different kinds
+of libraries is also controlled through parameters to ant or jam.  The valid library kinds are:
+
+  * STATIC - using static compile time linking (`*`.a)
+  * SHARED - using shared compile time linking (`*`.so) (`*`.dylib on OS X)
+  * NONE - avoid using libraries (link `*`.o directly) **(This option is no longer officially supported, although it should still function)**
+
+
+For example, to build using static libraries :
+
+```
+% cd $PLASMA_HOME
+% ant -Djam.libraries=STATIC
+```
+
+> Depending on which kind of libraries are used, the target executable names are also different.
+
+  * STATIC = {filename}.exe
+  * NONE = {filename}`_`no.exe
+  * SHARED = {filename}`_`rt.exe
+
+The default library kind is SHARED. The library kind NONE is only recommended for situations where cyclic dependencies
+exist between modules or for platforms that don't support libraries or which limit library sizes below what EUROPA requires. The library kind SHARED is often the most space efficient. When running with SHARED it is required to add the EUROPA shared library directory to your library search path. The relevant variable depends on your platform, and the way to set it depends on your shell. Here is an example for the sh and bash shells: % LD\_LIBRARY\_PATH="$LD\_LIBRARY\_PATH":/home/me/PLASMA/lib % export LD\_LIBRARY\_PATH where you should replace '/home/me' with the full path to the directory containing your EUROPA checkout from SVN. For csh and tcsh and similar shells: % setenv LD\_LIBRARY\_PATH="$LD\_LIBRARY\_PATH":/home/me/PLASMA/lib
+
+## Additional Arguments to Jam ##
+Arguments to the jam exec can be passed through the jam.args variable.  This is useful to enable cacheing for repeated
+builds.  For example:
+```
+  % ant -Djam.args="-sGCC_PREFIX=ccache"
+```
+will tell jam to use the ccache compiler caching program.
+
+Todo: expand this so there's more documentation about what you can pass to Jam.
+
+## Running Ant using alternative Antlr-3c library ##
+> If you defined the ANTLR-C library path as ANTLR\_HOME, the following commands will build the EUROPA distribution:
+```
+% cd $PLASMA_HOME
+% $ANT_HOME/bin/ant -Dantlr.lib=$ANTLR_HOME/lib -Dantlr.include=$ANTLR_HOME/include
+```
+
+
+## Analyzing Code Coverage (Linux platform only) ##
+EUROPA's code coverage tool (based on gcov) is used to identify the percentage of the code base that is exercised by the module tests. This is an important quality metric as the higher the percentage of the code base tested the more likely it is that bugs will be detected.
+
+Go to the PLASMA/bin directory and invoke the coverage script to generate the coverage data. The script will run for approximatly 30 mins as it builds a coverage variant of the EUROPA system and runs all the module tests before generating the gcov code coverage data. The script produces the following files in the PLASMA directory.
+
+  * coverage-results.txt lists the percentage of each source file executed by Europa's system tests.
+  * A filename.cc.gcov or filename.hh.gcov file is provide for each source file in the system. It lists the code within the file annotated with the number of times each line has been run. Mulitple pound signs (#) indicate that a line was not executed.
+  * `*`.bb, `*`.bbg, `*`.da are working files prouced by gcov. They are of no interest to the human reader.
+
+## Debugging failed builds ##
+> If your build is not successful, you can create an verbose output log by directing output to a log file stored on $PLASMA\_HOME.  This particular jam target will list why Jam failed.
+```
+% cd $PLASMA_HOME
+% $ANT_HOME/bin/ant print-env > tmp.txt
+% $ANT_HOME/bin/ant -v -Djam.args="-dc" >> tmp.txt
+```
+
+
+## Examples ##
+To build an optimized version with static libraries
+
+```
+% cd $PLASMA_HOME
+% ant -Djam.variant=OPTIMIZED -Djam.libraries=STATIC
+```
+To build a debug version with shared libraries
+
+```
+% cd $PLASMA_HOME
+% ant -Djam.variant=DEV -Djam.libraries=SHARED
+```
+To build a debug version with static libraries and ANTLR3 installed in /sw
+% cd $PLASMA_HOME
+% ant -Djam.variant=DEV -Djam.libraries=STATIC -Dantlr.include=/sw/include -Dantlr.lib=/sw/lib```

@@ -1,0 +1,57 @@
+### Introduction ###
+CppUnit is a C++ unit testing module. It is a derivative of Java unit test module called JUnit. CppUnit was originally written by Michael Feathers. The wikipedia description of unit testing is [here](http://en.wikipedia.org/wiki/Unit_testing).
+
+Some advantage of CppUnit over ad-hoc unit testing macros such as asserts are:
+
+  * Object oriented (most desired feature)
+  * Centered around unit testing as a concept
+  * Standard compiler-like text output
+  * Easy implementation and management (with Helper macros)
+  * Test registry to reduce recompilation needs
+
+
+### Download ###
+Download Cppunit 1.12 at
+[here](http://sourceforge.net/project/downloading.php?groupname=cppunit&filename=cppunit-1.12.0.tar.gz&use_mirror=internap)
+
+Install Cppunit
+```
+1) cd cppunit-1.12.0
+2) ./configure (if not working, try ./configure --disable-shared)
+3) make
+```
+
+Try the `Money` example (http://cppunit.sourceforge.net/doc/1.11.6/money_example.html)
+
+### Trouble shooting ###
+in case you encounter the following error "fatal error - unable to remap..." when installing cppunit
+
+To resolve it, do the following things in order:
+```
+1) Quit all cygwin processes 
+2) Start ash (<cygroot>\bin\ash.exe) 
+3) Execute /usr/bin/rebaseall 
+```
+
+### Compilation ###
+To compile a cpp unit problem (example.cpp), we need to compile it with the following commands:
+```
+g++ -g -O2 -c -o example.o example.cpp
+```
+
+Then compile the executable like this:
+```
+g++ -g -O2 -o example.exe example.o -ldl -lcppunit
+```
+
+
+### Run Tests (on cygwin) ###
+Suppose we want to run the constraint engine test under cygwin. We should first enter the PLASMA directory:
+```
+cd $PLASMA_HOME/src/PLASMA
+```
+
+Then we run the following jam command:
+```
+jam -sLIBRARIES=STATIC -sOS=CYGWIN -sNOCYGWIN=TRUE run-ce-module-tests
+```

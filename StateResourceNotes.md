@@ -1,0 +1,140 @@
+A "state resource" is like a resource (henceforth "numeric resource") in that it is a single value that varies over time, but has a
+discrete set of values that it can take rather than being a continuous numeric interval.  It is assumed that the values symbolic
+rather than numeric, but there is no reason to treat those two cases differently.
+
+State resources differ from timelines in a few ways:
+  * they don't pre-define any sort of state transition function--it is assumed that the conditions that cause a value change are external to the resource
+  * they are action-oriented.  The base predicates (or constraints, depending on the implementation) are actions to change
+state or requirements for state values, not the states and actions
+  * there is (maybe?  See the bit about additive resources.) no merging
+  * states aren't parameterized
+
+They also differ from our numeric resources in a few ways:
+  * possibly (commonly) symbolic- or boolean-valued rather than necessarily numeric
+  * the notion of a "bounded profile" is less meaningful.  Instead of upper and lower levels, you end up with "most constrained" and "least constrained" states, with the latter usually just being the union of the possible values of the former.
+  * all of the limits with regard to production/consumption aren't useful, though possibly analogues with the number of sets() or of state changes could be.
+
+However, instants (times of possible change) are still useful.  As with numeric resources, instants on state resources
+occur at the bounds of timepoints.
+
+There are three predicates/constraints on state resources that I'll be referring to.  In pseudo-NDDL, assuming the type
+of the state enumeration is S:
+
+`set(S state, int time)`: sets the value at a time
+
+`require(S state, int start, int end)`: requires that the state take a particular value at a time
+
+`get(S state, int time)`: gets the state at a time (This is probably the only place where I mention this, since it's not strictly necessary under the current discussion, but could be useful in the future).
+
+Two types of resources have been discussed:  "saturated" and "additive".  In a saturated resource, set(s) always
+causes the state to be equal to s, regardless of the prior state.  In an additive resource, set(s) essentially
+increments a counter for s, which must be decremented an equal number of times by consecutive instances of set(p) for
+the state to be changed from s to p.  There is also the possibility of having a transaction that behaves in a saturated
+way on additive resources, that is, it ignores the counters and always causes a state change, but for the moment I'll
+just talk about resources that are purely saturated or additive.
+
+It is certainly possible to implement these resources in terms of existing Europa features--timelines or numeric
+resources for saturated state resources and numeric resources for additive (see below for further discussion)--but I
+believe that a more direct implementation will be more efficient in terms of memory and computation.
+
+# Saturated state resources #
+A "saturated" resource is one in which set(s, t) always causes a state change, assuming that the state before t is
+different from s.  Due to the relative simplicity of the semantics, saturated resources can have an arbitrary number of states.
+
+The value of a state resource at an instant is the union of the values of the set()s that overlap that instant.  The
+value of a state resource at any time t for which there isn't an instant is the value of the resource at the latest time
+before t.
+
+## Flaws and violations ##
+Like with numeric resources, we have closed- and open-world possibilities, where problems either must be solved by
+adding temporal constraints or may be solved by introducing new set()s, and what is considered a violation is different
+between them.
+
+  * A set(x, t1) and set(y, t2) where x and y may or must be unequal, t1 and t2 may be equal, and no precedence constraint exists is a flaw.
+
+  * A set(x, t1) and set(y, t2) where x and y must be unequal and t1 and t2 must be equal is a violation.
+  * A set(x, t1) and set(y, t2) where x and y may be equal and t1 and t2 must be equal is a flaw (Poss. point of propagation: x = y).
+
+  * A set(x, t) and require(y, start, end) where x and y must be unequal and t must be between start and  end is a violation.
+  * A set(x, t) and require(y, start, end) where x and y may be equal and t must be between start and end is a flaw (Poss. point of propagation: x ⇐ y)
+
+  * A set(x, t) and require(y, start, and) where x and y may be unequal, t may be equal to either start or end, and no precedence constraint exists is a flaw.
+
+  * A require(x, start1, end1) and require(y, start2, end2) where x and y must be unequal, that must overlap, is a violation.
+  * A require(x, start1, end1) and require(y, start2, end2) where x and y must be unequal, that may overlap, is a flaw.
+  * A require(x, start1, end1) and require(y, start2, end2) where x and y may be unequal, that must  or may overlap, is a flaw.
+
+  * A require(x, start, end) and the set(y, t) such that t is the latest time not greater than start, if x and y may be unequal, is a flaw.
+  * A require(x, start, end) and the set(y, t) such that t is the latest time not greater than start, if x and y must be unequal, is a violation (flaw in the "open world" context).
+
+Computing the value of a state at a given instant requires taking the union of the values of the set()s overlapping that instant, so O(n) in the number of set()s.  If there are no set(s), then it's simply the value of the latest instant not later than the current instant.  Computing the value of the resource over the whole profile is O(n<sup>2</sup>), given the worst case where the bounds of timepoints never coincide and all overlap.
+
+Detecting a flaw or violation at an instant is O(n<sup>2</sup>g), computing the temporal distances between all set()s and require()s overlapping that instant, where g is the complexity of computing those distances.  As a result, computing all flaws is O(n<sup>3</sup>).
+
+Fortunately, both of these can be done incrementally and over limited intervals, so the worst-case performance should be very rare and distributed over the course of planning.
+
+# Additive state resources #
+# NDDL #
+Because NDDL doesn't have parameterized types, the base state resource can only provide the predicates and subclasses
+must be depended on to correctly type their parameters, assuming that state resources use tokens:
+
+```
+
+//in Resources.nddl:
+class StateResource {
+  predicate set {}
+  predicate get {}
+  predicate require {}
+}
+
+class SaturatedStateResource extends StateResource {}
+class AdditiveStateResource extends StateResource {}
+//could provide pre-defined states for Additive, since it can only be binary, but users
+//might complain about that
+
+//in user code:
+enum {foo, bar baz} states;
+
+class MyStateResource extends SaturatedStateResource {
+  predicate set {states s};
+  predicate get {states s};
+  predicate require {states s};
+}
+
+```
+
+If they use constraints, I'm not sure how to specify the correct typing.
+
+As described, this method of defining state resources is a bit brittle--the underlying implementation will have to rely on the predicate having exactly one parameter, the state parameter being first or last, or having a particular name.  I can see two extensions to NDDL that would alleviate that: parameter requirements or parametric types.
+
+Parameter requirements would let you say something like:
+
+```
+class StateResource {
+  predicate set {var s;}
+  //...
+}
+//...
+```
+Which would declare a variable s without a type, and it would be an error not to specify the type in one of the sub-classes.
+
+Parametric types would look and behave much as you'd expect:
+
+```
+class StateResource<type States> {
+  predicate set {States s;}
+  //...
+}
+
+//...
+enum {foo, bar, baz} states;
+class MyStateResource extends SaturatedStateResource<states> {}
+
+```
+
+Though that is clearly a much more difficult thing to implement.  Neither of these enhancements are necessary, either in the predicate or constraint case, but they make a predicate implementation better-formed.
+
+# Enhancements #
+  * state transition function/constraints (possibly just partial)--the valid from/to state pairs
+  * propagation to states/times
+  * backward propagation of require() in closed-world cases

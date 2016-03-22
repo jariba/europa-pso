@@ -1,0 +1,1 @@
+Links to this page should be replaced with links to [SwingUI](SwingUI.md).

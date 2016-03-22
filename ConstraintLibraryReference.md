@@ -1,0 +1,63 @@
+# Constraints in NDDL #
+The tables that follow overviews built-in constraints and functions, available in NDDL or through the programmatic API.  Note that:
+
+  * Many constraints can have a variable number of parameters;  we use letters (a,b,etc) to indicate required parameters, and '...' to indicate that subsequent parameters are optional.
+  * In the _Variable Types_ column, we describe restrictions on the variable types as follows:
+    * **Numeric**:  Type is _int_, _float_, _bool_, or some user-defined numeric type.  For _bool_, the usual C/C++ convention is used; 0 <=> false, non-zero => true, and true => 1.
+    * **Numeric Intervals**:  Same as Numeric except that eumerated types (enumerated numeric types are possible) are disallowed.
+    * **Comparable**:  Comparable variables must all be numeric, or must all be the same type.
+  * We use _lb_ and _ub_ to refer to the lower and upper bounds, respectively, of a variable's domain.
+  * Maintainance of constraints means that for any value in the domain of any variable, there exists values in the domains of all other variables such that the desired property holds.  For example, _a == b_ means that for any x in the domain of a, there is a y in the domain of b such that x == y (ie. it restricts the domains of a and b to be the intersection of those domains).
+
+## Calculation Constraints ##
+These constraints enforce that one variable (usually _a_) is constrained by a calculation done on the remaining variables.
+
+| **Constraint** | **Syntax** | **Description** | **Variable Types** |
+|:---------------|:-----------|:----------------|:-------------------|
+| distanceSquares | distanceSquares(a,b,c) | c = sqrt(a + b) if a and b are singleton | Numeric intervals  |
+| calcDistance   | calcDistance(a,b,c,d,e) | a is the Euclidean distance between points (b,c) and (d,e) | Numeric intervals  |
+| sin            | sin(a,b)   | a = sin(b)      | Numeric intervals  |
+| allDiff        | allDiff(a,b,...) | Restrict all domains so the intersection of any pair of domains is empty | Comparable         |
+| EqualMaximum   | EqualMax(a,b,...) | a = max(b,...)  | Numeric            |
+| EqualMinimum   | EqualMin(a,b,...) | a = min(b,...)  | Numeric            |
+| CountZeros     | CountZeros(a,b,...) | a is the count of the rest that can be zero | Numeric            |
+| CountNonZeros  | CountNonZeros(a,b,...) | a is the count of the rest that can be non-zero | Numeric            |
+| diffSquare     | diffSquare(a,b,c) | c = (a - b)<sup>2</sup> if a and b are singleton | Numeric intervals  |
+| card           | card(a,b,...)| a must be greater than or equal the count of the other variables that are true | Numeric            |
+
+## Set Constraints ##
+These constraints are likely to be used for set comparisons etc.  Note, however, that many of the other constraints listed on this page could be used for sets (ie Comparable variables) just as these constraints could be applied to numeric domains as well.
+
+| **Constraint** | **Syntax** | **Description** | **Variable Types** |
+|:---------------|:-----------|:----------------|:-------------------|
+| subsetOf       | subsetOf(a,b) | a is a subset of b | Comparable         |
+| memberImply    | memberImply(a,b,c,d) |If a is subset of b, then require that c is subset of d | a and b comparable, c and d comparable |
+| Lock           | Lock(a,b)  | Restrict a's domain to be contained in b's domain | Comparable         |
+
+## Object Hierarchy Constraints ##
+**NOTE**:  Unlike most constraints on this page, which are imposed on variables, these constraints are imposed on objects and tokens.
+
+These constraints are used to assert which object one or more tokens is contained by.  Most often, the commonAncestor constraint is used to subgoal across timelines which must share a contained object in common.
+
+| **Constraint** | **Syntax** | **Description** | **Variable Types** |
+|:---------------|:-----------|:----------------|:-------------------|
+| commonAncestor | commonAncestor(a,b,c) | a and b must be contained by the same object in c (or by c itself) | a, b, and c are all objects |
+| hasAncestor    | hasAncestor(a,b) | a must be contained by some object in b | a and b are objects<sub>, </sub>|
+
+Here's a snippet of code showing the use of the commonAncestor constraint:
+
+```
+Instrument::TakeSample{
+     contained_by(Navigator.At at);
+     at.location == rock;
+     Rover rovers;
+     commonAncestor(at.object, this.object, rovers);
+```
+This ensures that the Navigator object used for the At token and the Instrument object used for the TakeSample token token are both contained in the same Rover (you wouldn't want one Rover to be in the right place and another to take the sample!).
+
+## Miscellaneous Constraints ##
+| **Constraint** | **Syntax** | **Description** | **Variable Types** |
+|:---------------|:-----------|:----------------|:-------------------|
+| UNARY          |NA          |Restrict a variable's domain:  given a variable and a domain, intersect them.Note that this constraint is only available internally and not exposed in nddl. | Anything           |
+| or             | or(a,b,...) | At least one of the variables must be true | Numeric            |
+| absVal         | absVal(a,b) | a.lb >= 0, a.ub = max(abs(b.lb), abs(b.ub)), b.lb >= -a.lb, b.ub <= a.ub | Numeric            |

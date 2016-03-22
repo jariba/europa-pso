@@ -1,0 +1,12 @@
+To install a fresh version on ubuntu install these packages:
+
+gcc
+g++
+build-essential
+ant
+sun-java6-jdk
+
+Then you need to update the java version:
+
+> mroberts-v-ubuntu:~>sudo update-java-alternatives -l [[br](br.md)]
+> mroberts-v-ubuntu:~>sudo update-java-alternatives -s java-6-sun

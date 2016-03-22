@@ -1,0 +1,761 @@
+
+
+# Introduction #
+NDDL (pronounced 'noodle') is a domain description language used to model hybrid systems and the context in which they operate. NDDL is based on a number of concepts described  [here](PlanningApproach.md). The reader is strongly advised to review that material prior to working through this chapter.
+
+NDDL is introduced here in a bottom up fashion, starting with variables and constraints, moving onto classes of increasing sophistication, and then exploring the expressive language for writing rules. The NDDL transaction language for allocating elements of a partial plan in a plan database is used throughout in support of examples, and detailed more comprehensively at the end of the chapter.  Note that many of the code snippets used as examples here originate in the [Mars Rover example/tutorial](ExampleRover.md).
+
+# Variables and Constraints #
+
+Variables and constraints are the basic building blocks of EUROPA. They can be introduced in a number of ways, and in a range of scopes. The following basic forms for variable declaration are supported:
+
+  * _type label_: Declares a variable of type _type_ with the name _label_ and allocates a default domain as the base domain based on the type. The available primitive types are: _int_, _float_, _bool_ and _string_. In addition, a type can be a user-defined enumeration or class. The default base domain for _int_ is _`[-inf +inf]`_, and for _float_ it is _`[-inff +inff]`_ i.e. from negative to positive infinity. Variables of type _bool_ have a base domain of _{false, true}_. Variables of type _string_ are a special case requiring a singleton value on declaration (see our [warning](StringWarning.md)).
+  * _type label = value_: Declares a variable of type _type_ with the name _label_ and sets the base domain to the singleton value given by _value_.
+  * _type label = domain_: Declares a variable of type _type_ with the name _label_ and sets the base domain to _domain_. For _int_ and _float_ the domain is described as an interval.
+
+In each of the above cases, the term _domain_ reflects the base set of values in the domain of the variable. The variable cannot contain any values not present in this initial domain unless the type of the variable is [open](NDDLReference#Summary.md)<sup>1</sup> This domain is called the _base domain_.
+
+## Basic Declaration ##
+Figure 1 provides examples of different forms of variable declaration and restriction. Notice in particular the use of _enum_ and _typedef_ keywords which introduce user-defined types. Notice also that _int_ and _float_ types are restricted to intervals and that the decimal point is only used (and must be used) for _float_ values.
+
+```
+//Primitives with default base domains
+int v0;               // Declares an integer variable v0 with a domain [-inf +inf]
+float v1;             // Declares a float variable v1 with a domain [-inff +inff]
+bool v2;              // Declares a bool variable v2 with a domain {false, true}
+
+// String requires explicit instantiation
+string v3 = "NDDL is Not DDL";
+
+// Declare a symbolic enumeration as a custom type
+enum SPEED {SLOW, MEDIUM, FAST};
+SPEED v4;             // Declares a variable with an enumeration of values {SLOW, MEDIUM, FAST}
+
+// Use custom type definitions
+typedef int [1, 10] INT_TEN;
+INT_TEN v5;
+```
+**Figure 1**: Examples of different forms of variable declaration and restriction
+
+Figure 2 provides a NDDL specification of a simple _Constraint Satisfaction Problem_ or CSP. A CSP is given by a set of variables and a set of constraints. The problem is solved when all variables are assigned a value and all constraints are satisfied. In this case, the variables are the integer variables a, b, c, and d. Each is initialized with an initial domain of values. The solution to the problem is: a {5}, b{5}, c{15}, d {20}.
+
+```
+// Declare variables of type int.
+int a; // Declare a variable of type int. It's base domain = [-inf +inf]
+int b = [-inf +inf]; // Equivalent declaration but making the base domain explicit.
+int c = 15; // In place initialization to a singleton value. Base domain = 40.
+int d = [1, 20]; // In place initialization to a finite interval. Base domain = [1, 20].
+
+// Post constraints on variables
+a == b;
+b <= c;
+b + c == d;
+b == [4, 8];
+a == 5;
+```
+
+**Figure 2**: A simple _Constraint Satisfaction Problem_ in NDDL illustrating global variable declaration and constraint allocation.
+
+## Arithmetic Constraints ##
+NDDL supports explict use of the common relations (_==_, _<_, _<=_, _>_, _>=_, _!=_) and operators (_+_, _-_, _`*`_, _/_).
+For example, the following code fragment includes legal expressions:
+```
+a + b < 2 * c;
+a == c * d;
+a != e 
+```
+
+It is legal to include logical relations. For example, the following NDDL fragment restates the above constraints in a sinlge line:
+```
+a + b < 2 * c && a == c * d && a != e 
+```
+
+Disjunctions are also permitted:
+```
+a < 10 || a > 100;
+```
+
+## User-defined Relations and Functions ##
+NDDL and EUROPA are highly extendible. NDDL permits user-defined relations and functions to be directly integrated, one they have been registered with the [EUROPA constraint engine](ConstraintRegistration.md). _Constraints_ refer to relationships that apply among variables without any particular return type. For example:
+```
+int a, b, c;
+some_constraint_name(a, b, c);
+some_constraint_name(a, [10, 14], c);
+another_constraint_name(a, 2 * b, [2 4]);
+```
+
+_Functions_ are special classes of relations that have a specific output variable, allowing them to be naturally embedded in other expressions. The example below assumes the existence of a _max_ and _sqrt_ functions.
+```
+int a, b, c, d;
+c == max(a, b, c);
+d == sqrt(a) + sqrt(c * 4);
+```
+
+# Classes #
+A class is a user-defined abstract data type that is used when either:
+  1. The instances of the type are problem specific. For example, the set of _speeds_ might be encoded in the model but the set of _locations_ might be problem specific. However, the model will reference _locations_ without knowledge or necessity of the instance details.
+  1. The instances of the type have structure. For example, a _path_ might include a _source_, _destination_ and _cost_.
+  1. The instances of the type have state that is temporally scoped (i.e. described by predicates).
+
+## Basic Definition and Instantiation ##
+
+The simplest possible class can be introduced in a model thus:
+```
+class Foo {} // Declare a class Foo. It has no members and no custom constructor.
+```
+
+Instances of classes are allocated when setting up a problem. An object (i.e. an instance of a class) is allocated with the imperative _new_ operator:
+```
+new Foo(); // Allocate an object of class Foo. Constructor for Foo has no arguments.
+```
+
+There is no NDDL command to delete an object. All objects are uniquely named. If, as above, no name is provided, a unique name will be generated. A variable of a class is declared and instantiated with a base domain of all objects of that class that have been allocated.
+```
+Foo f; // Allocate a variable whose domain is the set of all objects of class Foo.
+```
+
+As with other variable declaration statements, the domain of the variable can be restricted:
+```
+Foo f1 = new Foo(); // Allocate an object and an object variable. Restrict variable to singleton of new object.
+Foo f2 = f1; // Allocate a variable and restrict its domain to the object held in f1
+```
+
+As with any other variables, object variables can participate in constraints:
+
+```
+Foo f1;
+Foo f3;
+f3 == f1;
+```
+
+It is possible that an object variable is declared before objects of the given type have been allocated. As long as the class is open, this is not a problem, since empty domains are permitted for variables of open types. However, if the class has been closed for a problem, indicating no further instances can be added, and no instances are present, then the variable will be empty on allocation and the system will be considered _inconsistent_. To illustrate this, consider the following NDDL model and problem description
+
+```
+// The model has 2 class declarations
+class Foo{}
+class Bar{}
+
+// The problem instance is allocated procedurally by the following statements
+Foo f1; // variable allocated before any objects
+Foo f2 = new Foo(); // After this f1 will contain the new object stored in f2.
+close(); // Close all types 
+Bar b; // Base domain will be empty and type is closed. This causes inconsistent initial state.
+```
+
+The most common situation is that all objects are allocated and then all the classes are closed using the _close_ command without qualification. This is preferred since stronger inference is possible on closed domains. However, for applications where the set of instances may be increased after the initial state is created, it may be important to leave a class open. For example, suppose an application requires target tracking and the set of targets to track is dynamic, evolving throughout execution. As execution progresses, new targets are added and these can be incorporated into the planning system smoothly as long as the type for targets was left open. Later sections will explore the semantics and consequences of dynamic objects (instances of open classes) in more detail.
+
+## Composition and Construction ##
+
+Classes typically have more structure than _Foo_ and _Bar_ from the previous section. Consider an application involving path navigation. Navigation must deal with path selection from place to place. Different path and location networks may arise in different problem instances, but the basic structure of a path network can be re-used across problem instances. Figure 3 illustrates such a path network structure.
+```
+#include "Plasma.nddl"
+
+// Declare Location as a class to allow allocation of instances
+// at run-time rather than compile time.
+class Location {
+   string name;
+   Location(string _name){
+      name = _name;
+   }
+}
+
+// Declare Path as a triple of locations and cost
+class Path { 
+   Location from; // Declare member variable 'from' of type 'Location'
+   Location to; // Declare member variable 'to' of type 'Location'
+   float cost = 0.0; // Declare member variable 'cost' of type 'float' with a default value. 
+
+   // Specify a constructor to initialize members
+   Path(Location _from, Location _to){
+      from = _from;
+      to = _to;
+   }
+
+   // Another constructor with only one Location - trivial path
+   Path(Location loc){
+      from = loc;
+      to = loc;
+   }
+
+   // Another constructor which over-rides default cost
+   Path(Location _from, Location _to, float _cost){
+      from = _from;
+      to = _to;
+      cost = _cost;
+   }
+}
+```
+**Figure 3**: a model of a Path Network
+
+Locations are modeled with a class _Location_ which includes a string name as a member variable. Note the declaration of a member variable. The body of the class declaration specifies the default base domains for each variable. All manner of declaration introduced for variables can be applied within the scope of a class declaration. For example:
+
+```
+class Bar{}
+class Foo {
+    int arg1; // [-inf inf]
+    float arg2 = [0.1 10.0]; // [0.1 10.0]
+    bool arg3; // {false, true}
+    string arg4 = “STRING DEFAULT”;     // WARNING:  Cannot be changed to a different value later!
+    Bar arg5; // All instances of Bar by default 
+    Bar arg6 = new Bar(); // A new instance always
+}
+```
+
+Recall that _string_ variables must always have explicit base domains (see our [warning](StringWarning.md)). In the case of _Location.name_ in Figure 3, since no specific base domain was provided on declaration, NDDL requires a constructor to pass in a specific _name_ on allocation. A constructor is invoked using the new operator first introduced in the previous section. For example:
+
+```
+Location l1 = new Location(“Hill”);
+```
+
+Constructor execution is procedural, meaning it proceeds line by line in the order of declaration. Constructor statements are limited to variable assignment. Notice in Figure 3 that more than one constructor is provided for class _Path_. This supports different modes of initialization. There is no limit to the number of constructors that can be defined for a class. Assignments in a constructor take precedence over default assignments made in member variable declarations.
+It is common practice to define a model in a separate file from an initial state description.  NDDL allows file inclusion as follows:
+
+```
+#include “PathNetwork.nddl”
+Location l1 = new Location(“Hill”);
+Location l2 = new Location(“Home”);
+Path p1 = new Path(l1, l2, 10);
+```
+
+The above NDDL fragment allocates 2 locations and a single path between them with a cost of 10. Obviously, more elaborate path networks can be created using this pattern.
+
+## Token Types (Action and Predicate) Declaration ##
+Thus far, the discussion of classes has been limited to problem domain elements without any temporal context. As was described in the [EUROPA Overview](PlanningApproach.md), a Token is an entity that contains a set of attributes (variables) and has a temporal extent. Tokens can be used to represent temporally qualified actions that an object can perform and temporally qualified states that an object can be in. Consequently, in a NDDL model, Token Types provide the means to describe the types of actions and states needed to describe a domain.
+In this next example, consider a _Navigator_ with the simple behavior of being _At_ a _Location_ or _Going_ from one _Location_ to another. The NDDL model given in Figure 4 extends the path network model to include the classes and token types required for navigation.
+
+```
+// Include prior model file, re-using the definition of Location
+#include "classes.0.nddl"
+
+class Navigator extends Timeline {
+   // A predicate for the state of being at a location for a period of time
+   predicate At{
+    Location location; // Paramater is Location
+   }
+
+   // A predicate for the state of being in the middle of travel between 2 locations
+   predicate Going{
+      Location from, to;
+      from !=  to; // Travel must happen between different locations
+   }
+}
+
+class Rover {
+   Navigator navigator;
+
+   Rover() {
+      navigator = new Navigator();
+   }     
+
+   // An action for traveling from one location to another
+   // Internally it can use the navigator to keep track of the Rover's location
+   action Go{
+       Location destination;
+   } 
+}
+```
+**Figure 4**: Navigation support
+
+Note that declaration of arguments to a Token Type follow patterns of variable declaration and allocation already described, including implicit and explicit base domain specifications. However, the _new_ operator is not permitted. Note also that there may be cases where relationships exist among Token Type arguments. These are examples of internal token relationships discussed in 3.2. They are defined in the Token Type declaration itself as constraints in the same way that constraints were introduced in prior sections. This example prohibits going to a location one is presently at by posting a constraint in the body of the predicate declaration which imposes the relation that its arguments are not equal (!=). Finally, notice that the _Navigator_ class extends a _Timeline_. Thus it inherits semantics of mutual exclusion described in the [EUROPA Overview](PlanningApproach.md).
+
+The NDDL listing in Figure 5 uses NDDL to construct a partial plan with:
+  1. A set of Locations
+  1. A single instance of a Rover which has its own Navigator
+  1. 2 tokens, i.e. instances of predicates, for being at a _Rock_ and later being at a _Lander_.
+
+```
+// Include the model
+#include "classes.1.nddl"
+
+// Allocate instances for this plan database
+Location Hill = new Location("Hill");
+Location Rock = new Location("Rock");
+Location Lander = new Location("Lander");
+
+// Allocate a Rover which in turn allocates its navigator internally.
+Rover rover = new Rover();
+
+// Indicate that the database is closed - no new objects can be created
+close();
+
+// Now allocate instances of predicates i.e. tokens
+
+// Initial state, at time=0 are at a Rock
+fact(rover.navigator.At t0);
+t0.location.specify(Rock);
+t0.start.specify(0);
+
+// Post a goal to be at Lander by time=1000
+goal(rover.navigator.At t1);
+t1.location.specify(Lander);
+t1.start <= 1000;
+
+// Impose a temporal distance of between 20 and 100 time units between the end of the first token
+// and the start of the second.
+t0.end +  [20 100] == t1.start;
+```
+**Figure 5**:  A partial plan for navigating from Rock to Lander
+
+A number of items are worth noting:
+  1. Commands are executed in the order they are defined.
+  1. _goal_ and _fact_ keywords are used to introduce tokens. The base domain of their built-in _state variable_ will be {ACTIVE, MERGED}. (Current implementation of _facts_ needs to be improved, see [issue #134](https://code.google.com/p/europa-pso/issues/detail?id=#134)).  Alternatively the _rejectable_ keyword results in {ACTIVE, MERGED, REJECTED} and can be used to specify a goal that is preferred but not required.
+  1. An instance of _Navigator_ is allocated inside the _Rover_ instance prior to creating any token. If a token of the _Navigator_ class were created prior to allocation of an object, then the base domain of the built-in object variable would be empty. This would yield an inconsistent state and is not permitted for tokens.
+  1. Unlike object member variables, token parameter variables are not initialized specially during allocation. Therefore, the base domain is derived from the defaults in the Token Type declaration. Further restriction is possible using the assignment statement.
+  1. A scoping operator is used to access variables of tokens. This example accesses built-in variables (e.g. _start_, _end_) as well as user-defined parameter variables (e.g. _location_).
+
+
+## Inheritance ##
+Inheritance is a second method of re-use in [NDDL](NDDLReference#Summary.md)<sup>2</sup> designed to make models more compact, and modeling less laborious and error-prone. The goal is that NDDL libraries may be developed that can be applied on many applications in a common domain (e.g. robotic control). The _Navigator_ example incorporated class inheritance using the _extends_ keyword (We saw an example already in Figure 4).  There are no scope qualifiers at this time so all member variables and predicates of a class are publicly available outside the class and by subclasses. The general pattern is:
+
+```
+class DerivedClass extends SuperClass { … }
+```
+
+An additional language construct, the keyword _super_, is provided to invoke base class constructors. It is only usable in the body of a constructor.
+
+Figure 6 illustrates the application of inheritance. Note that in the derived class it is possible to add new member variables, new predicates, and additional parameter variables to inherited predicates. In addition, further restrictions can be placed on inherited predicates. In this example a more restricted base domain is provided for parameter _Foo.arg1_ and a constraint is imposed between _Foo.arg1_ and _Foo.arg2_.
+
+```
+// Declare a simple class
+class Foo {
+   // Declare member variables of primitive types
+   int arg1;
+   float arg2;
+   bool arg3;
+
+   // Declare a constructor with no arguments to conduct default initialization
+   Foo(){
+      arg1 = [0 10];
+      arg2 = 0.0;
+      arg3 = false;
+   }
+
+   // Declare a constructor with 2 arguments, default the 3rd
+   Foo(int _arg1, float _arg2){
+      arg1 = _arg1;
+      arg2 = _arg2;
+      arg3 = false;
+   }
+
+   // Declare a constructor to explicitly initialize all arguments 
+   Foo(int _arg1, float _arg2, bool _arg3){
+      arg1 = _arg1;
+      arg2 = _arg2;
+      arg3 = _arg3;
+   }
+}
+
+// Declare a subclass
+class Bar extends Foo {
+   string arg4; // Add another argument
+ 
+   Bar(){
+      // Must explicitly invokes superclass default constructor!
+      super();
+      arg4 = "empty string";
+   }
+
+   Bar(string _arg4){
+      super(); // Explicitly invoke superclass default constructor  super();
+      arg4 = _arg4;
+   }
+
+   Bar(string _arg4, int _arg1, float _arg2, bool _arg3){
+      super(_arg1, _arg2, _arg3); // Invok specific superclass constructor with arguments
+      arg4 = _arg4;
+   }
+}
+
+// Allocate instances
+Bar bar1 = new Bar();
+Bar bar2 = new Bar("hello");
+Bar bar3 = new Bar("goodbye", 10, 20.6, true);
+```
+**Figure 6**:  An example of class inheritance which illustrates use of extends and super keywords.
+
+Semantically, inheritance defines an _isA_ relationship between classes such that all instances of a derived class can be treated as instances of a parent class. The converse is not true. This has implications for populating object variables, which in turn impacts merging. For example, consider the following:
+
+```
+Base b1 = new Base(1);
+Base b2 = new Derived(2);
+Base b3 = new Base(3);
+Derived v0;
+Base v1;
+```
+
+The above will result in 3 objects named _b1_, _b2_, and _b3_. It will also result in 5 variables. Variables _b1_, _b2_ and _b3_ will all have singleton domains. Variables _v0_ and _v1_ will have domains of _{b2}_ and _{b1, b2, b3}_ respectively.
+
+
+
+Internally, EUROPA uses maximum flow and incremental maximum flow (the default) algorithms to compute resource envelopes.  These are documented in [here](http://ic.arc.nasa.gov/publications/pdf/2001-0308.pdf) ([Muscettola, 2001](DocReferences.md)) and [here](http://www-rcf.usc.edu/~skoenig/icaps/icaps04/icapspapers/ICAPS04MuscettolaN.pdf) ([Muscettola, 2004](DocReferences.md)).
+
+# Rules #
+This section describes the facilities in NDDL for describing internal and external relationships between tokens and between token variables. These relationships were described at a high-level in [Planning Approach](PlanningApproach.md).
+
+## Basic Rule Definition ##
+The absence of rules governing interactions between  _Rover.Go_, _Navigator.At_ and _Navigator.Going_ in Figure 13 lead to an incomplete partial plan which had to be completed with explicit specification of an appropriate linkage. To enable a planner to bridge this gap automatically, model rules can be added to indicate the required relationships. Figure 7 presents a listing which provides the rules to accomplish this.
+
+```
+#include "classes.2.nddl" // Reuse the definitions
+
+// Define compatibility rules for the Go Action
+// Only parameter is "Location destination;", which is
+// the location we want to go to.
+Rover::Go
+{
+    // Keep track of initial and end location using the navigator
+    met_by(condition object.navigator.At currentLocation);
+
+    meets(effect object.navigator.At targetLocation);
+    eq(targetLocation.location, destination);
+
+    // Find a path between the current location and the desired destination
+    Path path; 
+	
+    // The path used must be between the 2 points
+    path.from == currentLocation.location;
+    path.to == destination;
+  	
+    equals(effect object.navigator.Going going);
+    eq(going.path,path);
+    eq(going.from,currentLocation.location);
+    eq(going.to,destination);
+}
+
+
+
+```
+**Figure 7**: Bridging the gap with domain rules.
+
+Rules are written for a specific Token Type (predicate and actions accept the same kinds of rules, although the _condition_ and _effect_ annotations only make sense inside actions), and are then applied to all tokens of that predicate that are [ACTIVE](NDDLReference#Summary.md)<sup>3</sup>. There is no limit to the number of rules that can be defined on a Token Type. Different rules might be written to reduce individual rule complexity and/or to make rules more modular. Rules can be all in a single file or distributed in many files. However, each rule must be defined in a single file. Rule declaration can be interleaved with class declaration as long as classes and predicates referenced in a rule are already declared. The syntax for introducing a rule follows:
+
+```
+ClassName::PredicateName {<rule-body>}
+```
+
+
+## Slave Allocation and Temporal Relations ##
+A slave token is most commonly introduced using a _temporal relation_. The set of all temporal relations is based on the Allen Relations of ([Allen, 1983](DocReferences.md)). For example, the statement:
+
+```
+meets(Going successor);
+```
+
+allocates a new slave token which will be referenced in the scope of the rule with the label _successor_. It further imposes a constraint that the _end_ time of the master token (i.e. the token on which the rule is being applied) is concurrent with the _start_ of the successor. This can also be stated more verbosely using the any keyword and an explicit constraint:
+
+```
+any(Going successor);
+this.end == successor.start;
+```
+
+In the above, _this_ is used to refer to the master token context and can be used to disambiguate variable names. All Allen relations are turned into primitives in this way using general slave allocation and explicit constraints during model compilation. Other valid constructs for token allocation or specification of temporal relations between tokens are:
+
+```
+any(Foo.p); // Allocates a slave of a predicate p with no label on a class Foo.
+any(var.p); // Allocates a slave of a predicate p with no label on a class given by the type of var and assigned to an
+// object in the domain of var, where var is an object variable.
+Any(Foo.p t1); // Unconstrained slave t1
+Any(Foo.p t2); // Unconstrained slave t2
+t2 meets t1; // An Allen relation between 2 slaves 
+this meets t2; // An Allen relation between the master and the slave
+```
+
+The supported binary temporal relations are :
+
+| **Relationship** | **Implied Constraints** |
+|:-----------------|:------------------------|
+| before           | origin.end <= target.start |
+| after            | target.end <= origin.start |
+| meets            | origin.end == target.start |
+| met\_by          | origin.start == target.end |
+| equal or equals  | origin.start == target.start && origin.end == target.end && origin.duration == target.duration |
+| contains         | origin.start <= target.start && target.end <= origin.end && origin.duration >= target.duration |
+| contained\_by    | target.start <= origin.start && origin.end <= target.end && origin.duration <= target.duration |
+| paralleled\_by   | target.start <= origin.start && target.end <= origin.end |
+| parallels        | origin.start <= target.start && origin.end <= target.end |
+| starts           | origin.start == target.start |
+| ends             | origin.end == target.end |
+| ends\_after      | target.start <= origin.end |
+| ends\_before     | origin.end <= target.start |
+| ends\_after\_start | target.start <= origin.end |
+| starts\_before\_end | origin.start <= target.end |
+| starts\_during   | origin.start >= target.start && origin.start < target.end |
+| contains\_start  | origin.start <= target.start && origin.end > target.start |
+| ends\_during     | origin.end > target.start && origin.end <= target.end |
+| contains\_end    | origin.start < target.end && origin.end >= target.end |
+| starts\_after    | origin.start >= target.start |
+| starts\_before   | origin.start <= target.start |
+| any              | None                    |
+
+Inside actions, a slave can be optionally annotated as being a\_condition_or_effect_, EUROPA doesn't enforce any semantics for those, but keeps the information around which can be exploited by a solver. EUROPA's built-in solver in fact takes advantage of those annotations when present to speed up search, in general most planning solvers will find that information useful, so it is a good practice to specify them when appropriate (for many scheduling or CSP problems the concepts of condition/effect may not apply and so the annotations will not be necessary)._
+
+## Variables and Constraints ##
+The material presented above for handling variables and constraints at the global level applies equally in the context of rules. All variables accessible in a rule context can be incorporated into constraints in precisely the same manner as seen earlier. The scope for accessing variables in a rule includes:
+  1. All token variables. All built-in and user-defined predicate parameters for the master token are accessible without qualification, or with explicit qualification using the keyword _this_.
+  1. All global variables. All variables declared outside the scope of a class or predicate are considered global.
+  1. All slave variables. All built-in and user-defined parameters on any slave token introduced in the rule and labeled. The label is required to reference a slave’s variables.
+  1. Local variables. It is possible to declare local rule variables in the same way that one declares global variables. However, it is not permitted to use the _new_ operator within a rule. Local variable names must not conflict with global variable names or variable names already defined on the token.
+
+It is worth mentioning that the composition relationships permitted in class declarations can be traversed using the ‘.’ [operator](NDDLReference#Summary.md)<sup>5</sup>. For example, below we define a composition structure::
+```
+class A{int i = [1, 10];}
+class B{A a; B(){a = new A();}}
+class C{B b; C(){b = new AB();}}
+```
+Given the above structure, any variable declared of type _C_ can be navigated to obtain a structurally related variable as follows:
+```
+C c; // A local variable of type C. Could also be a variable on a token, a global, etc.
+int j;
+c.b.a.i ==  j; // Traverse the object structure to access a specific variable.
+```
+
+## Guards ##
+It is possible to include extra qualifications to guard introduction of slaves or constraints in a rule. This applies wherever rules or rule elements are conditional. A guard is placed around a block of statements in a rule using the if keyword. For example:
+
+```
+Bool b;
+if(b == true){
+	<rule statements>
+}
+else{
+	<rule statements>
+}
+```
+
+The above NDDL rule fragment includes a declaration of a local variable and then provides 2 guarded branches based on values of that variable. Any legal relational expression is
+permitted within a guard statement.
+
+Conjunctions are permitted. For example:
+```
+if(a == 1 && b == 2 && c == 3){..}
+```
+
+## Filtering ##
+The navigation model presented in Figure 7 expressed rules for moving the Rover from its current location to a new, desired location. Recall that the model included a _Path_ class which is a link between two locations and a cost associated with that link. The condition we are looking to satisfy in that rule then is:
+
+_There exists some path such that its goes from my current location to my destination location_.
+
+In NDDL this is expressed as:
+
+```
+Rover::Go{
+
+// ...
+Path p;
+p.from == currentLocation.location;
+p.to == destination;
+// ...
+
+}
+```
+
+Figure 8 illustrates the semantics in terms of variables and constraints for this seemingly simple construct. It shows a simple path network with 5 locations and 5 path links.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/guide.nddl8.gif](http://europa-pso.googlecode.com/svn/wiki/images/guide.nddl8.gif)
+
+**Figure 8:** An illustration of the underlying semantics for existential quantification.
+
+A proxy variable is created for each referenced member of the path variable p (i.e. _p.from_ and _p.to_). Each proxy variable is populated with the union of respective member values over all paths. A special constraint is created to maintain synchronization as domains are restricted in both directions. It is the proxy variables which are actually used in the constraints explicitly defined in the model. In the example only an equality constraint was used. However, the proxy variable formulation allows any constraint to be used in filtering providing a powerful technique for expressing existential quantification constraints. Only members that are singletons or enumerations can be used for filtering.
+
+## Iteration ##
+Consider a domain rule where all hatches must be sealed before a submarine can submerge. This could be modeled with a _submerge_ action and a rule requiring all hatches to be in a _closed_ state prior to and during submerging. It might be cumbersome and/or impractical to impose this relation explicitly on specific hatch instances.  To address this, NDDL includes a _foreach_ structure permitting universally quantified relationships over abstract sets, as shown here:
+
+```
+Submarine::submerge {
+    Hatches hatches; // Local variable populated with teh set of all hatches
+    foreach(hatch in hatches) {
+        contained_by(hatch.closed);
+    }
+}
+```
+
+The general form is:
+
+```
+foreach(label in set){
+	<rule statements>
+}
+```
+
+The set must be closed and its contents cannot be further restricted through plan refinement. This is a subtle but important prohibition. Since a rule statement within a single iteration might include allocation of a constraint or token, a restriction on the set over which the iteration applied would then imply that a constraint or token be removed. This is non-monotonic. Instead, a lock constraint is imposed when imposes a lock on the set over which the iteration occurs once it is fired.
+
+**Note**: If you are using europa's built-in solver, you will want the solver to ignore the variable used to denote the set, you can do that by adding a filter in the built-in solver's [configuration file](PlannerCfg.md). For example:
+```
+<UnboundVariableManager>
+    ...
+    <FlawFilter var-match="hatches"/>
+    ...
+</UnboundVariableManager>
+```
+
+# The NDDL Transaction Language #
+
+NDDL includes procedural extensions, referred to as the _NDDL Transaction Language_, to operate on the plan database and thus initialize and/or modify a partial plan. A design goal of the NDDL transaction language is to provide syntax and semantics closely related to the use of NDDL elsewhere for class, predicate and rule declaration. However, the NDDL transaction language pertains exclusively to run-time data. It is referred to as a transaction language since a set of statements in this language form a procedurally executed sequence of atomic operations on the plan database, which stores an instance of a partial plan. Each statement of the language is thus directly translated into one or more operations available through the _DbClient_ interface.
+
+The NDDL transaction language has many applications. The most common one is the construction of an initial partial plan as an input to a solver. A second important application is to log transactions on the database for later replay. This is useful for copying a database, and for reproducing a state found through planning in a direct manner without having to search. It is also a potentially very useful integration mechanism for pushing updates to the database from external systems. Many of the available operations have been touched on in prior examples. This section presents the full language. The operations covered are:
+
+  * **Type Operations**
+    * _Closure_ : Indicate that no new instances of a class shall be created. Unless explicitly closed, all types remain open.
+  * **Variable Operations**
+    * _Creation_ : Declare and define a global variable which can be referenced by subsequent statements in a transaction sequence or from within the model.
+    * _Assignment and Un-assignment_ : Commit to specific values or domains for any variable in the transaction sequence context and to withdraw that commitment.
+    * _Constraint Creation_ : Create an instance of a given registered constraint between any variables in the transaction sequence context.
+  * **Object Operations**
+    * _Creation_ : Allocate instances of any class declared in the model, using any of the declared constructors.
+  * **Token Operations**
+    * _Creation_ : Allocate instances of any predicate declared in the model.
+    * _Activation and Deactivation_ : Force a token to be active and the means to retract from this state.
+    * _Merging and Splitting_ : Force a token to be merged, and the means to retract from this state.
+    * _Rejection and Reinstating_ : Force a token to be rejected, and the means to retract from this state.
+    * _Relations_ : State temporal relations between tokens
+
+We have already covered variable and constraint creation using the NDDL transaction language.  We showed:
+  * Declaration of a variable with a default base domain - e.g.  ` int i; Colors colors; `
+  * Declaration of a variable with an explicit and restricted base domain - e.g. ` int i = 6; int j = [10, 40]; Colors colors = Blue; `
+  * Declaration of an object variable and allocation of an object - e.g. ` Foo f = new Foo(); `
+  * Declaration of one variable by assignment of the contents of another - e.g. ` Foo b = f; `
+  * Allocation of a constraint - e.g. ` eq(i, j); neq(j, k); `
+
+We also introduced predicates, composition and inheritance and showed that constructors with arguments can be invoked explicitly, passing in values, domains or variable references - e.g.  ` Bar b = new Bar(f); `  We also showed that tokens can be created using the _goal_, _fact_ or _rejectable_ keywords. This section revisits some of these operations and discusses some new material.
+
+## Type Closure ##
+Most commonly, all objects are instantiated in the Plan Database before any tokens or constraints are added. Once all the objects are created, it is typical to indicate to the database that no more objects can be added. The most straightforward way to accomplish this is with the statement:
+`close(); // Close the plan database. No new objects can be added`
+Under certain circumstances, it may be preferable to allow objects of a particular type to be created throughout the lifetime of the plan database. The general form of such a statement is `class.close();` to prohibit further instantiation of objects of type class. Here are some examples:
+```
+Rover.close(); // Close the database to new Rover instances (and any subclasses).
+Timeline.close(); // Close the database to new Timeline instances (and any subclasses).
+```
+Any attempt to allocate an instance of a class that has been closed will result in an error. By default, all types remain _open_ until they are explicitly closed. Unless you have specialized requirements for _Dynamic Objects_, you should always insert a `close();` statement before creating any tokens. There is no operation to open a class once it has been closed.
+
+## Creating Tokens ##
+There are 3 ways to introduce a token into the plan database using NDDL transactions:
+
+  1. With the _goal_ keyword. It has the form _goal(objectScope.predicate `[label]`);_ where _objectScope_ designates the set of objects to which this token can be assigned and predicate designates the particular predicate to be created. A label is optionally used if later NDDL statements wish to refer to the instance to be allocated. For example, consider the statement:
+`goal(Navigator.At); // Allocates an anonymous active token which can be assigned to any instance of Navigator`.  The object variable of the new token will be populated with the set of all instances in the _Navigator_ class present in the database at the time of token creation. Other examples include:
+```
+goal(nav1.At); // Allocates an anonymous active token with a singleton object variable == nav1
+goal(nav1.At t0); // Allocates a labeled active token t1 with a singleton object variable == nav1
+```
+Upon execution of this command, the state variable is INACTIVE and has domain={ACTIVE, MERGED}. This means that the token cannot be REJECTED.
+  1. With the _fact_ keyword.  A _fact_ is different from a _goal_ in that it can only be merged with other facts, whereas as _goal_ can be satisfied by merging with a fact.(Current implementation needs to be improved, see [issue #134](https://code.google.com/p/europa-pso/issues/detail?id=#134)).
+  1. With the _rejectable_ keyword. The keyword _rejectable_ is identical in form to the goal keyword. The only difference is that the resulting token is in an _inactive_ state. Upon execution of this command, the state variable of the new token is _{ACTIVE, MERGED, REJECTED}_. This means that we can _activate_, or _reject_ the token.
+
+## Specifying and Resetting Variables ##
+
+We have seen many example statements where the domain of values of a variable was restricted:
+  * On construction it is restricted to the set of all values in the default base domain for the type e.g. int i;
+  * On construction it is restricted to an explicit domain e.g. int i = `[0 100]`;
+  * On construction it is restricted to a singleton value e.g. int i = 10;
+  * A constraint is posted on the variable relating it to another variable, domain or value.
+
+The assignment operator ‘=’ restricts the base domain of a variable and is the preferred method of indicating domain restrictions in the initial state. It is more efficient than posting a constraint and makes a stronger commitment since base domain restrictions are not retractable. However, the NDDL Transaction Language also supports _retractable_ commitments on a variable. This is useful to record and replay operations on the database made by a solver, or some other client. There is an operational difference between setting a variable to a value, and constraining it to the same value since rules of inference which may be conditional on this value will not be evaluated until the value is specified. Therefore, a method is provided to _directly specify_ the value of a variable as a _retractable_ commitment and a companion operation is provided to withdraw the commitment. Here is an example transaction sequence (and tiny model) using _specify_ and _reset_:
+
+```
+class Foo { // Declare a basic class with a simple predicate
+    predicate pred{int arg;}
+}
+
+enum Color {Red, Yellow, Blue}; // Declare an enumeration
+
+// Allocate objects and close the database
+Foo f1 = new Foo();
+Foo f2 = new Foo();
+Foo f3 = new Foo();
+close();
+
+Foo allFoo; // Declare a variable. Contains all Foo instances initially
+allFoo.specify(f2); // Specify it to a singleton
+allFoo.reset();
+
+goal(Foo.pred t0); // Allocate a goal token - initially active. Initially the object variable contains all instances of Foo
+t0.object.specify(f1); // Specify to a singleton. Demonstrates access to built-in token variable
+t0.arg.specify(4); // Specify to a singleton. Demonstrates access to an explicit token parameter variable
+Color color; // Allocate a variable which initially contains all colors.
+color.specify(Red); // Specify to a singleton
+```
+
+## Operations on Tokens ##
+We have described the set of internal token states indicating their role and relevance in the plan database and the partial plan. It has been shown how tokens are introduced into the plan database using _goal_, _fact_, or _rejectable_ statements. The example below demonstrates the use of NDDL transactions to effect state changes in the token.
+
+```
+// Declare a basic class with a simple predicate
+class Foo { 
+    predicate pred{}
+}
+
+Foo foo = new Foo();
+close();
+goal(foo.pred t0); // Initially inactive
+rejectable(foo.pred t2);  // Initially inactive
+t2.reject(); // Now rejected
+rejectable(foo.pred t3);  // Initially inactive
+t3.activate(); // Now Active
+t3.cancel(); // Now inactive again
+```
+
+## Token Relationships ##
+In addition to the general capability of creating constraints among variables, NDDL supports special kinds of relationships to be stated among tokens. These relationships are based on the Allen Relations introduced described earlier in the context of model rules. The general form for specification of these relations is a binary relation:
+```
+tokenA relationName tokenB;
+```
+
+This imposes the specified relation _relationName_ between _tokenA_ and _tokenB_ and is identical to the use of qualitative temporal relations presented in section 5.3.2. In addition, a very specific type of ordering relation, _constrain_, is supported which is equivalent to the before temporal relation in terms of its effect on the time-points of the variable. However, it is _object specific_ and is used to also indicate an assignment of the tokens involved on the _Timeline_. Unlike the situation with temporal relations, this operation can be reversed using the _free_ operation. These operations are the basis for resolving _threats_. The example below illustrates usage of these 2 operators.
+
+```
+// Declare a basic class with a set of simple predicates
+class Foo extends Timeline { 
+predicate pred0{}
+predicate pred1{}
+predicate pred2{}
+predicate pred3{}
+predicate pred4{}
+}
+
+// Allocate 2 objects
+Foo foo1 = new Foo();
+Foo foo2 = new Foo();
+close();
+
+// Allocate active tokens. Initially the object variable of each will contain
+// 2 values - foo1 and foo2
+goal(Foo.pred0 t0); // Initially active
+goal(Foo.pred1 t1); // Initially active
+goal(Foo.pred2 t2); // Initially active
+goal(Foo.pred3 t3); // Initially active
+goal(Foo.pred4 t4); // Initially active
+
+// Pass the same token for both arguments as a degenerate case to assign the token to the object.
+// This will probably be deprecated.
+foo1.constrain(t1,t1);
+
+// Constrain t2 and t3 such that t2 before t3 and both assigned to foo2,
+foo2.constrain(t2, t3);
+
+// Constrain t1 and t4 to foo1.
+foo1.constrain(t1, t4);
+
+// Constraint t0 before t1 on foo1
+foo1.constrain(t0, t1);
+
+// Now free it to illustrate the reversal.
+foo1.free(t0, t1);
+```
+
+# Summary #
+
+This chapter has presented the means of describing problem domains and partial plans in EUROPA using the NDDL modeling language. NDDL provides a very high-level, declarative, object-oriented approach for specifying the types to be considered in a domain and the nature of the interactions among domain elements. It is an open language in the sense that it promotes extension by integration of plug-in types for constraints, variables, objects and tokens.
+
+
+---
+
+
+  1. Variables of primitive types, typedefs and enumerations are closed on construction.  Classes are the only types that may remain open - meaning that the set of instances of that type (i.e. that class) may not yet be fully defined.
+
+> 2.  The first being composition.
+
+> 3.  Rules are not expanded until a token has been committed to the plan.  The reason for this is mainly practical since the process of merging tokens would be more convoluted and expensive in time and space and the benefits of doing otherwise are not clear.  It is possible that rule expansion could be applied on inactive tokens in the future.
+
+> 4.  If the master were explicit they are all binary relations between tokens.
+
+> 5.  '.' is a _member accessor_ operator and can be applied to object variables and tokens.

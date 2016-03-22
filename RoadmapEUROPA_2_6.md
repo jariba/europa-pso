@@ -1,0 +1,20 @@
+### Modeling ###
+  * NDDL
+    * Add STRIPS (action/condition/effect) annotations
+  * ANML
+    * re-enable ANML module
+    * upgrade ANML parser to latest grammar version from Dave Smith & Will Cushing
+
+### Search Support ###
+  * Add ability to keep track of Token Type information so that solvers can build planning graph
+  * In built-in solver, take advantage of STRIPS annotations if present
+
+### Resources ###
+  * Add ability to define time-varying capacity and limit profiles, instead of single numeric value
+
+### Documentation ###
+  * Improve example models, use STRIPS annotations where applicable
+
+### Bug Fixes ###
+  * Several bug fixes and performance improvements to Temporal Network
+  * Fix update mechanism for incremental flow profile

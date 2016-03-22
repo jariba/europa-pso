@@ -1,0 +1,117 @@
+# Constraint engine #
+## Flaw reporting ##
+Constraints already detect and report violations.  I propose that we add to that the ability to report flaws.  The
+motivation here is twofold:  First, to unify the mechanism for getting flaws from the PlanDatabase and the
+ConstraintEngine, or at least to make them look somewhat similar.  Second, to allow us to represent other constraints
+(resource constraints, specifically) as constraints and to take advantage of the ConstraintEngine to report those flaws.
+
+A threat in the PlanDatabase is currently detected at the Object level, reported to the PlanDatabase, then accessed by
+the Solver's ThreatManager through PlanDatabase::getTokensToOrder and PlanDatabase::getOrderingChoices.  On the other
+hand, an unbound variable flaw is detected by the planner by listening on the ConstraintEngine for addition, removal,
+restriction, and relaxation messages on variables.  This is both unnecessarily complex and can lead to irrelevant
+search.  Consider the following CSP:
+
+```
+int a = [0 5];
+int b = [6 10];
+lt(a, b);
+```
+
+There are no flaws (inconsistent variable assignments) here.  This CSP only requires variable binding if the solver is
+interested in producing a completely grounded solution.  If binding those variables is part of a larger decision stack,
+they could represent an entirely unnecessary pair of retractions and re-bindings.  A smarter backtracking scheme would
+be able to skip them, but so would smarter flaw reporting.  I propose the following additions:
+
+To the ConstraintEngine class:
+
+```
+
+public:
+const std::set<ConstrainedVariableId>& getVariablesToBind(); //returns the set of flawed variables
+const std::set<ConstrainedVariableId>& getAllUnboundVariables(); //returns all non-singleton variables
+
+protected:
+void notifyBindingRequired(const ConstrainedVariableId& var); //notify the constraint engine that a variable needs
+                                                              //binding
+
+To the Propagator class:
+const std::set<ConstrainedVariableId>& getVariablesToBind(); //returns the set of flawed variables
+
+protected:
+void notifyBindingRequired(const ConstrainedVariableId& var); //notify the propagator that a variable needs
+                                                              //binding
+
+
+To the Constraint class:
+
+protected:
+void notifyBindingRequired(const ConstrainedVariableId& var); //notify the propagator that a variable needs
+                                                              //binding
+
+```
+
+A sub-class of Constraint would invoke notifyBindingRequired inside handleExecute any time it could prove or even
+suspected that some inconsistent assignment to the variables in its scope exists.  For compatibility's sake, existing
+constraints not updated to take advantage of full flaw reporting could simply report a flaw on all of its non-singleton
+variables.
+
+Another advantage to having constraints report flaws is that the flaw reporting or later querying could be augmented
+with information about what some or all of those inconsistent yet uneliminated assignments are, allowing smarter search.
+
+## Resources ##
+To clear up some terminology, since there's been some confusion in the past, a "resource transaction" is anything that
+affects the level(s) of the resource.  Transactions have two implementations, both as a Transaction sub-class and a
+Constraint sub-class.  A "resource constraint" is the relation between the level(s) and the limits.  The
+most common is between the levels and the upper/lower limits, but Europa supports "constraints" on the
+instantaneous and cumulative production/consumption.  The resource constraints are implemented in sub-classes of
+FVDetector rather than Constraint and do no propagation.
+
+Currently, a Resource consists of a single Profile, a FVDetector, and six constant limits.  The level of the reource is
+accessed through Instants, which consist of a set of overlapping transactions and a fixed set of twelve levels (four for
+bounds of upper/lower limits, four for bounds of instantaneous production/consumption, and four for bounds of
+cumulative consumption/production).
+
+This design is limited in a number of ways.  All the limits are constant over the lifetime of the resource, so it's
+impossible to model things like battery capacity degredation.  The set of levels computed (actual levels and
+instantaneous/cumulative production/consumption) is fixed; this is bad because unnecessary computation may be done,
+because there is no way to express in the model what levels aren't computed, and there is no easy way to add new numeric
+attributes to a resource which may participate in a constraint--the user simply has to know which levels a particular
+Profile implementation produces.  It also requires that a Profile implementation compute more than
+the level it's directly associated with.  For example, the FlowProfile actually computes the **delta** at each instant
+and has additional code to compute the levels from the deltas, which could be part of a separate class.
+Finally, it's conceptually inconsistent--resource constraints aren't Constraints.  At least twice when explaining
+Europa's resource capabilities, I've had to overcome this disconnect.
+
+There are many changes that I propose to address these, so I won't include a bunch of suggested C++ and NDDL
+modifications that I haven't thought much about yet.
+
+First, represent the levels at instants as variables.  The upper and lower levels as well as the instantaneous and
+cumulative production and consumption all have minimum and maxumum values, which sound awfully like variables.  Domains
+at the very least, but representing them as variables lets us use constraints later.
+
+Second, unify the notion of a limit and a level as simply "values that vary over time", so I'll call them both "fluents",
+since the semantics of a limit comes from the constraint rather than the value (e.g. in a < b, b could be called the
+"limit" of a, but only because of the < constraint.) and they are continuous values that change over time (there are
+certainly grounds to object to using the word "fluent" here, but I haven't yet come up with a better word).  Allowing
+limits to be fluents permits the modeling of changes in capacity as well as requirements on levels that aren't related
+to capacity.
+
+Third, allow resources to have arbitrary sets of fluents, each with their own computation, configurable from the model.
+This allows inexpensive computations like a constant limit fluent to continue to be cheap, and also allows the user to
+specify only what they're interested in for their model.  If a user is worried only about lower-limit violations, all
+that's needed is a delta fluent, an upper-level fluent, and a lower-limit fluent.
+
+Fourth and finally, allow resources to post constraints between fluents with implicit universal quantifiers--the
+constraint holds for all times.  This, combined with the constraint engine enhancement where constriants report flaws
+allows a seamless integration with existing flaw reporting.
+
+These changes make implementing state resources substantially easier.  First of all, we can re-use almost all of the
+code above the level of constraints and profile computation, since references to the representation of a resource will
+use ConstrainedVariable rather than the numeric (or symbolic) components of the value.  Second, some of the features of
+state resources are easily represented as secondary symbolic fluents with constraints between them and the value
+fluent.  The primary example is the "req" constraint.  Complete details are available [here](TristanStateResourceNotes.md),
+but a "req" on a state resource is essentially a constraint that the state resource have a particular value over an
+interval.  Note that it doesn't alter the value of the resource, it simply causes flaws or violations to be reported if
+it's outside the required domain or if overlapping reqs may conflict.  Tristan and I have come up with a couple of
+different ways of implementing req, but I think the most straightforward way is to have a separate fluent for the "req"
+domain and the constraint that the value fluent always be a subset of the req fluent.

@@ -1,0 +1,63 @@
+### Architecture ###
+  * Make PSEngine runtime configuration (what modules to be instanciated, wiring between modules, etc) completely data-driven. This seems to be possible only through the use of dynamic libraries. Find alternatives for static libs.
+  * Streamline and cleanup PSEngine interface. make sure all extension points and event notifications are reachable through it.
+  * allow EUROPA extensions (constraints, propagators, decision points, etc.) to be written in other languages (java/python)
+  * PSEngine
+    * Systematic review
+    * PSVarValue is a very simplified view of a Domain, should be improved
+    * Decide what to do with DbClient interface, it is redundant
+    * Improve PSList
+  * Resources
+    * Measure performance of constrained-based resources vs token-based ones (migrate UBO benchmarks). Drop token-based approach?
+    * Implement more efficient alternatives to Incremental Flow profile? (see #217). Measure performance of Grounded profile. Make sure default profile is fast.
+    * Implement fast profile for Unaries so that they're competitive with Timelines
+
+### Search Support ###
+  * Incorporate domain-independent heuristics developed by Sara Bernardini and Dave Smith
+  * Capture required metadata and expose through Schema API
+  * Add new solver that incorporates heuristics
+  * Make sure built-in solver functionality can be reused as a building block for custom solvers
+    * it works in the presence of constraint violations (until it finds the next one, or ideally, until it breaks a violation threshold, that way upper bounds can be used)
+    * choice of next decision and next value can be easily customized from Java or other languages that can use EUROPA through SWIG.
+
+  * Re-factor Solver, make it easier to extend built-in solver, write solver from scratch or by composition of solvers.
+  * Add explicit support for relaxations?
+  * Add Dave & Sara's work on domain independent heuristics
+  * Add min-perturbation heuristic solver from Dynamic Europa
+  * incorporate and expose classical approaches from CP (variable ordering, back-jumping, etc).
+  * research :
+    * Support for automatic interleaving of multiple solvers
+    * Machine learning applications to improve search (see Mark Roberts paper on benchmark problems should be useful here).
+    * Mixing classical planning and CP,LS,Math programming search approaches
+
+### Modeling Language Support ###
+  * NDDL
+    * provide support for soft constraints (specify penalty values) and violation explanation
+    * provide procedural elements for :
+      * creating problem instances through iteration, branching, etc.
+      * loading data from a database
+      * creating/extending/running solvers
+      * dumping Plan Database/ Schema information
+    * provide API to obtain structural information (predicate relationships, grounded instances, etc) about the model
+    * better AST support
+  * ANML
+    * Move ANML parser to antlr3, reconnect ANML module to build
+    * Merge with [latest ANML grammar](http://code.google.com/p/anml/) written by Will Cushing and Dave Smith. Involve Will?
+    * provide full ANML support
+
+
+  * provide PDDL support : #106
+  * provide POCL planner for PDDL/ANML
+
+### Visualization/Debugging tools ###
+  * Improve Solver Dialog : #41
+  * PlanWorks has in effect been deprecated. Come up with a plan to migrate/re-implement any functionality that we maybe missing in PSDesktop tools or Tatiana's new UI tools
+
+### Automated Build ###
+  * Test with benchmark problems from CP, Scheduling and Planning
+
+### Documentation ###
+  * Improve Solver docs : #127
+  * Improve EUROPA extensions docs
+
+### Bug Fixes ###

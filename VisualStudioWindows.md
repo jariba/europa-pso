@@ -1,0 +1,48 @@
+# Introduction #
+> Developing on the Windows platform can be very challenging.  To simplify builds, Europa comes with pre-defined Visual Studio solution and project files.  Each project file corresponds to an individual module while each solution file serves as a wrapper of multiple project files for building and organizing projects.  In Europa, static or dynamic libraries can be generated.  To use static libraries you will need to use Europa.sln.  For dynamic libraries use EuropaDll.sln.  Please check your settings prior to attempting a build.
+
+# Requirements #
+Microsoft Visual Studio 2008 (Standard or Express)
+Microsoft .Net framework 3.5
+
+# Additional Required Initialization #
+  * unpack thirdparty\visualstudio
+  * create a PLASMA\_THIRD\_PARTY environment variable pointing to where you checked out plasma.ThirdParty
+  * Start VS2008 (or VS2008 express)
+  * Open the Europa.sln in PLASMA\_HOME (in express you may get some message about the solution file .. just ignore it)
+  * Set PATH variable to point to libraries
+  * Set JAVA\_HOME, JAVA\_INCLUDE, and JAVA\_BIN
+  * set ANT\_HOME to %PLASMA\_HOME%\ext\ant
+```
+PATH=%PATH%;%PLASMA_THIRD_PARTY%\pthreads-w32-2-8-0-release\lib;%PLASMA_HOME%\bin;%PLASMA_HOME%\build\lib\debug;%PLASMA_HOME%\build\lib;
+```
+Note: if you are receiving a missing dll error while building, make sure this setting is correct.  Use absolute path names if necessary.
+
+# Building #
+Build->Build Solution (F7)
+
+# Running #
+Debug->Start without Debugger (CTRL + F5)
+
+Note: only solution files have test projects which show output.  If you have trouble seeing the output:
+> Find Solution Explorer (usually on the right hand side with all of the projects listed)
+> Click on the Test project (be sure to have **Test** highlighted)
+> Run Start w/o Debugger from Debug
+
+# Command Line #
+Windows builds also work with some of the default targets in ant.  Currently the following targets are operational:
+
+build
+clean
+test
+dist
+zip-dist
+release-dist
+
+# Command Line Arguments #
+Windows builds current support the following arguments to ant:
+
+-Dbuild.libraries="DYNAMIC"
+
+# Developing on Visual Studio #
+For more information of how Visual Studio is setup for Europa see [VisualStudio](http://code.google.com/p/europa-pso/wiki/BuildingEuropaWithVisualStudio)

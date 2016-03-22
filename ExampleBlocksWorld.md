@@ -1,0 +1,11 @@
+The implementation provided [here](http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/BlocksWorld) uses a robotic arm to build the stacks and includes a UI where you can look at the partial state of the arm and the stacks as the planner progresses towards the stated goal.
+
+Run the example:
+
+```
+% cd $EUROPA_HOME/examples/BlocksWorld
+% ant
+```
+Click "Go" in the solver Dialog, then run "setupDesktop()" from the BeanShell console. Mouse over the green rectangles to see the actions over each timeline; for example, you can see the arm operator performing pick up and stack operations on the blocks.  The "BlockWorld History" window shows the evolution of the stacks as the operator performs the actions from the plan on them, until it arrives to the stated goal:
+
+![http://europa-pso.googlecode.com/svn/wiki/images/Example-BlocksWorld0.jpg](http://europa-pso.googlecode.com/svn/wiki/images/Example-BlocksWorld0.jpg)

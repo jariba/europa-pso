@@ -1,0 +1,23 @@
+# Quick Start #
+
+Command line arguments are optional. PSDesktop needs a NDDL file (for the initial state) and [PlannerConfig.xml](http://code.google.com/p/europa-pso/wiki/PlannerCfg) to run. If these are not provided from the command line, file open dialogs are shown. Command line arguments:
+
+```
+  [-nddl initial_state.nddl] [-config PlannerConfig.xml] [-view user.package.ClassName]
+```
+
+Note, **-view** does not work yet.
+
+The main class is **org.ops.ui.main.swing.PSDesktop**. It expects **LD\_LIBRARY\_PATH** (or **PATH** on Windows) to include Europa shared libraries and prints a message to this end if it cannot load the library.
+
+# Overview #
+
+The main visible difference from the original [PSDesktop](PSUIDocs.md) is the Window menu, which allows to open/close various views. Custom views picked up by reflection will also be added here. Note that in Swing version all views are created at the start up and destroyed on exit. The check boxes in the menu control only visibility.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/SwingScreenshot.png](http://europa-pso.googlecode.com/svn/wiki/images/SwingScreenshot.png)
+
+![http://europa-pso.googlecode.com/svn/wiki/images/SwingGantt2.png](http://europa-pso.googlecode.com/svn/wiki/images/SwingGantt2.png)
+
+# Details #
+
+See also [Developer Notes](JavaUINotes.md) for the various EUROPA Java UI interfaces.

@@ -1,0 +1,451 @@
+# A Simple Sample Application (The Planetary Rover) #
+
+This tutorial will step you through a simple EUROPA application to provide you with a solid understanding of the capabilities of EUROPA and how to approach modeling application domains. We begin by introducing the goal before stepping through the stages of creating a EUROPA application for it.
+
+Note that this example has much in common with the nddl snippets used on the [NDDL Reference](NDDLReference.md) page.  EUROPA includes working code for this example in [this directory](http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Rover).
+
+## Overview of the Simple Planetary Rover Application ##
+For many years NASA's Mars Exploratory Rover (MER) mission operated two rovers on the surface of Mars. The rovers moved between points of interest identified by scientists on earth to collect a range of scientific data by placing instruments and then transmitting the produced data back to earth. We are going to write the planning application for controlling a simplified version of these rovers.
+
+To provide some context, the figure below shows NASA Ames' K9 rover that is used to experiment with advanced control concepts for future Mars rover missions. K9 is operating in a simulated Martian landscape (called Marscape) where it mirrors the MER mission. The first picture shows K9 in the context of its environments.  The second picture shows K9 placing its sensor on a rock.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/k9-rover-overview-photo.jpg](http://europa-pso.googlecode.com/svn/wiki/images/k9-rover-overview-photo.jpg)  **Figure 1**:  K9 Rover at NASA Ames' Marscape while controlled by a EUROPA planner.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/k9-sensor-on-rock-photo.jpg](http://europa-pso.googlecode.com/svn/wiki/images/k9-sensor-on-rock-photo.jpg)  **Figure 2**:  K9 Rover Placing a sensor at NASA Ames' Marscape.
+
+We will build a batch application where we provide an application domain model and problem definition to the planner. The planner must then generate a plan to solve the problem. The figure below shows the main inputs and outputs to our application.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/simple-sample-overview.jpg](http://europa-pso.googlecode.com/svn/wiki/images/simple-sample-overview.jpg)  **Figure 3**: Application overview
+
+## Application Domain Analysis ##
+Developing EUROPA applications is a design task that requires judgement and multiple iterations. We have found the steps in this tutorial useful in practice. The overall approach is to gradually build up a domain description adding detail methodically. This approach controls complexity by allowing the domain writer to focus only on well defined issues at a given instant.
+
+The first stage is to draw a concept map of the entities in the application domain and their relationships. The figure below shows our concept map for the rover domain. We have identified locations and the paths between them as the key environment entities. The rover is the core vehicle, and includes possible commands scientists can issues, as well as subcomponents for the various things it can do. The navigator concept manages the location of the rover. The instrument concept will manage the instruments for sampling rocks.  The battery concept is included to provide a place for managing the power used by the other components of the rover. The Lander corresponds to the vehicle used to deliver the rover to the planet surface and provides a communication service that the rover can use to transmit information to earth.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/RoverConcept.jpg](http://europa-pso.googlecode.com/svn/wiki/images/RoverConcept.jpg)  **Figure 4**:  Rover Application Concept Diagram
+
+The next decision is to identify the entities in our concept map that will describe changes in state of the rover as it moves around its environment and performs experiments. We call each entity a _timeline_. The concept is best introduced by example. The rover in our domain is the actor we will be planning for and will contain all the timelines. Analyzing the components of the rover produces the following breakdown of timelines:
+
+  * **Navigator** controls the rover's movement between locations and holds position at a location.
+  * **Rover** manages instructions from the scientists tasking the rover.
+  * **Instrument** controls the API (commands) for the scientific instrument on the rover.
+  * **InstrumentLocation** controls the location (or position) of the instrument on board the rover.
+  * **InstrumentState** controls the state of the instrument.
+
+The next stage is to identify the states that each timeline can be in. We call each state a _predicate_. The easiest way to identify the predicates is to think through the lifecycle of each timeline. The following figure shows the set of predicates we have identified on each timeline.
+
+![http://europa-pso.googlecode.com/svn/wiki/images/RoverTimelines.jpg](http://europa-pso.googlecode.com/svn/wiki/images/RoverTimelines.jpg)  **Figure 5**:  Initial Timelines and Predicates
+
+Working from the top of the figure downwards:
+
+  * **Navigator:** The rover is _at_ a location or it _going_ between locations.
+  * **Rover:** The activities the rover can perform are _Go_ somewhere, _TakeSample_, _PhoneHome_ or _PhoneLander_.
+  * **Instrument:** The four commands that can be sent to the instrument are _TakeSample_, _Place_, _Stow_, and _Unstow_.
+  * **InstrumentLocation:** The instrument can be _Stowed_, _Unstowed_, or moving between those locations (_Stowing_ or _Unstowing_).
+  * **InstrumentState:** The instrument can be _Free_, _Placed_ at a given location to take a sample, or in the process of _Sampling_.
+
+As noted earlier, identifying the timelines and predicates is an iterative process. It would not be unusual to find new timelines while identifying predicates or to discover that two timelines could be collapsed into one. Please iterate and be comfortable with experimentation.
+
+The next stage is to flesh out the properties of the predicates and the constraints between them. Using constraints among the predicates is the principal way to define acceptable behavior in the system (and disallow unacceptable behavior).
+
+![http://europa-pso.googlecode.com/svn/wiki/images/RoverTakeSample.jpg](http://europa-pso.googlecode.com/svn/wiki/images/RoverTakeSample.jpg)  **Figure 6**:  Timelines and Predicates with Transitions between Predicates on each Timeline.
+
+In the above figure, we show the constraints between the instrument _TakeSample_ command and other instrument timelines, using a variety of temporal relations.  The 'contained by' constraint indicates the instrument must be in the unstowed location for the duration of the _TakeSample_ (but could be unstowed before and after as well).  The constraints with the InstrumentState timeline show that when the _TakeSample_ starts, a _Placed_ state must end ('met by'), and a _Sampling_ state must begin; the use of 'equals' for the _Sampling_ state indicates that it will begin and end at the same times as the _TakeSample_.
+
+## NDDL Encoding - Model ##
+Our encoding of the Rover domain is available [here](http://code.google.com/p/europa-pso/source/browse/PLASMA/trunk/examples/Rover). We will step through each of the model files and explain how it was derived form our analysis above and the NDDL constructs that were used. Rover-model.nddl contains the application domain model and Rover-inital-state.nddl contains a sample problem definition.
+
+
+We begin with the application domain model.
+
+### Defining Locations ###
+The concept of locations is encoded in the _Location_ class. The class has three attributes. The _name_ is a symbolic name for the location. The _x_ and _y_ attributes are coordinates. We have decided to position all our locations on a Euclidean Plane. The second part of the class specifies the constructor. The constructor defines how the attributes of a location are initialized when a new instance is created. We simply provide a signature that allows us to create locations with the name and coordinates specified; the constructor's job is to copy those initial values into the correct member variables.
+
+```
+class Location {
+   string name;
+   int x;
+   int y;
+
+   Location(string _name, int _x, int _y){
+     name = _name;
+     x = _x;
+     y = _y;
+   }
+```
+
+### Defining Paths ###
+The _Path_ class connects pairs of locations and its implementation follows a similar pattern to the _Location_ class. Paths have a symbolic name and a pair of locations that they connect. The _cost_ parameter will be used to compute the amount of battery power that will be consumed while traversing a path. The constructor's role is again just to take initial values for each of a path's attributes.
+
+```
+class Path {
+  string name;
+  Location from;
+  Location to;
+  float cost;
+
+  Path(string _name, Location _from, Location _to, float _cost){
+    name = _name;
+    from = _from;
+    to = _to;
+    cost = _cost;
+   }
+}
+```
+### Defining Resources ###
+We next encode the _Battery_ that will be used to power the rover. EUROPA provides a _Reservoir_ class for modeling consumable resources like batteries and fuel cells that have a numeric capacity that is produced and consumed during a plan. The _Battery_ class specializes the general _Reservoir_ class. It takes three arguments: an initial capacity _ic_, a minimum charge level _ll\_min_ and a maximum charge level _ll\_max_. The _Battery_ constructor delegates the creation of an instance to its parent or super class, the general _Reservoir_ class.  The _profieType_ string is used to indicate to the EUROPA solver what type of algorithms to use for calculating resource flaws and inconsistencies ([more details](EuropaResources.md)).
+
+```
+class Battery extends Reservoir 
+{
+    string profileType;
+
+	Battery(float ic, float ll_min, float ll_max)
+	{
+		super(ic, ll_min, ll_max);
+		profileType="IncrementalFlowProfile";
+	}
+}
+
+}
+```
+### Defining the Navigator Timeline ###
+We now move on to encode the components of the rover. We begin with the rover's navigator. This class contains the two predicates we identified earlier. The _At_ predicate models the concept of the rover being at a particular location. The _Going_ predicate models the concept of moving between locations. The _neq_ construct is a constraint that ensures the rover does not attempt to traverse a path that start and finishes in the same location.
+
+```
+class Navigator extends Timeline
+{
+	predicate At { Location location; }
+
+	// Rover may be going between two locations.
+	predicate Going{
+		Path path;
+	  	Location from;
+	  	Location to;
+	  	neq(from, to); // prevents rover from going from a location straight back to that location.
+	}
+}
+```
+
+
+
+### Defining the Instrument Timelines ###
+
+Before we get to the Instrument timeline itself, we consider two sub-timelines that it will use.  !The InstrumentLocation timelines maintains.  These predicates are declared but have no accompanying logic (in effect, the only constraint is that they occur on a single timeline, so cannot overlap).
+
+```
+class InstrumentLocation extends Timeline
+{
+	predicate Stowed{}
+	predicate Stowing{}
+	predicate Unstowed{}
+	predicate Unstowing{}
+}
+```
+
+
+Similarly, we create a timeline for the state of the instrument, where the _Placed_ and _Sampling_ predicates include the specific location.
+
+```
+class InstrumentState extends Timeline
+{
+	predicate Placed {Location rock;}	
+	predicate Sampling {Location rock;}	
+	predicate Free {}	
+}
+```
+
+Finally, the Instrument timline itself details the management of the rover's instrument for taking samples and for keeping the instrument safely stowed while moving.  It contains InstrumentLocation and InstrumentState objects (timelines).  Notice that the TakeSample and Place actions each include a Location parameter, and that each action has a specfied duration (for example, _Place_ takes 3 time units).
+
+```
+class Instrument
+{
+    Rover rover;
+	InstrumentLocation location;
+	InstrumentState state;
+	
+	Instrument(Rover r)
+	{
+		rover = r;
+		location = new InstrumentLocation();
+             	state = new InstrumentState();
+	}
+	
+	action TakeSample{
+    	Location rock;
+	    	eq(10, duration); // duration of TakeSample is 10 time units
+	}
+
+	action Place{
+		Location rock;
+    	        eq(3, duration); // duration of Place is 3 time units
+        }
+
+	action Stow{
+		eq(2, duration); // duration of Stow is 2 time units
+	}
+
+  	action Unstow{
+    		eq(2, duration); // duration of Unstow is 2 time units
+	}
+}
+```
+
+
+With the predicates defined we now move on to specify the detailed constraints on each beginning with _TakeSample_.  These constraints ensure that the state switches from _Placed_ to sampling when the sampling starts, that the location of the instrument is _Unstowed_ and that the rock being sampled matches the rock variables for the _InstrumentState.Sampling_ variable. The predicate consumes 120 units of battery power.
+
+```
+Instrument::TakeSample
+{
+  	met_by(condition object.state.Placed on);
+  	eq(on.rock, rock);
+
+        contained_by(condition object.location.Unstowed);
+    
+  	equals(effect object.state.Sampling sample);
+  	eq(sample.rock, rock);
+  	
+  	starts(effect object.rover.mainBattery.consume tx);
+  	eq(tx.quantity, 120); // consume battery power	
+}
+```
+
+
+The _Place_ predicate is similar to the _TakeSample_ predicate.
+
+```
+Instrument::Place
+{
+    contained_by(condition object.location.Unstowed);
+    
+    meets(effect object.state.Placed on); 
+    eq(on.rock,rock);
+	
+    starts(effect object.rover.mainBattery.consume tx);
+    eq(tx.quantity, 20); // consume battery power		
+}
+```
+
+_Unstow_ has three conditions on the InstrumentLocation timeline; it is preceded by a _Stowed_ predicate, matches an _Unstowing_ predicate and is followed by an _Unstowed_ predicate.  It also consumes some battery charge.
+
+```
+Instrument::Unstow
+{
+	met_by(condition object.location.Stowed);
+	equals(effect object.location.Unstowing);
+	meets(effect object.location.Unstowed);
+	
+  	starts(effect object.rover.mainBattery.consume tx);
+  	eq(tx.quantity, 20); // consume battery power		
+}
+```
+
+The _Stow_ predicate is the same idea.
+
+```
+Instrument::Stow
+{
+	met_by(condition object.location.Unstowed);
+	equals(effect object.location.Stowing);
+	meets(effect object.location.Stowed);
+	
+  	starts(effect object.rover.mainBattery.consume tx);
+  	eq(tx.quantity, 20); // consume battery power		
+}
+}
+```
+
+
+
+
+### Defining the Rover ###
+The _Rover_ class pulls together all the components we have defined so far and manages instructions from the scientist user to move (_Go_), take samples (_TakeSample_), or transmit information back to the lander (_PhoneLander_) or earth (_PhoneEarth_). It has an attribute for the navigator, instrument, and battery classes. The constructor takes an instance of the _Battery_ class and creates instances of the other classes to setup the rover.
+
+```
+class Rover 
+{
+	Navigator navigator;   // Keeps track of Rover's position
+	Instrument instrument; // Keeps track of Instrument's state
+	Battery mainBattery;   // Provides power 
+
+	Rover(Battery b)
+	{
+    	navigator = new Navigator();
+    	instrument = new Instrument(this);
+    	mainBattery = b;
+  	}
+  	
+  	action Go { Location dest; }
+  	
+	action TakeSample { Location rock; }
+   	
+   	action PhoneHome{}    // Communicate material back to earth  
+   	action PhoneLander{}  // Communicate material back to lander
+}
+```
+
+The definitions of the Rover actions will be familiar from previous predicates.  The _Go_ predicate specifies that the instrument must be stowed, defines what the Navigator timeline should look like before during and after the _Go_, and matches the destination with the Path 'from' variable.  Finally, the _Go_ action consumes battery charge.
+
+```
+Rover::Go
+{
+	// Instrument must be stowed while driving
+	contained_by(condition object.instrument.location.Stowed);
+	 
+	met_by(condition object.navigator.At _from);
+	meets(effect object.navigator.At _to);
+	eq(_to.location, dest);
+
+	// Find a path
+	Path path; 
+	
+	// The path used must be between the 2 points
+  	eq(path.from, _from.location);
+  	eq(path.to, dest);
+  	
+	equals(effect object.navigator.Going going);
+	eq(going.path,path);
+	eq(going.from,_from.location);
+	eq(going.to,dest);
+
+  	// Pull power from the battery equal to the path cost.
+  	starts(effect object.mainBattery.consume tx);
+  	eq(tx.quantity, path.cost);
+}
+```
+
+Consider _TakeSample_ next. The contained\_by constraint ensures that the Rover stay at one location throughout the sampling..  The equals constraint ensures that the instrument does indeed take the sample, and that it is taking a sample from the correct rock.  The condition allows the predicate to either meet a _PhoneHome_ or _PhoneLander_ predicate to transmit the results of the sampling back to earth. Either way can be used by the planner unless we set specify the value of the _OR_ variable.
+
+```
+Rover::TakeSample
+{
+	// Rover must be at the target rock throughout 
+	contained_by(condition object.navigator.At at);
+	eq(at.location, rock);
+	
+	equals(object.instrument.TakeSample ts);
+	eq(ts.rock, rock);
+    
+	// Make contact with results. Prefer to phone home, but
+	// also allow contact to lander instead as a relay
+	bool OR;
+	
+	if (OR == false) {
+		meets(object.PhoneHome t0);
+	}
+	if (OR == true) {
+    	meets(object.PhoneLander t1);
+  	}
+}
+```
+The _PhoneHome_ and _PhoneLander_ predicates are specified next. Both use battery power. _PhoneHome_ is more expensive as the signal needs to be transmitted back to earth requiring much more power.
+
+```
+Rover::PhoneHome
+{
+  starts(object.mainBattery.consume tx);
+  eq(tx.quantity, 300); // consume battery power
+}
+
+Rover::PhoneLander
+{
+  starts(object.mainBattery.consume tx);
+  eq(tx.quantity, 20); // consume battery power
+}
+```
+
+
+We have now completed the NDDL modeling we need to describe our application domain and it is now possible to describe problems that we want our planner to solve.
+
+
+## NDDL Encoding - Initial State ##
+
+The initial state file contains an example planning problem with a specific set of locations and paths. The first line of the file just includes the domain model file we detailed in the previous section.
+
+```
+#include "Rover-model.nddl"
+```
+
+The environment is configured to have five locations - four rocks and a single lander.
+
+```
+Location lander = new Location("LANDER", 0, 0);
+Location rock1 = new Location("ROCK1", 9, 9);
+Location rock2 = new Location("ROCK2", 1, 6);
+Location rock3 = new Location("ROCK3", 4, 8);
+Location rock4 = new Location("ROCK4", 3, 9);
+```
+
+We define three paths that lead from the lander to the location named _rock4_. The paths vary considerably in the amount of battery energy needed to traverse them.
+
+```
+Path p2 = new Path("Very Long Way", lander, rock4, 2000.0);
+Path p3 = new Path("Moderately Long Way", lander, rock4, 1500.0);
+Path p1 = new Path("Short Cut", lander, rock4, 400.0);
+```
+
+We define a single battery with an initial and maximum capacity of 1000 units. The battery may be drained as low as 0 units.
+
+```
+Battery battery = new Battery(1000.0, 0.0, 1000.0);
+```
+
+We define a single rover, _spirit_, and pass it the battery we just defined.
+
+```
+Rover spirit = new Rover(battery);
+```
+
+We have now defined all the objects in our domain and we can close the database and begin specifying the state of the world.
+
+```
+close();
+```
+
+
+We define the initial state by creating an _At_ token called _initialPosition_. It is constrained to start at the same time the planning horizon starts and the location attribute is set to being the _lander_. The result is to place the rover at the lander at time zero.
+
+
+```
+fact(spirit.navigator.At initialPosition);
+eq(initialPosition.start, 0);  // What time - the start of this planning horizon
+eq(initialPosition.location, lander); // What position - the lander
+```
+
+
+We define the instrument to start in the _Stowed_ location and the _Free state._
+
+```
+fact(spirit.instrument.location.Stowed stowed);
+eq(stowed.start, 0);
+fact(spirit.instrument.state.Free free);
+eq(free.start, 0);
+```
+
+We define the goal as taking a sample of _rock4_ starting at time 50.
+
+```
+goal(spirit.TakeSample sample);
+sample.start.specify(50);
+sample.rock.specify(rock4);  // Want to get to rock4
+```
+
+With the model and the initial state now specified it is time to start planning.
+
+## Results ##
+
+Run the example:
+
+```
+% cd $EUROPA_HOME/examples/Rover
+% ant
+```
+Click on "Go" in the solver dialog, then run "setupDesktop();" from the BeanShell console.  You will see the resulting schedule for this particular example (windows have been rearranged in this screenshot to show everything):
+
+![http://europa-pso.googlecode.com/svn/wiki/images/Rover.results3.png](http://europa-pso.googlecode.com/svn/wiki/images/Rover.results3.png)
+**Figure 7**: EUROPA UI Showing a Rover domain solution
+
+A couple of observations:
+
+  * The red and blue curves bound the possible batter charge.  The difference between the two is due to flexibility in the plan regarding when the navigation and sampling take place.  The red curve shows the charge when they occur as soon as possible, and the blue curve shows them if everything is delayed as long as possible.
+  * The bottom window displays a gantt chart for the Rover, Navigator and Instrument timelines in this problem.  Hover the mouse over any piece (green rectangle) of the gantt chart to see details displayed in the Details window.  In this screenshot, the mouse was hovered over the large box on the Navigator timeline, which is an 'At' predicate.

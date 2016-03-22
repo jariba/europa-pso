@@ -1,0 +1,16 @@
+### Platform Support ###
+  * Build EUROPA on windows using MS Visual Studio
+  * Build 64-bit binaries for Mac
+
+### Architecture enhancements/re-factoring/cleanup ###
+  * Allow Europa Engine's configuration to be read from an XML file.
+
+### Visualization/Debugging tools ###
+  * Integrate Tatiana's UI work into distribution
+  * Write new gantt chart that we can extend
+
+### Automated Build ###
+  * Add plan comparison to regression tests
+
+### Bug Fixes ###
+  * Several memory mgmt bug fixes that surfaced while building with MS Visual Studio.

@@ -1,0 +1,148 @@
+# Building EUROPA on Windows #
+
+This page supplements the build page for [Europa Development](http://babelfish.arc.nasa.gov/trac/europa/wiki/EuropaDevelopment) by covering specific setup that is needed for a windows build.  You may configure your build platform for MinGW or Cygwin or both, though MinGW is the officially supported platform for Windows.
+
+The supported build process is to build Europa using Ant build.xml file in the root of the project. The easiest thing is to use Ant from ext/ant. Make sure **ANT\_HOME** is not set to another ANT directory, or it will confuse the build.
+
+## Cygwin vs. MinGW ##
+
+Cygwin is a UNIX-like environment for Windows. MinGW is a native port of the GNU Compiler Collection to Windows. In short, both Cygwin and MinGW have C++ compilers. The difference is that Cygwin has its own DLL, while MinGW uses native Windows libraries.
+
+Europa uses MinGW to compile a windows executable because MinGW is not under the GPL, while (at least part of) Cygwin is under the GPL.  Never-the-less, the user may wish to develop/test inside cygwin but compile MinGW executables.  These instructions allow the user to do both.  While you can certainly compile Europa using only Cygwin (there is an extra step to do this outlined below), _please be aware of the licensing issues with distributing any executables under the GPL_.
+
+
+---
+
+## Cygwin ##
+
+### Setting up Cygwin ###
+We assume you already have a working cygwin installation.  For details, see the [Cygwin](http://www.cygwin.com/) site.
+
+To install on cygwin, you will need to add the following packages using the cygwin setup:
+
+  * from devel: automake, binutils, cppunit, gcc, make, subersion, subversion-python, swig
+  * from perl: perl
+
+The Java JDK must be installed in windows and the JAVA\_HOME variable set in your .bashrc file.  For example
+```
+  setenv JAVA_HOME /cygdrive/c/Program\ Files/Java/jdk1.6.0_12
+```
+or
+```
+  export JAVA_HOME=/cygdrive/c/Program\ Files/Java/jdk1.6.0_12
+```
+
+
+The following tools/packages will need to be installed by hand:
+  * jam-2.5 - you can use a cygwin shell to make this program.  Then the exec jam0.exe needs to be copied to the /usr/bin directory for cygwin.  Check the installation by running jam at the command line.
+
+  * Cygwin comes with pthreads. If you are building for Cygwin (which is not default), this is good enough.
+
+### Building on Cygwin ###
+
+By default, Europa is only supported on MinGW bacause of the licensing issues with the GPL mentioned above.  If you change your build, _please be aware of the licensing issues with distributing any executables under the GPL_.
+
+To compile under Cygwin, open build.xml and change the following line
+```
+   <property name="jam.misc" value="-sOS=CYGWIN -sNOCYGWIN=TRUE" />
+```
+to
+```
+   <property name="jam.misc" value="-sOS=CYGWIN" />
+```
+
+Please do not check in this change (because MinGW is the officially supported windows build environment).
+
+
+
+---
+
+## MinGW ##
+
+MinGW is the default windows build environment.
+
+### Setting up MinGW ###
+
+There are two choices to installing MinGW.  The first is in Cygwin by adding  the following components to your system using the cygwin setup utility:
+
+  * from devel: gcc-mingw-core, mingw-runtime
+
+A cleaner way is to install the MinGW toolkit directly into c:/MinGW and then set the MinGW path before the Cygwin path (assuming you installed Cygwin as well for the toolset).  See the MinGW [FAQ](http://www.mingw.org/wiki/FAQ) for details.  The relevant places to change the path are in the windows environment, the .bashrc, and possibly the .cshrc.
+
+Change the window user environment PATH variable to include "c:\mingw\bin;c:\cygwin\bin".  The correct path can be verified by running a windows shell and typing 'which gcc'.  You should see that the gcc mingw is the default gcc.
+
+You may have to set TEMP, TMP, TMPDIR to avoid
+```
+This application has requested the Runtime to terminate it in an unusual way.
+Please contact the application's support team for more information.
+```
+
+For the cygwin bash shell (the default shell for Europa scripts), you will need to modify /etc/profile such that:
+
+  * PATH=c:\MinGW\bin:....:$PATH
+
+and the path in your HOME\.bashrc equals
+
+  * export PATH=/cygdrive/c/MinGW/bin:$PATH
+
+
+Verify the bash shell by running at the bash prompt 'which gcc'.  As before, you should see that the mingw gcc is being called.
+
+If you use an alternate shell (such as csh or tcsh) you may need to adjust the PATH appropriately.  Verify as before using 'which gcc'.
+
+Once the paths are correct, you can follow the instructions below for installing pthreads.
+
+#### PThreads ####
+
+If you want to build for MinGW (default), one option is to use [Pthreads32](http://sourceware.org/pthreads-win32/).
+
+Copy includes and libraries from this new PThreads installation into _/usr/include/mingw_ and _/lib/mingw_ respectively for cygwin while for mingw use _c:/mingw/include/_ and _c:/mingw/lib. Also_
+
+  * symlink pthread.dll to pthreadGC2.dll
+  * symlink libpthread.a to libpthreadGC.a
+
+#### CPPUnit ####
+
+MinGW note: You may see errors about 'multiple target patterns' if you run the make process from the command line as listed below.  This is caused by the path "c:..." in the .deps files.  To fix this, consider running the makeCppUnit.mingw from the [ThirdParty library](http://code.google.com/p/europa-pso/source/browse/#svn/ThirdParty/trunk).
+
+The cppunit installed above for cygwin clashes with the MinGW setup.  You will need to download, compile, and install cppunit by hand from [Sourceforge](http://apps.sourceforge.net/mediawiki/cppunit/index.php?title=Main_Page); the these instructions used cppunit-1.12.1.
+```
+  % tar zxvf cppunit.distro.tar.gz
+  % cd cppunit.distro
+  % mkdir include.install
+  % ./configure --build=mingw32 --libdir=./lib --includedir=./include.install CFLAGS=-mno-cygwin CPPFLAGS=-mno-cygwin CXXFLAGS=-mno-cygwin 
+  % make
+  % make install
+  % cd include.install
+  % cp -R * /usr/include #or c:/mingw/include for MinGW
+  % cd ../lib 
+  % cp * /lib/mingw  #or c:/mingw/lib for MinGW
+```
+
+### Setting up Log4cxx ###
+
+For Cygwin, you can include the liblog4cxx library.
+**CAUTION: if you use Cygwin for packages wish to use MinGW to compile, make sure you install Log4cxx prior to configuring Log4cxx or you may run into a compilation error from MinGW gcc compiler.**
+
+For MinGW, performing this task requires getting APR, APR-util, and APR-iconf, Log4cxx (an possibly other libraries) to compile under MinGW.  We are still working on getting this suite to compile for MinGW.  Some hints along the way:
+  * APR
+  * [these](http://wiki.apache.org/logging-log4cxx/MSWindowsBuildInstructions) may help
+  * you'll need to install libtool for cygwin
+  * problem in configure script with long long variable not being used properly.  Had to comment lines 37062ff except the case where _long\_long = 8 (which it does)
+  * the symlink for pthread must be a HARD link (mingw cannot seem to follow soft links)
+  * you will need to include the MinGW winsock library (either -lws2\_32 or -lwsock32_
+
+
+#### DLL paths ####
+
+When you run Java examples, make sure the pthread DLL is in **PATH**. If it is not, you may get something like this:
+
+```
+[java]     Exception in thread "main" java.lang.UnsatisfiedLinkError:
+C:\cygwin\Program\europa-2.1.2-windows\lib\System_g.dll: Can't find
+dependent libraries
+```
+
+
+
+On pure Cygwin, both _build_ and _test_ targets work. MinGW has problems with some of the tests, because several tests use _cppunit_, which depends on Cygwin DLL. This causes the Windows equivalent of core dump if you try to run them.

@@ -1,0 +1,55 @@
+# Introduction #
+
+This page describes the Visual Studio Environment
+
+
+# Understand Visual Studio #
+
+Many problems with building are caused by the wrong configuration and platform.  Currently, only the Debug|Win32 configuration is supported (we will add more as time allows).  Your set up should look like this:
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/pick%20the%20right%20configuration.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/pick%20the%20right%20configuration.png)
+
+
+After you open the Europa.sln file you will see a solution explorer that looks like:
+
+
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/solution%20explorer.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/solution%20explorer.png)
+
+
+# Project Properties of an executable #
+
+Test Properties - note the Linker is listed
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Test%20Properties.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Test%20Properties.png)
+
+# Project Properties of an library #
+
+Utils Properties
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20Properties.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20Properties.png)
+
+Include directories
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshot/Utils%20Property%20Page%20showing%20Include%20Directories.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshot/Utils%20Property%20Page%20showing%20Include%20Directories.png)
+
+Utils Include directories appear empty
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20Include%20Directories%20appear%20empty.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20Include%20Directories%20appear%20empty.png)
+
+Utils Inherited Include Directories
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20Inherited%20Include%20Directories.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20Inherited%20Include%20Directories.png)
+
+Look in property manager
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20PropertyManager%20Debug.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Utils%20PropertyManager%20Debug.png)
+
+
+
+
+# Project Dependencies #
+
+If you right-click the Solution file and select "Project Dependencies":
+
+![http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Static%20Libs%20dependencies.png](http://europa-pso.googlecode.com/svn/ThirdParty/trunk/visualStudio/screenshots/Static%20Libs%20dependencies.png)

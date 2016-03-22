@@ -1,0 +1,27 @@
+# Constraint Satisfaction Problems #
+
+EUROPA is based on translating a planning problem into a graph of constraints and variables. Solving a planning problem thus borrows heavily from methods of solving constraint satisfaction problems, and leverages algorithms for using constraints to propagate consequences of changes to variables in order to detect inconsistencies and improve search.
+
+A Constraint Satisfaction problem consists of a set of _Variables_.  For example:
+
+  * speed = `[`1 10`]` i.e. the variable speed has a value in the range from 1 to 10.
+  * distance = `[`40 100`]` i.e. the variable distance has a value in the range from 1 40 to 100.
+  * time = `[`0 inf`]` i.e. the variable time has a value in the range from 0 to infinity.
+  * location1 = `[`20 25`]` i.e. the variable location1 has a value in the range 20 to 25.
+  * location2 = `[`80 200`]` i.e. the variable location2 has a value in the range 80 200.
+
+and a set of _Constraints_:
+
+  * _C0_: speed == distance`/` time
+  * _C1_: location1 + distance == location2
+
+A _Solution_ to a _constraint satisfaction problem (CSP)_ is a value for each variable such that all constraints are satisfied. For example, the following is a solution to the above _CSP_:
+
+  * speed=10; distance=70; time=700; location1=25; location2=95.
+
+In this problem, note that no solution is possible which contains the value 0 for _time_. Such a value would make constraint _C0_ inconsistent. Constraints can be _propagated_ to remove values from the domain of variable that cannot participate in a solution to the _CSP_. The principal solution techniques available for solving a _CSP_ are:
+
+  * _Heuristic Search_ to select a value for each variable from the remaining values in its domain.
+  * _Propagation_ to prune infeasible values to reduce backtracking, and to detect a dead-end where no further refinement of the variables is a solution.
+
+Solving a _CSP_ is NP-Hard (i.e. totally intractable!) in theory, but often very efficient in practice using the above methods. EUROPA uses an extended version of the basic ideas of a _CSP_ called a _Dynamic Constraint Satisfaction Problem_ (_DCSP_). A _DCSP_ permits addition of new variables and constraints to the problem which is essential as plans evolve with new activities and states and relations between them being created.
